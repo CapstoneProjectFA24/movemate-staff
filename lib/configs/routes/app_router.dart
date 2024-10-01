@@ -1,0 +1,68 @@
+import 'package:auto_route/auto_route.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+// guard
+import 'guard/onboarding_guard.dart';
+import 'package:movemate_staff/configs/routes/guard/auth_guard.dart';
+
+// screen
+import 'package:movemate_staff/features/auth/presentation/screens/sign_in/sign_in_screen.dart';
+import 'package:movemate_staff/features/auth/presentation/screens/sign_up/sign_up_screen.dart';
+import 'package:movemate_staff/features/auth/presentation/screens/privacy_term/privacy_screen.dart';
+import 'package:movemate_staff/features/auth/presentation/screens/privacy_term/term_screen.dart';
+import 'package:movemate_staff/features/auth/presentation/screens/otp_verification/otp_verification_screen.dart';
+
+import 'package:movemate_staff/features/home/presentation/screens/home_screen.dart';
+
+import 'package:movemate_staff/splash_screen.dart';
+import 'package:movemate_staff/tab_screen.dart';
+// import 'package:movemate_staff/onboarding_screen.dart';
+
+// model
+// import 'package:movemate_staff/features/promotion/data/models/promotion_model.dart';
+
+// utils
+import 'package:movemate_staff/utils/enums/enums_export.dart';
+
+part 'app_router.gr.dart';
+
+@AutoRouterConfig(replaceInRouteName: 'Route')
+class AppRouter extends _$AppRouter {
+  final Ref _ref;
+  AppRouter({
+    required Ref ref,
+  }) : _ref = ref;
+
+  @override
+  List<AutoRoute> get routes => [
+        // auth
+        AutoRoute(
+          page: SignInScreenRoute.page,
+        ),
+        AutoRoute(page: SignUpScreenRoute.page),
+        AutoRoute(page: OTPVerificationScreenRoute.page),
+
+        // Màn hình Onboarding
+        // AutoRoute(page: OnboardingScreenRoute.page),
+
+        // Màn hình chính
+        AutoRoute(
+          page: TabViewScreenRoute.page,
+          initial: true,
+          guards: [
+            // OnboardingGuard(ref: _ref),
+            // AuthGuard(ref: _ref),
+          ],
+          // guards: [AuthGuard(ref: _ref)],
+          children: [
+            AutoRoute(page: HomeScreenRoute.page),
+            // AutoRoute(page: OrderScreenRoute.page),
+            // AutoRoute(page: PromotionScreenRoute.page),
+            // AutoRoute(page: ProfileScreenRoute.page),
+          ],
+        ),
+      ];
+}
+
+final appRouterProvider = Provider((ref) => AppRouter(ref: ref));
