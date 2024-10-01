@@ -117,7 +117,7 @@ class AssetsConstants {
   static const transactionIn = Color(0xff53905F);
   static const transactionOut = Color(0xffE58E74);
 
-  // Images
+  // Images   -> CHỈNH THÊM HÌNH ẢNH MỚI Ở ĐÂY  (CLEAN HỘ T HEN TUẤN)
   static const String spashImage = '';
   static const String spashLogo = '';
   static const String appLogo = '';
