@@ -62,7 +62,7 @@ class AuthRepositoryImpl extends RemoteBaseRepository
     );
   }
 
-    @override
+  @override
   Future<TokenModel> generateToken({required TokenModel request}) {
     return getDataOf(
       request: () =>

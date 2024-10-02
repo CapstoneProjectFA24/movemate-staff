@@ -13,6 +13,8 @@ import 'package:movemate_staff/features/auth/presentation/screens/privacy_term/p
 import 'package:movemate_staff/features/auth/presentation/screens/privacy_term/term_screen.dart';
 import 'package:movemate_staff/features/auth/presentation/screens/otp_verification/otp_verification_screen.dart';
 
+import 'package:movemate_staff/features/test/presentation/screens/test_screen/test_screen.dart';
+
 import 'package:movemate_staff/features/home/presentation/screens/home_screen.dart';
 
 import 'package:movemate_staff/splash_screen.dart';
@@ -42,6 +44,9 @@ class AppRouter extends _$AppRouter {
         ),
         AutoRoute(page: SignUpScreenRoute.page),
         AutoRoute(page: OTPVerificationScreenRoute.page),
+
+        //test
+        AutoRoute(page: TestScreenRoute.page),
 
         // Màn hình Onboarding
         // AutoRoute(page: OnboardingScreenRoute.page),

@@ -52,13 +52,11 @@ abstract class AuthSource {
     @Header(APIConstants.contentHeader) String contentType,
   );
 
-    @POST(APIConstants.reGenerateToken)
+  @POST(APIConstants.reGenerateToken)
   Future<HttpResponse<TokenModel>> generateToken(
     @Body() TokenModel request,
     @Header(APIConstants.contentHeader) String contentType,
   );
-
-  
 }
 
 @riverpod
