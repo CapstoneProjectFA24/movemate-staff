@@ -40,9 +40,11 @@ class CustomBottomBar extends HookWidget {
                   ? AssetsConstants.primaryLight
                   : AssetsConstants.whiteColor,
             ),
-            child: const Icon(
+            child: Icon(
               Icons.home,
-              color: AssetsConstants.primaryDark,
+              color: tabsRouter.activeIndex == 0
+                  ? Colors.white // Change icon to white when selected
+                  : AssetsConstants.primaryDark,
               size: AssetsConstants.defaultFontSize - 6.0,
             ),
           ),
@@ -63,49 +65,43 @@ class CustomBottomBar extends HookWidget {
                   ? AssetsConstants.primaryLight
                   : AssetsConstants.whiteColor,
             ),
-            child: Image.asset(
-              "assets/icons/truck2.png",
+            child: Icon(
+              Icons.airport_shuttle_rounded,
               color: tabsRouter.activeIndex == 1
-                  ? AssetsConstants.primaryDark
-                  : AssetsConstants
-                      .primaryDark, // Optional: different color when inactive
-              width: size.width * 0.6, // Adjust the icon size as needed
-              height: size.width * 0.6, // Adjust the icon size as needed
-              fit: BoxFit.scaleDown,
+                  ? Colors.white // Change icon to white when selected
+                  : AssetsConstants.primaryDark,
+              size: AssetsConstants.defaultFontSize - 6.0,
             ),
           ),
-          label: 'Đặt xe của tôi', // Text label
+          label: 'Công việc của tôi', // Text label
         ),
-        BottomNavigationBarItem(
-          icon: Container(
-            margin: const EdgeInsets.only(
-              top: AssetsConstants.defaultMargin - 6.0,
-            ),
-            width: size.width * 0.09,
-            height: size.width * 0.08,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(
-                AssetsConstants.defaultBorder,
-              ),
-              color: tabsRouter.activeIndex == 2
-                  ? AssetsConstants.primaryLight
-                  : AssetsConstants.whiteColor,
-            ),
-            child: Center(
-              child: Image.asset(
-                "assets/icons/discount.png",
-                color: tabsRouter.activeIndex == 1
-                    ? AssetsConstants.primaryDark
-                    : AssetsConstants
-                        .primaryDark, // Optional: different color when inactive
-                width: size.width * 0.6, // Adjust the icon size as needed
-                height: size.width * 0.6, // Adjust the icon size as needed
-                fit: BoxFit.scaleDown,
-              ),
-            ),
-          ),
-          label: 'Gói dịch vụ', // Text label
-        ),
+        // BottomNavigationBarItem(
+        //   icon: Container(
+        //     margin: const EdgeInsets.only(
+        //       top: AssetsConstants.defaultMargin - 6.0,
+        //     ),
+        //     width: size.width * 0.09,
+        //     height: size.width * 0.08,
+        //     decoration: BoxDecoration(
+        //       borderRadius: BorderRadius.circular(
+        //         AssetsConstants.defaultBorder,
+        //       ),
+        //       color: tabsRouter.activeIndex == 2
+        //           ? AssetsConstants.primaryLight
+        //           : AssetsConstants.whiteColor,
+        //     ),
+        //     child: Center(
+        //       child: Icon(
+        //         Icons.discount,
+        //         color: tabsRouter.activeIndex == 2
+        //             ? Colors.white // Change icon to white when selected
+        //             : AssetsConstants.primaryDark,
+        //         size: AssetsConstants.defaultFontSize - 6.0,
+        //       ),
+        //     ),
+        //   ),
+        //   label: 'Gói dịch vụ', // Text label
+        // ),
         BottomNavigationBarItem(
           icon: Container(
             margin: const EdgeInsets.only(
@@ -121,9 +117,11 @@ class CustomBottomBar extends HookWidget {
                   ? AssetsConstants.primaryLight
                   : AssetsConstants.whiteColor,
             ),
-            child: const Icon(
+            child: Icon(
               Icons.account_box,
-              color: AssetsConstants.primaryDark,
+              color: tabsRouter.activeIndex == 3
+                  ? Colors.white // Change icon to white when selected
+                  : AssetsConstants.primaryDark,
               size: AssetsConstants.defaultFontSize - 6.0,
             ),
           ),

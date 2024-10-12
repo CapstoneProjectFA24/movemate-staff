@@ -16,6 +16,14 @@ import 'package:movemate_staff/features/auth/presentation/screens/otp_verificati
 import 'package:movemate_staff/features/test/presentation/screens/test_screen/test_screen.dart';
 
 import 'package:movemate_staff/features/home/presentation/screens/home_screen.dart';
+import 'package:movemate_staff/features/profile/presentation/screens/wallet/wallet_screen.dart';
+import 'package:movemate_staff/features/profile/presentation/screens/profile_detail_screen/profile_detail_screen.dart';
+import 'package:movemate_staff/features/profile/presentation/screens/info_screen/info_screen.dart';
+import 'package:movemate_staff/features/profile/presentation/screens/profile_screen/profile_screen.dart';
+import 'package:movemate_staff/features/profile/presentation/screens/contact/contact_screen.dart';
+
+import 'package:movemate_staff/features/job/presentation/screen/job_details_screen/job_details_screen.dart';
+import 'package:movemate_staff/features/job/presentation/screen/job_screen/job_screen.dart';
 
 import 'package:movemate_staff/splash_screen.dart';
 import 'package:movemate_staff/tab_screen.dart';
@@ -62,10 +70,28 @@ class AppRouter extends _$AppRouter {
           // guards: [AuthGuard(ref: _ref)],
           children: [
             AutoRoute(page: HomeScreenRoute.page),
+            AutoRoute(page: JobScreenRoute.page),
+            AutoRoute(
+              page: ProfileScreenRoute.page,
+            ),
             // AutoRoute(page: OrderScreenRoute.page),
             // AutoRoute(page: PromotionScreenRoute.page),
             // AutoRoute(page: ProfileScreenRoute.page),
           ],
+        ),
+
+        AutoRoute(page: ProfileScreenRoute.page),
+        AutoRoute(
+          page: ProfileDetailScreenRoute.page,
+        ),
+        AutoRoute(
+          page: InfoScreenRoute.page,
+        ),
+        AutoRoute(
+          page: WalletScreenRoute.page,
+        ),
+        AutoRoute(
+          page: ContactScreenRoute.page,
         ),
       ];
 }

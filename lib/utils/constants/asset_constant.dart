@@ -118,12 +118,13 @@ class AssetsConstants {
   static const transactionOut = Color(0xffE58E74);
 
   // Images   -> CHỈNH THÊM HÌNH ẢNH MỚI Ở ĐÂY  (CLEAN HỘ T HEN TUẤN)
-  static const String spashImage = '';
-  static const String spashLogo = '';
-  static const String appLogo = '';
-  static const String welcomeImage = '';
-  static const String defaultAvatar = '';
-  static const String errorLogo = '';
+  static const String spashImage = 'assets/images/splash/splash.png';
+  static const String spashLogo = 'assets/images/splash/Vectortruck.png';
+  static const String appLogo = 'assets/images/movemate_logo.png';
+  static const String welcomeImage = 'assets/images/image_welcome.png';
+  static const String defaultAvatar = 'assets/images/avatar_default.png';
+  static const String errorLogo = 'assets/images/error.png';
+  static const String hot = 'assets/images/onboarding/onboarding1.png';
 
   // Sizes
   static const double defaultPadding = 20.0;

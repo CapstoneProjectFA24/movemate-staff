@@ -23,9 +23,10 @@ class TabViewScreen extends ConsumerWidget {
         scaffoldKey: autoTabsScaffoldKey,
         routes: const [
           HomeScreenRoute(),
+          JobScreenRoute(),
           // OrderScreenRoute(),
           // PromotionScreenRoute(),
-          // ProfileScreenRoute(),
+          ProfileScreenRoute(),
         ],
         bottomNavigationBuilder: (_, tabsRouter) =>
             CustomBottomBar(tabsRouter: tabsRouter),
