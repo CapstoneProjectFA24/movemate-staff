@@ -59,28 +59,29 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDkY04sXx3lx5sNbKnkL48kQC8fkKJdpyk',
-    appId: '1:708811505333:ios:30c84bbd802bab73f508fc',
+    appId: '1:708811505333:ios:8322c52cbdbfbc1ff508fc',
     messagingSenderId: '708811505333',
     projectId: 'movemate-bb487',
     storageBucket: 'movemate-bb487.appspot.com',
-    iosBundleId: 'com.example.movemateStaff',
+    iosBundleId: 'com.example.test',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyDkY04sXx3lx5sNbKnkL48kQC8fkKJdpyk',
-    appId: '1:708811505333:ios:30c84bbd802bab73f508fc',
+    appId: '1:708811505333:ios:8322c52cbdbfbc1ff508fc',
     messagingSenderId: '708811505333',
     projectId: 'movemate-bb487',
     storageBucket: 'movemate-bb487.appspot.com',
-    iosBundleId: 'com.example.movemateStaff',
+    iosBundleId: 'com.example.test',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
     apiKey: 'AIzaSyBquGjA3fx_RlGcDupTtNFwUctoFXj-zAY',
-    appId: '1:708811505333:web:559654e66388b825f508fc',
+    appId: '1:708811505333:web:ac5c28e6b14ef594f508fc',
     messagingSenderId: '708811505333',
     projectId: 'movemate-bb487',
     authDomain: 'movemate-bb487.firebaseapp.com',
     storageBucket: 'movemate-bb487.appspot.com',
   );
+
 }

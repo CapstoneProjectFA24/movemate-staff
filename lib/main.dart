@@ -8,18 +8,18 @@ import 'configs/routes/app_router.dart';
 import 'configs/theme/app_theme.dart';
 import 'utils/constants/asset_constant.dart';
 
-// import 'package:movemate_staff/firebase_options.dart';
+import 'package:movemate_staff/firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   // await initFirebaseMessaging();
 
   // check firebase anonymous user connect
-  //await testFirebaseConnection();
+  await testFirebaseConnection();
   // await testFirebaseConnectionWithPhone('+84382703625');
 
   SystemChrome.setPreferredOrientations([
