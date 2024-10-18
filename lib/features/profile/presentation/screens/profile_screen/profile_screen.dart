@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
+import 'package:movemate_staff/features/auth/presentation/screens/sign_in/sign_in_controller.dart';
 import 'package:movemate_staff/features/profile/presentation/widgets/profile/profile_header.dart';
 import 'package:movemate_staff/features/profile/presentation/widgets/profile/profile_menu.dart';
 import 'package:movemate_staff/features/profile/presentation/widgets/profile/promo_section.dart';
@@ -15,6 +15,7 @@ class ProfileScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // final authProvider = ref.read(signInControllerProvider);
     final profile = {
       'name': 'Lê An',
       'phoneNumber': '0972266784',
@@ -58,7 +59,10 @@ class ProfileScreen extends HookConsumerWidget {
       ProfileMenu(
         icon: Icons.logout_outlined,
         title: "Đăng xuất",
-        onTap: () {},
+        onTap: () async {
+          await ref.read(signInControllerProvider.notifier).signOut(context);
+          print("oke");
+        },
         color: Colors.red,
       ),
     ];
@@ -73,7 +77,6 @@ class ProfileScreen extends HookConsumerWidget {
               .innerRouterOf<TabsRouter>(TabViewScreenRoute.name);
           if (tabsRouter != null) {
             tabsRouter.setActiveIndex(0);
-            // Pop back to the TabViewScreen
             context.router.popUntilRouteWithName(TabViewScreenRoute.name);
           }
         },
@@ -86,7 +89,7 @@ class ProfileScreen extends HookConsumerWidget {
           children: [
             ProfileHeader(profile: profile),
             const SizedBox(height: 24.0),
-            PromoSection(),
+            const PromoSection(),
             const SizedBox(height: 24.0),
             Expanded(
               child: ListView.builder(

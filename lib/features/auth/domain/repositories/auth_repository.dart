@@ -1,4 +1,3 @@
-import 'package:movemate_staff/models/token_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 // data impl
@@ -11,6 +10,7 @@ import 'package:movemate_staff/features/auth/data/models/request/otp_verify_requ
 
 // model system
 import 'package:movemate_staff/models/response/success_model.dart';
+import 'package:movemate_staff/models/token_model.dart';
 
 part 'auth_repository.g.dart';
 

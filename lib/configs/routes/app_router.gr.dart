@@ -42,7 +42,7 @@ abstract class _$AppRouter extends RootStackRouter {
     JobScreenRoute.name: (routeData) {
       return AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: JobScreen(),
+        child: const JobScreen(),
       );
     },
     OTPVerificationScreenRoute.name: (routeData) {

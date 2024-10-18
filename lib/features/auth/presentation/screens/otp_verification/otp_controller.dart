@@ -19,8 +19,6 @@ import 'package:movemate_staff/utils/constants/asset_constant.dart';
 import 'package:movemate_staff/utils/commons/functions/functions_common_export.dart';
 import 'package:movemate_staff/utils/commons/widgets/widgets_common_export.dart';
 import 'package:movemate_staff/utils/extensions/extensions_export.dart';
-import 'package:movemate_staff/utils/constants/api_constant.dart';
-import 'package:movemate_staff/utils/enums/enums_export.dart';
 
 part 'otp_controller.g.dart';
 
@@ -99,6 +97,7 @@ class OtpController extends _$OtpController {
       final userModel = UserModel(
         id: user.payload.id,
         email: user.payload.email,
+        roleName: user.payload.roleName,
         tokens: user.payload.tokens,
       );
 

@@ -19,7 +19,7 @@ part 'house_source.g.dart';
 abstract class HouseSource {
   factory HouseSource(Dio dio, {String baseUrl}) = _HouseSource;
 
-  @GET(APIConstants.house_type)
+  @GET(APIConstants.get_house_types)
   Future<HttpResponse<HouseResponse>> getHouseType(
     @Header(APIConstants.contentHeader) String contentType,
   );

@@ -17,9 +17,13 @@ class ProfileDetailScreen extends HookConsumerWidget {
     return Scaffold(
       appBar: CustomAppBar(
         backgroundColor: AssetsConstants.primaryMain,
-        backButtonColor: AssetsConstants.whiteColor,
-        centerTitle: true,
+        // iconFirst: Icons.chevron_left,
         showBackButton: true,
+        backButtonColor: AssetsConstants.whiteColor,
+        onCallBackFirst: () {
+          // Hành động khi nhấn vào icon
+          Navigator.pop(context); // Quay lại trang trước
+        },
         title: "Trang cá nhân của tôi",
         iconSecond: Icons.home_outlined,
         onCallBackSecond: () {
@@ -27,6 +31,7 @@ class ProfileDetailScreen extends HookConsumerWidget {
               .innerRouterOf<TabsRouter>(TabViewScreenRoute.name);
           if (tabsRouter != null) {
             tabsRouter.setActiveIndex(0);
+            // Pop back to the TabViewScreen
             context.router.popUntilRouteWithName(TabViewScreenRoute.name);
           }
         },

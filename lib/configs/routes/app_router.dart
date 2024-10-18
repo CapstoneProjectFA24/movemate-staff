@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:movemate_staff/configs/routes/guard/role_guard.dart';
 
 // guard
 import 'guard/onboarding_guard.dart';
@@ -65,7 +66,7 @@ class AppRouter extends _$AppRouter {
           initial: true,
           guards: [
             // OnboardingGuard(ref: _ref),
-            // AuthGuard(ref: _ref),
+            AuthGuard(ref: _ref),
           ],
           // guards: [AuthGuard(ref: _ref)],
           children: [
@@ -73,16 +74,28 @@ class AppRouter extends _$AppRouter {
             AutoRoute(page: JobScreenRoute.page),
             AutoRoute(
               page: ProfileScreenRoute.page,
+              guards: [
+                RoleGuard(_ref, [UserRole.reviewer, UserRole.poster])
+              ],
             ),
+          
             // AutoRoute(page: OrderScreenRoute.page),
             // AutoRoute(page: PromotionScreenRoute.page),
             // AutoRoute(page: ProfileScreenRoute.page),
           ],
         ),
 
-        AutoRoute(page: ProfileScreenRoute.page),
+        AutoRoute(
+          page: ProfileScreenRoute.page,
+          guards: [
+            RoleGuard(_ref, [UserRole.reviewer, UserRole.poster])
+          ],
+        ),
         AutoRoute(
           page: ProfileDetailScreenRoute.page,
+          guards: [
+            RoleGuard(_ref, [UserRole.reviewer, UserRole.poster])
+          ],
         ),
         AutoRoute(
           page: InfoScreenRoute.page,
@@ -92,6 +105,12 @@ class AppRouter extends _$AppRouter {
         ),
         AutoRoute(
           page: ContactScreenRoute.page,
+        ),
+        AutoRoute(
+          page: ProfileScreenRoute.page,
+          guards: [
+            RoleGuard(_ref, [UserRole.reviewer, UserRole.poster])
+          ],
         ),
       ];
 }

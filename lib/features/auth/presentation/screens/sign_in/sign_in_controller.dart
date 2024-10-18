@@ -11,8 +11,6 @@ import 'package:movemate_staff/features/auth/domain/repositories/auth_repository
 import 'package:movemate_staff/features/auth/data/models/request/sign_in_request.dart';
 
 import 'package:movemate_staff/utils/enums/enums_export.dart';
-import 'package:movemate_staff/utils/constants/asset_constant.dart';
-import 'package:movemate_staff/utils/constants/api_constant.dart';
 import 'package:movemate_staff/utils/commons/functions/api_utils.dart';
 import 'package:movemate_staff/utils/commons/widgets/widgets_common_export.dart';
 import 'package:movemate_staff/utils/extensions/extensions_export.dart';
@@ -45,10 +43,11 @@ class SignInController extends _$SignInController {
     state = await AsyncValue.guard(
       () async {
         final user = await authRepository.signIn(request: request);
-
+        print(user.payload.toJson());
         final userModel = UserModel(
           id: user.payload.id,
           email: user.payload.email,
+          roleName: user.payload.roleName,
           tokens: user.payload.tokens,
         );
 
@@ -59,7 +58,7 @@ class SignInController extends _$SignInController {
           userModel,
           'user_token',
         );
-        context.router.replaceAll([const HomeScreenRoute()]);
+        context.router.replaceAll([const TabViewScreenRoute()]);
       },
     );
 
@@ -80,15 +79,16 @@ class SignInController extends _$SignInController {
     BuildContext context,
   ) async {
     state = const AsyncLoading();
+
     ref.read(modifyProfiver.notifier).update((state) => true);
     final authRepository = ref.read(authRepositoryProvider);
     final user = await SharedPreferencesUtils.getInstance('user_token');
 
     state = await AsyncValue.guard(
       () async {
-        final userDevice = user!.userTokens!.firstWhere(
-          (element) => element.fcmToken == user.fcmToken,
-        );
+        // final userDevice = user!.userTokens!.firstWhere(
+        //   (element) => element.fcmToken == user.fcmToken,
+        // );
 
         ref.read(authProvider.notifier).update((state) => null);
         await authRepository.signOut();

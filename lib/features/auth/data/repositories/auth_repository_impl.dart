@@ -2,7 +2,6 @@
 
 import 'package:movemate_staff/features/auth/data/models/response/account_response.dart';
 import 'package:movemate_staff/features/auth/data/models/request/sign_in_request.dart';
-import 'package:movemate_staff/models/token_model.dart';
 import 'package:movemate_staff/utils/commons/functions/functions_common_export.dart';
 
 import '../../domain/repositories/auth_repository.dart';
@@ -12,6 +11,7 @@ import 'package:movemate_staff/features/auth/data/models/request/otp_verify_requ
 
 // models system
 import 'package:movemate_staff/models/response/success_model.dart';
+import 'package:movemate_staff/models/token_model.dart';
 
 // utils
 import 'package:movemate_staff/utils/constants/api_constant.dart';

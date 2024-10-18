@@ -40,7 +40,6 @@ class SignInScreen extends HookConsumerWidget with Validations {
             password: password,
             context: context,
           );
-      print("click : done");
     } else {
       print("Form is not valid.");
     }
@@ -189,19 +188,19 @@ class SignInScreen extends HookConsumerWidget with Validations {
                         const SizedBox(height: 25.0),
 
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            GestureDetector(
-                              onTap: () {
-                                context.router.replace(SignUpScreenRoute());
-                              },
-                              child: const LabelText(
-                                content: 'Đã có tài khoản?',
-                                size: AssetsConstants.defaultFontSize - 10.0,
-                                fontWeight: FontWeight.w700,
-                                color: AssetsConstants.mainColor,
-                              ),
-                            ),
+                            // GestureDetector(
+                            //   onTap: () {
+                            //     context.router.replace(SignUpScreenRoute());
+                            //   },
+                            //   child: const LabelText(
+                            //     content: 'Chưa có tài khoản?',
+                            //     size: AssetsConstants.defaultFontSize - 10.0,
+                            //     fontWeight: FontWeight.w700,
+                            //     color: AssetsConstants.mainColor,
+                            //   ),
+                            // ),
                             GestureDetector(
                               onTap: () {
                                 // Forgot password navigation

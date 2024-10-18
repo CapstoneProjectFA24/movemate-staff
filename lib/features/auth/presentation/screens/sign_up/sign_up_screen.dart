@@ -11,7 +11,6 @@ import 'package:movemate_staff/configs/routes/app_router.dart';
 // screen
 import 'package:movemate_staff/features/auth/presentation/screens/privacy_term/privacy_screen.dart';
 import 'package:movemate_staff/features/auth/presentation/screens/privacy_term/term_screen.dart';
-import 'package:movemate_staff/features/auth/presentation/screens/sign_in/sign_in_screen.dart';
 import 'package:movemate_staff/utils/enums/enums_export.dart';
 import '../../widgets/custom_scaford.dart';
 
@@ -186,7 +185,7 @@ class SignUpScreen extends HookConsumerWidget with Validations {
                                           );
                                         },
                                     ),
-                                    const TextSpan(text: ' của MoveMate.'),
+                                    const TextSpan(text: ' của movemate_staff.'),
                                   ],
                                 ),
                               ),

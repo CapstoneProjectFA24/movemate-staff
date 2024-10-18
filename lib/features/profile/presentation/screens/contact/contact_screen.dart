@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
-
 import 'package:movemate_staff/features/profile/presentation/widgets/input/custom_text.dart';
 import 'package:movemate_staff/features/profile/presentation/widgets/input/input_item.dart';
 import 'package:movemate_staff/utils/commons/widgets/app_bar.dart';
@@ -31,17 +30,15 @@ class ContactScreen extends HookConsumerWidget {
     return Scaffold(
       appBar: CustomAppBar(
         backgroundColor: AssetsConstants.primaryMain,
-        backButtonColor: AssetsConstants.whiteColor,
         showBackButton: true,
+        backButtonColor: AssetsConstants.whiteColor,
         title: "Thông tin liên hệ",
-        centerTitle: true,
         iconSecond: Icons.home_outlined,
         onCallBackSecond: () {
           final tabsRouter = context.router.root
               .innerRouterOf<TabsRouter>(TabViewScreenRoute.name);
           if (tabsRouter != null) {
             tabsRouter.setActiveIndex(0);
-            // Pop back to the TabViewScreen
             context.router.popUntilRouteWithName(TabViewScreenRoute.name);
           }
         },

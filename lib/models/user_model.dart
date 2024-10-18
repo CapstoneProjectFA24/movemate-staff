@@ -1,10 +1,13 @@
 import 'dart:convert';
+import 'package:movemate_staff/utils/enums/enums_export.dart';
+
 import 'token_model.dart';
 import 'user_token.dart';
 
 class UserModel {
   final int? id;
   final String email;
+  final UserRole roleName;
   final TokenModel tokens;
   final String? fcmToken;
   final List<UserDevice>? userTokens;
@@ -12,6 +15,7 @@ class UserModel {
   UserModel({
     required this.id,
     required this.email,
+    required this.roleName,
     required this.tokens,
     this.fcmToken,
     this.userTokens,
@@ -25,6 +29,7 @@ class UserModel {
     }
 
     result.addAll({'email': email});
+    result.addAll({'roleName': roleName.type});
     result.addAll({'tokens': tokens.toMap()});
     if (fcmToken != null) {
       result.addAll({'fcmToken': fcmToken});
@@ -40,6 +45,7 @@ class UserModel {
     return UserModel(
       id: map['id']?.toInt(),
       email: map['email'] ?? '',
+      roleName: (map['roleName'] as String).toUserRoleEnum(),
       tokens: TokenModel.fromMap(map['tokens']),
       fcmToken: map['fcmToken'],
       userTokens: map['userTokens'] != null
@@ -64,6 +70,7 @@ class UserModel {
     return UserModel(
       id: id ?? this.id,
       email: email ?? this.email,
+      roleName: roleName ?? this.roleName,
       tokens: tokens ?? this.tokens,
       fcmToken: fcmToken ?? this.fcmToken,
       userTokens: userTokens ?? this.userTokens,

@@ -38,7 +38,7 @@ class _HouseSource implements HouseSource {
     )
         .compose(
           _dio.options,
-          '/housetypes/get-all',
+          '/housetypes',
           queryParameters: queryParameters,
           data: _data,
         )

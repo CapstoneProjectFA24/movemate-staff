@@ -1,11 +1,12 @@
 import 'dart:convert';
 
 import 'package:movemate_staff/models/token_model.dart';
+import 'package:movemate_staff/utils/enums/enums_export.dart';
 
 class AccountEntities {
   final int id;
   final String email;
-  final String roleName;
+  final UserRole roleName;
   final TokenModel tokens;
 
   AccountEntities({
@@ -20,7 +21,7 @@ class AccountEntities {
 
     result.addAll({'id': id});
     result.addAll({'email': email});
-    result.addAll({'roleName': roleName});
+    result.addAll({'roleName': roleName.type});
     result.addAll({'tokens': tokens.toMap()});
 
     return result;
@@ -30,7 +31,7 @@ class AccountEntities {
     return AccountEntities(
       id: map['id']?.toInt() ?? 0,
       email: map['email'] ?? '',
-      roleName: map['roleName'] ?? '',
+       roleName: (map['roleName'] as String).toUserRoleEnum(),
       tokens: TokenModel.fromMap(map['tokens']),
     );
   }

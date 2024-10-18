@@ -17,7 +17,6 @@ import 'package:movemate_staff/utils/constants/asset_constant.dart';
 import 'package:movemate_staff/utils/commons/functions/functions_common_export.dart';
 import 'package:movemate_staff/utils/commons/widgets/widgets_common_export.dart';
 import 'package:movemate_staff/utils/extensions/extensions_export.dart';
-import 'package:movemate_staff/utils/constants/api_constant.dart';
 import 'package:movemate_staff/utils/enums/enums_export.dart';
 
 part 'sign_up_controller.g.dart';
@@ -48,9 +47,12 @@ class SignUpController extends _$SignUpController {
       phone: phone,
       password: password,
     );
+    print(request.toString());
 
     state = await AsyncValue.guard(() async {
       await authRepository.checkValidUser(request: request);
+
+      await SharedPreferencesUtils.removeSignInRequestInfo('sign-up');
       await SharedPreferencesUtils.setSignInRequestInfo(request, "sign-up");
 
       final formattedPhone = formatPhoneNumber(phone);

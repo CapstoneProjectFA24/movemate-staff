@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:auto_route/auto_route.dart';
-import 'package:movemate_staff/configs/routes/app_router.dart';
-import 'package:movemate_staff/utils/commons/widgets/form_input/label_text.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
 
 class ProfileMenu extends StatelessWidget {
@@ -10,7 +7,7 @@ class ProfileMenu extends StatelessWidget {
   final VoidCallback onTap;
   final Color color;
 
-  const ProfileMenu({
+  const ProfileMenu({super.key, 
     required this.icon,
     required this.title,
     required this.onTap,

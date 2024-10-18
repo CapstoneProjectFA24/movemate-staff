@@ -4,7 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/features/profile/presentation/widgets/input/custom_text.dart';
 import 'package:movemate_staff/features/profile/presentation/widgets/input/input_item.dart';
-import 'package:movemate_staff/utils/commons/widgets/app_bar.dart';
+import 'package:movemate_staff/utils/commons/widgets/widgets_common_export.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -65,8 +65,8 @@ class InfoScreen extends HookConsumerWidget {
     return Scaffold(
       appBar: CustomAppBar(
         backgroundColor: AssetsConstants.primaryMain,
+        showBackButton: true,
         backButtonColor: AssetsConstants.whiteColor,
-        centerTitle: true,
         title: "Thông tin cá nhân",
         iconSecond: Icons.home_outlined,
         onCallBackSecond: () {

@@ -6,20 +6,32 @@ class APIConstants {
   static const prefixToken = 'bearer ';
 
   // auth
-  static const login = '/authenticationss/login';
-  static const register = '/authenticationss/register/v2';
-  static const checkExists = '/authenticationss/check-exists';
-  static const verifyToken = '/authenticationss/verify-token/v2';
-  static const reGenerateToken = '/authentications/regeneration-tokens';
+  static const login = '/authentications/login';
+  static const register = '/authentications/register';
+  static const checkExists = '/authentications/check-exists';
+  static const verifyToken = '/authentications/verify-token';
+  static const reGenerateToken = '/authentications/re';
 
-  // house-type
-  static const house_type = '/housetypes/get-all';
+  // Booking endpoints
+  static const get_truck_category = '/truckcategorys';
+  static const get_service = '/services/truck-category';
+  static const get_fees_system = '/fees/system';
+  static const get_house_types = '/housetypes';
+  static const get_package_services = '/services';
+
+  // order
+  static const bookings = '/bookings';
+
+  // payments
+  static const paymentsBooking = '/payments/create-payment-url';
+  static const paymentsDeposit = '/wallets/recharge';
 
   // error
   static const Map<String, String> errorTrans = {
     'Email is already registered.': 'Email này đã được đăng kí',
     'Phone number is already registered.': 'Số điện thoại này đã được đăng kí',
     'Email already exists.': 'Email này đã được đăng kí',
+    'Phone already exists.': 'Số điện thoại này đã được đăng kí',
     'Email does not exist in the system.':
         'Email không tồn tại trong hệ thống.',
     'Email or Password is invalid.': 'Email hoặc mật khẩu không hợp lệ.',
@@ -33,5 +45,9 @@ class APIConstants {
     'You are not allowed to access this function!':
         'Bạn không có quyền truy cập hệ thống',
     'Rejected Reason is not empty.': 'Lý do hủy đơn không được trống',
+
+
+    // payment-error
+    "Booking status must be either DEPOSITING or COMPLETED" : "Trạng thái đặt đơn đã hoàn thành"
   };
 }

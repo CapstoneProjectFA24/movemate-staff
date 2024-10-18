@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:auto_route/auto_route.dart';
-import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
 
 class PromoSection extends StatelessWidget {
+  const PromoSection({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Container(
