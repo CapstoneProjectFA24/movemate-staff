@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
-import 'package:movemate_staff/features/profile/presentation/widgets/custom_app_bar.dart';
 import 'package:movemate_staff/features/profile/presentation/widgets/details/profile_info.dart';
 import 'package:movemate_staff/features/profile/presentation/widgets/details/profile_status.dart';
+import 'package:movemate_staff/utils/commons/widgets/app_bar.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -17,11 +17,9 @@ class ProfileDetailScreen extends HookConsumerWidget {
     return Scaffold(
       appBar: CustomAppBar(
         backgroundColor: AssetsConstants.primaryMain,
-        // iconFirst: Icons.chevron_left,
-        onCallBackFirst: () {
-          // Hành động khi nhấn vào icon
-          Navigator.pop(context); // Quay lại trang trước
-        },
+        backButtonColor: AssetsConstants.whiteColor,
+        centerTitle: true,
+        showBackButton: true,
         title: "Trang cá nhân của tôi",
         iconSecond: Icons.home_outlined,
         onCallBackSecond: () {
@@ -29,7 +27,6 @@ class ProfileDetailScreen extends HookConsumerWidget {
               .innerRouterOf<TabsRouter>(TabViewScreenRoute.name);
           if (tabsRouter != null) {
             tabsRouter.setActiveIndex(0);
-            // Pop back to the TabViewScreen
             context.router.popUntilRouteWithName(TabViewScreenRoute.name);
           }
         },

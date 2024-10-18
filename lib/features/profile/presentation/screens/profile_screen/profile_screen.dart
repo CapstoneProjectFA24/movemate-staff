@@ -3,12 +3,11 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
-import 'package:movemate_staff/features/profile/presentation/widgets/custom_app_bar.dart';
 import 'package:movemate_staff/features/profile/presentation/widgets/profile/profile_header.dart';
 import 'package:movemate_staff/features/profile/presentation/widgets/profile/profile_menu.dart';
 import 'package:movemate_staff/features/profile/presentation/widgets/profile/promo_section.dart';
+import 'package:movemate_staff/utils/commons/widgets/app_bar.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
-import 'package:movemate_staff/features/profile/presentation/widgets/item/profile_item_list.dart';
 
 @RoutePage()
 class ProfileScreen extends HookConsumerWidget {

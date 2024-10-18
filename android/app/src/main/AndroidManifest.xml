@@ -1,4 +1,4 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.movemate.app">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.movemate_staff.app">
 
  <!-- Add your permissions here -->
     <uses-permission android:name="android.permission.INTERNET" />

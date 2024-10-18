@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:movemate_staff/features/profile/presentation/widgets/custom_app_bar.dart';
+import 'package:movemate_staff/configs/routes/app_router.dart';
+
 import 'package:movemate_staff/features/profile/presentation/widgets/input/custom_text.dart';
 import 'package:movemate_staff/features/profile/presentation/widgets/input/input_item.dart';
+import 'package:movemate_staff/utils/commons/widgets/app_bar.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -29,14 +31,19 @@ class ContactScreen extends HookConsumerWidget {
     return Scaffold(
       appBar: CustomAppBar(
         backgroundColor: AssetsConstants.primaryMain,
-        iconFirst: Icons.chevron_left,
-        onCallBackFirst: () {
-          Navigator.pop(context); // Quay lại trang trước
-        },
+        backButtonColor: AssetsConstants.whiteColor,
+        showBackButton: true,
         title: "Thông tin liên hệ",
+        centerTitle: true,
         iconSecond: Icons.home_outlined,
         onCallBackSecond: () {
-          Navigator.pushNamed(context, '/home'); // Điều hướng đến trang Home
+          final tabsRouter = context.router.root
+              .innerRouterOf<TabsRouter>(TabViewScreenRoute.name);
+          if (tabsRouter != null) {
+            tabsRouter.setActiveIndex(0);
+            // Pop back to the TabViewScreen
+            context.router.popUntilRouteWithName(TabViewScreenRoute.name);
+          }
         },
       ),
       body: SingleChildScrollView(

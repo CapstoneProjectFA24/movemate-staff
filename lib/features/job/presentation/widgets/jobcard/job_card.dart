@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movemate_staff/features/job/presentation/screen/job_details_screen/job_details_screen.dart';
-
-class JobCard extends StatelessWidget {
+class JobModel {
   final String title;
   final String details;
   final String location;
@@ -9,13 +8,21 @@ class JobCard extends StatelessWidget {
   final Color statusColor;
   final String imageUrl;
 
-  JobCard({
+  JobModel({
     required this.title,
     required this.details,
     required this.location,
     required this.status,
     required this.statusColor,
     required this.imageUrl,
+  });
+}
+class JobCard extends StatelessWidget {
+  final JobModel job;
+
+  JobCard({
+    super.key,
+    required this.job,
   });
 
   @override
@@ -38,10 +45,10 @@ class JobCard extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title,
+                  Text(job.title,
                       style:
                           TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                  Text(details, style: TextStyle(fontSize: 14)),
+                  Text(job.details, style: TextStyle(fontSize: 14)),
                 ],
               ),
               Padding(
@@ -50,7 +57,7 @@ class JobCard extends StatelessWidget {
                   children: [
                     ClipOval(
                       child: Image.network(
-                        imageUrl,
+                        job.imageUrl,
                         width: 60,
                         height: 60,
                         fit: BoxFit.cover,
@@ -60,11 +67,11 @@ class JobCard extends StatelessWidget {
                       padding:
                           EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                       decoration: BoxDecoration(
-                        color: statusColor,
+                        color: job.statusColor,
                         borderRadius: BorderRadius.circular(5),
                       ),
                       child: Text(
-                        status,
+                        job.status,
                         style: TextStyle(color: Colors.white, fontSize: 12),
                       ),
                     ),
@@ -79,7 +86,7 @@ class JobCard extends StatelessWidget {
             children: [
               Icon(Icons.location_on, color: Colors.red),
               SizedBox(width: 5),
-              Text(location),
+              Text(job.location),
             ],
           ),
           SizedBox(height: 10),

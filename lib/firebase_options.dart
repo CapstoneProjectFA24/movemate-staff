@@ -42,7 +42,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyBquGjA3fx_RlGcDupTtNFwUctoFXj-zAY',
-    appId: '1:708811505333:web:ac5c28e6b14ef594f508fc',
+    appId: '1:708811505333:web:559654e66388b825f508fc',
     messagingSenderId: '708811505333',
     projectId: 'movemate-bb487',
     authDomain: 'movemate-bb487.firebaseapp.com',
@@ -51,7 +51,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyAaZy4VTx61msImwqQUiABaHliQhTkXc5g',
-    appId: '1:708811505333:android:e8384ec3e06734d1f508fc',
+    appId: '1:708811505333:android:69e520c4c167bffef508fc',
     messagingSenderId: '708811505333',
     projectId: 'movemate-bb487',
     storageBucket: 'movemate-bb487.appspot.com',
@@ -59,25 +59,25 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDkY04sXx3lx5sNbKnkL48kQC8fkKJdpyk',
-    appId: '1:708811505333:ios:8322c52cbdbfbc1ff508fc',
+    appId: '1:708811505333:ios:30c84bbd802bab73f508fc',
     messagingSenderId: '708811505333',
     projectId: 'movemate-bb487',
     storageBucket: 'movemate-bb487.appspot.com',
-    iosBundleId: 'com.example.test',
+    iosBundleId: 'com.example.movemateStaff',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyDkY04sXx3lx5sNbKnkL48kQC8fkKJdpyk',
-    appId: '1:708811505333:ios:8322c52cbdbfbc1ff508fc',
+    appId: '1:708811505333:ios:30c84bbd802bab73f508fc',
     messagingSenderId: '708811505333',
     projectId: 'movemate-bb487',
     storageBucket: 'movemate-bb487.appspot.com',
-    iosBundleId: 'com.example.test',
+    iosBundleId: 'com.example.movemateStaff',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
     apiKey: 'AIzaSyBquGjA3fx_RlGcDupTtNFwUctoFXj-zAY',
-    appId: '1:708811505333:web:ac5c28e6b14ef594f508fc',
+    appId: '1:708811505333:web:559654e66388b825f508fc',
     messagingSenderId: '708811505333',
     projectId: 'movemate-bb487',
     authDomain: 'movemate-bb487.firebaseapp.com',

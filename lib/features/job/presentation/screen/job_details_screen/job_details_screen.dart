@@ -42,22 +42,17 @@ class JobDetailsScreen extends HookConsumerWidget {
     return Scaffold(
       appBar: CustomAppBar(
         backgroundColor: AssetsConstants.primaryMain,
-        iconFirst: Icons.chevron_left,
-        onCallBackFirst: () {
-            context.router.push(TabViewScreenRoute(children: [
-            HomeScreenRoute(),
-            JobScreenRoute(),
-            ProfileScreenRoute(),
-          ]));
-        },
+        backButtonColor: AssetsConstants.whiteColor,
+        showBackButton: true,
         title: "Thông tin đơn hàng",
         iconSecond: Icons.home_outlined,
         onCallBackSecond: () {
-          context.router.push(TabViewScreenRoute(children: [
-            HomeScreenRoute(),
-            JobScreenRoute(),
-            ProfileScreenRoute(),
-          ]));
+          final tabsRouter = context.router.root
+              .innerRouterOf<TabsRouter>(TabViewScreenRoute.name);
+          if (tabsRouter != null) {
+            tabsRouter.setActiveIndex(0);
+            context.router.popUntilRouteWithName(TabViewScreenRoute.name);
+          }
         },
       ),
       body: SingleChildScrollView(
@@ -280,7 +275,7 @@ class JobDetailsScreen extends HookConsumerWidget {
                     ),
                     const SizedBox(height: 10),
                     if (isExpanded1.value) ...[
-                      Section(
+                      const Section(
                         title: 'Phòng khách',
                         imageUrls: [
                           'https://storage.googleapis.com/a1aa/image/dvpjaAZVn8JdNhNPtaaFDhQIeMwhXQ0HMUcf0hHMhoKYKAmTA.jpg',
@@ -288,7 +283,7 @@ class JobDetailsScreen extends HookConsumerWidget {
                           'https://storage.googleapis.com/a1aa/image/K1C1Fefpj2lXgEmrDGfRdpJooZY7I5nU3WxfE85UFQ9PqAYOB.jpg',
                         ],
                       ),
-                      Section(
+                      const Section(
                         title: 'Phòng ngủ',
                         imageUrls: [
                           'https://storage.googleapis.com/a1aa/image/fBpjleWEpgugmEBvFjXwk2H98ZgSIbDKaheiOgg4UZhBVAMnA.jpg',
@@ -296,7 +291,7 @@ class JobDetailsScreen extends HookConsumerWidget {
                           'https://storage.googleapis.com/a1aa/image/BJdB94Gzprb0BZraxwED8F5DWPeH8T92UNmlBZ8SX05OFAzJA.jpg',
                         ],
                       ),
-                      Section(
+                      const Section(
                         title: 'Phòng ăn/ bếp',
                         imageUrls: [
                           'https://storage.googleapis.com/a1aa/image/LGjfvIaJ6xw0WygoEs8q6YmuI77RohPhefDyz6ndgf9RqAYOB.jpg',
@@ -304,7 +299,7 @@ class JobDetailsScreen extends HookConsumerWidget {
                           'https://storage.googleapis.com/a1aa/image/QfROlDzTbKTpYyEpiJ7fHWaUehLPdXFJyDTgwUSNFIZ2UAMnA.jpg',
                         ],
                       ),
-                      Section(
+                      const Section(
                         title: 'Phòng làm việc',
                         imageUrls: [
                           'https://storage.googleapis.com/a1aa/image/RLtRhYWNmeQMaKflapHPLpszw0sfvHv6tTHZeRpd2o2iqAYOB.jpg',
@@ -312,7 +307,7 @@ class JobDetailsScreen extends HookConsumerWidget {
                           'https://storage.googleapis.com/a1aa/image/89UXhJbyaioJKZBnZkLB1E8K6ZNuVW2NPfbwUH4DRlLTFAzJA.jpg',
                         ],
                       ),
-                      Section(
+                      const Section(
                         title: 'Phòng vệ sinh',
                         imageUrls: [
                           'https://storage.googleapis.com/a1aa/image/qeNJZtlx9G3YKK4Rqhw7OKUFFWCtl0pqhDF69Dx39zuLFAzJA.jpg',
