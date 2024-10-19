@@ -16,7 +16,7 @@ import 'package:movemate_staff/features/job/presentation/widgets/details/section
 import 'package:movemate_staff/features/job/presentation/widgets/details/summary.dart';
 import 'package:movemate_staff/utils/commons/widgets/app_bar.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
-import 'package:timeline_tile/timeline_tile.dart';
+import 'package:animate_do/animate_do.dart';
 
 // Nhập khẩu các widget đã tạo
 
@@ -234,7 +234,6 @@ class JobDetailsScreen extends HookConsumerWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 20),
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
@@ -411,7 +410,69 @@ class JobDetailsScreen extends HookConsumerWidget {
                     const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: () {
-                        // Add your onPressed logic here
+                        showModalBottomSheet(
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.vertical(
+                              top: Radius.circular(20),
+                            ),
+                          ),
+                          context: context,
+                          builder: (BuildContext context) {
+                            return Container(
+                              height: 400,
+                              decoration: const BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(20),
+                                ),
+                              ),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    margin: const EdgeInsets.only(top: 8),
+                                    width: 80,
+                                    height: 5,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                  FadeInUp(
+                                    child: const Padding(
+                                      padding: EdgeInsets.only(top: 38.0),
+                                      child: Text(
+                                        "Bạn có muốn check thông tin lại thêm lần nữa không",
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ),
+                                  FadeInUp(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(top: 18.0),
+                                      child: Center(
+                                        child: ElevatedButton(
+                                          child: Text("Xác Nhận "),
+                                          onPressed: () {
+                                            context.router.push(
+                                                const GenerateNewJobScreenRoute());
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.orange,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                ],
+                              ),
+                            );
+                          },
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFFF9900),

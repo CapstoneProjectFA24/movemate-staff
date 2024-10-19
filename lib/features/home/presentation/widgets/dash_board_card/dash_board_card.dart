@@ -21,6 +21,7 @@ class DashboardCard extends StatelessWidget {
       onTap: onTap, // Gọi hàm khi bấm vào thẻ
       borderRadius: BorderRadius.circular(10), // Bo tròn góc khi bấm
       child: Container(
+        height: MediaQuery.of(context).size.height * 0.2,
         width: MediaQuery.of(context).size.width * 0.42,
         padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(

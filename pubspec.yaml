@@ -64,7 +64,7 @@ dependencies:
   flutter_spinkit: ^5.2.0
   shimmer: ^3.0.0
   timeline_tile: ^2.0.0
-
+  animate_do: ^2.1.0
   cupertino_icons: ^1.0.8
 
 dev_dependencies:

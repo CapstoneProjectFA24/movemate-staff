@@ -93,7 +93,7 @@ class HomeScreen extends StatelessWidget {
             ),
             const Positioned(
               left: 20,
-              top: 250,
+              top: 280,
               child: Icon(
                 Icons.notifications,
                 color: Colors.white,
@@ -109,7 +109,7 @@ class HomeScreen extends StatelessWidget {
             ),
             DraggableScrollableSheet(
               initialChildSize: 0.4, // Chiều cao ban đầu là 40% màn hình
-              minChildSize: 0.2, // Chiều cao tối thiểu
+              minChildSize: 0.3, // Chiều cao tối thiểu
               maxChildSize: 0.8, // Chiều cao tối đa khi kéo lên
               builder: (context, scrollController) {
                 return Container(
@@ -140,35 +140,6 @@ class HomeScreen extends StatelessWidget {
                           title: 'Công Việc Mới',
                           description:
                               'Bắt đầu chuyến đi bằng cách đăng công việc.',
-                          onTap: () {
-                            // context.router.push(const JobScreenRoute());
-                            AutoTabsRouter.of(context).setActiveIndex(1);
-                          },
-                        ),
-                        DashboardCard(
-                          icon: Icons.person_add,
-                          color: Colors.orange,
-                          title: 'Phân Công Tài Xế',
-                          description:
-                              'Phân công tài xế cho công việc dễ dàng.',
-                          onTap: () {
-                            AutoTabsRouter.of(context).setActiveIndex(2);
-                          },
-                        ),
-                        DashboardCard(
-                          icon: Icons.person,
-                          color: Colors.purple,
-                          title: 'Tuyển Tài Xế',
-                          description: 'Tuyển dụng tài xế mới.',
-                          onTap: () {
-                            context.router.push(const JobScreenRoute());
-                          },
-                        ),
-                        DashboardCard(
-                          icon: Icons.business_center,
-                          color: Colors.redAccent,
-                          title: 'Công Việc Của Tôi',
-                          description: 'Xem và quản lý công việc.',
                           onTap: () {
                             // context.router.push(const JobScreenRoute());
                             AutoTabsRouter.of(context).setActiveIndex(1);

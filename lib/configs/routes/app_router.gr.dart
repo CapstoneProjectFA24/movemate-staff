@@ -21,6 +21,12 @@ abstract class _$AppRouter extends RootStackRouter {
         child: const ContactScreen(),
       );
     },
+    GenerateNewJobScreenRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const GenerateNewJobScreen(),
+      );
+    },
     HomeScreenRoute.name: (routeData) {
       return AutoRoutePage<dynamic>(
         routeData: routeData,
@@ -137,6 +143,20 @@ class ContactScreenRoute extends PageRouteInfo<void> {
         );
 
   static const String name = 'ContactScreenRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [GenerateNewJobScreen]
+class GenerateNewJobScreenRoute extends PageRouteInfo<void> {
+  const GenerateNewJobScreenRoute({List<PageRouteInfo>? children})
+      : super(
+          GenerateNewJobScreenRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'GenerateNewJobScreenRoute';
 
   static const PageInfo<void> page = PageInfo<void>(name);
 }
