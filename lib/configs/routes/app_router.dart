@@ -2,7 +2,9 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:movemate_staff/configs/routes/guard/role_guard.dart';
+import 'package:movemate_staff/features/driver/presentation/screen/driver_screen.dart';
 import 'package:movemate_staff/features/job/presentation/screen/generate_new_job_screen/generate_new_job_screen.dart';
+import 'package:movemate_staff/features/order/presentation/screen/order_screen.dart';
 
 // guard
 import 'guard/onboarding_guard.dart';
@@ -110,6 +112,12 @@ class AppRouter extends _$AppRouter {
         ),
         AutoRoute(
           page: ContactScreenRoute.page,
+        ),
+         AutoRoute(
+          page: OrderScreenRoute.page,
+        ),
+        AutoRoute(
+          page: DriverScreenRoute.page,
         ),
         AutoRoute(
           page: GenerateNewJobScreenRoute.page,

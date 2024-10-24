@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/features/home/presentation/widgets/dash_board_card/dash_board_card.dart';
+import 'package:movemate_staff/utils/constants/asset_constant.dart';
 
 @RoutePage()
 class HomeScreen extends StatelessWidget {
@@ -152,6 +153,24 @@ class HomeScreen extends StatelessWidget {
                           description: 'Theo dõi chi phí của bạn.',
                           onTap: () {
                             context.router.push(const JobScreenRoute());
+                          },
+                        ),
+                        DashboardCard(
+                          icon: Icons.notification_add_outlined,
+                          color: const Color.fromARGB(255, 86, 76, 175),
+                          title: 'Yêu cầu',
+                          description: 'những yêu cầu đang chờ bạn duyệt.',
+                          onTap: () {
+                            context.router.push(const OrderScreenRoute());
+                          },
+                        ),
+                        DashboardCard(
+                          icon: Icons.local_shipping,
+                          color: AssetsConstants.primaryMain,
+                          title: 'Tài xế',
+                          description: 'tài xế theo yêu cầu.',
+                          onTap: () {
+                            context.router.push(const DriverScreenRoute());
                           },
                         ),
                       ],

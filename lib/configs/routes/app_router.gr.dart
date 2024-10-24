@@ -21,6 +21,12 @@ abstract class _$AppRouter extends RootStackRouter {
         child: const ContactScreen(),
       );
     },
+    DriverScreenRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: DriverScreen(),
+      );
+    },
     GenerateNewJobScreenRoute.name: (routeData) {
       return AutoRoutePage<dynamic>(
         routeData: routeData,
@@ -60,6 +66,12 @@ abstract class _$AppRouter extends RootStackRouter {
           phoneNumber: args.phoneNumber,
           verifyType: args.verifyType,
         ),
+      );
+    },
+    OrderScreenRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: OrderScreen(),
       );
     },
     PrivacyPolicyScreenRoute.name: (routeData) {
@@ -143,6 +155,20 @@ class ContactScreenRoute extends PageRouteInfo<void> {
         );
 
   static const String name = 'ContactScreenRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [DriverScreen]
+class DriverScreenRoute extends PageRouteInfo<void> {
+  const DriverScreenRoute({List<PageRouteInfo>? children})
+      : super(
+          DriverScreenRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'DriverScreenRoute';
 
   static const PageInfo<void> page = PageInfo<void>(name);
 }
@@ -259,6 +285,20 @@ class OTPVerificationScreenRouteArgs {
   String toString() {
     return 'OTPVerificationScreenRouteArgs{key: $key, phoneNumber: $phoneNumber, verifyType: $verifyType}';
   }
+}
+
+/// generated route for
+/// [OrderScreen]
+class OrderScreenRoute extends PageRouteInfo<void> {
+  const OrderScreenRoute({List<PageRouteInfo>? children})
+      : super(
+          OrderScreenRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'OrderScreenRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
 }
 
 /// generated route for
