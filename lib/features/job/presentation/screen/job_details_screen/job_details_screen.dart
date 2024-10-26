@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
+import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/address.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/booking_code.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/column.dart';
@@ -22,8 +23,12 @@ import 'package:animate_do/animate_do.dart';
 
 @RoutePage()
 class JobDetailsScreen extends HookConsumerWidget {
-  const JobDetailsScreen({super.key});
+  const JobDetailsScreen({
+    super.key,
+    required this.job,
+  });
 
+  final BookingResponseEntity job;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isExpanded =

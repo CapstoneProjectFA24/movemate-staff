@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:movemate_staff/configs/routes/guard/role_guard.dart';
 import 'package:movemate_staff/features/driver/presentation/screen/driver_screen.dart';
+import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/presentation/screen/generate_new_job_screen/generate_new_job_screen.dart';
 import 'package:movemate_staff/features/order/presentation/screen/order_screen.dart';
 
@@ -28,6 +29,8 @@ import 'package:movemate_staff/features/profile/presentation/screens/contact/con
 
 import 'package:movemate_staff/features/job/presentation/screen/job_details_screen/job_details_screen.dart';
 import 'package:movemate_staff/features/job/presentation/screen/job_screen/job_screen.dart';
+import 'package:movemate_staff/features/job/presentation/screen/add_job_screen/add_job_screen.dart';
+import 'package:movemate_staff/features/history/presentation/screen/history_screen.dart';
 
 import 'package:movemate_staff/splash_screen.dart';
 import 'package:movemate_staff/tab_screen.dart';

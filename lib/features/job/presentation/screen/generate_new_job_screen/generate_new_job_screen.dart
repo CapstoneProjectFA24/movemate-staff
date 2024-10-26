@@ -3,17 +3,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:movemate_staff/configs/routes/app_router.dart';
-import 'package:movemate_staff/features/job/presentation/widgets/details/address.dart';
-import 'package:movemate_staff/features/job/presentation/widgets/details/booking_code.dart';
-import 'package:movemate_staff/features/job/presentation/widgets/details/column.dart';
-import 'package:movemate_staff/features/job/presentation/widgets/details/image.dart';
-import 'package:movemate_staff/features/job/presentation/widgets/details/infoItem.dart';
-import 'package:movemate_staff/features/job/presentation/widgets/details/item.dart';
-import 'package:movemate_staff/features/job/presentation/widgets/details/policies.dart';
-import 'package:movemate_staff/features/job/presentation/widgets/details/priceItem.dart';
-import 'package:movemate_staff/features/job/presentation/widgets/details/section.dart';
-import 'package:movemate_staff/features/job/presentation/widgets/details/summary.dart';
+
 import 'package:movemate_staff/features/job/presentation/widgets/function/popup.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/function/image.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/function/label.dart';
@@ -44,8 +34,7 @@ class GenerateNewJobScreen extends HookConsumerWidget {
               children: [
                 Container(
                   padding: const EdgeInsets.all(16),
-                  width:
-                      380, // Equivalent to w-80 in Tailwind CSS (80 * 4 = 320)
+                  width: 380,
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(12),

@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:movemate_staff/configs/routes/app_router.dart';
+import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/presentation/screen/job_details_screen/job_details_screen.dart';
+import 'package:auto_route/auto_route.dart';
+
 class JobModel {
   final String title;
   final String details;
@@ -17,11 +21,14 @@ class JobModel {
     required this.imageUrl,
   });
 }
+
 class JobCard extends StatelessWidget {
-  final JobModel job;
+  final BookingResponseEntity job;
+  final VoidCallback onCallback;
 
   JobCard({
     super.key,
+    required this.onCallback,
     required this.job,
   });
 
@@ -45,10 +52,10 @@ class JobCard extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(job.title,
+                  Text(job.id.toString(),
                       style:
                           TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                  Text(job.details, style: TextStyle(fontSize: 14)),
+                  Text(job.typeBooking, style: TextStyle(fontSize: 14)),
                 ],
               ),
               Padding(
@@ -57,7 +64,7 @@ class JobCard extends StatelessWidget {
                   children: [
                     ClipOval(
                       child: Image.network(
-                        job.imageUrl,
+                        'https://storage.googleapis.com/a1aa/image/fpR5CaQW2ny0CCt8MBn1ufzjTBuLAgHXz4yQMiYIxzaWDIlTA.jpg',
                         width: 60,
                         height: 60,
                         fit: BoxFit.cover,
@@ -67,7 +74,6 @@ class JobCard extends StatelessWidget {
                       padding:
                           EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                       decoration: BoxDecoration(
-                        color: job.statusColor,
                         borderRadius: BorderRadius.circular(5),
                       ),
                       child: Text(
@@ -86,7 +92,7 @@ class JobCard extends StatelessWidget {
             children: [
               Icon(Icons.location_on, color: Colors.red),
               SizedBox(width: 5),
-              Text(job.location),
+              Text(job.pickupAddress),
             ],
           ),
           SizedBox(height: 10),
@@ -119,9 +125,9 @@ class JobCard extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) =>
-                            JobDetailsScreen()), // Chuyển đến trang NewPage
+                        builder: (context) => JobDetailsScreen(job: job)),
                   );
+                  // context.router.push(JobDetailsScreenRoute(job:job));
                 },
                 child: Text('Xem'),
               ),

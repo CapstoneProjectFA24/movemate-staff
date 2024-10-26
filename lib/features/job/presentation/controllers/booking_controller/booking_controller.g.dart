@@ -1,26 +1,26 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'otp_controller.dart';
+part of 'booking_controller.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$otpControllerHash() => r'14d1d12cf83da22b4d0df26dd885761edc1990a2';
+String _$bookingControllerHash() => r'f609087d1b34fbe709710aa5c5b6ee093b1a512e';
 
-/// See also [OtpController].
-@ProviderFor(OtpController)
-final otpControllerProvider =
-    AutoDisposeAsyncNotifierProvider<OtpController, void>.internal(
-  OtpController.new,
-  name: r'otpControllerProvider',
+/// See also [BookingController].
+@ProviderFor(BookingController)
+final bookingControllerProvider =
+    AutoDisposeAsyncNotifierProvider<BookingController, void>.internal(
+  BookingController.new,
+  name: r'bookingControllerProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$otpControllerHash,
+      : _$bookingControllerHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$OtpController = AutoDisposeAsyncNotifier<void>;
+typedef _$BookingController = AutoDisposeAsyncNotifier<void>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
