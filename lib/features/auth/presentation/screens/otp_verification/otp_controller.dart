@@ -96,8 +96,8 @@ class OtpController extends _$OtpController {
 
       final userModel = UserModel(
         id: user.payload.id,
-        email: user.payload.email,
         roleName: user.payload.roleName,
+        email: user.payload.email,
         tokens: user.payload.tokens,
       );
 

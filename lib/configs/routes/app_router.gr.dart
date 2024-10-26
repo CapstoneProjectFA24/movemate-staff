@@ -15,6 +15,12 @@ abstract class _$AppRouter extends RootStackRouter {
 
   @override
   final Map<String, PageFactory> pagesMap = {
+    AddJobScreenRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: AddJobScreen(),
+      );
+    },
     ContactScreenRoute.name: (routeData) {
       return AutoRoutePage<dynamic>(
         routeData: routeData,
@@ -33,6 +39,12 @@ abstract class _$AppRouter extends RootStackRouter {
         child: const GenerateNewJobScreen(),
       );
     },
+    HistoryScreenRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const HistoryScreen(),
+      );
+    },
     HomeScreenRoute.name: (routeData) {
       return AutoRoutePage<dynamic>(
         routeData: routeData,
@@ -46,9 +58,13 @@ abstract class _$AppRouter extends RootStackRouter {
       );
     },
     JobDetailsScreenRoute.name: (routeData) {
+      final args = routeData.argsAs<JobDetailsScreenRouteArgs>();
       return AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const JobDetailsScreen(),
+        child: JobDetailsScreen(
+          key: args.key,
+          job: args.job,
+        ),
       );
     },
     JobScreenRoute.name: (routeData) {
@@ -146,6 +162,20 @@ abstract class _$AppRouter extends RootStackRouter {
 }
 
 /// generated route for
+/// [AddJobScreen]
+class AddJobScreenRoute extends PageRouteInfo<void> {
+  const AddJobScreenRoute({List<PageRouteInfo>? children})
+      : super(
+          AddJobScreenRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'AddJobScreenRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
 /// [ContactScreen]
 class ContactScreenRoute extends PageRouteInfo<void> {
   const ContactScreenRoute({List<PageRouteInfo>? children})
@@ -188,6 +218,20 @@ class GenerateNewJobScreenRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
+/// [HistoryScreen]
+class HistoryScreenRoute extends PageRouteInfo<void> {
+  const HistoryScreenRoute({List<PageRouteInfo>? children})
+      : super(
+          HistoryScreenRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'HistoryScreenRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
 /// [HomeScreen]
 class HomeScreenRoute extends PageRouteInfo<void> {
   const HomeScreenRoute({List<PageRouteInfo>? children})
@@ -217,16 +261,40 @@ class InfoScreenRoute extends PageRouteInfo<void> {
 
 /// generated route for
 /// [JobDetailsScreen]
-class JobDetailsScreenRoute extends PageRouteInfo<void> {
-  const JobDetailsScreenRoute({List<PageRouteInfo>? children})
-      : super(
+class JobDetailsScreenRoute extends PageRouteInfo<JobDetailsScreenRouteArgs> {
+  JobDetailsScreenRoute({
+    Key? key,
+    required BookingResponseEntity job,
+    List<PageRouteInfo>? children,
+  }) : super(
           JobDetailsScreenRoute.name,
+          args: JobDetailsScreenRouteArgs(
+            key: key,
+            job: job,
+          ),
           initialChildren: children,
         );
 
   static const String name = 'JobDetailsScreenRoute';
 
-  static const PageInfo<void> page = PageInfo<void>(name);
+  static const PageInfo<JobDetailsScreenRouteArgs> page =
+      PageInfo<JobDetailsScreenRouteArgs>(name);
+}
+
+class JobDetailsScreenRouteArgs {
+  const JobDetailsScreenRouteArgs({
+    this.key,
+    required this.job,
+  });
+
+  final Key? key;
+
+  final BookingResponseEntity job;
+
+  @override
+  String toString() {
+    return 'JobDetailsScreenRouteArgs{key: $key, job: $job}';
+  }
 }
 
 /// generated route for
