@@ -39,7 +39,7 @@ abstract class BookingSource {
   );
   // Services
   @GET(APIConstants.get_service_truck_cate)
-  Future<HttpResponse<ServicesResponse>> getServices(
+  Future<HttpResponse<ServicesResponse>> getVehicle(
     @Header(APIConstants.contentHeader) String contentType,
     @Header(APIConstants.authHeader) String accessToken,
   );

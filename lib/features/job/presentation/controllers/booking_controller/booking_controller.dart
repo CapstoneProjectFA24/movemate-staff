@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:movemate_staff/features/auth/presentation/screens/sign_in/sign_in_controller.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
+import 'package:movemate_staff/features/job/domain/entities/service_entity.dart';
+import 'package:movemate_staff/features/job/domain/entities/services_package_entity.dart';
 import 'package:movemate_staff/features/job/domain/repositories/service_booking_repository.dart';
 
 import 'package:movemate_staff/models/request/paging_model.dart';
@@ -71,5 +73,49 @@ class BookingController extends _$BookingController {
     }
 
     return bookings;
+  }
+
+  Future<List<ServiceEntity>> getVehicle(
+    PagingModel request,
+    BuildContext context,
+  ) async {
+    List<ServiceEntity> getVehicles = [];
+
+    state = const AsyncLoading();
+    final bookingRepository = ref.read(bookingRepositoryProvider);
+    final authRepository = ref.read(authRepositoryProvider);
+    final user = await SharedPreferencesUtils.getInstance('user_token');
+
+    state = await AsyncValue.guard(() async {
+      final response = await bookingRepository.getVehicle(
+        accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
+        request: request,
+      );
+      getVehicles = response.payload;
+    });
+
+    if (state.hasError) {
+      state = await AsyncValue.guard(() async {
+        final statusCode = (state.error as DioException).onStatusDio();
+        await handleAPIError(
+          statusCode: statusCode,
+          stateError: state.error!,
+          context: context,
+          onCallBackGenerateToken: () async => await reGenerateToken(
+            authRepository,
+            context,
+          ),
+        );
+
+        if (state.hasError) {
+          await ref.read(signInControllerProvider.notifier).signOut(context);
+        }
+
+        if (statusCode != StatusCodeType.unauthentication.type) {}
+
+        await getVehicle(request, context);
+      });
+    }
+    return getVehicles;
   }
 }

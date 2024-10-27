@@ -5,10 +5,10 @@ import 'package:movemate_staff/configs/routes/guard/role_guard.dart';
 import 'package:movemate_staff/features/driver/presentation/screen/driver_screen.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/presentation/screen/generate_new_job_screen/generate_new_job_screen.dart';
+import 'package:movemate_staff/features/job/presentation/screen/vehicles_screen/vehicles_available_screen.dart';
 import 'package:movemate_staff/features/order/presentation/screen/order_screen.dart';
 
 // guard
-import 'guard/onboarding_guard.dart';
 import 'package:movemate_staff/configs/routes/guard/auth_guard.dart';
 
 // screen
@@ -84,7 +84,7 @@ class AppRouter extends _$AppRouter {
                 RoleGuard(_ref, [UserRole.reviewer, UserRole.poster])
               ],
             ),
-          
+
             // AutoRoute(page: OrderScreenRoute.page),
             // AutoRoute(page: PromotionScreenRoute.page),
             // AutoRoute(page: ProfileScreenRoute.page),
@@ -107,7 +107,7 @@ class AppRouter extends _$AppRouter {
           page: InfoScreenRoute.page,
         ),
         //hoàng
-         AutoRoute(
+        AutoRoute(
           page: JobScreenRoute.page,
         ),
         AutoRoute(
@@ -116,7 +116,7 @@ class AppRouter extends _$AppRouter {
         AutoRoute(
           page: ContactScreenRoute.page,
         ),
-         AutoRoute(
+        AutoRoute(
           page: OrderScreenRoute.page,
         ),
         AutoRoute(
@@ -124,6 +124,9 @@ class AppRouter extends _$AppRouter {
         ),
         AutoRoute(
           page: GenerateNewJobScreenRoute.page,
+        ),
+        AutoRoute(
+          page: AvailableVehiclesScreenRoute.page,
         ),
         AutoRoute(
           page: ProfileScreenRoute.page,

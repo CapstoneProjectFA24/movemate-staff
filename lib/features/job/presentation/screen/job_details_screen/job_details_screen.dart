@@ -524,6 +524,8 @@ class JobDetailsScreen extends HookConsumerWidget {
                         ),
                       ),
                     ),
+                  
+                  
                   ],
                 ),
               ),

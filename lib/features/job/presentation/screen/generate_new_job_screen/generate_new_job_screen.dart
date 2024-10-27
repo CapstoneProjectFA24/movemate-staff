@@ -3,6 +3,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:movemate_staff/configs/routes/app_router.dart';
 
 import 'package:movemate_staff/features/job/presentation/widgets/function/popup.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/function/image.dart';
@@ -154,6 +155,93 @@ class GenerateNewJobScreen extends HookConsumerWidget {
                         ),
                       ),
                     ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16.0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      showModalBottomSheet(
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(20),
+                          ),
+                        ),
+                        context: context,
+                        builder: (BuildContext context) {
+                          return Container(
+                            height: 400,
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.vertical(
+                                top: Radius.circular(20),
+                              ),
+                            ),
+                            child: Column(
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.only(top: 8),
+                                  width: 80,
+                                  height: 5,
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                FadeInUp(
+                                  child: const Padding(
+                                    padding: EdgeInsets.only(top: 38.0),
+                                    child: Text(
+                                      "Bạn có muốn check thông tin lại thêm lần nữa không",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ),
+                                FadeInUp(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(top: 18.0),
+                                    child: Center(
+                                      child: ElevatedButton(
+                                        child: Text("Xác Nhận "),
+                                        onPressed: () {
+                                          context.router.push(
+                                              const AvailableVehiclesScreenRoute());
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor:
+                                              AssetsConstants.primaryMain,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const Spacer(),
+                              ],
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFFF9900),
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      fixedSize: const Size(400, 50),
+                    ),
+                    child: const Text(
+                      'Xác nhận',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ),
               ],

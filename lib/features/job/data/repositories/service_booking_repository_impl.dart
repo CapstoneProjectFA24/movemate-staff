@@ -45,13 +45,13 @@ class BookingRepositoryImpl extends RemoteBaseRepository
   }
 
   @override
-  Future<ServicesResponse> getServices({
+  Future<ServicesResponse> getVehicle({
     required PagingModel request,
     required String accessToken,
   }) async {
     return getDataOf(
       request: () =>
-          _bookingSource.getServices(APIConstants.contentType, accessToken),
+          _bookingSource.getVehicle(APIConstants.contentType, accessToken),
     );
   }
 

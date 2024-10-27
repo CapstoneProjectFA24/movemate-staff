@@ -24,7 +24,7 @@ abstract class BookingRepository {
   });
 
   // Services Methods
-  Future<ServicesResponse> getServices({
+  Future<ServicesResponse> getVehicle({
     required PagingModel request,
     required String accessToken,
   });
