@@ -21,19 +21,24 @@ class APIConstants {
   static const get_package_services = '/services';
   static const post_valuation_booking_service = '/bookings/valuation-booking';
 
-//post booking
+  //post booking
 
   static const post_booking_service = '/bookings/register-booking';
   // static const post_booking_service = '/bookings/register-booking';
   // order
   static const bookings = '/bookings';
 
+  // reviwer-status
+  static const reviewer_state = '/bookingdetails/reviewer/update-status';
+  static const reviewer_at = '/bookings/reviewer/review-at';
+
   // payments
   static const paymentsBooking = '/payments/create-payment-url';
   static const paymentsDeposit = '/wallets/recharge';
 
   // api vietmap-key
-  static const apiVietMapKey = "38db2f3d058b34e0f52f067fe66a902830fac1a044e8d444";
+  static const apiVietMapKey =
+      "38db2f3d058b34e0f52f067fe66a902830fac1a044e8d444";
 
   // error
   static const Map<String, String> errorTrans = {

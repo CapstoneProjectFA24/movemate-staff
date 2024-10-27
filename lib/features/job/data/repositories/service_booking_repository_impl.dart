@@ -1,6 +1,8 @@
 // service_booking_repository_impl.dart
 
 import 'package:movemate_staff/features/job/data/model/request/booking_requesst.dart';
+import 'package:movemate_staff/features/job/data/model/request/reviewer_status_request.dart';
+import 'package:movemate_staff/features/job/data/model/request/reviewer_time_request.dart';
 import 'package:movemate_staff/features/job/data/model/response/booking_response.dart';
 import 'package:movemate_staff/features/job/data/model/response/house_type_response.dart';
 import 'package:movemate_staff/features/job/data/model/response/services_fee_system_response.dart';
@@ -9,6 +11,7 @@ import 'package:movemate_staff/features/job/data/model/response/services_respons
 import 'package:movemate_staff/features/job/data/remotes/booking_source.dart';
 import 'package:movemate_staff/features/job/domain/repositories/service_booking_repository.dart';
 import 'package:movemate_staff/models/request/paging_model.dart';
+import 'package:movemate_staff/models/response/success_model.dart';
 import 'package:movemate_staff/utils/constants/api_constant.dart';
 import 'package:movemate_staff/utils/resources/remote_base_repository.dart';
 
@@ -30,7 +33,7 @@ class BookingRepositoryImpl extends RemoteBaseRepository
     );
   }
 
-    @override
+  @override
   Future<HouseTypeResponse> getHouseDetails({
     required String accessToken,
     required int id,
@@ -100,7 +103,7 @@ class BookingRepositoryImpl extends RemoteBaseRepository
     );
   }
 
-    @override
+  @override
   Future<BookingResponse> getBookings({
     required String accessToken,
   }) async {
@@ -121,6 +124,34 @@ class BookingRepositoryImpl extends RemoteBaseRepository
         APIConstants.contentType,
         accessToken,
       ),
+    );
+  }
+
+  //reviewer state
+  @override
+  Future<SuccessModel> updateStateReviewer({
+    required String accessToken,
+    required ReviewerStatusRequest request,
+    required int id,
+  }) async {
+    return getDataOf(
+      request: () => _bookingSource.updateStateReviewer(
+          APIConstants.contentType, accessToken, request, id),
+    );
+  }
+
+  @override
+  Future<SuccessModel> updateCreateScheduleReview({
+    required String accessToken,
+    required ReviewerTimeRequest request,
+    required int id,
+  }) async {
+    print("repo log ${request.toJson()}");
+    print("repo log ${id}");
+
+    return getDataOf(
+      request: () => _bookingSource.updateCreateScheduleReview(
+          APIConstants.contentType, accessToken, request, id),
     );
   }
 }

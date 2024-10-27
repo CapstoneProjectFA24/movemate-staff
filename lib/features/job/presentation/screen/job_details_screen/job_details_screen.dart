@@ -4,7 +4,9 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
+import 'package:movemate_staff/features/job/data/model/request/reviewer_time_request.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
+import 'package:movemate_staff/features/job/presentation/controllers/reviewer_update_controller/reviewer_update_controller.dart';
 import 'package:movemate_staff/features/job/presentation/screen/add_job_screen/add_job_screen.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/address.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/booking_code.dart';
@@ -16,8 +18,10 @@ import 'package:movemate_staff/features/job/presentation/widgets/details/policie
 import 'package:movemate_staff/features/job/presentation/widgets/details/priceItem.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/section.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/summary.dart';
+import 'package:movemate_staff/features/job/presentation/widgets/dialog_schedule/schedule_dialog.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/tabItem/input_field.dart';
 import 'package:movemate_staff/utils/commons/widgets/app_bar.dart';
+import 'package:movemate_staff/utils/commons/widgets/form_input/label_text.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:intl/intl.dart';
@@ -85,18 +89,46 @@ class JobDetailsScreen extends HookConsumerWidget {
                         child: SizedBox(
                           height: 50,
                           child: ElevatedButton(
-                            onPressed: () => _showAddTaskDialog(context),
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) => ScheduleDialog(
+                                  onDateTimeSelected:
+                                      (DateTime selectedDateTime) async {
+                                    // Xử lý datetime đã chọn
+                                    final scheduledAt = selectedDateTime;
+                                    print('Selected datetime: $scheduledAt');
+                                    // TODO: Xử lý logic ở đây (ví dụ: gọi API)
+
+                                    final reviewerUpdateController = ref.read(
+                                        reviewerUpdateControllerProvider
+                                            .notifier);
+
+                                    await reviewerUpdateController
+                                        .updateCreateScheduleReview(
+                                      request: ReviewerTimeRequest(
+                                        reviewAt: selectedDateTime,
+                                      ),
+                                      id: job.id,
+                                      context: context,
+                                    );
+                                  },
+                                ),
+                              );
+                            },
                             style: ElevatedButton.styleFrom(
+                              backgroundColor: AssetsConstants.primaryDark,
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 20),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),
                             ),
-                            child: const Text(
-                              "Add Task",
-                              style:
-                                  TextStyle(fontSize: 16, color: Colors.white),
+                            child: const LabelText(
+                              content: "Tạo lịch hẹn",
+                              size: 16,
+                              fontWeight: FontWeight.bold,
+                              color: AssetsConstants.whiteColor,
                             ),
                           ),
                         ),
@@ -481,8 +513,7 @@ class JobDetailsScreen extends HookConsumerWidget {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(5),
                         ),
-                        fixedSize: const Size(
-                            400, 50), // Chiều rộng tự động và chiều cao là 50
+                        fixedSize: const Size(400, 50),
                       ),
                       child: const Text(
                         'Xác nhận',
@@ -524,198 +555,6 @@ Widget buildItem(
           ),
         ),
       ],
-    ),
-  );
-}
-
-void _showAddTaskDialog(BuildContext context) {
-  DateTime _selectedDay = DateTime.now();
-  final TextEditingController titleController = TextEditingController();
-  final TextEditingController descriptionController = TextEditingController();
-  final TextEditingController startTimeController = TextEditingController();
-  final TextEditingController endTimeController = TextEditingController();
-  String selectedPriority = 'High';
-
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        backgroundColor: AssetsConstants.whiteColor,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        contentPadding: const EdgeInsets.all(20),
-        content: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildHeader(),
-              MyInputField(
-                title: "Date",
-                hint: DateFormat.yMd().format(_selectedDay),
-                widget: IconButton(
-                    onPressed: () {
-                      _getDateFromUser(context);
-                    },
-                    icon: const Icon(Icons.calendar_today_outlined)),
-              ),
-              // _buildFormInput('Description', descriptionController,
-              //     isMultiline: true),
-              _buildTimeInputs(startTimeController, endTimeController),
-              // _buildPriorityGroup((priority) {
-              //   selectedPriority = priority;
-              // }),
-              // _buildParticipants(),
-              SizedBox(height: 20),
-              _buildCreateTaskButton(() {
-                // _addTask(
-                //   titleController.text,
-                //   descriptionController.text,
-                //   startTimeController.text,
-                //   endTimeController.text,
-                //   selectedPriority,
-                // );
-                Navigator.pop(context);
-              }),
-            ],
-          ),
-        ),
-      );
-    },
-  );
-}
-
-_getDateFromUser(BuildContext context) async {
-  DateTime? _pickerDate = await showDatePicker(
-    context: context,
-    initialDate: DateTime.now(),
-    firstDate: DateTime(2015),
-    lastDate: DateTime(2030),
-  );
-  if (_pickerDate != null) {
-    DateTime _selectedDay = _pickerDate;
-    print(_selectedDay);
-  }
-}
-
-Widget _buildHeader() {
-  return FadeInLeft(
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Icon(Icons.arrow_back),
-        Text(
-          'Add New Task',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        Icon(Icons.more_vert),
-      ],
-    ),
-  );
-}
-
-Widget _buildFormInput(String label, TextEditingController controller,
-    {bool isMultiline = false}) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 10),
-    child: FadeInDown(
-      child: TextField(
-        controller: controller,
-        maxLines: isMultiline ? 4 : 1,
-        decoration: InputDecoration(
-          labelText: label,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-        ),
-      ),
-    ),
-  );
-}
-
-Widget _buildTimeInputs(TextEditingController startTimeController,
-    TextEditingController endTimeController) {
-  return FadeInUp(
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        _buildTimeInput('Start Time', startTimeController),
-        const SizedBox(
-          width: 10,
-        ),
-        _buildTimeInput('End Time', endTimeController),
-      ],
-    ),
-  );
-}
-
-Widget _buildTimeInput(String label, TextEditingController controller) {
-  return FadeInUp(
-    child: Container(
-      width: 140,
-      child: TextField(
-        controller: controller,
-        decoration: InputDecoration(
-          labelText: label,
-          suffixIcon: Icon(Icons.access_time),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-        ),
-      ),
-    ),
-  );
-}
-
-Widget _buildPriorityGroup(ValueChanged<String> onPrioritySelected) {
-  const priorities = ['Low', 'Medium', 'High'];
-  return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 10),
-    child: FadeInUp(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: priorities.map((priority) {
-          return GestureDetector(
-            onTap: () => onPrioritySelected(priority),
-            child: Container(
-              width: 90,
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Center(
-                child: Text(
-                  priority,
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-          );
-        }).toList(),
-      ),
-    ),
-  );
-}
-
-Widget _buildCreateTaskButton(VoidCallback onCreate) {
-  return FadeInUp(
-    child: ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.black,
-        padding: const EdgeInsets.symmetric(vertical: 15),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-      ),
-      onPressed: onCreate,
-      child: Center(
-        child: Text(
-          '+ Create Task',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-      ),
     ),
   );
 }

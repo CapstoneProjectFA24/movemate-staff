@@ -1,6 +1,9 @@
 // service_booking_source.dart
 
 import 'package:dio/dio.dart';
+import 'package:movemate_staff/features/job/data/model/request/reviewer_status_request.dart';
+import 'package:movemate_staff/features/job/data/model/request/reviewer_time_request.dart';
+import 'package:movemate_staff/models/response/success_model.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -16,13 +19,11 @@ import 'package:movemate_staff/features/job/data/model/response/services_respons
 import 'package:movemate_staff/utils/constants/api_constant.dart';
 import 'package:movemate_staff/utils/providers/common_provider.dart';
 
-
 part 'booking_source.g.dart';
 
 @RestApi(baseUrl: APIConstants.baseUrl, parser: Parser.MapSerializable)
 abstract class BookingSource {
-  factory BookingSource(Dio dio, {String baseUrl}) =
-      _BookingSource;
+  factory BookingSource(Dio dio, {String baseUrl}) = _BookingSource;
 
   // House Types
   @GET(APIConstants.get_house_types)
@@ -30,7 +31,7 @@ abstract class BookingSource {
     @Header(APIConstants.contentHeader) String contentType,
     @Header(APIConstants.authHeader) String accessToken,
   );
- @GET('${APIConstants.get_house_types}/{id}')
+  @GET('${APIConstants.get_house_types}/{id}')
   Future<HttpResponse<HouseTypeResponse>> getHouseDetails(
     @Header(APIConstants.contentHeader) String contentType,
     @Header(APIConstants.authHeader) String accessToken,
@@ -58,7 +59,7 @@ abstract class BookingSource {
   );
 //Post , put
   // Post booking service
-    @GET(APIConstants.bookings)
+  @GET(APIConstants.bookings)
   Future<HttpResponse<BookingResponse>> getBookings(
     @Header(APIConstants.contentHeader) String contentType,
     @Header(APIConstants.authHeader) String accessToken,
@@ -82,6 +83,25 @@ abstract class BookingSource {
     @Body() BookingRequest request,
     @Header(APIConstants.contentHeader) String contentType,
     @Header(APIConstants.authHeader) String accessToken,
+  );
+
+  // PUT status staff reviwer
+
+  // PUT status staff reviwer
+  @PUT('${APIConstants.reviewer_state}/{id}')
+  Future<HttpResponse<SuccessModel>> updateStateReviewer(
+    @Header(APIConstants.contentHeader) String contentType,
+    @Header(APIConstants.authHeader) String accessToken,
+    @Body() ReviewerStatusRequest request,
+     @Path('id') int id,
+  );
+
+  @PUT('${APIConstants.reviewer_at}/{id}')
+  Future<HttpResponse<SuccessModel>> updateCreateScheduleReview(
+    @Header(APIConstants.contentHeader) String contentType,
+    @Header(APIConstants.authHeader) String accessToken,
+    @Body() ReviewerTimeRequest request,
+     @Path('id') int id,
   );
 }
 

@@ -64,9 +64,9 @@ class BookingController extends _$BookingController {
           await ref.read(signInControllerProvider.notifier).signOut(context);
         }
 
-        if (statusCode != StatusCodeType.unauthentication.type) {}
-
-        await getBookings(request, context);
+        if (statusCode != StatusCodeType.unauthentication.type) {
+          await getBookings(request, context);
+        }
       });
     }
 
