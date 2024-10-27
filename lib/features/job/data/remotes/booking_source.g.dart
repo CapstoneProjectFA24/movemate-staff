@@ -194,7 +194,7 @@ class _BookingSource implements BookingSource {
   }
 
   @override
-  Future<HttpResponse<ServicesPackageResponse>> getPackageServices(
+  Future<HttpResponse<ServicesPackageResponse>> getServicesPackage(
     String contentType,
     String accessToken,
   ) async {

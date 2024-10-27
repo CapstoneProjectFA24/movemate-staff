@@ -53,7 +53,7 @@ abstract class BookingSource {
 
   // Package Services
   @GET(APIConstants.get_service_not_type_truck)
-  Future<HttpResponse<ServicesPackageResponse>> getPackageServices(
+  Future<HttpResponse<ServicesPackageResponse>> getServicesPackage(
     @Header(APIConstants.contentHeader) String contentType,
     @Header(APIConstants.authHeader) String accessToken,
   );

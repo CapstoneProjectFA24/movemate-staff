@@ -69,12 +69,12 @@ class BookingRepositoryImpl extends RemoteBaseRepository
 
   // Services Package Methods
   @override
-  Future<ServicesPackageResponse> getPackageServices({
+  Future<ServicesPackageResponse> getServicesPackage({
     required PagingModel request,
     required String accessToken,
   }) async {
     return getDataOf(
-      request: () => _bookingSource.getPackageServices(
+      request: () => _bookingSource.getServicesPackage(
         APIConstants.contentType,
         accessToken,
       ),

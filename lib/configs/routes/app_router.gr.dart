@@ -27,6 +27,12 @@ abstract class _$AppRouter extends RootStackRouter {
         child: const AvailableVehiclesScreen(),
       );
     },
+    BookingScreenServiceRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const BookingScreenService(),
+      );
+    },
     ContactScreenRoute.name: (routeData) {
       return AutoRoutePage<dynamic>(
         routeData: routeData,
@@ -191,6 +197,20 @@ class AvailableVehiclesScreenRoute extends PageRouteInfo<void> {
         );
 
   static const String name = 'AvailableVehiclesScreenRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [BookingScreenService]
+class BookingScreenServiceRoute extends PageRouteInfo<void> {
+  const BookingScreenServiceRoute({List<PageRouteInfo>? children})
+      : super(
+          BookingScreenServiceRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'BookingScreenServiceRoute';
 
   static const PageInfo<void> page = PageInfo<void>(name);
 }
