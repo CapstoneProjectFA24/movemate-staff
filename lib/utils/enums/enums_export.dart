@@ -6,3 +6,4 @@ export './verification_otp_type.dart';
 export './share_preference_type.dart';
 export './user_type.dart';
 export './booking_status_type.dart';
+export './booking_detail_status_type.dart';

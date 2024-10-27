@@ -30,7 +30,12 @@ abstract class BookingSource {
     @Header(APIConstants.contentHeader) String contentType,
     @Header(APIConstants.authHeader) String accessToken,
   );
-
+ @GET('${APIConstants.get_house_types}/{id}')
+  Future<HttpResponse<HouseTypeResponse>> getHouseDetails(
+    @Header(APIConstants.contentHeader) String contentType,
+    @Header(APIConstants.authHeader) String accessToken,
+    @Path('id') int id,
+  );
   // Services
   @GET(APIConstants.get_service_truck_cate)
   Future<HttpResponse<ServicesResponse>> getServices(

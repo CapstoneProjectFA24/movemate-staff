@@ -1,14 +1,15 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:movemate_staff/features/job/domain/entities/task_entity.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/add_job/button_add.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/add_job/calender.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/add_job/participant.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/add_job/task.dart';
+import 'package:movemate_staff/features/job/presentation/widgets/tabItem/input_field.dart';
 import 'package:movemate_staff/utils/commons/widgets/app_bar.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
-
 
 @RoutePage()
 class AddJobScreen extends StatefulWidget {
@@ -17,7 +18,7 @@ class AddJobScreen extends StatefulWidget {
 }
 
 class _AddJobScreenState extends State<AddJobScreen> {
-  DateTime selectedDay = DateTime.now();
+  DateTime _selectedDay = DateTime.now();
   DateTime focusedDay = DateTime.now();
   Map<DateTime, List<Task>> tasksByDay = {};
   List<Map<String, String>> participants = [];
@@ -54,8 +55,8 @@ class _AddJobScreenState extends State<AddJobScreen> {
               // ),
               FadeInRight(
                 child: TaskListWidget(
-                  tasks: tasksByDay[selectedDay] ?? [],
-                  selectedDay: selectedDay,
+                  tasks: tasksByDay[_selectedDay] ?? [],
+                  selectedDay: _selectedDay,
                 ),
               ),
               AddTaskButton(onPressed: _showAddTaskDialog),
@@ -87,11 +88,21 @@ class _AddJobScreenState extends State<AddJobScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                _buildHeader(),
-                _buildFormInput('Task Title', titleController),
-                _buildFormInput('Description', descriptionController,
-                    isMultiline: true),
-                _buildTimeInputs(startTimeController, endTimeController),
+                // _buildHeader(),
+                // _buildFormInput('Task Title', titleController),
+                // _buildFormInput('Description', descriptionController,
+                //     isMultiline: true),
+                MyInputField(
+                  title: "Date",
+                  hint: DateFormat.yMd().format(_selectedDay),
+                  widget: IconButton(
+                      onPressed: () {
+                        _getDateFromUser();
+                      },
+                      icon: const Icon(Icons.calendar_today_outlined)),
+                ),
+
+                // _buildTimeInputs(startTimeController, endTimeController),
                 _buildPriorityGroup((priority) {
                   selectedPriority = priority;
                 }),
@@ -129,6 +140,14 @@ class _AddJobScreenState extends State<AddJobScreen> {
         ],
       ),
     );
+  }
+
+  _getDateFromUser() async {
+    DateTime? _pickerDate = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(2015),
+        lastDate: DateTime(2030));
   }
 
   Widget _buildFormInput(String label, TextEditingController controller,
@@ -338,8 +357,8 @@ class _AddJobScreenState extends State<AddJobScreen> {
     );
 
     setState(() {
-      tasksByDay[selectedDay] ??= [];
-      tasksByDay[selectedDay]!.add(newTask);
+      tasksByDay[_selectedDay] ??= [];
+      tasksByDay[_selectedDay]!.add(newTask);
       participants.clear();
     });
   }

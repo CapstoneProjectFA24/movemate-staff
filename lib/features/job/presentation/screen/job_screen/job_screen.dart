@@ -64,7 +64,7 @@ class JobScreen extends HookConsumerWidget {
         case "Việc đã hoàn thành":
           filteredBookings = fetchResult.items.where((booking) {
             final status = booking.status.toBookingTypeEnum();
-            return status == BookingStatusType.completed;
+            return status == BookingStatusType.reviewing;
           }).toList();
           break;
         default: // "Khác"
@@ -74,7 +74,7 @@ class JobScreen extends HookConsumerWidget {
               BookingStatusType.cancelled,
               BookingStatusType.refunded,
               BookingStatusType.depositing,
-              BookingStatusType.reviewed,
+              BookingStatusType.reviewing,
             ].contains(status);
           }).toList();
       }

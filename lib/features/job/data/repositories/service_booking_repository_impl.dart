@@ -30,6 +30,17 @@ class BookingRepositoryImpl extends RemoteBaseRepository
     );
   }
 
+    @override
+  Future<HouseTypeResponse> getHouseDetails({
+    required String accessToken,
+    required int id,
+  }) async {
+    return getDataOf(
+      request: () => _bookingSource.getHouseDetails(
+          APIConstants.contentType, accessToken, id),
+    );
+  }
+
   @override
   Future<ServicesResponse> getServices({
     required PagingModel request,
