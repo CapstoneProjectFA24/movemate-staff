@@ -10,6 +10,7 @@ import 'package:movemate_staff/features/job/data/model/response/services_package
 import 'package:movemate_staff/features/job/data/model/response/services_response.dart';
 import 'package:movemate_staff/features/job/data/remotes/booking_source.dart';
 import 'package:movemate_staff/features/job/data/repositories/service_booking_repository_impl.dart';
+import 'package:movemate_staff/features/test/domain/entities/house_entities.dart';
 import 'package:movemate_staff/models/request/paging_model.dart';
 import 'package:movemate_staff/models/response/success_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -21,6 +22,11 @@ abstract class BookingRepository {
   Future<HouseTypeResponse> getHouseTypes({
     required PagingModel request,
     required String accessToken,
+  });
+  Future<HouseEntities> getHouseDetails({
+    // required PagingModel request,
+    required String accessToken,
+    required int id,
   });
 
   // Services Methods

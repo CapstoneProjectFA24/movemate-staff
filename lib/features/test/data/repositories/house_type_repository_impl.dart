@@ -6,7 +6,6 @@ import 'package:movemate_staff/features/test/domain/repositories/house_type_repo
 // utils
 import 'package:movemate_staff/utils/constants/api_constant.dart';
 import 'package:movemate_staff/utils/resources/remote_base_repository.dart';
-import 'package:retrofit/dio.dart';
 
 class HouseTypeRepositoryImpl extends RemoteBaseRepository
     implements HouseTypeRepository {

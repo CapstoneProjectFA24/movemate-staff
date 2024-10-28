@@ -8,10 +8,10 @@ class TaskListWidget extends StatelessWidget {
   final DateTime selectedDay;
 
   const TaskListWidget({
-    Key? key,
+    super.key,
     required this.tasks,
     required this.selectedDay,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

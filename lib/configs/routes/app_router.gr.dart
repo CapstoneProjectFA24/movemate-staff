@@ -18,13 +18,17 @@ abstract class _$AppRouter extends RootStackRouter {
     AddJobScreenRoute.name: (routeData) {
       return AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: AddJobScreen(),
+        child: const AddJobScreen(),
       );
     },
     AvailableVehiclesScreenRoute.name: (routeData) {
+      final args = routeData.argsAs<AvailableVehiclesScreenRouteArgs>();
       return AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const AvailableVehiclesScreen(),
+        child: AvailableVehiclesScreen(
+          key: args.key,
+          job: args.job,
+        ),
       );
     },
     BookingScreenServiceRoute.name: (routeData) {
@@ -42,13 +46,17 @@ abstract class _$AppRouter extends RootStackRouter {
     DriverScreenRoute.name: (routeData) {
       return AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: DriverScreen(),
+        child: const DriverScreen(),
       );
     },
     GenerateNewJobScreenRoute.name: (routeData) {
+      final args = routeData.argsAs<GenerateNewJobScreenRouteArgs>();
       return AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const GenerateNewJobScreen(),
+        child: GenerateNewJobScreen(
+          key: args.key,
+          job: args.job,
+        ),
       );
     },
     HistoryScreenRoute.name: (routeData) {
@@ -99,7 +107,7 @@ abstract class _$AppRouter extends RootStackRouter {
     OrderScreenRoute.name: (routeData) {
       return AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: OrderScreen(),
+        child: const OrderScreen(),
       );
     },
     PrivacyPolicyScreenRoute.name: (routeData) {
@@ -189,16 +197,41 @@ class AddJobScreenRoute extends PageRouteInfo<void> {
 
 /// generated route for
 /// [AvailableVehiclesScreen]
-class AvailableVehiclesScreenRoute extends PageRouteInfo<void> {
-  const AvailableVehiclesScreenRoute({List<PageRouteInfo>? children})
-      : super(
+class AvailableVehiclesScreenRoute
+    extends PageRouteInfo<AvailableVehiclesScreenRouteArgs> {
+  AvailableVehiclesScreenRoute({
+    Key? key,
+    required BookingResponseEntity job,
+    List<PageRouteInfo>? children,
+  }) : super(
           AvailableVehiclesScreenRoute.name,
+          args: AvailableVehiclesScreenRouteArgs(
+            key: key,
+            job: job,
+          ),
           initialChildren: children,
         );
 
   static const String name = 'AvailableVehiclesScreenRoute';
 
-  static const PageInfo<void> page = PageInfo<void>(name);
+  static const PageInfo<AvailableVehiclesScreenRouteArgs> page =
+      PageInfo<AvailableVehiclesScreenRouteArgs>(name);
+}
+
+class AvailableVehiclesScreenRouteArgs {
+  const AvailableVehiclesScreenRouteArgs({
+    this.key,
+    required this.job,
+  });
+
+  final Key? key;
+
+  final BookingResponseEntity job;
+
+  @override
+  String toString() {
+    return 'AvailableVehiclesScreenRouteArgs{key: $key, job: $job}';
+  }
 }
 
 /// generated route for
@@ -245,16 +278,41 @@ class DriverScreenRoute extends PageRouteInfo<void> {
 
 /// generated route for
 /// [GenerateNewJobScreen]
-class GenerateNewJobScreenRoute extends PageRouteInfo<void> {
-  const GenerateNewJobScreenRoute({List<PageRouteInfo>? children})
-      : super(
+class GenerateNewJobScreenRoute
+    extends PageRouteInfo<GenerateNewJobScreenRouteArgs> {
+  GenerateNewJobScreenRoute({
+    Key? key,
+    required BookingResponseEntity job,
+    List<PageRouteInfo>? children,
+  }) : super(
           GenerateNewJobScreenRoute.name,
+          args: GenerateNewJobScreenRouteArgs(
+            key: key,
+            job: job,
+          ),
           initialChildren: children,
         );
 
   static const String name = 'GenerateNewJobScreenRoute';
 
-  static const PageInfo<void> page = PageInfo<void>(name);
+  static const PageInfo<GenerateNewJobScreenRouteArgs> page =
+      PageInfo<GenerateNewJobScreenRouteArgs>(name);
+}
+
+class GenerateNewJobScreenRouteArgs {
+  const GenerateNewJobScreenRouteArgs({
+    this.key,
+    required this.job,
+  });
+
+  final Key? key;
+
+  final BookingResponseEntity job;
+
+  @override
+  String toString() {
+    return 'GenerateNewJobScreenRouteArgs{key: $key, job: $job}';
+  }
 }
 
 /// generated route for

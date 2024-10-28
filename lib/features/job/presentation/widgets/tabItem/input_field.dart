@@ -8,7 +8,7 @@ class MyInputField extends StatelessWidget {
   final Widget? widget;
   final TextEditingController? controller;
   const MyInputField({
-    Key? key,
+    super.key,
     required this.title,
     required this.hint,
     this.widget,
@@ -18,7 +18,7 @@ class MyInputField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        margin: EdgeInsets.only(top: 16),
+        margin: const EdgeInsets.only(top: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

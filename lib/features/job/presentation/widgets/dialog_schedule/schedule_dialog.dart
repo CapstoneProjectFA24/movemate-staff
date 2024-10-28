@@ -8,9 +8,9 @@ class ScheduleDialog extends StatefulWidget {
   final Function(DateTime) onDateTimeSelected;
 
   const ScheduleDialog({
-    Key? key,
+    super.key,
     required this.onDateTimeSelected,
-  }) : super(key: key);
+  });
 
   @override
   State<ScheduleDialog> createState() => _ScheduleDialogState();

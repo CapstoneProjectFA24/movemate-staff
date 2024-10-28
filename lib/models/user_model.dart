@@ -70,7 +70,7 @@ class UserModel {
     return UserModel(
       id: id ?? this.id,
       email: email ?? this.email,
-      roleName: roleName ?? this.roleName,
+      roleName: roleName ?? roleName,
       tokens: tokens ?? this.tokens,
       fcmToken: fcmToken ?? this.fcmToken,
       userTokens: userTokens ?? this.userTokens,

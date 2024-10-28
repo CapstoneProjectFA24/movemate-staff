@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
+import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/service_entity.dart';
 import 'package:movemate_staff/features/job/presentation/controllers/booking_controller/booking_controller.dart';
 import 'package:movemate_staff/features/job/presentation/providers/booking_provider.dart';
@@ -27,8 +28,11 @@ import 'package:movemate_staff/utils/extensions/scroll_controller.dart';
 
 @RoutePage()
 class AvailableVehiclesScreen extends HookConsumerWidget {
-  const AvailableVehiclesScreen({super.key});
-
+  const AvailableVehiclesScreen({
+    super.key,
+    required this.job,
+  });
+  final BookingResponseEntity job;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final size = MediaQuery.sizeOf(context);
@@ -44,7 +48,7 @@ class AvailableVehiclesScreen extends HookConsumerWidget {
         final result = await ref
             .read(bookingControllerProvider.notifier)
             .getVehicle(model, context);
-        return result.map((e) => e as ServiceEntity).toList();
+        return result.map((e) => e).toList();
       },
       initialPagingModel: PagingModel(
         searchContent: "1",
@@ -52,17 +56,19 @@ class AvailableVehiclesScreen extends HookConsumerWidget {
       context: context,
     );
 
-    // useEffect(() {
-    //   scrollController.onScrollEndsListener(fetchResult.loadMore);
-    //   return scrollController.dispose;
-    // }, const []);
+    // try {
+    //   print("(AvailableVehiclesScreen) fetchResult job: ${job?.id}");
+    //   print(
+    //       "(AvailableVehiclesScreen) fetchResult job - serviceId: ${job?.bookingDetails.first.serviceId}");
+    // } catch (e) {
+    //   print("lỗi rồi $e");
+    // }
 
     useEffect(() {
       scrollController.onScrollEndsListener(fetchResult.loadMore);
+
       return null;
     }, const []);
-
-    // final selectedService = useState<ServiceEntity?>(null);
 
     return Scaffold(
       appBar: CustomAppBar(
@@ -76,6 +82,7 @@ class AvailableVehiclesScreen extends HookConsumerWidget {
           SizedBox(height: size.height * 0.02),
           Expanded(
             child: VehicleList(
+              job: job,
               state: state,
               fetchResult: fetchResult,
               scrollController: scrollController,

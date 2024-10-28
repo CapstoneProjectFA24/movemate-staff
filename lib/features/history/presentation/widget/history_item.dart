@@ -11,8 +11,8 @@ class HistoryItem extends StatelessWidget {
     required this.museums,
     required this.archives,
     required this.tourDuration,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

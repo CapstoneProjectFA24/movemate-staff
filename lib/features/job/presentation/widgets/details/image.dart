@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 class ImageContainer extends StatelessWidget {
   final String imageUrl;
 
-  ImageContainer({required this.imageUrl});
+  const ImageContainer({super.key, required this.imageUrl});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: 70,
       height: 70,
-      margin: EdgeInsets.only(right: 5),
+      margin: const EdgeInsets.only(right: 5),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         // overflow: BoxOverflow.hidden,
@@ -29,12 +29,12 @@ class ImageContainer extends StatelessWidget {
             top: 5,
             right: 5,
             child: Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Color(0xFFFF4D97),
                 shape: BoxShape.circle,
               ),
-              padding: EdgeInsets.all(5),
-              child: Icon(
+              padding: const EdgeInsets.all(5),
+              child: const Icon(
                 Icons.favorite,
                 color: Colors.white,
                 size: 12,

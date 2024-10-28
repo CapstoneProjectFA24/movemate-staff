@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_enities.dart';
+import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/service_entity.dart';
 import 'package:movemate_staff/features/job/presentation/providers/booking_provider.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/vehicles/vehicle_card.dart';
@@ -8,24 +9,22 @@ import 'package:movemate_staff/utils/commons/widgets/empty_box.dart';
 import 'package:movemate_staff/utils/commons/widgets/home_shimmer.dart';
 import 'package:movemate_staff/utils/commons/widgets/no_more_content.dart';
 
-
 // vehicle_list.dart
 class VehicleList extends StatelessWidget {
   final dynamic state;
   final dynamic fetchResult;
   final ScrollController scrollController;
-  // final ValueNotifier<ServiceEntity?> selectedService;
   final BookingNotifier bookingNotifier;
   final Booking bookingState;
-
+  final BookingResponseEntity job;
   const VehicleList({
     super.key,
     required this.state,
     required this.fetchResult,
     required this.scrollController,
-    // required this.selectedService,
     required this.bookingNotifier,
     required this.bookingState,
+    required this.job,
   });
 
   @override
@@ -39,6 +38,12 @@ class VehicleList extends StatelessWidget {
         child: EmptyBox(title: 'Các phương tiện đều bận'),
       );
     }
+    try {
+      print(
+          "(VehicleList) fetchResult job - serviceId: ${job?.bookingDetails.first.serviceId}");
+    } catch (e) {
+      print("lỗi rồi $e");
+    }
     return ListView.builder(
       itemCount: fetchResult.items.length + 1,
       physics: const AlwaysScrollableScrollPhysics(),
@@ -50,21 +55,23 @@ class VehicleList extends StatelessWidget {
           }
           return fetchResult.isLastPage ? const NoMoreContent() : Container();
         }
-        // final service = fetchResult.items[index];
         final service = fetchResult.items[index] as ServiceEntity;
+
         return GestureDetector(
           onTap: () {
-            print("Xe được chọn là: ${service.name}");
-            print("Xe được chọn là: ${service.id}");
+            print("service name được chọn là: ${service.name}");
+            print("service được chọn là: ${service.id}");
             print("Xe được chọn là: ${service.truckCategory?.id}");
-            // selectedService.value = service;
+
             bookingNotifier.updateSelectedVehicle(service);
           },
           child: VehicleCard(
             service: service,
-            // isSelected: selectedService.value?.id == service.id,
             isSelected: bookingState.selectedVehicle?.truckCategory?.id ==
                 service.truckCategory?.id,
+            isDefaultSelected: job?.bookingDetails
+                    .any((detail) => detail.serviceId == service.id) ??
+                false,
           ),
         );
       },

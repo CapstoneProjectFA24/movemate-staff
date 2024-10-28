@@ -92,6 +92,7 @@ class BookingController extends _$BookingController {
         request: request,
       );
       getVehicles = response.payload;
+      // print("object: ${getVehicles}");
     });
 
     if (state.hasError) {
@@ -126,8 +127,7 @@ class BookingController extends _$BookingController {
     List<ServicesPackageEntity> servicePackages = [];
 
     state = const AsyncLoading();
-    final bookingRepository =
-        ref.read(bookingRepositoryProvider);
+    final bookingRepository = ref.read(bookingRepositoryProvider);
     final authRepository = ref.read(authRepositoryProvider);
     final user = await SharedPreferencesUtils.getInstance('user_token');
 
@@ -163,5 +163,4 @@ class BookingController extends _$BookingController {
     }
     return servicePackages;
   }
-
 }

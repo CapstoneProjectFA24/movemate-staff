@@ -22,7 +22,7 @@ enum BookingDetailStatusType {
 
 extension ConvertBookingDetailStatus on String {
   BookingDetailStatusType toBookingDetailTypeEnum() {
-    switch (this.toUpperCase()) {
+    switch (toUpperCase()) {
       case 'WAITING':
         return BookingDetailStatusType.waiting;
       case 'ASSIGNED':

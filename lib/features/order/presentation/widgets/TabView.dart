@@ -14,7 +14,7 @@ Widget buildTabView() {
             color: Colors.orange.withOpacity(0.1), // Màu bóng
             spreadRadius: 2, // Độ lan tỏa
             blurRadius: 5, // Độ mờ
-            offset: Offset(0, 2), // Vị trí bóng
+            offset: const Offset(0, 2), // Vị trí bóng
           ),
         ],
       ),
@@ -23,14 +23,14 @@ Widget buildTabView() {
           Container(
             decoration: BoxDecoration(
               color: Colors.orange[700],
-              borderRadius: BorderRadius.vertical(
+              borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(10)), // Bo tròn cho Container
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.1), // Màu bóng
                   spreadRadius: 2, // Độ lan tỏa
                   blurRadius: 5, // Độ mờ
-                  offset: Offset(0, 2), // Vị trí bóng
+                  offset: const Offset(0, 2), // Vị trí bóng
                 ),
               ],
             ),

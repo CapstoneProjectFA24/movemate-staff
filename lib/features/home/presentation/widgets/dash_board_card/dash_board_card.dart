@@ -7,7 +7,7 @@ class DashboardCard extends StatelessWidget {
   final String description;
   final VoidCallback onTap; // Hàm callback khi bấm vào thẻ
 
-  const DashboardCard({
+  const DashboardCard({super.key, 
     required this.icon,
     required this.color,
     required this.title,

@@ -9,7 +9,9 @@ import 'package:movemate_staff/features/job/data/model/response/services_fee_sys
 import 'package:movemate_staff/features/job/data/model/response/services_package_response.dart';
 import 'package:movemate_staff/features/job/data/model/response/services_response.dart';
 import 'package:movemate_staff/features/job/data/remotes/booking_source.dart';
+import 'package:movemate_staff/features/job/domain/entities/house_type_entity.dart';
 import 'package:movemate_staff/features/job/domain/repositories/service_booking_repository.dart';
+import 'package:movemate_staff/features/test/domain/entities/house_entities.dart';
 import 'package:movemate_staff/models/request/paging_model.dart';
 import 'package:movemate_staff/models/response/success_model.dart';
 import 'package:movemate_staff/utils/constants/api_constant.dart';
@@ -34,13 +36,17 @@ class BookingRepositoryImpl extends RemoteBaseRepository
   }
 
   @override
-  Future<HouseTypeResponse> getHouseDetails({
+  Future<HouseEntities> getHouseDetails({
     required String accessToken,
     required int id,
   }) async {
+    // print("repo log $id");
     return getDataOf(
       request: () => _bookingSource.getHouseDetails(
-          APIConstants.contentType, accessToken, id),
+        APIConstants.contentType,
+        accessToken,
+        id,
+      ),
     );
   }
 
@@ -147,7 +153,7 @@ class BookingRepositoryImpl extends RemoteBaseRepository
     required int id,
   }) async {
     print("repo log ${request.toJson()}");
-    print("repo log ${id}");
+    print("repo log $id");
 
     return getDataOf(
       request: () => _bookingSource.updateCreateScheduleReview(

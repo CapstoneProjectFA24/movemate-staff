@@ -8,13 +8,13 @@ import '../../../constants/asset_constant.dart';
 
 class PhoneInput extends HookConsumerWidget {
   const PhoneInput({
-    Key? key,
+    super.key,
     required this.textController,
     required this.hintText,
     required this.hintTextLable,
     required this.onValidate,
     required this.autoFocus,
-  }) : super(key: key);
+  });
 
   final TextEditingController textController;
   final String Function(String val) onValidate;

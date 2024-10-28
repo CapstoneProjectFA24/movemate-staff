@@ -4,6 +4,10 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
+import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
+import 'package:movemate_staff/features/job/presentation/screen/vehicles_screen/vehicles_available_screen.dart';
+import 'package:movemate_staff/features/job/presentation/widgets/button_next/confirmation_button_sheet.dart'
+    as confirm_button_sheet;
 
 import 'package:movemate_staff/features/job/presentation/widgets/function/popup.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/function/image.dart';
@@ -13,13 +17,20 @@ import 'package:movemate_staff/features/job/presentation/widgets/function/text_i
 import 'package:movemate_staff/utils/commons/widgets/app_bar.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
 import 'package:animate_do/animate_do.dart';
+import 'package:movemate_staff/utils/enums/enums_export.dart';
 
 @RoutePage()
 class GenerateNewJobScreen extends HookConsumerWidget {
-  const GenerateNewJobScreen({super.key});
-
+  const GenerateNewJobScreen({
+    super.key,
+    required this.job,
+  });
+  final BookingResponseEntity job;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final status = job.status.toBookingTypeEnum();
+    print("(GenerateNewJobScreen)  job: ${job.id}");
+
     return Scaffold(
       appBar: const CustomAppBar(
         backgroundColor: AssetsConstants.primaryMain,
@@ -53,6 +64,7 @@ class GenerateNewJobScreen extends HookConsumerWidget {
                       // Date/Time Input Field
                       buildLabel("Ngày/ giờ"),
                       buildTextInput(
+                        defaultValue: job.createdAt,
                         hintText: "Chọn ngày/ giờ",
                         icon: Icons.calendar_today,
                       ),
@@ -60,6 +72,7 @@ class GenerateNewJobScreen extends HookConsumerWidget {
                       // Start Location Input Field
                       buildLabel("Địa điểm bắt đầu chuyển"),
                       buildTextInput(
+                        defaultValue: job.pickupAddress,
                         hintText: "Địa điểm",
                         icon: Icons.location_on,
                       ),
@@ -67,6 +80,7 @@ class GenerateNewJobScreen extends HookConsumerWidget {
                       // End Location Input Field
                       buildLabel("Địa điểm chuyển đến"),
                       buildTextInput(
+                        defaultValue: job.deliveryAddress,
                         hintText: "Địa điểm",
                         icon: Icons.location_on,
                       ),
@@ -74,7 +88,7 @@ class GenerateNewJobScreen extends HookConsumerWidget {
                       // House Type Dropdown
                       buildLabel("Loại nhà"),
                       buildDropdown(
-                        items: ['Nhà riêng'],
+                        items: ['${job.houseTypeId}'],
                         icon: Icons.arrow_drop_down,
                       ),
                       const SizedBox(height: 16),
@@ -169,59 +183,18 @@ class GenerateNewJobScreen extends HookConsumerWidget {
                         ),
                         context: context,
                         builder: (BuildContext context) {
-                          return Container(
-                            height: 400,
-                            decoration: const BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.vertical(
-                                top: Radius.circular(20),
-                              ),
-                            ),
-                            child: Column(
-                              children: [
-                                Container(
-                                  margin: const EdgeInsets.only(top: 8),
-                                  width: 80,
-                                  height: 5,
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey,
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                ),
-                                FadeInUp(
-                                  child: const Padding(
-                                    padding: EdgeInsets.only(top: 38.0),
-                                    child: Text(
-                                      "Bạn có muốn check thông tin lại thêm lần nữa không",
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                ),
-                                FadeInUp(
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(top: 18.0),
-                                    child: Center(
-                                      child: ElevatedButton(
-                                        child: Text("Xác Nhận "),
-                                        onPressed: () {
-                                          context.router.push(
-                                              const AvailableVehiclesScreenRoute());
-                                        },
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor:
-                                              AssetsConstants.primaryMain,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const Spacer(),
-                              ],
-                            ),
+                          return confirm_button_sheet.ConfirmationBottomSheet(
+                            job: job,
+                            onConfirm: () {
+                              // context.router
+                              //     .push(AvailableVehiclesScreenRoute(job: job));
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        AvailableVehiclesScreen(job: job)),
+                              );
+                            },
                           );
                         },
                       );

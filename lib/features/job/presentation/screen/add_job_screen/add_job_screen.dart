@@ -13,12 +13,14 @@ import 'package:movemate_staff/utils/constants/asset_constant.dart';
 
 @RoutePage()
 class AddJobScreen extends StatefulWidget {
+  const AddJobScreen({super.key});
+
   @override
   State<AddJobScreen> createState() => _AddJobScreenState();
 }
 
 class _AddJobScreenState extends State<AddJobScreen> {
-  DateTime _selectedDay = DateTime.now();
+  final DateTime _selectedDay = DateTime.now();
   DateTime focusedDay = DateTime.now();
   Map<DateTime, List<Task>> tasksByDay = {};
   List<Map<String, String>> participants = [];
@@ -107,7 +109,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
                   selectedPriority = priority;
                 }),
                 _buildParticipants(),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 _buildCreateTaskButton(() {
                   _addTask(
                     titleController.text,
@@ -128,7 +130,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
 
   Widget _buildHeader() {
     return FadeInLeft(
-      child: Row(
+      child: const Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Icon(Icons.arrow_back),
@@ -143,7 +145,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
   }
 
   _getDateFromUser() async {
-    DateTime? _pickerDate = await showDatePicker(
+    DateTime? pickerDate = await showDatePicker(
         context: context,
         initialDate: DateTime.now(),
         firstDate: DateTime(2015),
@@ -187,13 +189,13 @@ class _AddJobScreenState extends State<AddJobScreen> {
 
   Widget _buildTimeInput(String label, TextEditingController controller) {
     return FadeInUp(
-      child: Container(
+      child: SizedBox(
         width: 140,
         child: TextField(
           controller: controller,
           decoration: InputDecoration(
             labelText: label,
-            suffixIcon: Icon(Icons.access_time),
+            suffixIcon: const Icon(Icons.access_time),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
             ),
@@ -223,7 +225,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
                 child: Center(
                   child: Text(
                     priority,
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
@@ -245,7 +247,7 @@ class _AddJobScreenState extends State<AddJobScreen> {
           ),
         ),
         onPressed: onCreate,
-        child: Center(
+        child: const Center(
           child: Text(
             '+ Create Task',
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),

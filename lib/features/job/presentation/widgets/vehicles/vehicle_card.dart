@@ -6,11 +6,13 @@ import 'package:movemate_staff/utils/constants/asset_constant.dart';
 class VehicleCard extends StatelessWidget {
   final ServiceEntity service;
   final bool isSelected;
+  final bool isDefaultSelected;
 
   const VehicleCard({
     super.key,
     required this.service,
     required this.isSelected,
+    this.isDefaultSelected = false,
   });
 
   @override
@@ -20,12 +22,12 @@ class VehicleCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: isSelected
+        color: isSelected || isDefaultSelected
             ? AssetsConstants.primaryLight.withOpacity(0.2)
             : AssetsConstants.whiteColor,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isSelected
+          color: isSelected || isDefaultSelected
               ? AssetsConstants.primaryDark
               : AssetsConstants.greyColor.shade300,
           width: 2,
@@ -137,7 +139,7 @@ class VehicleCard extends StatelessWidget {
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (isSelected)
+              if (isSelected || isDefaultSelected)
                 const Icon(
                   Icons.check_circle,
                   color: AssetsConstants.primaryDark,

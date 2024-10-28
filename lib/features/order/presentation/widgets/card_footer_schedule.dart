@@ -18,12 +18,12 @@ import 'package:flutter/material.dart';
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text('Tạo lịch hẹn', style: TextStyle(color: Colors.white)),
+          const Text('Tạo lịch hẹn', style: TextStyle(color: Colors.white)),
           CircleAvatar(
             radius: 20,
             backgroundColor: Colors.orange[700],
             child:
-                Text('+', style: TextStyle(color: Colors.white, fontSize: 24)),
+                const Text('+', style: TextStyle(color: Colors.white, fontSize: 24)),
           ),
         ],
       ),

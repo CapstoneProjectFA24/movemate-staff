@@ -131,7 +131,7 @@ class BookingScreenService extends HookConsumerWidget {
         onPlacePress: () {
           showConfirmationDialog();
         },
-        buttonText: 'Đặt đơn',
+        buttonText: 'Cập nhật',
         // priceLabel: 'Tổng giá',
         onConfirm: () {
           Navigator.pop(context);
@@ -140,4 +140,6 @@ class BookingScreenService extends HookConsumerWidget {
       ),
     );
   }
+
+  
 }

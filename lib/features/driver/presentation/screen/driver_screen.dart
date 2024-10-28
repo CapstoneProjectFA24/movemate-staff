@@ -5,6 +5,8 @@ import 'package:movemate_staff/utils/constants/asset_constant.dart';
 
 @RoutePage()
 class DriverScreen extends StatelessWidget {
+  const DriverScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,7 +32,7 @@ class DriverScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SectionTitle(title: 'Nearest Driver'),
-              DriverCard(
+              const DriverCard(
                 name: 'Ramesh Kumar',
                 distance: '200 Meters',
                 imageUrl:
@@ -65,7 +67,7 @@ class DriverScreen extends StatelessWidget {
 class SectionTitle extends StatelessWidget {
   final String title;
 
-  const SectionTitle({required this.title});
+  const SectionTitle({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +87,7 @@ class DriverCard extends StatelessWidget {
   final String imageUrl;
   final String rating;
 
-  const DriverCard({
+  const DriverCard({super.key, 
     required this.name,
     required this.distance,
     required this.imageUrl,
@@ -220,6 +222,8 @@ class DriverCard extends StatelessWidget {
 }
 
 class SearchBar extends StatelessWidget {
+  const SearchBar({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Row(

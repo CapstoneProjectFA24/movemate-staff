@@ -5,7 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 class AddTaskButton extends StatelessWidget {
   final VoidCallback onPressed;
 
-  AddTaskButton({required this.onPressed});
+  const AddTaskButton({super.key, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -14,12 +14,12 @@ class AddTaskButton extends StatelessWidget {
       child: FadeInUp(
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            shape: CircleBorder(),
-            padding: EdgeInsets.all(16),
+            shape: const CircleBorder(),
+            padding: const EdgeInsets.all(16),
             backgroundColor: Colors.green,
           ),
           onPressed: onPressed,
-          child: FaIcon(
+          child: const FaIcon(
             FontAwesomeIcons.plus,
             color: Colors.white,
             size: 24,

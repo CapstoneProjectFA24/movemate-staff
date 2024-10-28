@@ -10,7 +10,7 @@ class JobCard extends StatelessWidget {
   final BookingResponseEntity job;
   final VoidCallback onCallback;
 
-  JobCard({
+  const JobCard({
     super.key,
     required this.onCallback,
     required this.job,
@@ -20,10 +20,10 @@ class JobCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return FadeInUp(
       child: Container(
-        padding: EdgeInsets.only(left: 15, right: 15, bottom: 15),
-        margin: EdgeInsets.only(bottom: 20),
+        padding: const EdgeInsets.only(left: 15, right: 15, bottom: 15),
+        margin: const EdgeInsets.only(bottom: 20),
         decoration: BoxDecoration(
-          border: Border.all(color: Color(0xFFFF7F50)),
+          border: Border.all(color: const Color(0xFFFF7F50)),
           borderRadius: BorderRadius.circular(10),
           color: Colors.white,
         ),
@@ -66,13 +66,13 @@ class JobCard extends StatelessWidget {
                       ),
                       Container(
                         padding:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                            const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(5),
                         ),
                         child: Text(
                           job.status,
-                          style: TextStyle(color: Colors.white, fontSize: 12),
+                          style: const TextStyle(color: Colors.white, fontSize: 12),
                         ),
                       ),
                     ],
@@ -80,30 +80,30 @@ class JobCard extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             // Job Details
             Row(
               children: [
-                Icon(Icons.location_on, color: Colors.red),
-                SizedBox(width: 5),
+                const Icon(Icons.location_on, color: Colors.red),
+                const SizedBox(width: 5),
                 Expanded(
                   child: Text(
                     job.pickupAddress,
-                    style: TextStyle(fontSize: 14),
+                    style: const TextStyle(fontSize: 14),
                     overflow: TextOverflow.ellipsis,
                   ),
                 )
               ],
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             // Job Actions
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFFFE4E1),
-                    foregroundColor: Color(0xFFFF4500),
+                    backgroundColor: const Color(0xFFFFE4E1),
+                    foregroundColor: const Color(0xFFFF4500),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(5), // Bo tròn góc
                     ),
@@ -111,11 +111,11 @@ class JobCard extends StatelessWidget {
                   onPressed: () {
                     // Chat action
                   },
-                  child: Text('Chat'),
+                  child: const Text('Chat'),
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFFF4500),
+                    backgroundColor: const Color(0xFFFF4500),
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(5), // Bo tròn góc

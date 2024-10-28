@@ -6,8 +6,12 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/features/job/data/model/request/reviewer_time_request.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
+import 'package:movemate_staff/features/job/domain/entities/house_type_entity.dart';
+import 'package:movemate_staff/features/job/presentation/controllers/house_type_controller/house_type_controller.dart';
 import 'package:movemate_staff/features/job/presentation/controllers/reviewer_update_controller/reviewer_update_controller.dart';
 import 'package:movemate_staff/features/job/presentation/screen/add_job_screen/add_job_screen.dart';
+import 'package:movemate_staff/features/job/presentation/screen/generate_new_job_screen/generate_new_job_screen.dart';
+import 'package:movemate_staff/features/job/presentation/widgets/button_next/confirmation_button_sheet.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/address.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/booking_code.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/column.dart';
@@ -20,11 +24,21 @@ import 'package:movemate_staff/features/job/presentation/widgets/details/section
 import 'package:movemate_staff/features/job/presentation/widgets/details/summary.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/dialog_schedule/schedule_dialog.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/tabItem/input_field.dart';
+import 'package:movemate_staff/features/test/domain/entities/house_entities.dart';
+import 'package:movemate_staff/models/request/paging_model.dart';
+import 'package:movemate_staff/models/response/success_model.dart';
+import 'package:movemate_staff/utils/commons/functions/api_utils.dart';
 import 'package:movemate_staff/utils/commons/widgets/app_bar.dart';
 import 'package:movemate_staff/utils/commons/widgets/form_input/label_text.dart';
+import 'package:movemate_staff/features/job/presentation/widgets/button_next/confirmation_button_sheet.dart'
+    as confirm_button_sheet;
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:intl/intl.dart';
+// Hooks
+import 'package:movemate_staff/hooks/use_fetch.dart';
+import 'package:movemate_staff/utils/enums/enums_export.dart';
+
 // Nhập khẩu các widget đã tạo
 
 @RoutePage()
@@ -49,6 +63,9 @@ class JobDetailsScreen extends HookConsumerWidget {
     void toggleDropdown1() {
       isExpanded1.value = !isExpanded1.value; // Toggle the dropdown state
     }
+
+    final status = job.status.toBookingTypeEnum();
+    print("Status: $status");
 
     return Scaffold(
       appBar: CustomAppBar(
@@ -84,55 +101,56 @@ class JobDetailsScreen extends HookConsumerWidget {
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(right: 18.0),
-                        child: SizedBox(
-                          height: 50,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (context) => ScheduleDialog(
-                                  onDateTimeSelected:
-                                      (DateTime selectedDateTime) async {
-                                    // Xử lý datetime đã chọn
-                                    final scheduledAt = selectedDateTime;
-                                    print('Selected datetime: $scheduledAt');
-                                    // TODO: Xử lý logic ở đây (ví dụ: gọi API)
+                      if (status == BookingStatusType.assigned)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 18.0),
+                          child: SizedBox(
+                            height: 50,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => ScheduleDialog(
+                                    onDateTimeSelected:
+                                        (DateTime selectedDateTime) async {
+                                      // Xử lý datetime đã chọn
+                                      final scheduledAt = selectedDateTime;
+                                      print('Selected datetime: $scheduledAt');
+                                      // TODO: Xử lý logic ở đây (ví dụ: gọi API)
 
-                                    final reviewerUpdateController = ref.read(
-                                        reviewerUpdateControllerProvider
-                                            .notifier);
+                                      final reviewerUpdateController = ref.read(
+                                          reviewerUpdateControllerProvider
+                                              .notifier);
 
-                                    await reviewerUpdateController
-                                        .updateCreateScheduleReview(
-                                      request: ReviewerTimeRequest(
-                                        reviewAt: selectedDateTime,
-                                      ),
-                                      id: job.id,
-                                      context: context,
-                                    );
-                                  },
+                                      await reviewerUpdateController
+                                          .updateCreateScheduleReview(
+                                        request: ReviewerTimeRequest(
+                                          reviewAt: selectedDateTime,
+                                        ),
+                                        id: job.id,
+                                        context: context,
+                                      );
+                                    },
+                                  ),
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AssetsConstants.primaryDark,
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 20),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AssetsConstants.primaryDark,
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 20),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
                               ),
-                            ),
-                            child: const LabelText(
-                              content: "Tạo lịch hẹn",
-                              size: 16,
-                              fontWeight: FontWeight.bold,
-                              color: AssetsConstants.whiteColor,
+                              child: const LabelText(
+                                content: "Tạo lịch hẹn",
+                                size: 16,
+                                fontWeight: FontWeight.bold,
+                                color: AssetsConstants.whiteColor,
+                              ),
                             ),
                           ),
                         ),
-                      ),
                     ],
                   )),
               const SizedBox(height: 50),
@@ -176,9 +194,10 @@ class JobDetailsScreen extends HookConsumerWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                'Loại nhà : ',
-                                style: TextStyle(fontWeight: FontWeight.bold),
+                              Text(
+                                'Loại nhà : ${job.houseTypeId} ',
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold),
                               ),
                               const SizedBox(height: 10),
                               buildAddressRow(
@@ -440,92 +459,45 @@ class JobDetailsScreen extends HookConsumerWidget {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: () {
-                        showModalBottomSheet(
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.vertical(
-                              top: Radius.circular(20),
-                            ),
-                          ),
-                          context: context,
-                          builder: (BuildContext context) {
-                            return Container(
-                              height: 400,
-                              decoration: const BoxDecoration(
-                                color: Colors.white,
+                      if (status != BookingStatusType.assigned)
+                        ElevatedButton(
+                          onPressed: () {
+                            showModalBottomSheet(
+                              shape: const RoundedRectangleBorder(
                                 borderRadius: BorderRadius.vertical(
                                   top: Radius.circular(20),
                                 ),
                               ),
-                              child: Column(
-                                children: [
-                                  Container(
-                                    margin: const EdgeInsets.only(top: 8),
-                                    width: 80,
-                                    height: 5,
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey,
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                  ),
-                                  FadeInUp(
-                                    child: const Padding(
-                                      padding: EdgeInsets.only(top: 38.0),
-                                      child: Text(
-                                        "Bạn có muốn check thông tin lại thêm lần nữa không",
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                  ),
-                                  FadeInUp(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(top: 18.0),
-                                      child: Center(
-                                        child: ElevatedButton(
-                                          child: Text("Xác Nhận "),
-                                          onPressed: () {
-                                            context.router.push(
-                                                const GenerateNewJobScreenRoute());
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor:
-                                                AssetsConstants.primaryMain,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const Spacer(),
-                                ],
-                              ),
+                              context: context,
+                              builder: (BuildContext context) {
+                                return confirm_button_sheet
+                                    .ConfirmationBottomSheet(
+                                  job: job,
+                                  onConfirm: () {
+                                    context.router.push(
+                                        GenerateNewJobScreenRoute(job: job));
+                                  },
+                                );
+                              },
                             );
                           },
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFFF9900),
-                        padding: const EdgeInsets.symmetric(vertical: 15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFFF9900),
+                            padding: const EdgeInsets.symmetric(vertical: 15),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            fixedSize: const Size(400, 50),
+                          ),
+                          child: const Text(
+                            'Xác nhận',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
-                        fixedSize: const Size(400, 50),
-                      ),
-                      child: const Text(
-                        'Xác nhận',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  
-                  
                   ],
                 ),
               ),

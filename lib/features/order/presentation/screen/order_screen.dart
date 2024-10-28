@@ -7,6 +7,8 @@ import 'package:movemate_staff/features/order/presentation/widgets/card_footer_s
 
 @RoutePage()
 class OrderScreen extends StatelessWidget {
+  const OrderScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,7 +17,7 @@ class OrderScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(FontAwesomeIcons.arrowLeft, color: Colors.black),
+          icon: const Icon(FontAwesomeIcons.arrowLeft, color: Colors.black),
           onPressed: () {
             context.router.pop();
           },

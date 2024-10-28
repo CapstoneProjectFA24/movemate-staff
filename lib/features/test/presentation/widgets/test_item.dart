@@ -11,10 +11,10 @@ import '../../../../../utils/constants/asset_constant.dart';
 // gpt nhá generate UI =))
 class TestItem extends HookConsumerWidget {
   const TestItem({
-    Key? key,
+    super.key,
     required this.test,
     required this.onCallback,
-  }) : super(key: key);
+  });
 
   final HouseEntities test;
   final VoidCallback onCallback;
