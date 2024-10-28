@@ -10,6 +10,7 @@ import 'package:movemate_staff/features/job/domain/entities/service_entity.dart'
 import 'package:movemate_staff/features/job/domain/entities/services_fee_system_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/services_package_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/sub_service_entity.dart';
+import 'package:movemate_staff/features/test/domain/entities/house_entities.dart';
 
 class BookingNotifier extends StateNotifier<Booking> {
   BookingNotifier()
@@ -17,6 +18,20 @@ class BookingNotifier extends StateNotifier<Booking> {
           totalPrice: 0.0,
           additionalServiceQuantities: [],
         ));
+
+  void updateBookingDetails(BookingResponseEntity job) {
+    state = state.copyWith(
+      numberOfRooms: int.tryParse(job.roomNumber),
+      numberOfFloors: int.tryParse(job.floorsNumber),
+      bookingDate: DateTime.parse(job.createdAt),
+      houseType: HouseEntities(
+        id: job.houseTypeId,
+        // thêm các thông tin house type khác nếu có
+        description: "",
+        name: job.houseTypeId.toString(),
+      ),
+    );
+  }
 
   void updateSubServiceQuantity(SubServiceEntity subService, int newQuantity) {
     // Đảm bảo newQuantity không vượt quá quantityMax
@@ -164,7 +179,7 @@ class BookingNotifier extends StateNotifier<Booking> {
     calculateAndUpdateTotalPrice();
   }
 
-  void updateHouseType(HouseTypeEntity? houseType) {
+  void updateHouseType(HouseEntities? houseType) {
     state = state.copyWith(houseType: houseType);
   }
 
@@ -283,6 +298,11 @@ class BookingNotifier extends StateNotifier<Booking> {
     state = Booking(
       totalPrice: 0.0,
       additionalServiceQuantities: [],
+      // selectedSubServices: [],
+      servicesFeeList: [],
+      selectedVehicle: null,
+      // selectedPackages: [],
+      // livingRoomImages: [],
     );
   }
 }

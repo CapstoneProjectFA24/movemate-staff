@@ -1,12 +1,10 @@
 import 'dart:convert';
 
 import 'package:movemate_staff/features/job/domain/entities/house_type_entity.dart';
-
-
-
+import 'package:movemate_staff/features/test/domain/entities/house_entities.dart';
 
 class HouseTypeResponse {
-  final List<HouseTypeEntity> payload;
+  final List<HouseEntities> payload;
 
   HouseTypeResponse({
     required this.payload,
@@ -21,12 +19,11 @@ class HouseTypeResponse {
   }
 
   factory HouseTypeResponse.fromMap(Map<String, dynamic> map) {
-  return HouseTypeResponse(
-    payload: List<HouseTypeEntity>.from(
-        map['payload']?.map((x) => HouseTypeEntity.fromMap(x))),
-  );
-}
-
+    return HouseTypeResponse(
+      payload: List<HouseEntities>.from(
+          map['payload']?.map((x) => HouseEntities.fromMap(x))),
+    );
+  }
 
   String toJson() => json.encode(toMap());
 

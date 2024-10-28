@@ -33,7 +33,7 @@ class BookingController extends _$BookingController {
   ) async {
     List<HouseEntities> houses = [];
 
-    state = const AsyncLoading();
+    // state = const AsyncLoading();
     final houseTypeRepository = ref.read(bookingRepositoryProvider);
     final authRepository = ref.read(authRepositoryProvider);
     final user = await SharedPreferencesUtils.getInstance('user_token');
@@ -43,8 +43,8 @@ class BookingController extends _$BookingController {
         accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
         request: request,
       );
-      // houses = response.payload;
-      print(houses.length);
+      houses = response.payload;
+      // print("controller ${houses.length}");
     });
 
     if (state.hasError) {
@@ -65,8 +65,6 @@ class BookingController extends _$BookingController {
         }
 
         if (statusCode != StatusCodeType.unauthentication.type) {}
-
-        await getHouse(request, context);
       });
     }
 
@@ -79,43 +77,41 @@ class BookingController extends _$BookingController {
   ) async {
     HouseEntities? houseDetails;
 
-    state = const AsyncLoading();
+    // state = const AsyncLoading();
     final houseTypeRepository = ref.read(bookingRepositoryProvider);
     final authRepository = ref.read(authRepositoryProvider);
     final user = await SharedPreferencesUtils.getInstance('user_token');
 
-    state = await AsyncValue.guard(
-      () async {
-        houseDetails = await houseTypeRepository.getHouseDetails(
-          id: id,
-          accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
-        );
-      },
-    );
-    print("houseDetails ${houseDetails?.id}");
+    final result = await AsyncValue.guard(() async {
+      final response = await houseTypeRepository.getHouseDetails(
+        accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
+        id: id,
+      );
+      // print("controller ${response.payload}");
+      return response.payload;
+    });
 
-    if (state.hasError) {
-      state = await AsyncValue.guard(() async {
-        final statusCode = (state.error as DioException).onStatusDio();
-        await handleAPIError(
-          statusCode: statusCode,
-          stateError: state.error!,
-          context: context,
-          onCallBackGenerateToken: () async => await reGenerateToken(
-            authRepository,
-            context,
-          ),
-        );
+    state = result;
 
-        if (state.hasError) {
-          await ref.read(signInControllerProvider.notifier).signOut(context);
-        }
+    if (result.hasError) {
+      final statusCode = (result.error as DioException).onStatusDio();
+      await handleAPIError(
+        statusCode: statusCode,
+        stateError: result.error!,
+        context: context,
+        onCallBackGenerateToken: () async => await reGenerateToken(
+          authRepository,
+          context,
+        ),
+      );
 
-        if (statusCode != StatusCodeType.unauthentication.type) {}
-
-        await getHouseDetails(id, context);
-      });
+      if (statusCode != StatusCodeType.unauthentication.type) {}
     }
-    return houseDetails;
+
+    if (result is AsyncData<HouseEntities>) {
+      return result.value;
+    } else {
+      return null;
+    }
   }
 }

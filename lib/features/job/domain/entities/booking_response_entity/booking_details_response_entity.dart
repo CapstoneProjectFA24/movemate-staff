@@ -4,6 +4,8 @@ class BookingDetailsResponseEntity {
   final int bookingId;
   final int quantity;
   final String? price;
+  final String? status;
+  final String? type;
   final String? isQuantity;
   final String? description;
 
@@ -12,6 +14,8 @@ class BookingDetailsResponseEntity {
     required this.serviceId,
     required this.bookingId,
     required this.quantity,
+    this.status,
+    this.type,
     this.price,
     this.isQuantity,
     this.description,
@@ -23,6 +27,8 @@ class BookingDetailsResponseEntity {
       serviceId: json['serviceId'] ?? 0,
       bookingId: json['bookingId'] ?? 0,
       quantity: json['quantity'] ?? 0,
+      status: json['status']?.toString(),
+      type: json['type']?.toString(),
       price: json['price']?.toString(),
       isQuantity: json['isQuantity']?.toString(),
       description: json['description'],
@@ -35,6 +41,8 @@ class BookingDetailsResponseEntity {
       'serviceId': serviceId,
       'bookingId': bookingId,
       'quantity': quantity,
+      'status': status,
+      'type': type,
       'price': price,
       'isQuantity': isQuantity,
       'description': description,

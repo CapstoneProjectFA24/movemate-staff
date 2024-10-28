@@ -4,6 +4,7 @@ import 'package:movemate_staff/features/job/data/model/request/booking_requesst.
 import 'package:movemate_staff/features/job/data/model/request/reviewer_status_request.dart';
 import 'package:movemate_staff/features/job/data/model/request/reviewer_time_request.dart';
 import 'package:movemate_staff/features/job/data/model/response/booking_response.dart';
+import 'package:movemate_staff/features/job/data/model/response/house_type_obj_response.dart';
 import 'package:movemate_staff/features/job/data/model/response/house_type_response.dart';
 import 'package:movemate_staff/features/job/data/model/response/services_fee_system_response.dart';
 import 'package:movemate_staff/features/job/data/model/response/services_package_response.dart';
@@ -36,11 +37,11 @@ class BookingRepositoryImpl extends RemoteBaseRepository
   }
 
   @override
-  Future<HouseEntities> getHouseDetails({
+  Future<HouseTypeObjResponse> getHouseDetails({
     required String accessToken,
     required int id,
   }) async {
-    // print("repo log $id");
+    print("repo log $id");
     return getDataOf(
       request: () => _bookingSource.getHouseDetails(
         APIConstants.contentType,

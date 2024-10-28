@@ -39,8 +39,8 @@ class VehicleList extends StatelessWidget {
       );
     }
     try {
-      print(
-          "(VehicleList) fetchResult job - serviceId: ${job?.bookingDetails.first.serviceId}");
+      // print(
+      //     "(VehicleList) fetchResult job - serviceIdP: ${job?.bookingDetails.first.serviceId}");
     } catch (e) {
       print("lỗi rồi $e");
     }
@@ -69,9 +69,11 @@ class VehicleList extends StatelessWidget {
             service: service,
             isSelected: bookingState.selectedVehicle?.truckCategory?.id ==
                 service.truckCategory?.id,
-            isDefaultSelected: job?.bookingDetails
-                    .any((detail) => detail.serviceId == service.id) ??
-                false,
+            // isSelected: job?.bookingDetails
+            //         .any((detail) => detail.serviceId == service.id) ?? false,
+            // isDefaultSelected: job?.bookingDetails
+            //         .any((detail) => detail.serviceId == service.id) ??
+            //     false,
           ),
         );
       },

@@ -56,13 +56,14 @@ class AvailableVehiclesScreen extends HookConsumerWidget {
       context: context,
     );
 
-    // try {
-    //   print("(AvailableVehiclesScreen) fetchResult job: ${job?.id}");
-    //   print(
-    //       "(AvailableVehiclesScreen) fetchResult job - serviceId: ${job?.bookingDetails.first.serviceId}");
-    // } catch (e) {
-    //   print("lỗi rồi $e");
-    // }
+    try {
+      // print(
+      //     ' (AvailableVehiclesScreen) Direct print - Selected numberOfFloors: ${bookingState.numberOfFloors}');
+      // print(
+      //     ' (AvailableVehiclesScreen) Direct print - Selected numberOfRooms: ${bookingState.numberOfRooms}');
+    } catch (e) {
+      print("lỗi rồi $e");
+    }
 
     useEffect(() {
       scrollController.onScrollEndsListener(fetchResult.loadMore);

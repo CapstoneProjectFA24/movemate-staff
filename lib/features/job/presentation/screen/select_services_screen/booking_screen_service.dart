@@ -106,18 +106,8 @@ class BookingScreenService extends HookConsumerWidget {
 
                   const SizedBox(height: 16),
 
-                  // RoundTripCheckbox(
-                  //   isRoundTrip: bookingState.isRoundTrip,
-                  //   onChanged: (value) {
-                  //     bookingNotifier.updateRoundTrip(value ?? false);
-                  //     bookingNotifier.calculateAndUpdateTotalPrice();
-                  //   },
-                  // ),
                   const SizedBox(height: 16),
-                  // const ChecklistSection(),
                   const SizedBox(height: 16),
-                  // const NotesSection(),
-                  // const DailyUIChallengeCard(),
                 ],
               ),
             ),

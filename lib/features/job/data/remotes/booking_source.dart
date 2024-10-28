@@ -3,6 +3,7 @@
 import 'package:dio/dio.dart';
 import 'package:movemate_staff/features/job/data/model/request/reviewer_status_request.dart';
 import 'package:movemate_staff/features/job/data/model/request/reviewer_time_request.dart';
+import 'package:movemate_staff/features/job/data/model/response/house_type_obj_response.dart';
 import 'package:movemate_staff/features/test/domain/entities/house_entities.dart';
 import 'package:movemate_staff/models/response/success_model.dart';
 import 'package:retrofit/retrofit.dart';
@@ -33,7 +34,7 @@ abstract class BookingSource {
     @Header(APIConstants.authHeader) String accessToken,
   );
   @GET('${APIConstants.get_house_types}/{id}')
-  Future<HttpResponse<HouseEntities>> getHouseDetails(
+  Future<HttpResponse<HouseTypeObjResponse>> getHouseDetails(
     @Header(APIConstants.contentHeader) String contentType,
     @Header(APIConstants.authHeader) String accessToken,
     @Path('id') int id,

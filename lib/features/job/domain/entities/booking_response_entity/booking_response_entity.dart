@@ -1,17 +1,18 @@
 import 'dart:convert';
 
+import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/assignment_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_details_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_trackers_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/fee_details_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/service_details_response_entity.dart';
-
-
+import 'package:movemate_staff/features/job/domain/entities/house_type_entity.dart';
 
 class BookingResponseEntity {
   final int id;
   final int userId;
   final int houseTypeId;
-  final int deposit;
+  final HouseTypeEntity? houseType;
+  final double deposit;
   final String status;
   final String pickupAddress;
   final String pickupPoint;
@@ -20,8 +21,8 @@ class BookingResponseEntity {
   final bool isUseBox;
   final String? boxType;
   final String estimatedDistance;
-  final int total;
-  final int totalReal;
+  final double total;
+  final double totalReal;
   final String? estimatedDeliveryTime;
   final bool isDeposited;
   final bool isBonus;
@@ -44,15 +45,17 @@ class BookingResponseEntity {
   final bool isPorter;
   final bool isRoundTrip;
   final String note;
-  final int totalFee;
+  final double totalFee;
   final String? feeInfo;
   final bool isReviewOnline;
   final List<BookingDetailsResponseEntity> bookingDetails;
   final List<BookingTrackersResponseEntity> bookingTrackers;
   final List<ServiceDetailsResponseEntity> serviceDetails;
   final List<FeeDetailsResponseEntity> feeDetails;
+  final List<AssignmentsResponseEntity> assignments; // Thêm trường này
 
   BookingResponseEntity({
+    this.houseType,
     required this.id,
     required this.userId,
     required this.houseTypeId,
@@ -96,6 +99,7 @@ class BookingResponseEntity {
     required this.bookingTrackers,
     required this.serviceDetails,
     required this.feeDetails,
+    required this.assignments,
   });
 
   factory BookingResponseEntity.fromMap(Map<String, dynamic> json) {
@@ -103,7 +107,10 @@ class BookingResponseEntity {
       id: json['id'] ?? 0,
       userId: json['userId'] ?? 0,
       houseTypeId: json['houseTypeId'] ?? 0,
-      deposit: json['deposit'] ?? 0,
+      // deposit: json['deposit'] ?? 0,
+      deposit: (json['deposit'] is double)
+          ? json['deposit']
+          : (json['deposit'] ?? 0).toDouble(),
       status: json['status'] ?? '',
       pickupAddress: json['pickupAddress'] ?? '',
       pickupPoint: json['pickupPoint'] ?? '',
@@ -112,8 +119,15 @@ class BookingResponseEntity {
       isUseBox: json['isUseBox'] ?? false,
       boxType: json['boxType'],
       estimatedDistance: json['estimatedDistance'] ?? '',
-      total: json['total'] ?? 0,
-      totalReal: json['totalReal'] ?? 0,
+      // total: json['total'] ?? 0,
+      // totalReal: json['totalReal'] ?? 0,
+      total: (json['total'] is double)
+          ? json['total']
+          : (json['total'] ?? 0).toDouble(),
+      totalReal: (json['totalReal'] is double)
+          ? json['totalReal']
+          : (json['totalReal'] ?? 0).toDouble(),
+
       estimatedDeliveryTime: json['estimatedDeliveryTime'],
       isDeposited: json['isDeposited'] ?? false,
       isBonus: json['isBonus'] ?? false,
@@ -136,7 +150,10 @@ class BookingResponseEntity {
       isPorter: json['isPorter'] ?? false,
       isRoundTrip: json['isRoundTrip'] ?? false,
       note: json['note'] ?? '',
-      totalFee: json['totalFee'] ?? 0,
+      // totalFee: json['totalFee'] ?? 0,
+      totalFee: (json['totalFee'] is double)
+          ? json['totalFee']
+          : (json['totalFee'] ?? 0).toDouble(),
       feeInfo: json['feeInfo'],
       isReviewOnline: json['isReviewOnline'] ?? false,
       bookingDetails: (json['bookingDetails'] as List<dynamic>?)
@@ -153,6 +170,10 @@ class BookingResponseEntity {
           [],
       feeDetails: (json['feeDetails'] as List<dynamic>?)
               ?.map((e) => FeeDetailsResponseEntity.fromMap(e))
+              .toList() ??
+          [],
+      assignments: (json['assignments'] as List<dynamic>?)
+              ?.map((e) => AssignmentsResponseEntity.fromMap(e))
               .toList() ??
           [],
     );
@@ -203,7 +224,105 @@ class BookingResponseEntity {
       'bookingTrackers': bookingTrackers.map((e) => e.toMap()).toList(),
       'serviceDetails': serviceDetails.map((e) => e.toMap()).toList(),
       'feeDetails': feeDetails.map((e) => e.toMap()).toList(),
+      'assignments': assignments.map((e) => e.toMap()).toList(),
     };
+  }
+
+  BookingResponseEntity copyWith({
+    int? id,
+    int? userId,
+    int? houseTypeId,
+    HouseTypeEntity? houseType,
+    double? deposit,
+    String? status,
+    String? pickupAddress,
+    String? pickupPoint,
+    String? deliveryAddress,
+    String? deliveryPoint,
+    bool? isUseBox,
+    String? boxType,
+    String? estimatedDistance,
+    double? total,
+    double? totalReal,
+    String? estimatedDeliveryTime,
+    bool? isDeposited,
+    bool? isBonus,
+    bool? isReported,
+    String? reportedReason,
+    bool? isDeleted,
+    String? createdAt,
+    String? createdBy,
+    String? updatedAt,
+    String? updatedBy,
+    String? review,
+    String? bonus,
+    String? typeBooking,
+    String? estimatedAcreage,
+    String? roomNumber,
+    String? floorsNumber,
+    bool? isManyItems,
+    bool? isCancel,
+    String? cancelReason,
+    bool? isPorter,
+    bool? isRoundTrip,
+    String? note,
+    double? totalFee,
+    String? feeInfo,
+    bool? isReviewOnline,
+    List<BookingDetailsResponseEntity>? bookingDetails,
+    List<BookingTrackersResponseEntity>? bookingTrackers,
+    List<ServiceDetailsResponseEntity>? serviceDetails,
+    List<FeeDetailsResponseEntity>? feeDetails,
+    List<AssignmentsResponseEntity>? assignments,
+  }) {
+    return BookingResponseEntity(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      houseTypeId: houseTypeId ?? this.houseTypeId,
+      houseType: houseType ?? this.houseType,
+      deposit: deposit ?? this.deposit,
+      status: status ?? this.status,
+      pickupAddress: pickupAddress ?? this.pickupAddress,
+      pickupPoint: pickupPoint ?? this.pickupPoint,
+      deliveryAddress: deliveryAddress ?? this.deliveryAddress,
+      deliveryPoint: deliveryPoint ?? this.deliveryPoint,
+      isUseBox: isUseBox ?? this.isUseBox,
+      boxType: boxType ?? this.boxType,
+      estimatedDistance: estimatedDistance ?? this.estimatedDistance,
+      total: total ?? this.total,
+      totalReal: totalReal ?? this.totalReal,
+      estimatedDeliveryTime:
+          estimatedDeliveryTime ?? this.estimatedDeliveryTime,
+      isDeposited: isDeposited ?? this.isDeposited,
+      isBonus: isBonus ?? this.isBonus,
+      isReported: isReported ?? this.isReported,
+      reportedReason: reportedReason ?? this.reportedReason,
+      isDeleted: isDeleted ?? this.isDeleted,
+      createdAt: createdAt ?? this.createdAt,
+      createdBy: createdBy ?? this.createdBy,
+      updatedAt: updatedAt ?? this.updatedAt,
+      updatedBy: updatedBy ?? this.updatedBy,
+      review: review ?? this.review,
+      bonus: bonus ?? this.bonus,
+      typeBooking: typeBooking ?? this.typeBooking,
+      estimatedAcreage: estimatedAcreage ?? this.estimatedAcreage,
+      roomNumber: roomNumber ?? this.roomNumber,
+      floorsNumber: floorsNumber ?? this.floorsNumber,
+      isManyItems: isManyItems ?? this.isManyItems,
+      isCancel: isCancel ?? this.isCancel,
+      cancelReason: cancelReason ?? this.cancelReason,
+      isPorter: isPorter ?? this.isPorter,
+      isRoundTrip: isRoundTrip ?? this.isRoundTrip,
+      note: note ?? this.note,
+      totalFee: totalFee ?? this.totalFee,
+      feeInfo: feeInfo ?? this.feeInfo,
+      isReviewOnline: isReviewOnline ?? this.isReviewOnline,
+      bookingDetails: bookingDetails ?? this.bookingDetails,
+      bookingTrackers: bookingTrackers ?? this.bookingTrackers,
+      serviceDetails: serviceDetails ?? this.serviceDetails,
+      feeDetails: feeDetails ?? this.feeDetails,
+      assignments: assignments ?? this.assignments,
+    );
   }
 
   String toJson() => json.encode(toMap());

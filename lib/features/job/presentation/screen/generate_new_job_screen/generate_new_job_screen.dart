@@ -5,19 +5,25 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
-import 'package:movemate_staff/features/job/presentation/screen/vehicles_screen/vehicles_available_screen.dart';
+import 'package:movemate_staff/features/job/domain/entities/house_type_entity.dart';
+import 'package:movemate_staff/features/job/presentation/controllers/house_type_controller/house_type_controller.dart';
+import 'package:movemate_staff/features/job/presentation/providers/booking_provider.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/button_next/confirmation_button_sheet.dart'
     as confirm_button_sheet;
-
 import 'package:movemate_staff/features/job/presentation/widgets/function/popup.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/function/image.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/function/label.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/function/number_input.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/function/text_input.dart';
+import 'package:movemate_staff/features/test/domain/entities/house_entities.dart';
+import 'package:movemate_staff/hooks/use_fetch_obj.dart';
+import 'package:movemate_staff/models/request/paging_model.dart';
 import 'package:movemate_staff/utils/commons/widgets/app_bar.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:movemate_staff/utils/enums/enums_export.dart';
+// Hooks
+import 'package:movemate_staff/hooks/use_fetch.dart';
 
 @RoutePage()
 class GenerateNewJobScreen extends HookConsumerWidget {
@@ -28,15 +34,62 @@ class GenerateNewJobScreen extends HookConsumerWidget {
   final BookingResponseEntity job;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final status = job.status.toBookingTypeEnum();
-    print("(GenerateNewJobScreen)  job: ${job.id}");
+    final bookingNotifier = ref.read(bookingProvider.notifier);
+    final bookingState = ref.watch(bookingProvider);
+    print("Job House Type ID: ${job.houseTypeId}");
+
+    // Truy cập BookingController
+    final bookingController = ref.read(bookingControllerProvider.notifier);
+
+    // Sử dụng useFetchObject để gọi getHouseDetails
+    final useFetchResult = useFetchObject<HouseEntities>(
+      function: (context) =>
+          bookingController.getHouseDetails(job.houseTypeId, context),
+      context: context,
+    );
+    final houseTypeById = useFetchResult.data;
+    print("House Type by ID: ${houseTypeById?.toJson()}");
+
+    useEffect(() {
+      if (houseTypeById != null) {
+        // Cập nhật vào provider
+        try {
+          bookingNotifier.updateHouseType(houseTypeById);
+          // Print để kiểm tra
+          print('Updated House Type in Provider:');
+          print('ID: ${bookingState.houseType?.id}');
+          print('Name: ${bookingState.houseType?.name}');
+          print('Description: ${bookingState.houseType?.description}');
+        } catch (e) {
+          print('Error updating house type in provider');
+        }
+      }
+      return null;
+    }, [houseTypeById]);
+
+    final fetchResult = useFetch<HouseEntities>(
+      function: (model, context) => bookingController.getHouse(model, context),
+      initialPagingModel: PagingModel(),
+      context: context,
+    );
+    final houseTypeEntities = fetchResult.items;
+    final houseTypes = houseTypeEntities.map((e) => e.name).toList();
+
+    print("House Type name : ${houseTypeById?.name}");
+    print("House Type  : ${houseTypeById?.toJson()}");
+    print("House Type  all  : ${houseTypes}");
 
     return Scaffold(
-      appBar: const CustomAppBar(
+      appBar: CustomAppBar(
         backgroundColor: AssetsConstants.primaryMain,
         backButtonColor: AssetsConstants.whiteColor,
         showBackButton: true,
         title: "Cập nhật Thông tin đơn hàng",
+        onBackButtonPressed: () {
+          bookingNotifier.reset();
+          print("bookingState reset: ${bookingState.selectedVehicle}");
+          Navigator.of(context).pop();
+        },
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -88,7 +141,9 @@ class GenerateNewJobScreen extends HookConsumerWidget {
                       // House Type Dropdown
                       buildLabel("Loại nhà"),
                       buildDropdown(
-                        items: ['${job.houseTypeId}'],
+                        items: [
+                          '${job.houseTypeId == houseTypeById?.id ? houseTypeById?.name : "Chọn loại nhà"}'
+                        ],
                         icon: Icons.arrow_drop_down,
                       ),
                       const SizedBox(height: 16),
@@ -175,6 +230,7 @@ class GenerateNewJobScreen extends HookConsumerWidget {
                   padding: const EdgeInsets.only(bottom: 16.0),
                   child: ElevatedButton(
                     onPressed: () {
+                      final updatedBooking = ref.read(bookingProvider);
                       showModalBottomSheet(
                         shape: const RoundedRectangleBorder(
                           borderRadius: BorderRadius.vertical(
@@ -184,16 +240,19 @@ class GenerateNewJobScreen extends HookConsumerWidget {
                         context: context,
                         builder: (BuildContext context) {
                           return confirm_button_sheet.ConfirmationBottomSheet(
-                            job: job,
+                            // job: job,
+                            job: job.copyWith(
+                              roomNumber:
+                                  updatedBooking.numberOfRooms?.toString(),
+                              floorsNumber:
+                                  updatedBooking.numberOfFloors?.toString(),
+                              createdAt:
+                                  updatedBooking.bookingDate?.toIso8601String(),
+                              houseTypeId: updatedBooking.houseType?.id,
+                            ),
                             onConfirm: () {
-                              // context.router
-                              //     .push(AvailableVehiclesScreenRoute(job: job));
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        AvailableVehiclesScreen(job: job)),
-                              );
+                              context.router
+                                  .push(AvailableVehiclesScreenRoute(job: job));
                             },
                           );
                         },
