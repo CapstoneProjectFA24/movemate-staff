@@ -319,7 +319,6 @@ class BookingNotifier extends StateNotifier<Booking> {
       notes: "",
       isRoundTrip: false,
       // Additional fields for your booking form
-      
     );
   }
 }

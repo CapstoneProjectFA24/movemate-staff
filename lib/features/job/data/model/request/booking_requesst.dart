@@ -228,3 +228,154 @@ class BookingRequest {
     );
   }
 }
+// PUT apidata
+// {
+//   "truckCategoryId": 0,
+//   "houseTypeId": 0,
+//   "pickupAddress": "string",
+//   "pickupPoint": "string",
+//   "deliveryAddress": "string",
+//   "deliveryPoint": "string",
+//   "estimatedDistance": "string",
+//   "isRoundTrip": true,
+//   "typeBooking": "string",
+//   "roomNumber": "string",
+//   "floorsNumber": "string",
+//   "note": "string",
+//   "bookingAt": "2024-10-28T20:00:25.775Z",
+//   "bookingDetails": [
+//     {
+//       "serviceId": 0,
+//       "quantity": 0
+//     }
+//   ]
+// }
+
+class BookingUpdateRequest {
+  final int truckCategoryId;
+  final int houseTypeId;
+  final String pickupAddress;
+  final String pickupPoint;
+  final String deliveryAddress;
+  final String deliveryPoint;
+  final String estimatedDistance;
+  final bool isRoundTrip;
+  final String typeBooking;
+  final String roomNumber;
+  final String floorsNumber;
+  final String note;
+  final String bookingAt;
+  final List<ServiceDetail> bookingDetails;
+
+  BookingUpdateRequest({
+    required this.truckCategoryId,
+    required this.houseTypeId,
+    required this.pickupAddress,
+    required this.pickupPoint,
+    required this.deliveryAddress,
+    required this.deliveryPoint,
+    required this.estimatedDistance,
+    required this.isRoundTrip,
+    required this.typeBooking,
+    required this.roomNumber,
+    required this.floorsNumber,
+    required this.note,
+    required this.bookingAt,
+    required this.bookingDetails,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'truckCategoryId': truckCategoryId,
+      'houseTypeId': houseTypeId,
+      'pickupAddress': pickupAddress,
+      'pickupPoint': pickupPoint,
+      'deliveryAddress': deliveryAddress,
+      'deliveryPoint': deliveryPoint,
+      'estimatedDistance': estimatedDistance,
+      'isRoundTrip': isRoundTrip,
+      'typeBooking': typeBooking,
+      'roomNumber': roomNumber,
+      'floorsNumber': floorsNumber,
+      'note': note,
+      'bookingAt': bookingAt,
+      'bookingDetails': bookingDetails.map((x) => x.toMap()).toList(),
+    };
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory BookingUpdateRequest.fromJson(String source) =>
+      BookingUpdateRequest.fromMap(json.decode(source));
+
+  factory BookingUpdateRequest.fromMap(Map<String, dynamic> map) {
+    return BookingUpdateRequest(
+      truckCategoryId: map['truckCategoryId'] ?? 0,
+      houseTypeId: map['houseTypeId'] ?? 1,
+      pickupAddress: map['pickupAddress'] ?? '',
+      pickupPoint: map['pickupPoint'] ?? '',
+      deliveryAddress: map['deliveryAddress'] ?? '',
+      deliveryPoint: map['deliveryPoint'] ?? '',
+      estimatedDistance: map['estimatedDistance'] ?? '0',
+      isRoundTrip: map['isRoundTrip'] ?? false,
+      typeBooking: map['typeBooking'] ?? '',
+      roomNumber: map['roomNumber'] ?? '',
+      floorsNumber: map['floorsNumber'] ?? '',
+      note: map['note'] ?? '',
+      bookingAt: map['bookingAt'] ?? '',
+      bookingDetails: map['bookingDetails'] != null
+          ? List<ServiceDetail>.from(
+              map['bookingDetails']?.map((x) => ServiceDetail.fromMap(x)))
+          : [],
+    );
+  }
+
+  // Phương thức xử lý để tạo BookingUpdateRequest từ một đối tượng Booking
+  factory BookingUpdateRequest.fromBookingUpdate(Booking booking) {
+    // Khởi tạo danh sách bookingDetails
+    List<ServiceDetail> bookingDetails = [];
+
+    // Thêm selectedSubServices vào bookingDetails
+    bookingDetails.addAll(booking.selectedSubServices.map((subService) {
+      return ServiceDetail(
+        serviceId: subService.id,
+        quantity: subService.quantity ?? 1,
+      );
+    }).toList());
+
+    // Thêm selectedPackages với số lượng vào bookingDetails
+    bookingDetails.addAll(booking.selectedPackages
+        .where((package) => package.quantity != null && package.quantity! > 0)
+        .map((package) {
+      return ServiceDetail(
+        serviceId: package.id,
+        quantity: package.quantity!,
+      );
+    }).toList());
+
+    // Chuyển đổi thời gian đặt chỗ sang định dạng ISO8601
+    String bookingAt = booking.bookingDate?.toIso8601String() ??
+        DateTime.now().add(Duration(days: 2)).toIso8601String();
+
+    return BookingUpdateRequest(
+      truckCategoryId: booking.selectedVehicle?.id ?? 0,
+      houseTypeId: booking.houseType?.id ?? 1,
+      pickupAddress: booking.pickUpLocation?.address ?? '',
+      pickupPoint: booking.pickUpLocation != null
+          ? '${booking.pickUpLocation!.latitude},${booking.pickUpLocation!.longitude}'
+          : '',
+      deliveryAddress: booking.dropOffLocation?.address ?? '',
+      deliveryPoint: booking.dropOffLocation != null
+          ? '${booking.dropOffLocation!.latitude},${booking.dropOffLocation!.longitude}'
+          : '',
+      estimatedDistance: '3', // Có thể tính toán dựa trên tọa độ
+      isRoundTrip: booking.isRoundTrip,
+      typeBooking: 'string', // Thiết lập typeBooking theo nhu cầu
+      roomNumber: (booking.numberOfRooms ?? 1).toString(),
+      floorsNumber: (booking.numberOfFloors ?? 1).toString(),
+      note: booking.notes ?? '',
+      bookingAt: bookingAt,
+      bookingDetails: bookingDetails,
+    );
+  }
+}

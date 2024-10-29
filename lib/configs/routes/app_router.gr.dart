@@ -32,9 +32,13 @@ abstract class _$AppRouter extends RootStackRouter {
       );
     },
     BookingScreenServiceRoute.name: (routeData) {
+      final args = routeData.argsAs<BookingScreenServiceRouteArgs>();
       return AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const BookingScreenService(),
+        child: BookingScreenService(
+          key: args.key,
+          job: args.job,
+        ),
       );
     },
     ContactScreenRoute.name: (routeData) {
@@ -236,16 +240,41 @@ class AvailableVehiclesScreenRouteArgs {
 
 /// generated route for
 /// [BookingScreenService]
-class BookingScreenServiceRoute extends PageRouteInfo<void> {
-  const BookingScreenServiceRoute({List<PageRouteInfo>? children})
-      : super(
+class BookingScreenServiceRoute
+    extends PageRouteInfo<BookingScreenServiceRouteArgs> {
+  BookingScreenServiceRoute({
+    Key? key,
+    required BookingResponseEntity job,
+    List<PageRouteInfo>? children,
+  }) : super(
           BookingScreenServiceRoute.name,
+          args: BookingScreenServiceRouteArgs(
+            key: key,
+            job: job,
+          ),
           initialChildren: children,
         );
 
   static const String name = 'BookingScreenServiceRoute';
 
-  static const PageInfo<void> page = PageInfo<void>(name);
+  static const PageInfo<BookingScreenServiceRouteArgs> page =
+      PageInfo<BookingScreenServiceRouteArgs>(name);
+}
+
+class BookingScreenServiceRouteArgs {
+  const BookingScreenServiceRouteArgs({
+    this.key,
+    required this.job,
+  });
+
+  final Key? key;
+
+  final BookingResponseEntity job;
+
+  @override
+  String toString() {
+    return 'BookingScreenServiceRouteArgs{key: $key, job: $job}';
+  }
 }
 
 /// generated route for

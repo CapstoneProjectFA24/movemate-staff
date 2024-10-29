@@ -48,6 +48,8 @@ class BookingResponseEntity {
   final double totalFee;
   final String? feeInfo;
   final bool isReviewOnline;
+  final String bookingAt; // Thêm trường bookingAt
+  final String? reviewAt; // Thêm trường reviewAt
   final List<BookingDetailsResponseEntity> bookingDetails;
   final List<BookingTrackersResponseEntity> bookingTrackers;
   final List<ServiceDetailsResponseEntity> serviceDetails;
@@ -95,6 +97,8 @@ class BookingResponseEntity {
     required this.totalFee,
     this.feeInfo,
     required this.isReviewOnline,
+    required this.bookingAt, // Thêm vào constructor
+    this.reviewAt, // Thêm vào constructor
     required this.bookingDetails,
     required this.bookingTrackers,
     required this.serviceDetails,
@@ -156,6 +160,8 @@ class BookingResponseEntity {
           : (json['totalFee'] ?? 0).toDouble(),
       feeInfo: json['feeInfo'],
       isReviewOnline: json['isReviewOnline'] ?? false,
+      bookingAt: json['bookingAt'] ?? '', // Thêm vào fromMap
+      reviewAt: json['reviewAt'],
       bookingDetails: (json['bookingDetails'] as List<dynamic>?)
               ?.map((e) => BookingDetailsResponseEntity.fromMap(e))
               .toList() ??
@@ -220,6 +226,8 @@ class BookingResponseEntity {
       'totalFee': totalFee,
       'feeInfo': feeInfo,
       'isReviewOnline': isReviewOnline,
+      'bookingAt': bookingAt, // Thêm vào toMap
+      'reviewAt': reviewAt, // Thêm vào toMap
       'bookingDetails': bookingDetails.map((e) => e.toMap()).toList(),
       'bookingTrackers': bookingTrackers.map((e) => e.toMap()).toList(),
       'serviceDetails': serviceDetails.map((e) => e.toMap()).toList(),
@@ -269,6 +277,8 @@ class BookingResponseEntity {
     double? totalFee,
     String? feeInfo,
     bool? isReviewOnline,
+    String? bookingAt, // Thêm vào copyWith
+    String? reviewAt, // Thêm vào copyWith
     List<BookingDetailsResponseEntity>? bookingDetails,
     List<BookingTrackersResponseEntity>? bookingTrackers,
     List<ServiceDetailsResponseEntity>? serviceDetails,
@@ -317,6 +327,8 @@ class BookingResponseEntity {
       totalFee: totalFee ?? this.totalFee,
       feeInfo: feeInfo ?? this.feeInfo,
       isReviewOnline: isReviewOnline ?? this.isReviewOnline,
+      bookingAt: bookingAt ?? this.bookingAt, // Thêm vào copyWith
+      reviewAt: reviewAt ?? this.reviewAt, // Thêm vào copyWith
       bookingDetails: bookingDetails ?? this.bookingDetails,
       bookingTrackers: bookingTrackers ?? this.bookingTrackers,
       serviceDetails: serviceDetails ?? this.serviceDetails,

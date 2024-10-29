@@ -4,6 +4,8 @@ import 'package:dio/dio.dart';
 import 'package:movemate_staff/features/job/data/model/request/reviewer_status_request.dart';
 import 'package:movemate_staff/features/job/data/model/request/reviewer_time_request.dart';
 import 'package:movemate_staff/features/job/data/model/response/house_type_obj_response.dart';
+import 'package:movemate_staff/features/job/data/model/response/update_booking_response.dart';
+import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/test/domain/entities/house_entities.dart';
 import 'package:movemate_staff/models/response/success_model.dart';
 import 'package:retrofit/retrofit.dart';
@@ -67,11 +69,12 @@ abstract class BookingSource {
     @Header(APIConstants.authHeader) String accessToken,
   );
 
-  @POST(APIConstants.post_booking_service)
-  Future<HttpResponse<BookingResponse>> postBookingservice(
-    @Body() BookingRequest request,
+  @PUT('${APIConstants.post_booking_service}/{id}')
+  Future<HttpResponse<UpdateBookingResponse>> postBookingservice(
+    @Body() BookingUpdateRequest request,
     @Header(APIConstants.contentHeader) String contentType,
     @Header(APIConstants.authHeader) String accessToken,
+    @Path('id') int id,
   );
   @GET('${APIConstants.bookings}/{id}')
   Future<HttpResponse<BookingResponse>> getBookingDetails(
@@ -95,7 +98,7 @@ abstract class BookingSource {
     @Header(APIConstants.contentHeader) String contentType,
     @Header(APIConstants.authHeader) String accessToken,
     @Body() ReviewerStatusRequest request,
-     @Path('id') int id,
+    @Path('id') int id,
   );
 
   @PUT('${APIConstants.reviewer_at}/{id}')
@@ -103,7 +106,7 @@ abstract class BookingSource {
     @Header(APIConstants.contentHeader) String contentType,
     @Header(APIConstants.authHeader) String accessToken,
     @Body() ReviewerTimeRequest request,
-     @Path('id') int id,
+    @Path('id') int id,
   );
 }
 

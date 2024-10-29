@@ -38,7 +38,7 @@ class GenerateNewJobScreen extends HookConsumerWidget {
     final bookingState = ref.watch(bookingProvider);
     final state = ref.watch(bookingControllerProvider);
     // print(state.isLoading ? "Loading" : "Not Loading");
-    print("Job House Type ID: ${job.houseTypeId}");
+    // print("Job House Type ID: ${job.houseTypeId}");
 
     // Truy cập BookingController
     final bookingController = ref.read(bookingControllerProvider.notifier);
@@ -50,13 +50,13 @@ class GenerateNewJobScreen extends HookConsumerWidget {
       context: context,
     );
     final houseTypeById = useFetchResult.data;
-    print('vinh log $houseTypeById');
+    // print('vinh log $houseTypeById');
 
     useEffect(() {
       if (houseTypeById != null) {
         // Cập nhật vào provider
         try {
-          bookingNotifier.updateHouseType(houseTypeById);
+          // bookingNotifier.updateHouseType(houseTypeById);
         } catch (e) {
           print('Error updating house type in provider');
         }

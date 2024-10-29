@@ -9,7 +9,9 @@ import 'package:movemate_staff/features/job/data/model/response/house_type_respo
 import 'package:movemate_staff/features/job/data/model/response/services_fee_system_response.dart';
 import 'package:movemate_staff/features/job/data/model/response/services_package_response.dart';
 import 'package:movemate_staff/features/job/data/model/response/services_response.dart';
+import 'package:movemate_staff/features/job/data/model/response/update_booking_response.dart';
 import 'package:movemate_staff/features/job/data/remotes/booking_source.dart';
+import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/house_type_entity.dart';
 import 'package:movemate_staff/features/job/domain/repositories/service_booking_repository.dart';
 import 'package:movemate_staff/features/test/domain/entities/house_entities.dart';
@@ -89,13 +91,14 @@ class BookingRepositoryImpl extends RemoteBaseRepository
   }
 
   @override
-  Future<BookingResponse> postBookingservice({
-    required BookingRequest request,
+  Future<UpdateBookingResponse> postBookingservice({
+    required BookingUpdateRequest request,
     required String accessToken,
+    required int id,
   }) {
     return getDataOf(
       request: () => _bookingSource.postBookingservice(
-          request, APIConstants.contentType, accessToken),
+          request, APIConstants.contentType, accessToken, id),
     );
   }
 

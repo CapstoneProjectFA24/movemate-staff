@@ -112,7 +112,7 @@ class AvailableVehiclesScreen extends HookConsumerWidget {
             // Đóng dialog chờ
             Navigator.of(context).pop();
 
-            context.router.push(const BookingScreenServiceRoute());
+            context.router.push(BookingScreenServiceRoute(job: job));
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(

@@ -29,6 +29,7 @@ class Booking {
   final bool isReviewOnline;
   final List<bool> checklistValues;
   final String notes;
+  final String typeBooking;
 
   // Booking select package
 
@@ -68,6 +69,7 @@ class Booking {
     this.isReviewOnline = false,
     List<bool>? checklistValues,
     this.notes = '',
+    this.typeBooking = '',
     this.servicesFeeList = const [],
     // Booking select packages
     this.selectedVehicle,
@@ -110,6 +112,7 @@ class Booking {
     bool? isReviewOnline,
     List<bool>? checklistValues,
     String? notes,
+    String? typeBooking,
     List<ServicesFeeSystemEntity>? servicesFeeList,
     // Booking select package
     ServiceEntity? selectedVehicle,
@@ -146,6 +149,7 @@ class Booking {
       isReviewOnline: isReviewOnline ?? this.isReviewOnline,
       checklistValues: checklistValues ?? this.checklistValues,
       notes: notes ?? this.notes,
+      typeBooking: typeBooking ?? this.typeBooking,
       servicesFeeList: servicesFeeList ?? this.servicesFeeList,
       // Booking select package
       selectedVehicle: selectedVehicle ?? this.selectedVehicle,

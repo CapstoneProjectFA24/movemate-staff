@@ -279,10 +279,11 @@ class _BookingSource implements BookingSource {
   }
 
   @override
-  Future<HttpResponse<BookingResponse>> postBookingservice(
-    BookingRequest request,
+  Future<HttpResponse<UpdateBookingResponse>> postBookingservice(
+    BookingUpdateRequest request,
     String contentType,
     String accessToken,
+    int id,
   ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -293,27 +294,28 @@ class _BookingSource implements BookingSource {
     _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     _data.addAll(request?.toMap() ?? <String, dynamic>{});
-    final _options = _setStreamType<HttpResponse<BookingResponse>>(Options(
-      method: 'POST',
+    final _options =
+        _setStreamType<HttpResponse<UpdateBookingResponse>>(Options(
+      method: 'PUT',
       headers: _headers,
       extra: _extra,
       contentType: contentType,
     )
-        .compose(
-          _dio.options,
-          '/bookings/register-booking',
-          queryParameters: queryParameters,
-          data: _data,
-        )
-        .copyWith(
-            baseUrl: _combineBaseUrls(
-          _dio.options.baseUrl,
-          baseUrl,
-        )));
+            .compose(
+              _dio.options,
+              '/bookings/reviewer/update-booking/${id}',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            )));
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late BookingResponse _value;
+    late UpdateBookingResponse _value;
     try {
-      _value = BookingResponse.fromMap(_result.data!);
+      _value = UpdateBookingResponse.fromMap(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;

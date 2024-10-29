@@ -17,7 +17,7 @@ class VehicleCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final truckCategory = service.truckCategory;
     // print('truckCategory: $truckCategory');
-    print('isSelected: $isSelected');
+    // print('isSelected: $isSelected');
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
       padding: const EdgeInsets.all(8),

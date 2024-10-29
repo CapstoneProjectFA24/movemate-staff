@@ -63,10 +63,10 @@ class VehicleList extends StatelessWidget {
             ? service.id == bookingState.selectedVehicle?.id
             : job.bookingDetails
                 .any((detail) => detail.serviceId == service.id);
-        print("Service ID: ${service.id}");
-        print(
-            "Booking Details Service IDs: ${job.bookingDetails.map((e) => e.serviceId).toList()}");
-        print("Is Service Selected: $isSelected");
+        // print("Service ID: ${service.id}");
+        // print(
+        //     "Booking Details Service IDs: ${job.bookingDetails.map((e) => e.serviceId).toList()}");
+        // print("Is Service Selected: $isSelected");
         return GestureDetector(
           onTap: () {
             print("service name được chọn là: ${service.name}");
