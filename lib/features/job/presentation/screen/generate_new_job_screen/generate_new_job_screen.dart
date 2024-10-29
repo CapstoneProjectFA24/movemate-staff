@@ -36,6 +36,8 @@ class GenerateNewJobScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final bookingNotifier = ref.read(bookingProvider.notifier);
     final bookingState = ref.watch(bookingProvider);
+    final state = ref.watch(bookingControllerProvider);
+    // print(state.isLoading ? "Loading" : "Not Loading");
     print("Job House Type ID: ${job.houseTypeId}");
 
     // Truy cập BookingController
@@ -48,18 +50,13 @@ class GenerateNewJobScreen extends HookConsumerWidget {
       context: context,
     );
     final houseTypeById = useFetchResult.data;
-    print("House Type by ID: ${houseTypeById?.toJson()}");
+    print('vinh log $houseTypeById');
 
     useEffect(() {
       if (houseTypeById != null) {
         // Cập nhật vào provider
         try {
           bookingNotifier.updateHouseType(houseTypeById);
-          // Print để kiểm tra
-          print('Updated House Type in Provider:');
-          print('ID: ${bookingState.houseType?.id}');
-          print('Name: ${bookingState.houseType?.name}');
-          print('Description: ${bookingState.houseType?.description}');
         } catch (e) {
           print('Error updating house type in provider');
         }
@@ -75,9 +72,9 @@ class GenerateNewJobScreen extends HookConsumerWidget {
     final houseTypeEntities = fetchResult.items;
     final houseTypes = houseTypeEntities.map((e) => e.name).toList();
 
-    print("House Type name : ${houseTypeById?.name}");
-    print("House Type  : ${houseTypeById?.toJson()}");
-    print("House Type  all  : ${houseTypes}");
+    // print("House Type name : ${houseTypeById?.name}");
+    // print("House Type  : ${houseTypeById?.toJson()}");
+    // print("House Type  all  : ${houseTypes}");
 
     return Scaffold(
       appBar: CustomAppBar(

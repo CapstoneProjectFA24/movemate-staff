@@ -298,11 +298,28 @@ class BookingNotifier extends StateNotifier<Booking> {
     state = Booking(
       totalPrice: 0.0,
       additionalServiceQuantities: [],
-      // selectedSubServices: [],
+      selectedSubServices: [],
       servicesFeeList: [],
       selectedVehicle: null,
-      // selectedPackages: [],
-      // livingRoomImages: [],
+      selectedPackages: [],
+      livingRoomImages: [],
+      bedroomImages: [],
+      diningRoomImages: [],
+      officeRoomImages: [],
+      bathroomImages: [],
+      checklistValues: [],
+      pickUpLocation: null,
+      dropOffLocation: null,
+      bookingDate: DateTime.now(),
+      isSelectingPickUp: false,
+      isReviewOnline: false,
+      houseType: null,
+      numberOfRooms: 0,
+      numberOfFloors: 0,
+      notes: "",
+      isRoundTrip: false,
+      // Additional fields for your booking form
+      
     );
   }
 }

@@ -44,6 +44,8 @@ class VehicleList extends StatelessWidget {
     } catch (e) {
       print("lỗi rồi $e");
     }
+    // Kiểm tra xem người dùng đã chọn vehicle mới chưa
+    bool hasUserSelection = bookingState.selectedVehicle != null;
     return ListView.builder(
       itemCount: fetchResult.items.length + 1,
       physics: const AlwaysScrollableScrollPhysics(),
@@ -57,6 +59,14 @@ class VehicleList extends StatelessWidget {
         }
         final service = fetchResult.items[index] as ServiceEntity;
 
+        bool isSelected = hasUserSelection
+            ? service.id == bookingState.selectedVehicle?.id
+            : job.bookingDetails
+                .any((detail) => detail.serviceId == service.id);
+        print("Service ID: ${service.id}");
+        print(
+            "Booking Details Service IDs: ${job.bookingDetails.map((e) => e.serviceId).toList()}");
+        print("Is Service Selected: $isSelected");
         return GestureDetector(
           onTap: () {
             print("service name được chọn là: ${service.name}");
@@ -65,16 +75,7 @@ class VehicleList extends StatelessWidget {
 
             bookingNotifier.updateSelectedVehicle(service);
           },
-          child: VehicleCard(
-            service: service,
-            isSelected: bookingState.selectedVehicle?.truckCategory?.id ==
-                service.truckCategory?.id,
-            // isSelected: job?.bookingDetails
-            //         .any((detail) => detail.serviceId == service.id) ?? false,
-            // isDefaultSelected: job?.bookingDetails
-            //         .any((detail) => detail.serviceId == service.id) ??
-            //     false,
-          ),
+          child: VehicleCard(service: service, isSelected: isSelected),
         );
       },
     );
