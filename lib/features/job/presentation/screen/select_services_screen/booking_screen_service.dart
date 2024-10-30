@@ -5,6 +5,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
+import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_details_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/services_package_entity.dart';
 import 'package:movemate_staff/features/job/presentation/controllers/booking_controller/booking_controller.dart';
@@ -36,6 +37,8 @@ class BookingScreenService extends HookConsumerWidget {
 
     final state = ref.watch(bookingControllerProvider);
     final double price = bookingState.totalPrice;
+    // Sử dụng một flag để track việc đã init chưa
+    final hasInitialized = useRef(false);
 
     final fetchResult = useFetch<ServicesPackageEntity>(
       function: (model, context) async {
@@ -49,12 +52,30 @@ class BookingScreenService extends HookConsumerWidget {
       ),
       context: context,
     );
-final service = job.bookingDetails.asMap().entries.map((e) {
-      final index = e.key;
-      final value = e.value;
-      return value;
-    }).toList();
-    
+
+    // Sử dụng useEffect để init data một lần duy nhất
+    useEffect(() {
+      if (!hasInitialized.value) {
+        hasInitialized.value = true;
+
+        // Sử dụng addPostFrameCallback để tránh update state trong build
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          syncData(job, fetchResult.items, bookingNotifier);
+        });
+      }
+      return null;
+    }, []);
+
+    // Theo dõi sự thay đổi của fetchResult.items
+    useEffect(() {
+      if (fetchResult.items.isNotEmpty && hasInitialized.value) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          syncData(job, fetchResult.items, bookingNotifier);
+        });
+      }
+      return null;
+    }, [fetchResult.items]);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Thông tin đặt hàng'),
@@ -193,5 +214,57 @@ final service = job.bookingDetails.asMap().entries.map((e) {
         // priceLabel: 'Tổng giá',
       ),
     );
+  }
+
+  void syncData(
+    BookingResponseEntity job,
+    List<ServicesPackageEntity> services,
+    BookingNotifier bookingNotifier,
+  ) {
+    // Reset state
+    bookingNotifier.reset();
+
+    // Sync services và sub-services
+    for (var service in services) {
+      // Tìm booking detail cho service
+      final serviceDetail = job.bookingDetails.firstWhere(
+        (detail) => detail.serviceId == service.id,
+        orElse: () => BookingDetailsResponseEntity(
+          id: 0,
+          serviceId: 0,
+          bookingId: 0,
+          quantity: 0,
+        ),
+      );
+
+      // Update service quantity nếu tìm thấy
+      if (serviceDetail.serviceId == service.id) {
+        bookingNotifier.updateServicePackageQuantity(
+          service,
+          serviceDetail.quantity,
+        );
+
+        // Sync sub-services
+        for (var subService in service.inverseParentService) {
+          final subServiceDetail = job.bookingDetails.firstWhere(
+            (detail) => detail.serviceId == subService.id,
+            orElse: () => BookingDetailsResponseEntity(
+              id: 0,
+              serviceId: 0,
+              bookingId: 0,
+              quantity: 0,
+            ),
+          );
+
+          // Update sub-service quantity nếu tìm thấy
+          if (subServiceDetail.serviceId == subService.id) {
+            bookingNotifier.updateSubServiceQuantity(
+              subService,
+              subServiceDetail.quantity,
+            );
+          }
+        }
+      }
+    }
   }
 }

@@ -2,6 +2,7 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_enities.dart';
+import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_details_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/house_type_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/image_data.dart';
@@ -33,15 +34,20 @@ class BookingNotifier extends StateNotifier<Booking> {
     );
   }
 
-  
+  // // Map để lưu trữ booking details tạm thời
+  // final Map<int, int> pendingBookingDetails = {};
+  // // Method để lưu trữ booking detail
+  // void storeBookingDetail(BookingDetailsResponseEntity detail) {
+  //   pendingBookingDetails[detail.serviceId] = detail.quantity;
+  // }
 
   void updateSubServiceQuantity(SubServiceEntity subService, int newQuantity) {
-    // Đảm bảo newQuantity không vượt quá quantityMax
     int finalQuantity = newQuantity;
     if (subService.quantityMax != null &&
         newQuantity > subService.quantityMax!) {
       finalQuantity = subService.quantityMax!;
     }
+
     List<SubServiceEntity> updatedSubServices =
         List.from(state.selectedSubServices);
 
@@ -49,21 +55,19 @@ class BookingNotifier extends StateNotifier<Booking> {
 
     if (index != -1) {
       if (finalQuantity > 0) {
-        // Update existing subService's quantity
         updatedSubServices[index] =
             updatedSubServices[index].copyWith(quantity: finalQuantity);
       } else {
-        // Remove subService if quantity is zero
         updatedSubServices.removeAt(index);
       }
     } else {
       if (finalQuantity > 0) {
-        // Add new subService with the specified quantity
         updatedSubServices.add(subService.copyWith(quantity: finalQuantity));
       }
     }
 
     state = state.copyWith(selectedSubServices: updatedSubServices);
+    calculateAndUpdateTotalPrice();
   }
 
   void updateServicesFeeQuantity(ServicesFeeSystemEntity fee, int newQuantity) {
@@ -101,7 +105,9 @@ class BookingNotifier extends StateNotifier<Booking> {
   }
 
   void updateServicePackageQuantity(
-      ServicesPackageEntity servicePackage, int newQuantity) {
+    ServicesPackageEntity servicePackage,
+    int newQuantity,
+  ) {
     List<ServicesPackageEntity> updatedPackages =
         List.from(state.selectedPackages);
 
@@ -109,23 +115,18 @@ class BookingNotifier extends StateNotifier<Booking> {
 
     if (index != -1) {
       if (newQuantity > 0) {
-        // Update existing package's quantity
         updatedPackages[index] =
             updatedPackages[index].copyWith(quantity: newQuantity);
       } else {
-        // Remove package if quantity is zero
         updatedPackages.removeAt(index);
       }
     } else {
       if (newQuantity > 0) {
-        // Add new package with specified quantity
         updatedPackages.add(servicePackage.copyWith(quantity: newQuantity));
       }
     }
 
     state = state.copyWith(selectedPackages: updatedPackages);
-
-    // Recalculate total price
     calculateAndUpdateTotalPrice();
   }
 
