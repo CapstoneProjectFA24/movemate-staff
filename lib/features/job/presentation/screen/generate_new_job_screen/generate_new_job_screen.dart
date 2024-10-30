@@ -15,6 +15,7 @@ import 'package:movemate_staff/features/job/presentation/widgets/function/image.
 import 'package:movemate_staff/features/job/presentation/widgets/function/label.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/function/number_input.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/function/text_input.dart';
+import 'package:movemate_staff/features/job/presentation/widgets/house_type/house_type_selection_modal.dart';
 import 'package:movemate_staff/features/test/domain/entities/house_entities.dart';
 import 'package:movemate_staff/hooks/use_fetch_obj.dart';
 import 'package:movemate_staff/models/request/paging_model.dart';
@@ -136,13 +137,46 @@ class GenerateNewJobScreen extends HookConsumerWidget {
                       ),
                       const SizedBox(height: 16),
                       // House Type Dropdown
-                      buildLabel("Loại nhà"),
-                      buildDropdown(
-                        items: [
-                          '${job.houseTypeId == houseTypeById?.id ? houseTypeById?.name : "Chọn loại nhà"}'
-                        ],
-                        icon: Icons.arrow_drop_down,
+                      // buildLabel("Loại nhà"),
+                      // buildDropdown(
+                      //   items: [
+                      //     '${job.houseTypeId == houseTypeById?.id ? houseTypeById?.name : "Chọn loại nhà"}'
+                      //   ],
+                      //   icon: Icons.arrow_drop_down,
+                      // ),
+                      GestureDetector(
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) =>
+                                const HouseTypeSelectionModal(),
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 15, horizontal: 10),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                bookingState.houseType?.name ?? "Chọn loại nhà",
+                                style: TextStyle(
+                                  color: bookingState.houseType != null
+                                      ? Colors.black
+                                      : Colors.grey,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              const Icon(Icons.arrow_drop_down),
+                            ],
+                          ),
+                        ),
                       ),
+
                       const SizedBox(height: 16),
                       // Number of Bedrooms and Floors
                       Row(
