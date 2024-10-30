@@ -6,6 +6,7 @@ import 'package:movemate_staff/features/job/domain/entities/booking_response_ent
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/fee_details_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/service_details_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/house_type_entity.dart';
+import 'package:movemate_staff/utils/enums/booking_status_type.dart';
 
 class BookingResponseEntity {
   final int id;

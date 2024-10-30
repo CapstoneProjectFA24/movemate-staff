@@ -319,8 +319,8 @@ class BookingUpdateRequest {
       estimatedDistance: map['estimatedDistance'] ?? '0',
       isRoundTrip: map['isRoundTrip'] ?? false,
       typeBooking: map['typeBooking'] ?? '',
-      roomNumber: map['roomNumber'] ?? '',
-      floorsNumber: map['floorsNumber'] ?? '',
+      roomNumber: map['roomNumber'] ?? 1,
+      floorsNumber: map['floorsNumber'] ?? 1,
       note: map['note'] ?? '',
       bookingAt: map['bookingAt'] ?? '',
       bookingDetails: map['bookingDetails'] != null

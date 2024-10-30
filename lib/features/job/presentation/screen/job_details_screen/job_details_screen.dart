@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
+import 'package:movemate_staff/features/job/data/model/request/reviewer_status_request.dart';
 import 'package:movemate_staff/features/job/data/model/request/reviewer_time_request.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/house_type_entity.dart';
@@ -13,6 +14,7 @@ import 'package:movemate_staff/features/job/presentation/controllers/reviewer_up
 import 'package:movemate_staff/features/job/presentation/screen/add_job_screen/add_job_screen.dart';
 import 'package:movemate_staff/features/job/presentation/screen/generate_new_job_screen/generate_new_job_screen.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/button_next/confirmation_button_sheet.dart';
+import 'package:movemate_staff/features/job/presentation/widgets/details/action_button.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/address.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/booking_code.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/column.dart';
@@ -23,6 +25,7 @@ import 'package:movemate_staff/features/job/presentation/widgets/details/policie
 import 'package:movemate_staff/features/job/presentation/widgets/details/priceItem.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/section.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/summary.dart';
+import 'package:movemate_staff/features/job/presentation/widgets/details/update_status_button.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/dialog_schedule/schedule_dialog.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/tabItem/input_field.dart';
 import 'package:movemate_staff/features/test/domain/entities/house_entities.dart';
@@ -66,8 +69,22 @@ class JobDetailsScreen extends HookConsumerWidget {
       isExpanded1.value = !isExpanded1.value; // Toggle the dropdown state
     }
 
-    final status = job.status.toBookingTypeEnum();
-    print("Status: $status");
+    final statusBooking = job.status.toBookingTypeEnum();
+
+    // Kiểm tra xem danh sách assignments có phần tử nào không
+    AssignmentsStatusType? statusAssignment;
+    if (job.assignments.isNotEmpty) {
+      statusAssignment = job.assignments.first.status.toAssignmentsTypeEnum();
+    } else {
+      // Gán một giá trị mặc định hoặc xử lý trường hợp không có assignments
+      statusAssignment = null;
+      print('Warning: Assignments list is empty.');
+    }
+
+    final buttonState = statusAssignment != null
+        ? ButtonStateManager.getButtonState(statusBooking, statusAssignment)
+        : ButtonState(isVisible: false);
+
     final state = ref.watch(bookingControllerProvider);
     return LoadingOverlay(
       isLoading: state.isLoading,
@@ -102,14 +119,28 @@ class JobDetailsScreen extends HookConsumerWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          job.status,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w500,
-                          ),
+                        Column(
+                          children: [
+                            Text(
+                              job.status,
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Text(
+                              statusAssignment?.name.toString() ?? '',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
                         ),
-                        if (status == BookingStatusType.assigned)
+                        if (statusBooking == BookingStatusType.assigned)
                           Padding(
                             padding: const EdgeInsets.only(right: 18.0),
                             child: SizedBox(
@@ -472,46 +503,62 @@ class JobDetailsScreen extends HookConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: 20),
-                      if (status != BookingStatusType.assigned &&
-                          status == BookingStatusType.reviewing)
-                        ElevatedButton(
-                          onPressed: () {
-                            showModalBottomSheet(
-                              shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(20),
-                                ),
-                              ),
-                              context: context,
-                              builder: (BuildContext context) {
-                                return confirm_button_sheet
-                                    .ConfirmationBottomSheet(
-                                  job: job,
-                                  onConfirm: () {
-                                    context.router.push(
-                                        GenerateNewJobScreenRoute(job: job));
-                                  },
-                                );
-                              },
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFFF9900),
-                            padding: const EdgeInsets.symmetric(vertical: 15),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            fixedSize: const Size(400, 50),
-                          ),
-                          child: const Text(
-                            'Xác nhận',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
+
+                      UpdateStatusButton(job: job),
+                      // ElevatedButton(
+                      //   onPressed: () {
+                      //     showModalBottomSheet(
+                      //       shape: RoundedRectangleBorder(
+                      //         borderRadius: BorderRadius.vertical(
+                      //           top: Radius.circular(20),
+                      //         ),
+                      //       ),
+                      //       context: context,
+                      //       builder: (BuildContext context) {
+                      //         return ConfirmationBottomSheet(
+                      //           job: job,
+                      //           onConfirm: () {
+                      //             switch (buttonState.onPressedAction) {
+                      //               case ButtonAction.updateReviewerStatus:
+                      //                 final reviewerController = ref.read(
+                      //                     reviewerUpdateControllerProvider
+                      //                         .notifier);
+                      //                 reviewerController.updateReviewerStatus(
+                      //                   id: job.id,
+                      //                   context: context,
+                      //                   request: ReviewerStatusRequest(
+                      //                     status: statusBooking,
+                      //                   ),
+                      //                 );
+                      //                 break;
+
+                      //               case ButtonAction.navigateToGenerateJob:
+                      //                 context.router.push(
+                      //                     GenerateNewJobScreenRoute(job: job));
+                      //                 break;
+                      //             }
+                      //           },
+                      //         );
+                      //       },
+                      //     );
+                      //   },
+                      //   style: ElevatedButton.styleFrom(
+                      //     backgroundColor: const Color(0xFFFF9900),
+                      //     padding: const EdgeInsets.symmetric(vertical: 15),
+                      //     shape: RoundedRectangleBorder(
+                      //       borderRadius: BorderRadius.circular(5),
+                      //     ),
+                      //     fixedSize: const Size(400, 50),
+                      //   ),
+                      //   child: const Text(
+                      //     'Cập nhật trạng thái',
+                      //     style: TextStyle(
+                      //       color: Colors.white,
+                      //       fontSize: 16,
+                      //       fontWeight: FontWeight.bold,
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),

@@ -1,0 +1,175 @@
+// lib/features/job/presentation/widgets/update_status_button.dart
+
+import 'package:flutter/material.dart';
+import 'package:auto_route/auto_route.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:movemate_staff/configs/routes/app_router.dart';
+import 'package:movemate_staff/features/job/data/model/request/reviewer_status_request.dart';
+import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
+import 'package:movemate_staff/features/job/presentation/controllers/reviewer_update_controller/reviewer_update_controller.dart';
+import 'package:movemate_staff/features/job/presentation/screen/generate_new_job_screen/generate_new_job_screen.dart';
+import 'package:movemate_staff/features/job/presentation/widgets/button_next/confirmation_button_sheet.dart'
+    as confirm_button_sheet;
+import 'package:movemate_staff/utils/enums/enums_export.dart';
+
+class UpdateStatusButton extends ConsumerWidget {
+  final BookingResponseEntity job;
+
+  const UpdateStatusButton({Key? key, required this.job}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Convert booking status to enum
+    final statusBooking = job.status.toBookingTypeEnum();
+    print("Status của booking: $statusBooking");
+
+    // Safely retrieve the first assignment's status as enum
+    final assignment =
+        job.assignments.isNotEmpty ? job.assignments.first : null;
+    final AssignmentsStatusType? assignmentStatus =
+        assignment?.status.toAssignmentsTypeEnum();
+
+    // Determine button text and action based on conditions
+    String? buttonText;
+    VoidCallback? onConfirm;
+
+    if (statusBooking == BookingStatusType.reviewing &&
+        statusBooking != BookingStatusType.assigned &&
+        assignmentStatus != null) {
+      switch (assignmentStatus) {
+        case AssignmentsStatusType.assigned:
+          buttonText = "bắt đầu";
+          onConfirm = () async {
+            try {
+              await ref
+                  .read(reviewerUpdateControllerProvider.notifier)
+                  .updateReviewerStatus(
+                    id: job.id,
+                    context: context, // Ensure this enum exists
+                    request: ReviewerStatusRequest(
+                      status: statusBooking,
+                    ),
+                  );
+              // Optionally, show a success message
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Bắt đầu thành công')),
+              );
+            } catch (e) {
+              // Handle the error, e.g., show a snackbar
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Cập nhật thất bại: $e')),
+              );
+            }
+          };
+          break;
+
+        case AssignmentsStatusType.enroute:
+          buttonText = "đã đến";
+          onConfirm = () async {
+            try {
+              await ref
+                  .read(reviewerUpdateControllerProvider.notifier)
+                  .updateReviewerStatus(
+                    id: job.id,
+                    context: context, // Ensure this enum exists
+                    request: ReviewerStatusRequest(
+                      status: statusBooking,
+                    ),
+                  );
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Đã đến thành công')),
+              );
+            } catch (e) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Cập nhật thất bại: $e')),
+              );
+            }
+          };
+          break;
+
+        case AssignmentsStatusType.suggested:
+          buttonText = "kết thúc review";
+          // onConfirm = () async {
+          //   try {
+          //     await ref
+          //         .read(reviewerUpdateControllerProvider.notifier)
+          //         .updateReviewerStatus(
+          //           id: job.id,
+          //           context: context, // Ensure this enum exists
+          //           request: ReviewerStatusRequest(
+          //             status: BookingStatusType.completed,
+          //           ),
+          //         );
+          //     ScaffoldMessenger.of(context).showSnackBar(
+          //       const SnackBar(content: Text('Kết thúc review thành công')),
+          //     );
+          //   } catch (e) {
+          //     ScaffoldMessenger.of(context).showSnackBar(
+          //       SnackBar(content: Text('Cập nhật thất bại: $e')),
+          //     );
+          //   }
+          // };
+          onConfirm = () {
+            context.router.push(
+              GenerateNewJobScreenRoute(job: job),
+            );
+          };
+          break;
+
+        case AssignmentsStatusType.arrived:
+          buttonText = "Cập nhật trạng thái";
+          onConfirm = () {
+            context.router.push(
+              GenerateNewJobScreenRoute(job: job),
+            );
+          };
+          break;
+
+        default:
+          // No action for other statuses
+          break;
+      }
+    }
+
+    if (buttonText != null && onConfirm != null) {
+      return ElevatedButton(
+        onPressed: () {
+          showModalBottomSheet(
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(20),
+              ),
+            ),
+            context: context,
+            isScrollControlled: true,
+            builder: (BuildContext context) {
+              return confirm_button_sheet.ConfirmationBottomSheet(
+                job: job,
+                onConfirm: onConfirm,
+              );
+            },
+          );
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFFFF9900),
+          padding: const EdgeInsets.symmetric(vertical: 15),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5),
+          ),
+          fixedSize: const Size(400, 50),
+        ),
+        child: Text(
+          buttonText,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      );
+    } else {
+      return const SizedBox
+          .shrink(); // Return empty widget if conditions not met
+    }
+  }
+}

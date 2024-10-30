@@ -10,15 +10,19 @@ enum BookingStatusType {
   completed('COMPLETED'),
   cancelled('CANCEL'),
   refunded('REFUNDED');
+
   final String type;
   const BookingStatusType(this.type);
 }
+
 enum AssignmentsStatusType {
+  assigned('ASSIGNED'),
   enroute('ENROUTE'),
   arrived('ARRIVED'),
   reviewing('REVIEWING'),
   suggested('SUGGESTED'),
   reviewed('REVIEWED');
+
   final String type;
   const AssignmentsStatusType(this.type);
 }
@@ -50,6 +54,25 @@ extension ConvertOrderPartnerStatus on String {
         return BookingStatusType.refunded;
       default:
         return BookingStatusType.pending;
+    }
+  }
+
+  AssignmentsStatusType toAssignmentsTypeEnum() {
+    switch (toUpperCase()) {
+      case 'ASSIGNED':
+        return AssignmentsStatusType.assigned;
+      case 'ENROUTE':
+        return AssignmentsStatusType.enroute;
+      case 'ARRIVED':
+        return AssignmentsStatusType.arrived;
+      case 'REVIEWING':
+        return AssignmentsStatusType.reviewing;
+      case 'SUGGESTED':
+        return AssignmentsStatusType.suggested;
+      case 'REVIEWED':
+        return AssignmentsStatusType.reviewed;
+      default:
+        return AssignmentsStatusType.enroute;
     }
   }
 }

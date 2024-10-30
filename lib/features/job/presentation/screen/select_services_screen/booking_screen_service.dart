@@ -136,13 +136,14 @@ class BookingScreenService extends HookConsumerWidget {
                       TextButton(
                         onPressed: () async {
                           // Confirm button
-                          // Navigator.of(context).pop();// đóng nó lại nếu không sẽ lỗi không chuyển màn hình được
+                          // Navigator.of(context).pop();
                           final bookingResponse = await ref
                               .read(bookingControllerProvider.notifier)
                               .updateBooking(
                                 context: context,
                                 id: job.id,
                               );
+                          print("bookingResponse screen $bookingResponse");
                           if (bookingResponse != null) {
                             // Điều hướng tới JobDetailsScreen sau khi thành công
                             if (context.mounted) {
@@ -154,6 +155,11 @@ class BookingScreenService extends HookConsumerWidget {
                                       JobDetailsScreen(job: bookingResponse),
                                 ),
                               );
+                              print("context.mounted ${context.mounted}");
+                              // context.router.push(
+                              //   JobDetailsScreenRoute(job: bookingResponse),
+                              //   // predicate: (route) => false,
+                              // );
                             }
                           } else {
                             final tabsRouter = context.router.root

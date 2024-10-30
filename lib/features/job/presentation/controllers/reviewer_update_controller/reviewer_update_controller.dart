@@ -71,21 +71,22 @@ class ReviewerUpdateController extends _$ReviewerUpdateController {
   }
 
   Future<void> updateReviewerStatus({
-    required String accessToken,
+    // required String accessToken,
     required ReviewerStatusRequest request,
     required int id,
     required BuildContext context,
   }) async {
     state = const AsyncLoading();
     final authRepository = ref.read(authRepositoryProvider);
-
+    final user = await SharedPreferencesUtils.getInstance('user_token');
     state = await AsyncValue.guard(() async {
-      final response =
-          await ref.read(bookingRepositoryProvider).updateStateReviewer(
-                accessToken: APIConstants.prefixToken + accessToken,
-                request: request,
-                id: id,
-              );
+      final response = await ref
+          .read(bookingRepositoryProvider)
+          .updateStateReviewer(
+            accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
+            request: request,
+            id: id,
+          );
 
       showSnackBar(
         context: context,

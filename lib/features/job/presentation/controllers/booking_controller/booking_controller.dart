@@ -7,6 +7,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/features/auth/presentation/screens/sign_in/sign_in_controller.dart';
 import 'package:movemate_staff/features/job/data/model/request/booking_requesst.dart';
+import 'package:movemate_staff/features/job/data/model/request/resource.dart';
+import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/assignment_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/service_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/services_package_entity.dart';
@@ -224,4 +226,7 @@ class BookingController extends _$BookingController {
       return ref.read(bookingResponseProvider);
     }
   }
+  
+
+
 }
