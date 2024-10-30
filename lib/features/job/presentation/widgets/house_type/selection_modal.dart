@@ -5,12 +5,14 @@ class SelectionModal extends StatelessWidget {
   final String title;
   final List<String> items;
   final ValueChanged<String> onItemSelected;
+  final String? selectedItem;
 
   const SelectionModal({
     super.key,
     required this.title,
     required this.items,
     required this.onItemSelected,
+    this.selectedItem,
   });
 
   @override
@@ -46,13 +48,19 @@ class SelectionModal extends StatelessWidget {
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: items.length,
                 itemBuilder: (context, index) {
+                  final item = items[index];
+                  final isSelected = item == selectedItem;
                   return ListTile(
                     title: Text(
-                      items[index],
+                      item,
                       style: const TextStyle(color: AssetsConstants.blackColor),
                     ),
+                    trailing: isSelected
+                        ? const Icon(Icons.check,
+                            color: Colors.blue) // Biểu tượng dấu kiểm
+                        : null,
                     onTap: () {
-                      onItemSelected(items[index]);
+                      onItemSelected(item);
                     },
                   );
                 },

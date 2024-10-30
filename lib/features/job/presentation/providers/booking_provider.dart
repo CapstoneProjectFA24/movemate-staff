@@ -33,6 +33,8 @@ class BookingNotifier extends StateNotifier<Booking> {
     );
   }
 
+  
+
   void updateSubServiceQuantity(SubServiceEntity subService, int newQuantity) {
     // Đảm bảo newQuantity không vượt quá quantityMax
     int finalQuantity = newQuantity;

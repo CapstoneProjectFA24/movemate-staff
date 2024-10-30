@@ -49,7 +49,12 @@ class BookingScreenService extends HookConsumerWidget {
       ),
       context: context,
     );
-
+final service = job.bookingDetails.asMap().entries.map((e) {
+      final index = e.key;
+      final value = e.value;
+      return value;
+    }).toList();
+    
     return Scaffold(
       appBar: AppBar(
         title: const Text('Thông tin đặt hàng'),

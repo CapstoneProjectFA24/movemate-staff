@@ -503,62 +503,7 @@ class JobDetailsScreen extends HookConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: 20),
-
                       UpdateStatusButton(job: job),
-                      // ElevatedButton(
-                      //   onPressed: () {
-                      //     showModalBottomSheet(
-                      //       shape: RoundedRectangleBorder(
-                      //         borderRadius: BorderRadius.vertical(
-                      //           top: Radius.circular(20),
-                      //         ),
-                      //       ),
-                      //       context: context,
-                      //       builder: (BuildContext context) {
-                      //         return ConfirmationBottomSheet(
-                      //           job: job,
-                      //           onConfirm: () {
-                      //             switch (buttonState.onPressedAction) {
-                      //               case ButtonAction.updateReviewerStatus:
-                      //                 final reviewerController = ref.read(
-                      //                     reviewerUpdateControllerProvider
-                      //                         .notifier);
-                      //                 reviewerController.updateReviewerStatus(
-                      //                   id: job.id,
-                      //                   context: context,
-                      //                   request: ReviewerStatusRequest(
-                      //                     status: statusBooking,
-                      //                   ),
-                      //                 );
-                      //                 break;
-
-                      //               case ButtonAction.navigateToGenerateJob:
-                      //                 context.router.push(
-                      //                     GenerateNewJobScreenRoute(job: job));
-                      //                 break;
-                      //             }
-                      //           },
-                      //         );
-                      //       },
-                      //     );
-                      //   },
-                      //   style: ElevatedButton.styleFrom(
-                      //     backgroundColor: const Color(0xFFFF9900),
-                      //     padding: const EdgeInsets.symmetric(vertical: 15),
-                      //     shape: RoundedRectangleBorder(
-                      //       borderRadius: BorderRadius.circular(5),
-                      //     ),
-                      //     fixedSize: const Size(400, 50),
-                      //   ),
-                      //   child: const Text(
-                      //     'Cập nhật trạng thái',
-                      //     style: TextStyle(
-                      //       color: Colors.white,
-                      //       fontSize: 16,
-                      //       fontWeight: FontWeight.bold,
-                      //     ),
-                      //   ),
-                      // ),
                     ],
                   ),
                 ),

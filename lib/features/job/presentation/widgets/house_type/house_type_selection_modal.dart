@@ -65,10 +65,11 @@ class HouseTypeSelectionModal extends HookConsumerWidget {
     } else {
       final houseTypeEntities = fetchResult.items;
       final houseTypes = houseTypeEntities.map((e) => e.name).toList();
-
+      final selectedItem = bookingState.houseType?.name;
       return SelectionModal(
         title: 'Chọn loại nhà ở',
         items: houseTypes,
+        selectedItem: selectedItem,
         onItemSelected: (selectedItem) {
           // Tìm đối tượng HouseTypeEntity được chọn
           final selectedHouseType = houseTypeEntities.firstWhere(

@@ -15,6 +15,7 @@ import 'package:movemate_staff/features/job/presentation/widgets/function/image.
 import 'package:movemate_staff/features/job/presentation/widgets/function/label.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/function/number_input.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/function/text_input.dart';
+import 'package:movemate_staff/features/job/presentation/widgets/house_type/house_form_controller.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/house_type/house_type_selection_modal.dart';
 import 'package:movemate_staff/features/test/domain/entities/house_entities.dart';
 import 'package:movemate_staff/hooks/use_fetch_obj.dart';
@@ -38,8 +39,6 @@ class GenerateNewJobScreen extends HookConsumerWidget {
     final bookingNotifier = ref.read(bookingProvider.notifier);
     final bookingState = ref.watch(bookingProvider);
     final state = ref.watch(bookingControllerProvider);
-    // print(state.isLoading ? "Loading" : "Not Loading");
-    // print("Job House Type ID: ${job.houseTypeId}");
 
     // Truy cập BookingController
     final bookingController = ref.read(bookingControllerProvider.notifier);
@@ -55,27 +54,61 @@ class GenerateNewJobScreen extends HookConsumerWidget {
 
     useEffect(() {
       if (houseTypeById != null) {
-        // Cập nhật vào provider
-        try {
-          // bookingNotifier.updateHouseType(houseTypeById);
-        } catch (e) {
-          print('Error updating house type in provider');
-        }
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          bookingNotifier.updateHouseType(houseTypeById);
+        });
       }
       return null;
     }, [houseTypeById]);
 
-    final fetchResult = useFetch<HouseEntities>(
-      function: (model, context) => bookingController.getHouse(model, context),
-      initialPagingModel: PagingModel(),
-      context: context,
-    );
-    final houseTypeEntities = fetchResult.items;
-    final houseTypes = houseTypeEntities.map((e) => e.name).toList();
+    final roomNumberController =
+        useTextEditingController(text: job.roomNumber?.toString() ?? "1");
 
-    // print("House Type name : ${houseTypeById?.name}");
-    // print("House Type  : ${houseTypeById?.toJson()}");
-    // print("House Type  all  : ${houseTypes}");
+    final floorsNumberController =
+        useTextEditingController(text: job.floorsNumber?.toString() ?? "1");
+
+    // Cập nhật StateProvider khi TextField thay đổi
+    useEffect(() {
+      void listener() {
+        final roomText = roomNumberController.text;
+        final floorsText = floorsNumberController.text;
+
+        final roomNumber = int.tryParse(roomText);
+        final floorsNumber = int.tryParse(floorsText);
+
+        if (roomNumber != null) {
+          bookingNotifier.updateNumberOfRooms(roomNumber);
+        }
+
+        if (floorsNumber != null) {
+          bookingNotifier.updateNumberOfFloors(floorsNumber);
+        }
+      }
+
+      roomNumberController.addListener(listener);
+      floorsNumberController.addListener(listener);
+
+      return () {
+        roomNumberController.removeListener(listener);
+        floorsNumberController.removeListener(listener);
+      };
+    }, [roomNumberController, floorsNumberController]);
+
+    //  Đồng bộ state với controller khi state thay đổi từ bên ngoài
+    useEffect(() {
+      if (bookingState.numberOfRooms != null &&
+          bookingState.numberOfRooms.toString() != roomNumberController.text) {
+        roomNumberController.text = bookingState.numberOfRooms.toString();
+      }
+
+      if (bookingState.numberOfFloors != null &&
+          bookingState.numberOfFloors.toString() !=
+              floorsNumberController.text) {
+        floorsNumberController.text = bookingState.numberOfFloors.toString();
+      }
+
+      return null;
+    }, [bookingState.numberOfRooms, bookingState.numberOfFloors]);
 
     return Scaffold(
       appBar: CustomAppBar(
@@ -137,13 +170,8 @@ class GenerateNewJobScreen extends HookConsumerWidget {
                       ),
                       const SizedBox(height: 16),
                       // House Type Dropdown
-                      // buildLabel("Loại nhà"),
-                      // buildDropdown(
-                      //   items: [
-                      //     '${job.houseTypeId == houseTypeById?.id ? houseTypeById?.name : "Chọn loại nhà"}'
-                      //   ],
-                      //   icon: Icons.arrow_drop_down,
-                      // ),
+                      buildLabel("Loại nhà"),
+
                       GestureDetector(
                         onTap: () {
                           showDialog(
@@ -186,7 +214,16 @@ class GenerateNewJobScreen extends HookConsumerWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 buildLabel("Số phòng ngủ"),
-                                buildNumberInput(initialValue: "1"),
+                                buildNumberInput(
+                                  controller: roomNumberController,
+                                  onChanged: (value) {
+                                    final roomNumber = int.tryParse(value);
+                                    if (roomNumber != null) {
+                                      bookingNotifier
+                                          .updateNumberOfRooms(roomNumber);
+                                    }
+                                  },
+                                ),
                               ],
                             ),
                           ),
@@ -196,12 +233,22 @@ class GenerateNewJobScreen extends HookConsumerWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 buildLabel("Số tầng"),
-                                buildNumberInput(initialValue: "1"),
+                                buildNumberInput(
+                                  controller: floorsNumberController,
+                                  onChanged: (value) {
+                                    final floorsNumber = int.tryParse(value);
+                                    if (floorsNumber != null) {
+                                      bookingNotifier
+                                          .updateNumberOfFloors(floorsNumber);
+                                    }
+                                  },
+                                ),
                               ],
                             ),
                           ),
                         ],
                       ),
+
                       const SizedBox(height: 16),
                       // Customer-Provided Images
                       buildLabel("Hình ảnh khách hàng cung cấp"),

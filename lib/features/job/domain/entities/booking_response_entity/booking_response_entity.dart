@@ -56,6 +56,7 @@ class BookingResponseEntity {
   final List<ServiceDetailsResponseEntity> serviceDetails;
   final List<FeeDetailsResponseEntity> feeDetails;
   final List<AssignmentsResponseEntity> assignments; // Thêm trường này
+  
 
   BookingResponseEntity({
     this.houseType,
