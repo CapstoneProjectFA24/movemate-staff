@@ -23,7 +23,7 @@ import 'package:movemate_staff/utils/extensions/extensions_export.dart';
 part 'house_type_controller.g.dart';
 
 @riverpod
-class BookingController extends _$BookingController {
+class HouseTypeController extends _$HouseTypeController {
   @override
   FutureOr<void> build() {}
 

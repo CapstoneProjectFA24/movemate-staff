@@ -38,10 +38,10 @@ class GenerateNewJobScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final bookingNotifier = ref.read(bookingProvider.notifier);
     final bookingState = ref.watch(bookingProvider);
-    final state = ref.watch(bookingControllerProvider);
+    final state = ref.watch(houseTypeControllerProvider);
 
     // Truy cập BookingController
-    final bookingController = ref.read(bookingControllerProvider.notifier);
+    final bookingController = ref.read(houseTypeControllerProvider.notifier);
 
     // Sử dụng useFetchObject để gọi getHouseDetails
     final useFetchResult = useFetchObject<HouseEntities>(

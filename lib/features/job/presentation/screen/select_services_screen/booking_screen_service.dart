@@ -187,16 +187,17 @@ class BookingScreenService extends HookConsumerWidget {
                               //   // predicate: (route) => false,
                               // );
                             }
-                          } else {
-                            final tabsRouter = context.router.root
-                                .innerRouterOf<TabsRouter>(
-                                    TabViewScreenRoute.name);
-                            if (tabsRouter != null) {
-                              tabsRouter.setActiveIndex(0);
-                              context.router.popUntilRouteWithName(
-                                  TabViewScreenRoute.name);
-                            }
                           }
+                          // else {
+                          //   final tabsRouter = context.router.root
+                          //       .innerRouterOf<TabsRouter>(
+                          //           TabViewScreenRoute.name);
+                          //   if (tabsRouter != null) {
+                          //     tabsRouter.setActiveIndex(0);
+                          //     context.router.popUntilRouteWithName(
+                          //         TabViewScreenRoute.name);
+                          //   }
+                          // }
                         },
                         child: const Text(
                           'Xác nhận',

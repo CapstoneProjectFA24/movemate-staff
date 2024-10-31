@@ -42,9 +42,26 @@ class JobCard extends StatelessWidget {
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: AssetsConstants.primaryLight)),
-                    Text(
-                      job.id.toString(),
-                      style: const TextStyle(fontSize: 14),
+                    Row(
+                      children: [
+                        Text(
+                          job.id.toString(),
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                        const SizedBox(width: 16),
+                        Icon(
+                          Icons.circle,
+                          color: job.isReviewOnline
+                              ? const Color(0xFF00FF00)
+                              : const Color(0xFFFF0000),
+                          size: 10,
+                        ),
+                        const SizedBox(width: 3),
+                        Text(
+                          job.isReviewOnline ? 'Online' : 'Offline',
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                      ],
                     ),
                     Text(
                       job.createdAt,
@@ -65,14 +82,15 @@ class JobCard extends StatelessWidget {
                         ),
                       ),
                       Container(
-                        padding:
-                            const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 5),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(5),
                         ),
                         child: Text(
                           job.status,
-                          style: const TextStyle(color: Colors.white, fontSize: 12),
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 12),
                         ),
                       ),
                     ],

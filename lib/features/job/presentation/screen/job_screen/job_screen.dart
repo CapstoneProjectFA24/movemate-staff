@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -7,6 +9,7 @@ import 'package:movemate_staff/features/job/presentation/controllers/booking_con
 import 'package:movemate_staff/features/job/presentation/widgets/jobcard/job_card.dart';
 import 'package:movemate_staff/hooks/use_fetch.dart';
 import 'package:movemate_staff/models/request/paging_model.dart';
+import 'package:movemate_staff/services/realtime_service/booking_status_realtime/booking_status_stream_provider.dart';
 import 'package:movemate_staff/utils/commons/widgets/widgets_common_export.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
 import 'package:movemate_staff/utils/enums/enums_export.dart';
@@ -17,7 +20,7 @@ class JobScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final tabController = useTabController(initialLength: 3);
+    final tabController = useTabController(initialLength: 4);
     final state = ref.watch(bookingControllerProvider);
     final size = MediaQuery.sizeOf(context);
     final scrollController = useScrollController();
@@ -32,9 +35,13 @@ class JobScreen extends HookConsumerWidget {
       ),
       context: context,
     );
-     
 
-    List<String> tabs = ["Việc sắp tới", "Việc đã hoàn thành", "Khác"];
+    List<String> tabs = [
+      "Việc sắp tới",
+      "Việc đã hoàn thành",
+      "Tất cả",
+      "Khác"
+    ];
 
     useEffect(() {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -42,6 +49,23 @@ class JobScreen extends HookConsumerWidget {
       });
       return null;
     }, []);
+    final debounce = useRef<Timer?>(null);
+
+    final statusAsync = ref.watch(orderStatusStreamProvider(
+        fetchResult.items.map((e) => e.id).toString()));
+
+    useEffect(() {
+      statusAsync.whenData((status) {
+        debounce.value?.cancel();
+        debounce.value = Timer(const Duration(milliseconds: 300), () {
+          fetchResult.refresh();
+        });
+      });
+
+      return () {
+        debounce.value?.cancel();
+      };
+    }, [statusAsync]);
 
     Widget buildTabContent(String tabName) {
       List<BookingResponseEntity> filteredBookings = [];
@@ -64,6 +88,25 @@ class JobScreen extends HookConsumerWidget {
           filteredBookings = fetchResult.items.where((booking) {
             final status = booking.status.toBookingTypeEnum();
             return status == BookingStatusType.reviewing;
+          }).toList();
+          break;
+        case "Tất cả":
+          filteredBookings = fetchResult.items.where((booking) {
+            final status = booking.status.toBookingTypeEnum();
+            return [
+              BookingStatusType.pending,
+              BookingStatusType.assigned,
+              BookingStatusType.approved,
+              BookingStatusType.coming,
+              BookingStatusType.waiting,
+              BookingStatusType.inProgress,
+              BookingStatusType.reviewing,
+              BookingStatusType.cancelled,
+              BookingStatusType.refunded,
+              BookingStatusType.depositing,
+              BookingStatusType.reviewing,
+              BookingStatusType.reviewed,
+            ].contains(status);
           }).toList();
           break;
         default: // "Khác"

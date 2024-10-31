@@ -7,6 +7,7 @@ class BookingDetailsResponseEntity {
   final String? status;
   final String? type;
   final String? isQuantity;
+  final String? name;
   final String? description;
 
   BookingDetailsResponseEntity({
@@ -18,6 +19,7 @@ class BookingDetailsResponseEntity {
     this.type,
     this.price,
     this.isQuantity,
+    this.name,
     this.description,
   });
 
@@ -31,6 +33,7 @@ class BookingDetailsResponseEntity {
       type: json['type']?.toString(),
       price: json['price']?.toString(),
       isQuantity: json['isQuantity']?.toString(),
+      name: json['name']?.toString(),
       description: json['description'],
     );
   }
@@ -45,6 +48,7 @@ class BookingDetailsResponseEntity {
       'type': type,
       'price': price,
       'isQuantity': isQuantity,
+      'name': name,
       'description': description,
     };
   }

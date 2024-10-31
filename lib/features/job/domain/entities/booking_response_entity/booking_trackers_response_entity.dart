@@ -8,6 +8,7 @@ class BookingTrackersResponseEntity {
   final String? description;
   final String? status;
   final List<dynamic> trackerSources;
+  
 
   BookingTrackersResponseEntity({
     required this.id,

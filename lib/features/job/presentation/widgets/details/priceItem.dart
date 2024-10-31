@@ -33,3 +33,10 @@ Widget buildPriceItem(String description, String price) {
     ),
   );
 }
+
+String formatPrice(String? price) {
+  if (price == null) return '0 đ';
+  double? numericPrice = double.tryParse(price);
+  if (numericPrice == null) return '$price đ';
+  return '${numericPrice.toStringAsFixed(0)} đ';
+}

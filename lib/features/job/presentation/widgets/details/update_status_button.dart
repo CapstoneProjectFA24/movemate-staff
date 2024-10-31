@@ -10,6 +10,7 @@ import 'package:movemate_staff/features/job/presentation/controllers/reviewer_up
 import 'package:movemate_staff/features/job/presentation/screen/generate_new_job_screen/generate_new_job_screen.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/button_next/confirmation_button_sheet.dart'
     as confirm_button_sheet;
+import 'package:movemate_staff/services/realtime_service/booking_status_realtime/booking_status_stream_provider.dart';
 import 'package:movemate_staff/utils/enums/enums_export.dart';
 
 class UpdateStatusButton extends ConsumerWidget {
@@ -20,22 +21,45 @@ class UpdateStatusButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // Convert booking status to enum
-    final statusBooking = job.status.toBookingTypeEnum();
-    print("Status của booking: $statusBooking");
+    final statusbookings = job.status.toString().toBookingTypeEnum();
+    print("object statusbookings ${statusbookings}");
+    final statusAsync = ref.watch(orderStatusStreamProvider(job.id.toString()));
+
+    final statusAsyncAssignment = ref
+        .watch(orderStatusAssignmentStreamProvider(job.id.toString()))
+        .when<AsyncValue<AssignmentsStatusType>>(
+          data: (statusList) {
+            if (statusList.isEmpty || statusList.first == null) {
+              return AsyncValue.data(AssignmentsStatusType
+                  .arrived); // Giá trị mặc định nếu list rỗng
+            }
+            return AsyncValue.data(statusList.first);
+          },
+          loading: () => const AsyncValue.loading(),
+          error: (err, stack) => AsyncValue.error(err, stack),
+        );
+
+    print("object statusAsync ${statusAsync.value}");
 
     // Safely retrieve the first assignment's status as enum
     final assignment =
         job.assignments.isNotEmpty ? job.assignments.first : null;
+
     final AssignmentsStatusType? assignmentStatus =
-        assignment?.status.toAssignmentsTypeEnum();
+        statusAsyncAssignment.value?.type.toAssignmentsTypeEnum();
 
     // Determine button text and action based on conditions
     String? buttonText;
     VoidCallback? onConfirm;
+    print("object statusAsync $statusAsync");
+    print("object statusAsyncAssignment ${statusAsyncAssignment.value}");
+    print("object assignmentStatus $assignmentStatus");
+    print("object job.isReviewOnline ${job.isReviewOnline}");
 
-    if (statusBooking == BookingStatusType.reviewing &&
-        statusBooking != BookingStatusType.assigned &&
-        assignmentStatus != null) {
+    if (statusAsync.value == BookingStatusType.reviewing &&
+        statusAsync.value != BookingStatusType.assigned &&
+        statusAsyncAssignment.value != null &&
+        job.isReviewOnline == false) {
       switch (assignmentStatus) {
         case AssignmentsStatusType.assigned:
           buttonText = "bắt đầu";
@@ -47,7 +71,7 @@ class UpdateStatusButton extends ConsumerWidget {
                     id: job.id,
                     context: context, // Ensure this enum exists
                     request: ReviewerStatusRequest(
-                      status: statusBooking,
+                      status: BookingStatusType.reviewing,
                     ),
                   );
               // Optionally, show a success message
@@ -73,7 +97,7 @@ class UpdateStatusButton extends ConsumerWidget {
                     id: job.id,
                     context: context, // Ensure this enum exists
                     request: ReviewerStatusRequest(
-                      status: statusBooking,
+                      status: BookingStatusType.reviewing,
                     ),
                   );
               ScaffoldMessenger.of(context).showSnackBar(
@@ -89,31 +113,33 @@ class UpdateStatusButton extends ConsumerWidget {
 
         case AssignmentsStatusType.suggested:
           buttonText = "kết thúc review";
-          // onConfirm = () async {
-          //   try {
-          //     await ref
-          //         .read(reviewerUpdateControllerProvider.notifier)
-          //         .updateReviewerStatus(
-          //           id: job.id,
-          //           context: context, // Ensure this enum exists
-          //           request: ReviewerStatusRequest(
-          //             status: BookingStatusType.completed,
-          //           ),
-          //         );
-          //     ScaffoldMessenger.of(context).showSnackBar(
-          //       const SnackBar(content: Text('Kết thúc review thành công')),
-          //     );
-          //   } catch (e) {
-          //     ScaffoldMessenger.of(context).showSnackBar(
-          //       SnackBar(content: Text('Cập nhật thất bại: $e')),
-          //     );
-          //   }
-          // };
-          onConfirm = () {
-            context.router.push(
-              GenerateNewJobScreenRoute(job: job),
-            );
+          onConfirm = () async {
+            try {
+              await ref
+                  .read(reviewerUpdateControllerProvider.notifier)
+                  .updateReviewerStatus(
+                    id: job.id,
+                    context: context, // Ensure this enum exists
+                    request: ReviewerStatusRequest(
+                      status: BookingStatusType.completed,
+                    ),
+                  );
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Kết thúc review thành công')),
+              );
+              // chuyển hướng về trang chủ
+              context.router.popUntilRoot();
+            } catch (e) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Cập nhật thất bại: $e')),
+              );
+            }
           };
+          // onConfirm = () {
+          //   context.router.push(
+          //     GenerateNewJobScreenRoute(job: job),
+          //   );
+          // };
           break;
 
         case AssignmentsStatusType.arrived:
@@ -127,6 +153,54 @@ class UpdateStatusButton extends ConsumerWidget {
 
         default:
           // No action for other statuses
+          break;
+      }
+    }
+    //
+    if (statusAsync.value == BookingStatusType.reviewing &&
+        statusAsync.value != BookingStatusType.assigned &&
+        statusAsyncAssignment.value?.type != null &&
+        job.isReviewOnline == true) {
+      switch (assignmentStatus) {
+        case AssignmentsStatusType.assigned:
+          buttonText = "Đánh giá trực tuyến";
+          onConfirm = () {
+            context.router.push(
+              GenerateNewJobScreenRoute(job: job),
+            );
+          };
+          break;
+        case AssignmentsStatusType.suggested:
+          buttonText = "Kết thúc review";
+          // onConfirm = () {
+          //   context.router.push(
+          //     GenerateNewJobScreenRoute(job: job),
+          //   );
+          // };
+          onConfirm = () async {
+            try {
+              await ref
+                  .read(reviewerUpdateControllerProvider.notifier)
+                  .updateReviewerStatus(
+                    id: job.id,
+                    context: context, // Ensure this enum exists
+                    request: ReviewerStatusRequest(
+                      status: BookingStatusType.completed,
+                    ),
+                  );
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Kết thúc review thành công')),
+              );
+              // chuyển hướng về trang chủ
+              context.router.popUntilRoot();
+            } catch (e) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Cập nhật thất bại: $e')),
+              );
+            }
+          };
+          break;
+        default:
           break;
       }
     }

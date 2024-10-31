@@ -12,6 +12,7 @@ class BookingResponseEntity {
   final int id;
   final int userId;
   final int houseTypeId;
+  final int truckNumber;
   final HouseTypeEntity? houseType;
   final double deposit;
   final String status;
@@ -56,13 +57,13 @@ class BookingResponseEntity {
   final List<ServiceDetailsResponseEntity> serviceDetails;
   final List<FeeDetailsResponseEntity> feeDetails;
   final List<AssignmentsResponseEntity> assignments; // Thêm trường này
-  
 
   BookingResponseEntity({
     this.houseType,
     required this.id,
     required this.userId,
     required this.houseTypeId,
+    required this.truckNumber,
     required this.deposit,
     required this.status,
     required this.pickupAddress,
@@ -113,6 +114,7 @@ class BookingResponseEntity {
       id: json['id'] ?? 0,
       userId: json['userId'] ?? 0,
       houseTypeId: json['houseTypeId'] ?? 0,
+      truckNumber: json['truckNumber'] ?? 0,
       // deposit: json['deposit'] ?? 0,
       deposit: (json['deposit'] is double)
           ? json['deposit']
@@ -192,6 +194,7 @@ class BookingResponseEntity {
       'id': id,
       'userId': userId,
       'houseTypeId': houseTypeId,
+      'truckNumber': truckNumber,
       'deposit': deposit,
       'status': status,
       'pickupAddress': pickupAddress,
@@ -242,6 +245,7 @@ class BookingResponseEntity {
     int? id,
     int? userId,
     int? houseTypeId,
+    int? truckNumber,
     HouseTypeEntity? houseType,
     double? deposit,
     String? status,
@@ -291,6 +295,7 @@ class BookingResponseEntity {
       id: id ?? this.id,
       userId: userId ?? this.userId,
       houseTypeId: houseTypeId ?? this.houseTypeId,
+      truckNumber: truckNumber ?? this.truckNumber,
       houseType: houseType ?? this.houseType,
       deposit: deposit ?? this.deposit,
       status: status ?? this.status,

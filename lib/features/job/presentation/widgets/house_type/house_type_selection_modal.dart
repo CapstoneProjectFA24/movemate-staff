@@ -30,11 +30,12 @@ class HouseTypeSelectionModal extends HookConsumerWidget {
     final bookingState = ref.watch(bookingProvider); // Watch the booking state
     final bookingNotifier = ref.read(bookingProvider.notifier);
     final scrollController = useScrollController();
-    final state = ref.watch(bookingControllerProvider);
+    final state = ref.watch(houseTypeControllerProvider);
 
     final fetchResult = useFetch<HouseEntities>(
-      function: (model, context) =>
-          ref.read(bookingControllerProvider.notifier).getHouse(model, context),
+      function: (model, context) => ref
+          .read(houseTypeControllerProvider.notifier)
+          .getHouse(model, context),
       initialPagingModel: PagingModel(),
       context: context,
     );

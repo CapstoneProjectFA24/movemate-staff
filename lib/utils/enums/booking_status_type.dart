@@ -2,9 +2,10 @@ enum BookingStatusType {
   pending('PENDING'),
   depositing('DEPOSITING'),
   assigned('ASSIGNED'),
+  reviewed('REVIEWED'),
   approved('APPROVED'),
   reviewing('REVIEWING'),
-  coming('COMMING'),
+  coming('COMING'),
   waiting('WAITING'),
   inProgress('IN_PROGRESS'),
   completed('COMPLETED'),
@@ -36,11 +37,13 @@ extension ConvertOrderPartnerStatus on String {
         return BookingStatusType.depositing;
       case 'ASSIGNED':
         return BookingStatusType.assigned;
+      case 'REVIEWED':
+        return BookingStatusType.reviewed;
       case 'APPROVED':
         return BookingStatusType.approved;
       case 'REVIEWING':
         return BookingStatusType.reviewing;
-      case 'COMMING':
+      case 'COMING':
         return BookingStatusType.coming;
       case 'WAITING':
         return BookingStatusType.waiting;

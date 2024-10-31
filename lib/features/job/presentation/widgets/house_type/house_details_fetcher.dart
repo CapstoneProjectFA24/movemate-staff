@@ -18,10 +18,10 @@ class HouseDetailsFetcher extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final bookingController = ref.read(bookingControllerProvider.notifier);
+    final houseTypeController = ref.read(houseTypeControllerProvider.notifier);
     final useFetchResult = useFetchObject<HouseEntities>(
       function: (context) =>
-          bookingController.getHouseDetails(job.houseTypeId, context),
+          houseTypeController.getHouseDetails(job.houseTypeId, context),
       context: context,
     );
     
