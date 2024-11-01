@@ -109,7 +109,7 @@ class GenerateNewJobScreen extends HookConsumerWidget {
 
       return null;
     }, [bookingState.numberOfRooms, bookingState.numberOfFloors]);
-
+    print("loai nha ${bookingState.houseType?.name} ");
     return Scaffold(
       appBar: CustomAppBar(
         backgroundColor: AssetsConstants.primaryMain,
@@ -117,7 +117,7 @@ class GenerateNewJobScreen extends HookConsumerWidget {
         showBackButton: true,
         title: "Cập nhật Thông tin đơn hàng",
         onBackButtonPressed: () {
-          bookingNotifier.reset();
+          // bookingNotifier.reset();
           print("bookingState reset: ${bookingState.selectedVehicle}");
           Navigator.of(context).pop();
         },

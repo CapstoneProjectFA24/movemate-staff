@@ -71,6 +71,12 @@ class AvailableVehiclesScreen extends HookConsumerWidget {
       return null;
     }, const []);
 
+    final gettruck = job.bookingDetails
+        .where((detail) => detail.type == "TRUCK")
+        .map((truckDetail) => truckDetail.serviceId);
+
+ 
+
     return Scaffold(
       appBar: CustomAppBar(
         // showBackButton: true,
@@ -100,7 +106,8 @@ class AvailableVehiclesScreen extends HookConsumerWidget {
         // totalPrice: bookingState.totalPrice ?? 0.0,
         isButtonEnabled: bookingState.selectedVehicle != null,
         onPlacePress: () async {
-          if (bookingState.selectedVehicle != null) {
+          if (bookingState.selectedVehicle != null &&
+              bookingState.selectedVehicle?.id == gettruck.first) {
             // Hiển thị một dialog chờ
             showDialog(
               context: context,

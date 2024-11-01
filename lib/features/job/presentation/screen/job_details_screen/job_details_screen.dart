@@ -13,6 +13,7 @@ import 'package:movemate_staff/features/job/domain/entities/booking_response_ent
 import 'package:movemate_staff/features/job/presentation/controllers/booking_controller/booking_controller.dart';
 import 'package:movemate_staff/features/job/presentation/controllers/house_type_controller/house_type_controller.dart';
 import 'package:movemate_staff/features/job/presentation/controllers/reviewer_update_controller/reviewer_update_controller.dart';
+import 'package:movemate_staff/features/job/presentation/providers/booking_provider.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/action_button.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/address.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/booking_code.dart';
@@ -66,6 +67,9 @@ class JobDetailsScreen extends HookConsumerWidget {
       isExpanded1.value = !isExpanded1.value; // Toggle the dropdown state
     }
 
+    final bookingNotifier =
+        ref.read(bookingProvider.notifier); // Read the booking notifier
+
     final Map<String, List<String>> groupedImages =
         getGroupedImages(job.bookingTrackers);
 
@@ -79,7 +83,6 @@ class JobDetailsScreen extends HookConsumerWidget {
       context: context,
     );
 
-    // print("hình ảnh xe tải là : ${job.truckNumber ?? 0}");
     print(
         "object:  houseTypeState : ${useFetchHouseResult.data?.name.toString()}");
     // Kiểm tra xem danh sách assignments có phần tử nào không
@@ -170,6 +173,10 @@ class JobDetailsScreen extends HookConsumerWidget {
           title: "Thông tin đơn hàng #${job.id} ",
           iconSecond: Icons.home_outlined,
           // iconFirst: Icons.refresh,
+          onBackButtonPressed: () {
+            bookingNotifier.reset();
+            Navigator.of(context).pop();
+          },
           onCallBackSecond: () {
             final tabsRouter = context.router.root
                 .innerRouterOf<TabsRouter>(TabViewScreenRoute.name);
