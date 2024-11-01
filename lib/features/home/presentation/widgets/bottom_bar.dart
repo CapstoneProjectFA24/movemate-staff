@@ -50,31 +50,32 @@ class CustomBottomBar extends HookWidget {
           ),
           label: 'Trang chủ', // Text label
         ),
-        BottomNavigationBarItem(
-          icon: Container(
-            margin: const EdgeInsets.only(
-              top: AssetsConstants.defaultMargin - 6.0,
-            ),
-            width: size.width * 0.09,
-            height: size.width * 0.08,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(
-                AssetsConstants.defaultBorder,
-              ),
-              color: tabsRouter.activeIndex == 1
-                  ? AssetsConstants.primaryLight
-                  : AssetsConstants.whiteColor,
-            ),
-            child: Icon(
-              Icons.airport_shuttle_rounded,
-              color: tabsRouter.activeIndex == 1
-                  ? Colors.white // Change icon to white when selected
-                  : AssetsConstants.primaryDark,
-              size: AssetsConstants.defaultFontSize - 6.0,
-            ),
-          ),
-          label: 'Công việc của tôi', // Text label
-        ),
+        // BottomNavigationBarItem(
+        //   icon: Container(
+        //     margin: const EdgeInsets.only(
+        //       top: AssetsConstants.defaultMargin - 6.0,
+        //     ),
+        //     width: size.width * 0.09,
+        //     height: size.width * 0.08,
+        //     decoration: BoxDecoration(
+        //       borderRadius: BorderRadius.circular(
+        //         AssetsConstants.defaultBorder,
+        //       ),
+        //       color: tabsRouter.activeIndex == 1
+        //           ? AssetsConstants.primaryLight
+        //           : AssetsConstants.whiteColor,
+        //     ),
+        //     child: Icon(
+        //       Icons.airport_shuttle_rounded,
+        //       color: tabsRouter.activeIndex == 1
+        //           ? Colors.white // Change icon to white when selected
+        //           : AssetsConstants.primaryDark,
+        //       size: AssetsConstants.defaultFontSize - 6.0,
+        //     ),
+        //   ),
+        //   label: 'Công việc của tôi', // Text label
+        // ),
+
         // BottomNavigationBarItem(
         //   icon: Container(
         //     margin: const EdgeInsets.only(

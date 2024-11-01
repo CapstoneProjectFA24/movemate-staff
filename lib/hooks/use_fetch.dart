@@ -38,12 +38,14 @@ class FetchData<T> {
 
     final fetchedItems = await function(
       PagingModel(
-          pageNumber: pageNumber.value,
-          searchContent: pagingModel.searchContent,
-          filterSystemContent: pagingModel.filterSystemContent,
-          filterContent: pagingModel.filterContent,
-          searchDateFrom: pagingModel.searchDateFrom,
-          searchDateTo: pagingModel.searchDateTo),
+        pageNumber: pageNumber.value,
+        searchContent: pagingModel.searchContent,
+        filterSystemContent: pagingModel.filterSystemContent,
+        filterContent: pagingModel.filterContent,
+        searchDateFrom: pagingModel.searchDateFrom,
+        searchDateTo: pagingModel.searchDateTo,
+        isReviewOnline: pagingModel.isReviewOnline,
+      ),
       context,
     );
     isLastPage.value = fetchedItems.length < pagingModel.pageSize;
@@ -87,7 +89,7 @@ FetchResult<T> useFetch<T>({
   final isLoadMoreLoading = useState(false);
 
   final fetch = useMemoized(() => FetchData<T>(function: function), [function]);
- 
+
   useEffect(() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       fetch.fetchData(

@@ -13,10 +13,15 @@ import 'package:movemate_staff/services/realtime_service/booking_status_realtime
 import 'package:movemate_staff/utils/commons/widgets/widgets_common_export.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
 import 'package:movemate_staff/utils/enums/enums_export.dart';
+import 'package:movemate_staff/utils/extensions/scroll_controller.dart';
 
 @RoutePage()
 class JobScreen extends HookConsumerWidget {
-  const JobScreen({super.key});
+  final bool isReviewOnline;
+  const JobScreen({
+    super.key,
+    required this.isReviewOnline,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -30,8 +35,7 @@ class JobScreen extends HookConsumerWidget {
           .read(bookingControllerProvider.notifier)
           .getBookings(model, context),
       initialPagingModel: PagingModel(
-        pageSize: 50,
-        pageNumber: 2,
+        isReviewOnline: isReviewOnline,
       ),
       context: context,
     );
@@ -55,6 +59,7 @@ class JobScreen extends HookConsumerWidget {
         fetchResult.items.map((e) => e.id).toString()));
 
     useEffect(() {
+      scrollController.onScrollEndsListener(fetchResult.loadMore);
       statusAsync.whenData((status) {
         debounce.value?.cancel();
         debounce.value = Timer(const Duration(milliseconds: 300), () {

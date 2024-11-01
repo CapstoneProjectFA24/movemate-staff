@@ -135,26 +135,46 @@ class HomeScreen extends StatelessWidget {
                       spacing: 10,
                       runSpacing: 10,
                       children: [
+                        // DashboardCard(
+                        //   icon: Icons.add_circle,
+                        //   color: Colors.pinkAccent,
+                        //   title: 'Công Việc Mới',
+                        //   description: 'Bắt đầu chuyến đi ',
+                        //   onTap: () {
+                        //     // context.router.push(const JobScreenRoute());
+                        //     AutoTabsRouter.of(context).setActiveIndex(1);
+                        //   },
+                        // ),
                         DashboardCard(
-                          icon: Icons.add_circle,
-                          color: Colors.pinkAccent,
-                          title: 'Công Việc Mới',
-                          description:
-                              'Bắt đầu chuyến đi bằng cách đăng công việc.',
+                          icon: Icons.add_to_home_screen_rounded,
+                          color: Colors.orange,
+                          title: 'Đánh giá tại nhà',
+                          description: 'Nhưng yêu cầu offline đag chờ bạn',
                           onTap: () {
-                            // context.router.push(const JobScreenRoute());
-                            AutoTabsRouter.of(context).setActiveIndex(1);
+                            context.router
+                                .push(JobScreenRoute(isReviewOnline: false));
                           },
                         ),
                         DashboardCard(
-                          icon: Icons.money,
-                          color: Colors.green,
-                          title: 'Chi Phí',
-                          description: 'Theo dõi chi phí của bạn.',
+                          icon: Icons.online_prediction_rounded,
+                          color: Colors.greenAccent,
+                          title: 'Đánh giá online',
+                          description: 'Nhưng yêu cầu online đag chờ bạn',
                           onTap: () {
-                            context.router.push(const JobScreenRoute());
+                            context.router
+                                .push(JobScreenRoute(isReviewOnline: true));
                           },
                         ),
+
+                        // DashboardCard(
+                        //   icon: Icons.money,
+                        //   color: Colors.green,
+                        //   title: 'Chi Phí',
+                        //   description: 'Theo dõi chi phí của bạn.',
+                        //   onTap: () {
+                        //     context.router.push(const JobScreenRoute(isReviewOnline: trrue));
+                        //   },
+                        // ),
                         DashboardCard(
                           icon: Icons.notification_add_outlined,
                           color: const Color.fromARGB(255, 86, 76, 175),
