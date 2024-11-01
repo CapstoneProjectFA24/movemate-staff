@@ -54,17 +54,17 @@ class BookingScreenService extends HookConsumerWidget {
     );
 
     // Sử dụng useEffect để init data một lần duy nhất
-    useEffect(() {
-      if (!hasInitialized.value) {
-        hasInitialized.value = true;
+    // useEffect(() {
+    //   if (!hasInitialized.value) {
+    //     hasInitialized.value = true;
 
-        // Sử dụng addPostFrameCallback để tránh update state trong build
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          syncData(job, fetchResult.items, bookingNotifier);
-        });
-      }
-      return null;
-    }, []);
+    //     // Sử dụng addPostFrameCallback để tránh update state trong build
+    //     WidgetsBinding.instance.addPostFrameCallback((_) {
+    //       syncData(job, fetchResult.items, bookingNotifier);
+    //     });
+    //   }
+    //   return null;
+    // }, []);
 
     // Theo dõi sự thay đổi của fetchResult.items
     useEffect(() {

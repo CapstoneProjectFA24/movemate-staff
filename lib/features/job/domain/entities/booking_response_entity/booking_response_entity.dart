@@ -12,7 +12,7 @@ class BookingResponseEntity {
   final int id;
   final int userId;
   final int houseTypeId;
-  final int truckNumber;
+  // final int truckNumber;
   final HouseTypeEntity? houseType;
   final double deposit;
   final String status;
@@ -63,7 +63,7 @@ class BookingResponseEntity {
     required this.id,
     required this.userId,
     required this.houseTypeId,
-    required this.truckNumber,
+    // required this.truckNumber,
     required this.deposit,
     required this.status,
     required this.pickupAddress,
@@ -114,7 +114,7 @@ class BookingResponseEntity {
       id: json['id'] ?? 0,
       userId: json['userId'] ?? 0,
       houseTypeId: json['houseTypeId'] ?? 0,
-      truckNumber: json['truckNumber'] ?? 0,
+      // truckNumber: json['truckNumber'] ?? 0,
       // deposit: json['deposit'] ?? 0,
       deposit: (json['deposit'] is double)
           ? json['deposit']
@@ -194,7 +194,7 @@ class BookingResponseEntity {
       'id': id,
       'userId': userId,
       'houseTypeId': houseTypeId,
-      'truckNumber': truckNumber,
+      // 'truckNumber': truckNumber,
       'deposit': deposit,
       'status': status,
       'pickupAddress': pickupAddress,
@@ -295,7 +295,7 @@ class BookingResponseEntity {
       id: id ?? this.id,
       userId: userId ?? this.userId,
       houseTypeId: houseTypeId ?? this.houseTypeId,
-      truckNumber: truckNumber ?? this.truckNumber,
+      // truckNumber: truckNumber ?? this.truckNumber,
       houseType: houseType ?? this.houseType,
       deposit: deposit ?? this.deposit,
       status: status ?? this.status,

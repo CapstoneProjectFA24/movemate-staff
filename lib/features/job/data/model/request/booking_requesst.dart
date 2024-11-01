@@ -358,7 +358,7 @@ class BookingUpdateRequest {
         DateTime.now().add(Duration(days: 2)).toIso8601String();
 
     return BookingUpdateRequest(
-      truckCategoryId: booking.selectedVehicle?.id ?? 0,
+      truckCategoryId: booking.selectedVehicle?.truckCategory?.id ?? 0,
       houseTypeId: booking.houseType?.id ?? 1,
       pickupAddress: booking.pickUpLocation?.address ?? '',
       pickupPoint: booking.pickUpLocation != null

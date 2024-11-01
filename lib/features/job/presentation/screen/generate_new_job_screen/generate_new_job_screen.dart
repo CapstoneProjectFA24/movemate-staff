@@ -52,14 +52,14 @@ class GenerateNewJobScreen extends HookConsumerWidget {
     final houseTypeById = useFetchResult.data;
     // print('vinh log $houseTypeById');
 
-    useEffect(() {
-      if (houseTypeById != null) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          bookingNotifier.updateHouseType(houseTypeById);
-        });
-      }
-      return null;
-    }, [houseTypeById]);
+    // useEffect(() {
+    //   if (houseTypeById != null) {
+    //     WidgetsBinding.instance.addPostFrameCallback((_) {
+    //       bookingNotifier.updateHouseType(houseTypeById);
+    //     });
+    //   }
+    //   return null;
+    // }, [houseTypeById]);
 
     final roomNumberController =
         useTextEditingController(text: job.roomNumber?.toString() ?? "1");

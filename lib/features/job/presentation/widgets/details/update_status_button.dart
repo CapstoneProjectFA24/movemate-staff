@@ -172,33 +172,33 @@ class UpdateStatusButton extends ConsumerWidget {
           break;
         case AssignmentsStatusType.suggested:
           buttonText = "Kết thúc review";
-          // onConfirm = () {
-          //   context.router.push(
-          //     GenerateNewJobScreenRoute(job: job),
-          //   );
-          // };
-          onConfirm = () async {
-            try {
-              await ref
-                  .read(reviewerUpdateControllerProvider.notifier)
-                  .updateReviewerStatus(
-                    id: job.id,
-                    context: context, // Ensure this enum exists
-                    request: ReviewerStatusRequest(
-                      status: BookingStatusType.completed,
-                    ),
-                  );
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Kết thúc review thành công')),
-              );
-              // chuyển hướng về trang chủ
-              context.router.popUntilRoot();
-            } catch (e) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Cập nhật thất bại: $e')),
-              );
-            }
+          onConfirm = () {
+            context.router.push(
+              GenerateNewJobScreenRoute(job: job),
+            );
           };
+          // onConfirm = () async {
+          //   try {
+          //     await ref
+          //         .read(reviewerUpdateControllerProvider.notifier)
+          //         .updateReviewerStatus(
+          //           id: job.id,
+          //           context: context, // Ensure this enum exists
+          //           request: ReviewerStatusRequest(
+          //             status: BookingStatusType.completed,
+          //           ),
+          //         );
+          //     ScaffoldMessenger.of(context).showSnackBar(
+          //       const SnackBar(content: Text('Kết thúc review thành công')),
+          //     );
+          //     // chuyển hướng về trang chủ
+          //     context.router.popUntilRoot();
+          //   } catch (e) {
+          //     ScaffoldMessenger.of(context).showSnackBar(
+          //       SnackBar(content: Text('Cập nhật thất bại: $e')),
+          //     );
+          //   }
+          // };
           break;
         default:
           break;
