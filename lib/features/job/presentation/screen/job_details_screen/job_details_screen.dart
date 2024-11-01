@@ -1,19 +1,27 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+// Routes
 import 'package:movemate_staff/configs/routes/app_router.dart';
+
+// Models & Entities
 import 'package:movemate_staff/features/job/data/model/request/reviewer_status_request.dart';
 import 'package:movemate_staff/features/job/data/model/request/reviewer_time_request.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
-import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_trackers_response_entity.dart';
+import 'package:movemate_staff/features/test/domain/entities/house_entities.dart';
+import 'package:movemate_staff/models/request/paging_model.dart';
+
+// Controllers & Providers
 import 'package:movemate_staff/features/job/presentation/controllers/booking_controller/booking_controller.dart';
 import 'package:movemate_staff/features/job/presentation/controllers/house_type_controller/house_type_controller.dart';
 import 'package:movemate_staff/features/job/presentation/controllers/reviewer_update_controller/reviewer_update_controller.dart';
 import 'package:movemate_staff/features/job/presentation/providers/booking_provider.dart';
+
+// Widgets
 import 'package:movemate_staff/features/job/presentation/widgets/details/action_button.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/address.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/booking_code.dart';
@@ -26,22 +34,17 @@ import 'package:movemate_staff/features/job/presentation/widgets/details/section
 import 'package:movemate_staff/features/job/presentation/widgets/details/summary.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/update_status_button.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/dialog_schedule/schedule_dialog.dart';
-import 'package:movemate_staff/features/test/domain/entities/house_entities.dart';
-import 'package:movemate_staff/hooks/use_fetch_obj.dart';
-import 'package:movemate_staff/models/request/paging_model.dart';
-import 'package:movemate_staff/services/realtime_service/booking_status_realtime/booking_status_stream_provider.dart';
-import 'package:movemate_staff/utils/commons/functions/string_utils.dart';
 import 'package:movemate_staff/utils/commons/widgets/app_bar.dart';
 import 'package:movemate_staff/utils/commons/widgets/form_input/label_text.dart';
-import 'package:movemate_staff/features/job/presentation/widgets/button_next/confirmation_button_sheet.dart'
-    as confirm_button_sheet;
 import 'package:movemate_staff/utils/commons/widgets/loading_overlay.dart';
-import 'package:movemate_staff/utils/constants/asset_constant.dart';
-// Hooks
+
+// Hooks & Utils
+import 'package:movemate_staff/hooks/use_fetch_obj.dart';
 import 'package:movemate_staff/hooks/use_fetch.dart';
 import 'package:movemate_staff/utils/enums/enums_export.dart';
-
-// Nhập khẩu các widget đã tạo
+import 'package:movemate_staff/utils/constants/asset_constant.dart';
+import 'package:movemate_staff/utils/commons/functions/string_utils.dart';
+import 'package:movemate_staff/services/realtime_service/booking_status_realtime/booking_status_stream_provider.dart';
 
 @RoutePage()
 class JobDetailsScreen extends HookConsumerWidget {
@@ -54,17 +57,15 @@ class JobDetailsScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isExpanded =
-        useState(false); // Manage the dropdown state using useState
-    final isExpanded1 =
-        useState(false); // Manage the dropdown state using useState
+    final isExpanded = useState(false);
+    final isExpanded1 = useState(false);
 
     void toggleDropdown() {
-      isExpanded.value = !isExpanded.value; // Toggle the dropdown state
+      isExpanded.value = !isExpanded.value;
     }
 
     void toggleDropdown1() {
-      isExpanded1.value = !isExpanded1.value; // Toggle the dropdown state
+      isExpanded1.value = !isExpanded1.value;
     }
 
     final bookingNotifier =
@@ -259,6 +260,7 @@ class JobDetailsScreen extends HookConsumerWidget {
                                 showDialog(
                                   context: context,
                                   builder: (context) => ScheduleDialog(
+                                    orderId: job.id.toString(),
                                     onDateTimeSelected:
                                         (DateTime selectedDateTime) async {
                                       final scheduledAt = selectedDateTime;
@@ -337,9 +339,7 @@ class JobDetailsScreen extends HookConsumerWidget {
                                       ),
                                       ElevatedButton(
                                         onPressed: () async {
-                                          // Thực hiện hành động xác nhận
-                                          Navigator.of(context)
-                                              .pop(); // Đóng hộp thoại sau khi xác nhận
+                                          Navigator.of(context).pop();
                                           // TODO: Thêm logic xử lý khi xác nhận
                                           try {
                                             await ref
@@ -358,7 +358,8 @@ class JobDetailsScreen extends HookConsumerWidget {
                                                 .showSnackBar(
                                               const SnackBar(
                                                   content: Text(
-                                                      'Đã đến thành công')),
+                                                'Đã đến thành công',
+                                              )),
                                             );
                                             fetchResult.refresh();
                                           } catch (e) {
@@ -643,7 +644,6 @@ class JobDetailsScreen extends HookConsumerWidget {
                         ],
                       ),
                       const SizedBox(height: 10),
-
                       ...job.bookingDetails
                           .where((detail) => detail.type == "TRUCK")
                           .map((truckDetail) => buildItem(
@@ -656,21 +656,6 @@ class JobDetailsScreen extends HookConsumerWidget {
                       ...job.bookingDetails.map((detail) => buildPriceItem(
                           detail.name ?? 'Dịch vụ không xác định',
                           formatPrice(detail.price))),
-                      // buildPriceItem(
-                      //     'Dịch Vụ Bốc Xếp Bốc Xếp Tận Nơi (Bởi tài xế)',
-                      //     '140.000 đ'),
-                      // buildPriceItem(
-                      //     'Dịch Vụ Bốc Xếp. Bốc Xếp Tận Nơi (Có người hỗ trợ)',
-                      //     '282.900 đ'),
-                      // buildPriceItem(
-                      //     'Dịch Vụ Bốc Xếp - Bốc Xếp Dưới Xe (Có người hỗ trợ)',
-                      //     '240.000 đ'),
-                      // buildPriceItem('Phí cầu đường', '40.000 đ'),
-                      // buildPriceItem('Giao hàng siêu tốc', '22.900 đ'),
-                      // buildPriceItem('Giao hàng 2 chiều', '20.000 đ'),
-                      // buildSummary('Giảm giá', '-00.000 đ'),
-                      // buildSummary('Thuế GTGT', '-00.000 đ'),
-                      const Divider(color: Colors.grey, thickness: 1),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [

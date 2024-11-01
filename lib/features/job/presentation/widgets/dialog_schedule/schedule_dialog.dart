@@ -4,13 +4,35 @@ import 'package:intl/intl.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/tabItem/input_field.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
 
+// Validation messages constants
+class ValidationMessages {
+  static const String pleaseSelectDateTime = 'Vui lòng chọn cả ngày và giờ';
+}
+
+// Dialog styles
+class DialogStyles {
+  static final borderRadius = BorderRadius.circular(20);
+  static const contentPadding = EdgeInsets.all(20);
+  static const headerTextStyle =
+      TextStyle(fontSize: 20, fontWeight: FontWeight.bold);
+  static final buttonStyle = ElevatedButton.styleFrom(
+    backgroundColor: Colors.black,
+    padding: const EdgeInsets.symmetric(vertical: 15),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(10),
+    ),
+  );
+}
+
 class ScheduleDialog extends StatefulWidget {
   final Function(DateTime) onDateTimeSelected;
+  final String? orderId;
 
   const ScheduleDialog({
-    super.key,
+    Key? key,
     required this.onDateTimeSelected,
-  });
+    this.orderId,
+  }) : super(key: key);
 
   @override
   State<ScheduleDialog> createState() => _ScheduleDialogState();
@@ -33,19 +55,18 @@ class _ScheduleDialogState extends State<ScheduleDialog> {
     super.dispose();
   }
 
-  DateTime? _combineDateAndTime() {
-    if (selectedTime == null) return null;
-
+  DateTime? _combineDateAndTime(DateTime date, TimeOfDay? time) {
+    if (time == null) return null;
     return DateTime(
-      selectedDate.year,
-      selectedDate.month,
-      selectedDate.day,
-      selectedTime!.hour,
-      selectedTime!.minute,
+      date.year,
+      date.month,
+      date.day,
+      time.hour,
+      time.minute,
     );
   }
 
-  Future<void> _handleDatePicker() async {
+  Future<void> handleDatePicker() async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: selectedDate,
@@ -59,7 +80,7 @@ class _ScheduleDialogState extends State<ScheduleDialog> {
     }
   }
 
-  Future<void> _handleTimePicker() async {
+  Future<void> handleTimePicker() async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
@@ -68,17 +89,19 @@ class _ScheduleDialogState extends State<ScheduleDialog> {
     if (picked != null) {
       setState(() {
         selectedTime = picked;
-        // Format the time using the context to get proper localization
         timeController.text = picked.format(context);
       });
     }
   }
 
-  void _handleSubmit() {
-    final DateTime? combinedDateTime = _combineDateAndTime();
+  void handleSubmit() {
+    final DateTime? combinedDateTime = _combineDateAndTime(
+      selectedDate,
+      selectedTime,
+    );
     if (combinedDateTime == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Vui lòng chọn cả ngày và giờ')),
+        const SnackBar(content: Text(ValidationMessages.pleaseSelectDateTime)),
       );
       return;
     }
@@ -87,7 +110,7 @@ class _ScheduleDialogState extends State<ScheduleDialog> {
     Navigator.pop(context);
   }
 
-  Widget _buildHeader() {
+  Widget buildHeader() {
     return FadeInLeft(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -96,10 +119,10 @@ class _ScheduleDialogState extends State<ScheduleDialog> {
             onTap: () => Navigator.pop(context),
             child: const Icon(Icons.arrow_back),
           ),
-          const Expanded(
+          Expanded(
             child: Text(
-              'Tạo lịch cho đơn #1234',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              'Tạo lịch cho đơn #${widget.orderId}',
+              style: DialogStyles.headerTextStyle,
               softWrap: true,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
@@ -112,17 +135,11 @@ class _ScheduleDialogState extends State<ScheduleDialog> {
     );
   }
 
-  Widget _buildCreateTaskButton() {
+  Widget buildCreateTaskButton() {
     return FadeInUp(
       child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.black,
-          padding: const EdgeInsets.symmetric(vertical: 15),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-        ),
-        onPressed: _handleSubmit,
+        style: DialogStyles.buttonStyle,
+        onPressed: handleSubmit,
         child: const Center(
           child: Text(
             'Tạo lịch hẹn',
@@ -138,21 +155,21 @@ class _ScheduleDialogState extends State<ScheduleDialog> {
     return AlertDialog(
       backgroundColor: AssetsConstants.whiteColor,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: DialogStyles.borderRadius,
       ),
-      contentPadding: const EdgeInsets.all(20),
+      contentPadding: DialogStyles.contentPadding,
       content: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            _buildHeader(),
+            buildHeader(),
             const SizedBox(height: 20),
             MyInputField(
               title: "Ngày",
               hint: DateFormat('dd/MM/yyyy').format(selectedDate),
               widget: IconButton(
-                onPressed: _handleDatePicker,
+                onPressed: handleDatePicker,
                 icon: const Icon(Icons.calendar_today_outlined),
               ),
             ),
@@ -162,12 +179,12 @@ class _ScheduleDialogState extends State<ScheduleDialog> {
               hint: "9:30 AM",
               controller: timeController,
               widget: IconButton(
-                onPressed: _handleTimePicker,
+                onPressed: handleTimePicker,
                 icon: const Icon(Icons.access_time_rounded),
               ),
             ),
             const SizedBox(height: 20),
-            _buildCreateTaskButton(),
+            buildCreateTaskButton(),
           ],
         ),
       ),
@@ -177,11 +194,13 @@ class _ScheduleDialogState extends State<ScheduleDialog> {
 
 // Helper function to show dialog
 void showScheduleDialog(
-    BuildContext context, Function(DateTime) onDateTimeSelected) {
+    BuildContext context, Function(DateTime) onDateTimeSelected,
+    {String orderId = '1234'}) {
   showDialog(
     context: context,
     builder: (context) => ScheduleDialog(
       onDateTimeSelected: onDateTimeSelected,
+      orderId: orderId,
     ),
   );
 }

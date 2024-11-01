@@ -171,6 +171,7 @@ class JobScreen extends HookConsumerWidget {
       resizeToAvoidBottomInset: false,
       appBar: CustomAppBar(
         backgroundColor: AssetsConstants.mainColor,
+        backButtonColor: AssetsConstants.whiteColor,
         title: "Công việc của tôi",
         iconFirst: Icons.refresh_rounded,
         iconSecond: Icons.filter_list_alt,
