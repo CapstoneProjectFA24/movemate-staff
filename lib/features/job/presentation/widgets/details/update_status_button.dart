@@ -22,7 +22,6 @@ class UpdateStatusButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // Convert booking status to enum
     final statusbookings = job.status.toString().toBookingTypeEnum();
-    print("object statusbookings ${statusbookings}");
     final statusAsync = ref.watch(orderStatusStreamProvider(job.id.toString()));
 
     final statusAsyncAssignment = ref
@@ -39,8 +38,6 @@ class UpdateStatusButton extends ConsumerWidget {
           error: (err, stack) => AsyncValue.error(err, stack),
         );
 
-    print("object statusAsync ${statusAsync.value}");
-
     // Safely retrieve the first assignment's status as enum
     final assignment =
         job.assignments.isNotEmpty ? job.assignments.first : null;
@@ -51,10 +48,6 @@ class UpdateStatusButton extends ConsumerWidget {
     // Determine button text and action based on conditions
     String? buttonText;
     VoidCallback? onConfirm;
-    print("object statusAsync $statusAsync");
-    print("object statusAsyncAssignment ${statusAsyncAssignment.value}");
-    print("object assignmentStatus $assignmentStatus");
-    print("object job.isReviewOnline ${job.isReviewOnline}");
 
     if (statusAsync.value == BookingStatusType.reviewing &&
         statusAsync.value != BookingStatusType.assigned &&
@@ -172,33 +165,33 @@ class UpdateStatusButton extends ConsumerWidget {
           break;
         case AssignmentsStatusType.suggested:
           buttonText = "Kết thúc review";
-          // onConfirm = () {
-          //   context.router.push(
-          //     GenerateNewJobScreenRoute(job: job),
-          //   );
-          // };
-          onConfirm = () async {
-            try {
-              await ref
-                  .read(reviewerUpdateControllerProvider.notifier)
-                  .updateReviewerStatus(
-                    id: job.id,
-                    context: context, // Ensure this enum exists
-                    request: ReviewerStatusRequest(
-                      status: BookingStatusType.completed,
-                    ),
-                  );
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Kết thúc review thành công')),
-              );
-              // chuyển hướng về trang chủ
-              context.router.popUntilRoot();
-            } catch (e) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Cập nhật thất bại: $e')),
-              );
-            }
+          onConfirm = () {
+            context.router.push(
+              GenerateNewJobScreenRoute(job: job),
+            );
           };
+          // onConfirm = () async {
+          //   try {
+          //     await ref
+          //         .read(reviewerUpdateControllerProvider.notifier)
+          //         .updateReviewerStatus(
+          //           id: job.id,
+          //           context: context, // Ensure this enum exists
+          //           request: ReviewerStatusRequest(
+          //             status: BookingStatusType.completed,
+          //           ),
+          //         );
+          //     ScaffoldMessenger.of(context).showSnackBar(
+          //       const SnackBar(content: Text('Kết thúc review thành công')),
+          //     );
+          //     // chuyển hướng về trang chủ
+          //     context.router.popUntilRoot();
+          //   } catch (e) {
+          //     ScaffoldMessenger.of(context).showSnackBar(
+          //       SnackBar(content: Text('Cập nhật thất bại: $e')),
+          //     );
+          //   }
+          // };
           break;
         default:
           break;
