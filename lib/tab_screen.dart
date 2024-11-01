@@ -23,7 +23,7 @@ class TabViewScreen extends ConsumerWidget {
         scaffoldKey: autoTabsScaffoldKey,
         routes: const [
           HomeScreenRoute(),
-          JobScreenRoute(),
+          // JobScreenRoute(),
           // OrderScreenRoute(),
           // PromotionScreenRoute(),
           ProfileScreenRoute(),

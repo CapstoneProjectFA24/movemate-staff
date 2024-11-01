@@ -57,7 +57,7 @@ class BookingController extends _$BookingController {
     state = await AsyncValue.guard(() async {
       final response = await bookingRepository.getBookings(
         accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
-        // request: request,
+        request: request,
       );
       bookings = response.payload;
 

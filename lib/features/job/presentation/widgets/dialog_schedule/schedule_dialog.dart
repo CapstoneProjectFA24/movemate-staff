@@ -96,9 +96,15 @@ class _ScheduleDialogState extends State<ScheduleDialog> {
             onTap: () => Navigator.pop(context),
             child: const Icon(Icons.arrow_back),
           ),
-          const Text(
-            'Tạo lịch cho đơn booking',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          const Expanded(
+            child: Text(
+              'Tạo lịch cho đơn #1234',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              softWrap: true,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+            ),
           ),
           const SizedBox(width: 24),
         ],

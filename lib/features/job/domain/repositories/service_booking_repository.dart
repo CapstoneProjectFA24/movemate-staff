@@ -64,6 +64,7 @@ abstract class BookingRepository {
 
   Future<BookingResponse> getBookings({
     required String accessToken,
+    required PagingModel request,
   });
 
   Future<BookingResponse> postValuationBooking({

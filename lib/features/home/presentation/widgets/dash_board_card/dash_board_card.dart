@@ -7,7 +7,8 @@ class DashboardCard extends StatelessWidget {
   final String description;
   final VoidCallback onTap; // Hàm callback khi bấm vào thẻ
 
-  const DashboardCard({super.key, 
+  const DashboardCard({
+    super.key,
     required this.icon,
     required this.color,
     required this.title,
@@ -21,8 +22,8 @@ class DashboardCard extends StatelessWidget {
       onTap: onTap, // Gọi hàm khi bấm vào thẻ
       borderRadius: BorderRadius.circular(10), // Bo tròn góc khi bấm
       child: Container(
-        height: MediaQuery.of(context).size.height * 0.2,
-        width: MediaQuery.of(context).size.width * 0.42,
+        height: MediaQuery.of(context).size.height * 0.22,
+        width: MediaQuery.of(context).size.width * 0.43,
         padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(
           color: Colors.white,

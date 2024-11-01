@@ -261,10 +261,8 @@ class JobDetailsScreen extends HookConsumerWidget {
                                   builder: (context) => ScheduleDialog(
                                     onDateTimeSelected:
                                         (DateTime selectedDateTime) async {
-                                      // Xử lý datetime đã chọn
                                       final scheduledAt = selectedDateTime;
                                       print('Selected datetime: $scheduledAt');
-                                      // TODO: Xử lý logic ở đây (ví dụ: gọi API)
 
                                       final reviewerUpdateController = ref.read(
                                           reviewerUpdateControllerProvider

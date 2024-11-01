@@ -1,6 +1,7 @@
 // service_booking_source.dart
 
 import 'package:dio/dio.dart';
+import 'package:movemate_staff/features/job/data/model/queries/booking_queries.dart';
 import 'package:movemate_staff/features/job/data/model/request/reviewer_status_request.dart';
 import 'package:movemate_staff/features/job/data/model/request/reviewer_time_request.dart';
 import 'package:movemate_staff/features/job/data/model/response/house_type_obj_response.dart';
@@ -67,6 +68,7 @@ abstract class BookingSource {
   Future<HttpResponse<BookingResponse>> getBookings(
     @Header(APIConstants.contentHeader) String contentType,
     @Header(APIConstants.authHeader) String accessToken,
+    @Queries() BookingQueries queries,
   );
 
   @PUT('${APIConstants.post_booking_service}/{id}')

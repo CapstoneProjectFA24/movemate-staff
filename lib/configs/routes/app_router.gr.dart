@@ -92,9 +92,13 @@ abstract class _$AppRouter extends RootStackRouter {
       );
     },
     JobScreenRoute.name: (routeData) {
+      final args = routeData.argsAs<JobScreenRouteArgs>();
       return AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const JobScreen(),
+        child: JobScreen(
+          key: args.key,
+          isReviewOnline: args.isReviewOnline,
+        ),
       );
     },
     OTPVerificationScreenRoute.name: (routeData) {
@@ -426,16 +430,40 @@ class JobDetailsScreenRouteArgs {
 
 /// generated route for
 /// [JobScreen]
-class JobScreenRoute extends PageRouteInfo<void> {
-  const JobScreenRoute({List<PageRouteInfo>? children})
-      : super(
+class JobScreenRoute extends PageRouteInfo<JobScreenRouteArgs> {
+  JobScreenRoute({
+    Key? key,
+    required bool isReviewOnline,
+    List<PageRouteInfo>? children,
+  }) : super(
           JobScreenRoute.name,
+          args: JobScreenRouteArgs(
+            key: key,
+            isReviewOnline: isReviewOnline,
+          ),
           initialChildren: children,
         );
 
   static const String name = 'JobScreenRoute';
 
-  static const PageInfo<void> page = PageInfo<void>(name);
+  static const PageInfo<JobScreenRouteArgs> page =
+      PageInfo<JobScreenRouteArgs>(name);
+}
+
+class JobScreenRouteArgs {
+  const JobScreenRouteArgs({
+    this.key,
+    required this.isReviewOnline,
+  });
+
+  final Key? key;
+
+  final bool isReviewOnline;
+
+  @override
+  String toString() {
+    return 'JobScreenRouteArgs{key: $key, isReviewOnline: $isReviewOnline}';
+  }
 }
 
 /// generated route for

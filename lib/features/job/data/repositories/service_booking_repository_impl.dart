@@ -1,5 +1,6 @@
 // service_booking_repository_impl.dart
 
+import 'package:movemate_staff/features/job/data/model/queries/booking_queries.dart';
 import 'package:movemate_staff/features/job/data/model/request/booking_requesst.dart';
 import 'package:movemate_staff/features/job/data/model/request/reviewer_status_request.dart';
 import 'package:movemate_staff/features/job/data/model/request/reviewer_time_request.dart';
@@ -116,10 +117,17 @@ class BookingRepositoryImpl extends RemoteBaseRepository
   @override
   Future<BookingResponse> getBookings({
     required String accessToken,
+    required PagingModel request,
   }) async {
+    final bookingQueries = BookingQueries(
+      page: request.pageNumber,
+      perPage: request.pageSize,
+      IsReviewOnl: request.isReviewOnline,
+    );
+    
     return getDataOf(
-      request: () =>
-          _bookingSource.getBookings(APIConstants.contentType, accessToken),
+      request: () => _bookingSource.getBookings(
+          APIConstants.contentType, accessToken, bookingQueries),
     );
   }
 
