@@ -46,6 +46,7 @@ class VehicleList extends StatelessWidget {
     }
     // Kiểm tra xem người dùng đã chọn vehicle mới chưa
     bool hasUserSelection = bookingState.selectedVehicle != null;
+
     return ListView.builder(
       itemCount: fetchResult.items.length + 1,
       physics: const AlwaysScrollableScrollPhysics(),
@@ -75,7 +76,8 @@ class VehicleList extends StatelessWidget {
 
             bookingNotifier.updateSelectedVehicle(service);
           },
-          child: VehicleCard(service: service, isSelected: isSelected),
+          child:
+              VehicleCard(service: service, isSelected: isSelected, job: job),
         );
       },
     );

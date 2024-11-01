@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/service_entity.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
 
@@ -6,11 +7,12 @@ import 'package:movemate_staff/utils/constants/asset_constant.dart';
 class VehicleCard extends StatelessWidget {
   final ServiceEntity service;
   final bool isSelected;
-
+  final BookingResponseEntity job;
   const VehicleCard({
     super.key,
     required this.service,
     required this.isSelected,
+    required this.job,
   });
 
   @override
@@ -18,6 +20,12 @@ class VehicleCard extends StatelessWidget {
     final truckCategory = service.truckCategory;
     // print('truckCategory: $truckCategory');
     // print('isSelected: $isSelected');
+    final gettruck = job.bookingDetails
+        .where((detail) => detail.type == "TRUCK")
+        .map((truckDetail) => truckDetail.serviceId);
+
+    final bool isSelectedTruckCard = isSelected && service.id == gettruck.first;
+
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
       padding: const EdgeInsets.all(8),
@@ -139,7 +147,7 @@ class VehicleCard extends StatelessWidget {
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (isSelected)
+              if (isSelectedTruckCard)
                 const Icon(
                   Icons.check_circle,
                   color: AssetsConstants.primaryDark,

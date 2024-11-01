@@ -52,47 +52,20 @@ class GenerateNewJobScreen extends HookConsumerWidget {
     final houseTypeById = useFetchResult.data;
     // print('vinh log $houseTypeById');
 
-    // useEffect(() {
-    //   if (houseTypeById != null) {
-    //     WidgetsBinding.instance.addPostFrameCallback((_) {
-    //       bookingNotifier.updateHouseType(houseTypeById);
-    //     });
-    //   }
-    //   return null;
-    // }, [houseTypeById]);
+    useEffect(() {
+      if (houseTypeById != null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          bookingNotifier.updateHouseType(houseTypeById);
+        });
+      }
+      return null;
+    }, [houseTypeById]);
 
     final roomNumberController =
         useTextEditingController(text: job.roomNumber?.toString() ?? "1");
 
     final floorsNumberController =
         useTextEditingController(text: job.floorsNumber?.toString() ?? "1");
-
-    // Cập nhật StateProvider khi TextField thay đổi
-    useEffect(() {
-      void listener() {
-        final roomText = roomNumberController.text;
-        final floorsText = floorsNumberController.text;
-
-        final roomNumber = int.tryParse(roomText);
-        final floorsNumber = int.tryParse(floorsText);
-
-        if (roomNumber != null) {
-          bookingNotifier.updateNumberOfRooms(roomNumber);
-        }
-
-        if (floorsNumber != null) {
-          bookingNotifier.updateNumberOfFloors(floorsNumber);
-        }
-      }
-
-      roomNumberController.addListener(listener);
-      floorsNumberController.addListener(listener);
-
-      return () {
-        roomNumberController.removeListener(listener);
-        floorsNumberController.removeListener(listener);
-      };
-    }, [roomNumberController, floorsNumberController]);
 
     //  Đồng bộ state với controller khi state thay đổi từ bên ngoài
     useEffect(() {
