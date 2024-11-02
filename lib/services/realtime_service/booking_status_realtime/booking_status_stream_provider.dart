@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
+import 'package:movemate_staff/services/realtime_service/booking_realtime_entity/booking_realtime_entity.dart';
 import 'package:movemate_staff/utils/enums/booking_status_type.dart';
 
 final orderStatusStreamProvider =
@@ -13,6 +15,7 @@ final orderStatusStreamProvider =
     return statusString.toBookingTypeEnum();
   });
 });
+
 final orderStatusAssignmentStreamProvider =
     StreamProvider.family<List<AssignmentsStatusType>, String>(
         (ref, bookingId) {
@@ -27,5 +30,23 @@ final orderStatusAssignmentStreamProvider =
       return statusString.toAssignmentsTypeEnum();
     }).toList();
     return statusList;
+  });
+});
+
+final bookingStreamProvider =
+    StreamProvider.family<BookingRealtimeEntity, String>(
+        (ref, String bookingId) {
+  return FirebaseFirestore.instance
+      .collection('bookings')
+      .doc(bookingId)
+      .snapshots()
+      .map((snapshot) {
+    if (!snapshot.exists) {
+      throw Exception('Booking not found');
+    }
+
+    final data = snapshot.data();
+
+    return BookingRealtimeEntity.fromMap(data!, bookingId);
   });
 });
