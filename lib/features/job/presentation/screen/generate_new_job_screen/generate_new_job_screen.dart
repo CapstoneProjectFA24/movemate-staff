@@ -227,87 +227,16 @@ class GenerateNewJobScreen extends HookConsumerWidget {
                       buildLabel("Hình ảnh khách hàng cung cấp"),
                       buildImageRow(),
                       const SizedBox(height: 16),
-                      // Vehicle Type Dropdown
-                      buildLabel("Loại xe"),
-                      buildDropdown(
-                        items: ['Xe tải 500kg'],
-                        icon: Icons.arrow_drop_down,
-                      ),
-                      const SizedBox(height: 16),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-                // Additional info section
-                const Padding(
-                  padding: EdgeInsets.only(left: 14.0, top: 14.0),
-                  child: Row(
-                    children: [
-                      Icon(Icons.add_circle, color: Colors.orange),
-                      SizedBox(width: 8),
-                      Text(
-                        "Số lượng bốc vác",
-                        style: TextStyle(color: Colors.orange),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 12),
-                const Padding(
-                  padding: EdgeInsets.only(bottom: 18.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Thời gian ước lượng hoàn thành: 3 tiếng",
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                      Text.rich(
-                        TextSpan(
-                          text: "Thời gian ước lượng kết thúc: ",
-                          style: TextStyle(color: Colors.grey),
-                          children: [
-                            TextSpan(
-                              text: "11h30",
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                      ),
                     ],
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0),
+                  padding: const EdgeInsets.only(
+                      bottom: 30.0, top: 30, right: 10, left: 10),
                   child: ElevatedButton(
                     onPressed: () {
-                      final updatedBooking = ref.read(bookingProvider);
-                      showModalBottomSheet(
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.vertical(
-                            top: Radius.circular(20),
-                          ),
-                        ),
-                        context: context,
-                        builder: (BuildContext context) {
-                          return confirm_button_sheet.ConfirmationBottomSheet(
-                            // job: job,
-                            job: job.copyWith(
-                              roomNumber:
-                                  updatedBooking.numberOfRooms?.toString(),
-                              floorsNumber:
-                                  updatedBooking.numberOfFloors?.toString(),
-                              createdAt:
-                                  updatedBooking.bookingDate?.toIso8601String(),
-                              houseTypeId: updatedBooking.houseType?.id,
-                            ),
-                            onConfirm: () {
-                              context.router
-                                  .push(AvailableVehiclesScreenRoute(job: job));
-                            },
-                          );
-                        },
-                      );
+                      context.router
+                          .push(AvailableVehiclesScreenRoute(job: job));
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFFF9900),
@@ -318,7 +247,7 @@ class GenerateNewJobScreen extends HookConsumerWidget {
                       fixedSize: const Size(400, 50),
                     ),
                     child: const Text(
-                      'Xác nhận',
+                      'Bước tiếp theo',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,
