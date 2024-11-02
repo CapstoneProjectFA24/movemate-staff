@@ -1,6 +1,5 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
-import 'package:movemate_staff/features/job/presentation/widgets/details/image.dart';
 
 class Section extends StatelessWidget {
   final String title;

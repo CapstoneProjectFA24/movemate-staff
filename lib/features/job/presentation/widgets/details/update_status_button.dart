@@ -235,8 +235,7 @@ class UpdateStatusButton extends ConsumerWidget {
         ),
       );
     } else {
-      return const SizedBox
-          .shrink(); // Return empty widget if conditions not met
+      return const SizedBox.shrink();
     }
   }
 }
