@@ -3,14 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 // Routes
 import 'package:movemate_staff/configs/routes/app_router.dart';
 
 // Models & Entities
-import 'package:movemate_staff/features/job/data/model/request/reviewer_status_request.dart';
-import 'package:movemate_staff/features/job/data/model/request/reviewer_time_request.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/main_detail_ui/contact_info_section.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/main_detail_ui/detail_info_basic.dart';
@@ -23,16 +20,11 @@ import 'package:movemate_staff/models/request/paging_model.dart';
 // Controllers & Providers
 import 'package:movemate_staff/features/job/presentation/controllers/booking_controller/booking_controller.dart';
 import 'package:movemate_staff/features/job/presentation/controllers/house_type_controller/house_type_controller.dart';
-import 'package:movemate_staff/features/job/presentation/controllers/reviewer_update_controller/reviewer_update_controller.dart';
 import 'package:movemate_staff/features/job/presentation/providers/booking_provider.dart';
 
 // Widgets
 import 'package:movemate_staff/features/job/presentation/widgets/details/action_button.dart';
-import 'package:movemate_staff/features/job/presentation/widgets/details/image_section.dart';
-import 'package:movemate_staff/features/job/presentation/widgets/details/update_status_button.dart';
-import 'package:movemate_staff/features/job/presentation/widgets/dialog_schedule/schedule_dialog.dart';
 import 'package:movemate_staff/utils/commons/widgets/app_bar.dart';
-import 'package:movemate_staff/utils/commons/widgets/form_input/label_text.dart';
 import 'package:movemate_staff/utils/commons/widgets/loading_overlay.dart';
 
 // Hooks & Utils
@@ -40,7 +32,6 @@ import 'package:movemate_staff/hooks/use_fetch_obj.dart';
 import 'package:movemate_staff/hooks/use_fetch.dart';
 import 'package:movemate_staff/utils/enums/enums_export.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
-import 'package:movemate_staff/utils/commons/functions/string_utils.dart';
 import 'package:movemate_staff/services/realtime_service/booking_status_realtime/booking_status_stream_provider.dart';
 
 @RoutePage()
@@ -65,8 +56,7 @@ class JobDetailsScreen extends HookConsumerWidget {
       isExpanded1.value = !isExpanded1.value;
     }
 
-    final bookingNotifier =
-        ref.read(bookingProvider.notifier); // Read the booking notifier
+    final bookingNotifier = ref.read(bookingProvider.notifier);
 
     final Map<String, List<String>> groupedImages =
         getGroupedImages(job.bookingTrackers);
@@ -228,28 +218,4 @@ class JobDetailsScreen extends HookConsumerWidget {
       ),
     );
   }
-}
-
-Widget buildItem(
-    {required String imageUrl,
-    required String title,
-    required String description}) {
-  return Container(
-    margin: const EdgeInsets.symmetric(vertical: 10),
-    child: Row(
-      children: [
-        Image.network(imageUrl, width: 80, height: 80),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-              Text(description, style: const TextStyle(color: Colors.grey)),
-            ],
-          ),
-        ),
-      ],
-    ),
-  );
 }

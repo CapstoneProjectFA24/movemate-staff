@@ -81,15 +81,15 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
                 error: (err, stack) => Text('Error: $err'),
               ) == BookingStatusType.pending &&
               !isReviewOnline)
-            _buildScheduleButton(context, ref),
+            buildScheduleButton(context, ref),
           if (statusOrders == BookingStatusType.pending && isReviewOnline)
-            _buildConfirmButton(context, ref),
+            buildConfirmButton(context, ref),
         ],
       ),
     );
   }
 
-  Widget _buildScheduleButton(BuildContext context, WidgetRef ref) {
+  Widget buildScheduleButton(BuildContext context, WidgetRef ref) {
     return Padding(
       padding: const EdgeInsets.only(right: 18.0, left: 10.0),
       child: SizedBox(
@@ -131,7 +131,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
     );
   }
 
-  Widget _buildConfirmButton(BuildContext context, WidgetRef ref) {
+  Widget buildConfirmButton(BuildContext context, WidgetRef ref) {
     return Padding(
       padding: const EdgeInsets.only(right: 18.0, left: 10.0),
       child: SizedBox(
