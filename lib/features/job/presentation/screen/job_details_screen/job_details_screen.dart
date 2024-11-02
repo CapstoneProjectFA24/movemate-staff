@@ -15,6 +15,7 @@ import 'package:movemate_staff/features/job/presentation/widgets/details/main_de
 import 'package:movemate_staff/features/job/presentation/widgets/details/main_detail_ui/image_info_section.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/main_detail_ui/price_service_section.dart';
 import 'package:movemate_staff/features/test/domain/entities/house_entities.dart';
+import 'package:movemate_staff/hooks/use_booking_status.dart';
 import 'package:movemate_staff/models/request/paging_model.dart';
 
 // Controllers & Providers
@@ -47,6 +48,13 @@ class JobDetailsScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isExpanded = useState(false);
     final isExpanded1 = useState(false);
+
+    final bookingAsync = ref.watch(bookingStreamProvider(job.id.toString()));
+    print("ving ${bookingAsync.value?.toJson()}");
+
+    final isReviewOnline = true;
+    final bookingStatus = useBookingStatus(bookingAsync.value, isReviewOnline);
+    print('ving 1 ${bookingStatus.statusMessage}');
 
     void toggleDropdown() {
       isExpanded.value = !isExpanded.value;
@@ -94,7 +102,7 @@ class JobDetailsScreen extends HookConsumerWidget {
           .getBookings(model, context),
       initialPagingModel: PagingModel(
         pageSize: 50,
-        pageNumber: 2,
+        pageNumber: 1,
       ),
       context: context,
     );
