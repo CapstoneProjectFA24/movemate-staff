@@ -49,13 +49,6 @@ class JobDetailsScreen extends HookConsumerWidget {
     final isExpanded = useState(false);
     final isExpanded1 = useState(false);
 
-    final bookingAsync = ref.watch(bookingStreamProvider(job.id.toString()));
-    print("ving ${bookingAsync.value?.toJson()}");
-
-    final isReviewOnline = true;
-    final bookingStatus = useBookingStatus(bookingAsync.value, isReviewOnline);
-    print('ving 1 ${bookingStatus.statusMessage}');
-
     void toggleDropdown() {
       isExpanded.value = !isExpanded.value;
     }
@@ -79,14 +72,10 @@ class JobDetailsScreen extends HookConsumerWidget {
       context: context,
     );
 
-    print(
-        "object:  houseTypeState : ${useFetchHouseResult.data?.name.toString()}");
-    // Kiểm tra xem danh sách assignments có phần tử nào không
     AssignmentsStatusType? statusAssignment;
     if (job.assignments.isNotEmpty) {
       statusAssignment = job.assignments.first.status.toAssignmentsTypeEnum();
     } else {
-      // Gán một giá trị mặc định hoặc xử lý trường hợp không có assignments
       statusAssignment = null;
       print('Warning: Assignments list is empty.');
     }
@@ -125,22 +114,12 @@ class JobDetailsScreen extends HookConsumerWidget {
           error: (err, stack) => AsyncValue.error(err, stack),
         );
 
-    print("Status  statusAsync  của booking  : $statusAsync");
-
-    print(
-        "Status  statusAsyncAssignment  của booking  : $statusAsyncAssignment");
-
-    print("service  của booking  : ${job.bookingDetails.map(
-      (e) => (e.type),
-    )} ");
-
     final debounce = useRef<Timer?>(null);
     final statusOrders = statusAsync.when(
       data: (status) => status,
       loading: () => const CircularProgressIndicator(),
       error: (err, stack) => Text('Error: $err'),
     );
-    print("object: statusOrders  $statusOrders");
     // useEffect(() {
     //   statusAsync.whenData((status) {
     //     debounce.value?.cancel();
@@ -192,13 +171,9 @@ class JobDetailsScreen extends HookConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 BookingHeaderStatusSection(
-                  statusAsync: statusAsync,
-                  statusAsyncAssignment: statusAsyncAssignment,
-                  statusOrders: statusOrders,
                   isReviewOnline: job.isReviewOnline,
                   job: job,
                   fetchResult: fetchResult,
-                  statusBooking: statusBooking,
                 ),
                 const SizedBox(height: 50),
                 DetailInfoBasicCard(

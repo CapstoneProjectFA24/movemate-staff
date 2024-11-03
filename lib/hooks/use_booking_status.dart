@@ -1,39 +1,6 @@
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:movemate_staff/services/realtime_service/booking_realtime_entity/booking_realtime_entity.dart';
-
-enum BookingStatus {
-  pending,
-  assigned,
-  waiting,
-  depositing,
-  reviewing,
-  reviewed,
-  coming,
-  cancel,
-  refunded,
-  inProgress,
-  inTransit,
-  delivered,
-  unloaded,
-  completed
-}
-
-enum BookingStateAssign {
-  waiting,
-  assigned,
-  enroute,
-  arrived,
-  inProgress,
-  inTransit,
-  delivered,
-  unloaded,
-  suggested,
-  reviewed,
-  completed,
-  failed,
-  cancelled,
-  refunded
-}
+import 'package:movemate_staff/utils/enums/booking_status_type.dart';
 
 class BookingStatusResult {
   final String statusMessage;
@@ -48,6 +15,7 @@ class BookingStatusResult {
   final bool isDelivered;
   final bool isCompleted;
   final bool isSuggested;
+  final bool canCreateSchedule;
 
   BookingStatusResult({
     required this.statusMessage,
@@ -62,6 +30,7 @@ class BookingStatusResult {
     required this.isDelivered,
     required this.isCompleted,
     required this.isSuggested,
+    required this.canCreateSchedule,
   });
 }
 
@@ -82,70 +51,74 @@ BookingStatusResult useBookingStatus(
         isDelivered: false,
         isCompleted: false,
         isSuggested: false,
+        canCreateSchedule: false,
       );
     }
 
     final assignments = booking.assignments ?? [];
-    final status = booking.status;
+    final status = booking.status.toBookingTypeEnum();
 
     // Check for offline reviewer assignment
     final hasReviewer = assignments.any((assignment) =>
-        assignment.status == BookingStateAssign.suggested.toString() &&
+        assignment.status.toAssignmentsTypeEnum() ==
+            AssignmentsStatusType.suggested &&
         assignment.staffType == "REVIEWER");
 
     // Check if any assignment is in SUGGESTED state
     final isSuggested = assignments.any((assignment) =>
-        assignment.status == BookingStateAssign.suggested.toString());
+        assignment.status.toAssignmentsTypeEnum() ==
+        AssignmentsStatusType.suggested);
 
     // Determine review capabilities
     final canReviewOffline = hasReviewer &&
-        (status == BookingStatus.reviewing.toString() && !isReviewOnline);
+        (status == BookingStatusType.reviewing && !isReviewOnline);
 
     final canReviewOnline =
-        isReviewOnline && status == BookingStatus.reviewing.toString();
+        isReviewOnline && status == BookingStatusType.reviewing;
 
     // Check staff status
-    final isStaffEnroute = assignments
-        .any((a) => a.status == BookingStateAssign.enroute.toString());
+    final isStaffEnroute = assignments.any((a) =>
+        a.status.toAssignmentsTypeEnum() == AssignmentsStatusType.enroute);
 
-    final isStaffArrived = assignments
-        .any((a) => a.status == BookingStateAssign.arrived.toString());
+    final isStaffArrived = assignments.any((a) =>
+        a.status.toAssignmentsTypeEnum() == AssignmentsStatusType.arrived);
 
     // Check delivery status
-    final isInProgress = assignments
-        .any((a) => a.status == BookingStateAssign.inProgress.toString());
+    final isInProgress = assignments.any((a) =>
+        a.status.toAssignmentsTypeEnum() == AssignmentsStatusType.inProgress);
 
-    final isInTransit = status == BookingStatus.inTransit.toString() ||
-        assignments
-            .any((a) => a.status == BookingStateAssign.inTransit.toString());
+    final isInTransit = status ==
+        // BookingStatusType.inTransit ||
+        assignments.any((a) =>
+            a.status.toAssignmentsTypeEnum() ==
+            AssignmentsStatusType.inTransit);
 
-    final isDelivered = assignments
-        .any((a) => a.status == BookingStateAssign.delivered.toString());
+    final isDelivered = assignments.any((a) =>
+        a.status.toAssignmentsTypeEnum() == AssignmentsStatusType.delivered);
 
-    final isCompleted = status == BookingStatus.completed.toString() ||
-        assignments
-            .any((a) => a.status == BookingStateAssign.completed.toString());
+    final isCompleted = status == BookingStatusType.completed ||
+        assignments.any((a) =>
+            a.status.toAssignmentsTypeEnum() ==
+            AssignmentsStatusType.completed);
 
     // Determine status message
     String statusMessage = "";
-    String description = '';
     switch (status) {
-      case "PENDING":
+      case BookingStatusType.pending:
         statusMessage = "Chờ xác nhận";
-        description = "";
         break;
-      case "DEPOSITING":
+      case BookingStatusType.depositing:
         statusMessage = "Chờ khách hàng thanh toán";
         break;
-      case "ASSIGNED":
+      case BookingStatusType.assigned:
         statusMessage = canReviewOffline
             ? "Chờ bạn xếp lịch với khách hàng"
             : "Đã được phân công";
         break;
-      case "WAITING":
+      case BookingStatusType.waiting:
         statusMessage = "Đang chờ khách hàng chấp nhận lịch";
         break;
-      case "REVIEWING":
+      case BookingStatusType.reviewing:
         if (isStaffEnroute) {
           statusMessage = "Nhân viên đang di chuyển";
         } else if (isStaffArrived) {
@@ -154,25 +127,25 @@ BookingStatusResult useBookingStatus(
           statusMessage = "Đang đợi bạn đánh giá";
         }
         break;
-      case "REVIEWED":
+      case BookingStatusType.reviewed:
         statusMessage = "Đã đánh giá xong";
         break;
-      case "IN_PROGRESS":
+      case BookingStatusType.inProgress:
         statusMessage = "Đang thực hiện";
         break;
-      case "IN_TRANSIT":
-        statusMessage = "Đang vận chuyển";
-        break;
-      case "DELIVERED":
-        statusMessage = "Đã giao hàng";
-        break;
-      case "COMPLETED":
+      // case BookingStatusType.inTransit:
+      //   statusMessage = "Đang vận chuyển";
+      //   break;
+      // case BookingStatusType.delivered:
+      //   statusMessage = "Đã giao hàng";
+      //   break;
+      case BookingStatusType.completed:
         statusMessage = "Hoàn thành";
         break;
-      case "CANCEL":
+      case BookingStatusType.cancelled:
         statusMessage = "Đã hủy";
         break;
-      case "REFUNDED":
+      case BookingStatusType.refunded:
         statusMessage = "Đã hoàn tiền";
         break;
       default:
@@ -183,15 +156,16 @@ BookingStatusResult useBookingStatus(
       statusMessage: statusMessage,
       canReviewOffline: canReviewOffline,
       canReviewOnline: canReviewOnline,
-      isWaitingForPayment: status == BookingStatus.depositing.toString(),
+      isWaitingForPayment: status == BookingStatusType.depositing,
       isStaffEnroute: isStaffEnroute,
       isStaffArrived: isStaffArrived,
-      isReviewed: status == BookingStatus.reviewed.toString(),
+      isReviewed: status == BookingStatusType.reviewed,
       isInProgress: isInProgress,
       isInTransit: isInTransit,
       isDelivered: isDelivered,
       isCompleted: isCompleted,
       isSuggested: isSuggested,
+      canCreateSchedule: status == BookingStatusType.assigned,
     );
   }, [booking]);
 }
