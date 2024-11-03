@@ -31,6 +31,7 @@ import 'package:movemate_staff/features/profile/presentation/screens/contact/con
 import 'package:movemate_staff/features/job/presentation/screen/job_details_screen/job_details_screen.dart';
 import 'package:movemate_staff/features/job/presentation/screen/job_screen/job_screen.dart';
 import 'package:movemate_staff/features/job/presentation/screen/add_job_screen/add_job_screen.dart';
+import 'package:movemate_staff/features/job/presentation/screen/porter_screen/porter_screen.dart';
 import 'package:movemate_staff/features/history/presentation/screen/history_screen.dart';
 
 import 'package:movemate_staff/splash_screen.dart';
@@ -106,6 +107,9 @@ class AppRouter extends _$AppRouter {
         ),
         AutoRoute(
           page: InfoScreenRoute.page,
+        ),
+        AutoRoute(
+          page: PorterScreenRoute.page,
         ),
         //hoàng
         AutoRoute(

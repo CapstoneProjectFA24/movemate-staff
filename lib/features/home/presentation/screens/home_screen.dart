@@ -165,6 +165,16 @@ class HomeScreen extends StatelessWidget {
                                 .push(JobScreenRoute(isReviewOnline: true));
                           },
                         ),
+                        DashboardCard(
+                          icon: Icons.tab,
+                          color: Colors.orange,
+                          title: 'Công việc bốc vác',
+                          description: 'Công việc của bạn',
+                          onTap: () {
+                            context.router
+                                .push(const PorterScreenRoute());
+                          },
+                        ),
 
                         // DashboardCard(
                         //   icon: Icons.money,
