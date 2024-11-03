@@ -33,7 +33,7 @@ import 'package:movemate_staff/features/job/presentation/screen/job_screen/job_s
 import 'package:movemate_staff/features/job/presentation/screen/add_job_screen/add_job_screen.dart';
 import 'package:movemate_staff/features/job/presentation/screen/porter_screen/porter_screen.dart';
 import 'package:movemate_staff/features/history/presentation/screen/history_screen.dart';
-
+import 'package:movemate_staff/features/test-map/map_test_screen.dart';
 import 'package:movemate_staff/splash_screen.dart';
 import 'package:movemate_staff/tab_screen.dart';
 // import 'package:movemate_staff/onboarding_screen.dart';
@@ -111,7 +111,9 @@ class AppRouter extends _$AppRouter {
         AutoRoute(
           page: PorterScreenRoute.page,
         ),
-        //hoàng
+        AutoRoute(
+          page: MapScreenTestRoute.page,
+        ),
         AutoRoute(
           page: JobScreenRoute.page,
         ),

@@ -1,8 +1,9 @@
 {
   "project_info": {
     "project_number": "739539035350",
+    "firebase_url": "https://movemate-firebase-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "movemate-firebase",
-    "storage_bucket": "movemate-firebase.appspot.com"
+    "storage_bucket": "movemate-firebase.firebasestorage.app"
   },
   "client": [
     {
