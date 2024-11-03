@@ -1,255 +1,295 @@
-import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:animate_do/animate_do.dart';
+import 'package:intl/intl.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/presentation/screen/job_details_screen/job_details_screen.dart';
-import 'package:movemate_staff/utils/constants/asset_constant.dart';
 
 class JobCard extends StatelessWidget {
   final BookingResponseEntity job;
   final VoidCallback onCallback;
+  final bool isReviewOnline;
+  final String currentTab;
 
   const JobCard({
     super.key,
     required this.onCallback,
     required this.job,
+    required this.isReviewOnline,
+    required this.currentTab,
   });
 
   @override
   Widget build(BuildContext context) {
     return FadeInUp(
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
-              spreadRadius: 2,
-              blurRadius: 8,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    const Color(0xFFFF7F50).withOpacity(0.9),
-                    const Color(0xFFFF4500).withOpacity(0.7),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(16),
-                  topRight: Radius.circular(16),
-                ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Column(
+            children: [
+              Icon(
+                _getStatusIcon(job.status),
+                color: _getStatusColor(job.status),
+                size: 24,
               ),
-              child: Row(
-                children: [
-                  // Status and ID Section
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          job.status,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          "ID: ${job.id}",
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  // Online Status Indicator
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.circle,
-                          size: 12,
-                          color: job.isReviewOnline
-                              ? const Color(0xFF00FF00)
-                              : const Color(0xFFFF0000),
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          job.isReviewOnline ? 'Online' : 'Offline',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+              Container(
+                height: 60,
+                width: 2,
+                color: _getStatusColor(job.status).withOpacity(0.4),
               ),
-            ),
-
-            // Content Section
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  // Profile Section
-                  Row(
+            ],
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => JobDetailsScreen(job: job),
+                  ),
+                );
+              },
+              child: Card(
+                margin: const EdgeInsets.only(bottom: 10),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                elevation: 4,
+                child: Container(
+                  padding: const EdgeInsets.all(15),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: _getCardGradientColors(job.status),
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: const Color(0xFFFF7F50),
-                            width: 2,
-                          ),
-                        ),
-                        child: ClipOval(
-                          child: Image.network(
-                            'https://storage.googleapis.com/a1aa/image/fpR5CaQW2ny0CCt8MBn1ufzjTBuLAgHXz4yQMiYIxzaWDIlTA.jpg',
-                            width: 60,
-                            height: 60,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Ngày đặt",
-                              style: TextStyle(
-                                color: Colors.grey[600],
-                                fontSize: 12,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              job.bookingAt,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  // Location Section
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[50],
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFFF4500).withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Icon(
-                            Icons.location_on,
-                            color: Color(0xFFFF4500),
-                            size: 24,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            job.pickupAddress,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Mã đơn dọn nhà: ${job.id}",
                             style: const TextStyle(
-                              fontSize: 14,
-                              height: 1.4,
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  // Action Buttons
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ElevatedButton.icon(
-                          icon: const Icon(Icons.chat_bubble_outline, size: 20),
-                          label: const Text('Chat'),
-                          style: ElevatedButton.styleFrom(
-                            foregroundColor: const Color(0xFFFF4500),
-                            backgroundColor: const Color(0xFFFFE4E1),
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: _getStatusColor(job.status),
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                          ),
-                          onPressed: () {
-                            // Chat action
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: ElevatedButton.icon(
-                          icon: const Icon(Icons.visibility_outlined, size: 20),
-                          label: const Text('Xem'),
-                          style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            backgroundColor: const Color(0xFFFF4500),
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    JobDetailsScreen(job: job),
+                            child: Text(
+                              job.status,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
                               ),
-                            );
-                          },
-                        ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      _buildDateInfo(),
+                      const SizedBox(height: 5),
+                      Row(
+                        children: [
+                          const Icon(Icons.location_on,
+                              color: Colors.white70, size: 18),
+                          const SizedBox(width: 5),
+                          Expanded(
+                            child: Text(
+                              job.pickupAddress,
+                              style: const TextStyle(
+                                  color: Colors.white70, fontSize: 13),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 5),
+                      Row(
+                        children: [
+                          const Icon(Icons.flag,
+                              color: Colors.white70, size: 18),
+                          const SizedBox(width: 5),
+                          Expanded(
+                            child: Text(
+                              job.deliveryAddress,
+                              style: const TextStyle(
+                                  color: Colors.white70, fontSize: 13),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Deposit: ${job.deposit.toStringAsFixed(2)}',
+                            style: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 13,
+                            ),
+                          ),
+                          Text(
+                            'Total: ${job.total.toStringAsFixed(2)}',
+                            style: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
+                ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
+  }
+
+  Widget _buildDateInfo() {
+    if (currentTab == "Đang đợi đánh giá") {
+      if (isReviewOnline) {
+        return Row(
+          children: [
+            const Icon(Icons.calendar_today, color: Colors.white70, size: 18),
+            const SizedBox(width: 5),
+            Text(
+              'Ngày đặt: ${_formatTime(job.bookingAt)}',
+              style: const TextStyle(color: Colors.white70, fontSize: 14),
+            ),
+          ],
+        );
+      } else {
+        return Row(
+          children: [
+            const Icon(Icons.rate_review, color: Colors.white70, size: 18),
+            const SizedBox(width: 5),
+            Text(
+              'Review Date: ${_formatTime(job.reviewAt)}',
+              style: const TextStyle(color: Colors.white70, fontSize: 14),
+            ),
+          ],
+        );
+      }
+    } else if (currentTab == "Đã đánh giá") {
+      if (!isReviewOnline) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.rate_review, color: Colors.white70, size: 18),
+                const SizedBox(width: 5),
+                Text(
+                  'Ngày đánh giá: ${_formatTime(job.reviewAt)}',
+                  style: const TextStyle(color: Colors.white70, fontSize: 14),
+                ),
+              ],
+            ),
+            const SizedBox(height: 5),
+            Row(
+              children: [
+                const Icon(Icons.access_time, color: Colors.white70, size: 18),
+                const SizedBox(width: 5),
+                Text(
+                  'Thời gian ước tính: ${job.estimatedDeliveryTime ?? 'N/A'}',
+                  style: const TextStyle(color: Colors.white70, fontSize: 14),
+                ),
+              ],
+            ),
+          ],
+        );
+      } else {
+        return Row(
+          children: [
+            const Icon(Icons.rate_review, color: Colors.white70, size: 18),
+            const SizedBox(width: 5),
+            Text(
+              'Ngày đặt: ${_formatTime(job.bookingAt)}',
+              style: const TextStyle(color: Colors.white70, fontSize: 14),
+            ),
+          ],
+        );
+      }
+    }
+
+    return const SizedBox.shrink();
+  }
+
+  String _formatTime(String? time) {
+    if (time == null) return "N/A";
+    try {
+      DateTime dateTime = DateFormat("MM/dd/yyyy HH:mm:ss").parse(time);
+      return "${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')} ${DateFormat('dd/MM/yyyy').format(dateTime)}";
+    } catch (e) {
+      return "Invalid Date";
+    }
+  }
+
+  IconData _getStatusIcon(String status) {
+    switch (status) {
+      case 'PENDING':
+        return Icons.hourglass_empty;
+      case 'ASSIGNED':
+        return Icons.assignment_turned_in;
+      case 'IN_PROGRESS':
+        return Icons.local_shipping;
+      case 'COMPLETED':
+        return Icons.check_circle;
+      case 'CANCELLED':
+        return Icons.cancel;
+      default:
+        return Icons.help_outline;
+    }
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status) {
+      case 'PENDING':
+        return Colors.orange;
+      case 'ASSIGNED':
+        return Colors.blue;
+      case 'IN_PROGRESS':
+        return Colors.teal;
+      case 'COMPLETED':
+        return Colors.green;
+      case 'CANCELLED':
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  List<Color> _getCardGradientColors(String status) {
+    switch (status) {
+      case 'PENDING':
+        return [Colors.orange.shade700, Colors.orange.shade400];
+      case 'ASSIGNED':
+        return [Colors.blue.shade700, Colors.blue.shade400];
+      case 'IN_PROGRESS':
+        return [Colors.teal.shade700, Colors.teal.shade400];
+      case 'COMPLETED':
+        return [Colors.green.shade700, Colors.green.shade400];
+      case 'CANCELLED':
+        return [Colors.red.shade700, Colors.red.shade400];
+      default:
+        return [Colors.grey.shade700, Colors.grey.shade400];
+    }
   }
 }

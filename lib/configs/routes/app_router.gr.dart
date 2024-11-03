@@ -118,6 +118,12 @@ abstract class _$AppRouter extends RootStackRouter {
         child: const OrderScreen(),
       );
     },
+    PorterScreenRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const PorterScreen(),
+      );
+    },
     PrivacyPolicyScreenRoute.name: (routeData) {
       final args = routeData.argsAs<PrivacyPolicyScreenRouteArgs>(
           orElse: () => const PrivacyPolicyScreenRouteArgs());
@@ -520,6 +526,20 @@ class OrderScreenRoute extends PageRouteInfo<void> {
         );
 
   static const String name = 'OrderScreenRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [PorterScreen]
+class PorterScreenRoute extends PageRouteInfo<void> {
+  const PorterScreenRoute({List<PageRouteInfo>? children})
+      : super(
+          PorterScreenRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'PorterScreenRoute';
 
   static const PageInfo<void> page = PageInfo<void>(name);
 }
