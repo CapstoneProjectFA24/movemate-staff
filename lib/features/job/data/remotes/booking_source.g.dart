@@ -417,11 +417,12 @@ class _BookingSource implements BookingSource {
   Future<HttpResponse<SuccessModel>> updateStateReviewer(
     String contentType,
     String accessToken,
-    ReviewerStatusRequest request,
+    ReviewerStatusRequest? request,
     int id,
   ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{
       r'Content-Type': contentType,
       r'Authorization': accessToken,

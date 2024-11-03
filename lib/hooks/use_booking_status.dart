@@ -4,7 +4,7 @@ import 'package:movemate_staff/utils/enums/booking_status_type.dart';
 
 class BookingStatusResult {
   final String statusMessage;
-  
+
   // Reviewer states
   final bool canReviewOffline;
   final bool canReviewOnline;
@@ -14,7 +14,7 @@ class BookingStatusResult {
   final bool canConfirmArrival;
   final bool canConfirmMoving;
   final bool canConfirmSuggestion;
-  
+
   // Status indicators
   final bool isWaitingCustomer;
   final bool isWaitingPayment;
@@ -22,7 +22,7 @@ class BookingStatusResult {
   final bool isStaffArrived;
   final bool isSuggested;
   final bool isReviewed;
-  
+
   // Driver/Porter states
   final bool isInProgress;
   final bool isCompleted;
@@ -57,35 +57,34 @@ BookingStatusResult useBookingStatus(
 
     final status = booking.status.toBookingTypeEnum();
     final assignments = booking.assignments ?? [];
-    
+
     // Helper functions
-    bool hasAssignmentWithStatus(String staffType, AssignmentsStatusType status) {
-      return assignments.any((a) => 
-        a.staffType == staffType && 
-        a.status.toAssignmentsTypeEnum() == status);
+    bool hasAssignmentWithStatus(
+        String staffType, AssignmentsStatusType status) {
+      return assignments.any((a) {
+        // print('Checking assignment: ${a.toJson()}');
+        // print('check bool type : ${a.staffType == staffType.toString()}');
+        // print('normal state $status');
+        // print(
+        //     'check bool state : ${a.status.toAssignmentsTypeEnum() == status}');
+        return a.staffType == staffType.toString() &&
+            a.status.toAssignmentsTypeEnum() == status;
+      });
     }
 
     // Xác định reviewer assignment
-    final hasReviewerAssignment = hasAssignmentWithStatus(
-      "REVIEWER",
-      AssignmentsStatusType.assigned
-    );
+    final hasReviewerAssignment =
+        hasAssignmentWithStatus("REVIEWER", AssignmentsStatusType.assigned);
 
     // Trạng thái của assignments
-    final isStaffEnroute = hasAssignmentWithStatus(
-      "REVIEWER",
-      AssignmentsStatusType.enroute
-    );
-    
-    final isStaffArrived = hasAssignmentWithStatus(
-      "REVIEWER",
-      AssignmentsStatusType.arrived
-    );
+    final isStaffEnroute =
+        hasAssignmentWithStatus("REVIEWER", AssignmentsStatusType.enroute);
 
-    final isSuggested = hasAssignmentWithStatus(
-      "REVIEWER",
-      AssignmentsStatusType.suggested
-    );
+    final isStaffArrived =
+        hasAssignmentWithStatus("REVIEWER", AssignmentsStatusType.arrived);
+
+    final isSuggested =
+        hasAssignmentWithStatus("REVIEWER", AssignmentsStatusType.suggested);
 
     // Logic cho Reviewer Offline
     bool canReviewOffline = false;
@@ -95,7 +94,8 @@ BookingStatusResult useBookingStatus(
     bool canUpdateServices = false;
     bool canConfirmSuggestion = false;
 
-    if (!isReviewOnline && hasReviewerAssignment) {
+   
+    if (!isReviewOnline) {
       switch (status) {
         case BookingStatusType.assigned:
           canCreateSchedule = true;
@@ -138,30 +138,24 @@ BookingStatusResult useBookingStatus(
     }
 
     return BookingStatusResult(
-      statusMessage: determineStatusMessage(
-        status,
-        isReviewOnline,
-        isStaffEnroute,
-        isStaffArrived,
-        canCreateSchedule
-      ),
-      canReviewOffline: canReviewOffline,
-      canReviewOnline: canReviewOnline,
-      canCreateSchedule: canCreateSchedule,
-      canConfirmReview: canConfirmReview,
-      canUpdateServices: canUpdateServices,
-      canConfirmArrival: canConfirmArrival,
-      canConfirmMoving: canConfirmMoving,
-      canConfirmSuggestion: canConfirmSuggestion,
-      isWaitingCustomer: status == BookingStatusType.waiting,
-      isWaitingPayment: status == BookingStatusType.depositing,
-      isStaffEnroute: isStaffEnroute,
-      isStaffArrived: isStaffArrived,
-      isSuggested: isSuggested,
-      isReviewed: status == BookingStatusType.reviewed,
-      isInProgress: status == BookingStatusType.inProgress,
-      isCompleted: status == BookingStatusType.completed
-    );
+        statusMessage: determineStatusMessage(status, isReviewOnline,
+            isStaffEnroute, isStaffArrived, canCreateSchedule),
+        canReviewOffline: canReviewOffline,
+        canReviewOnline: canReviewOnline,
+        canCreateSchedule: canCreateSchedule,
+        canConfirmReview: canConfirmReview,
+        canUpdateServices: canUpdateServices,
+        canConfirmArrival: canConfirmArrival,
+        canConfirmMoving: canConfirmMoving,
+        canConfirmSuggestion: canConfirmSuggestion,
+        isWaitingCustomer: status == BookingStatusType.waiting,
+        isWaitingPayment: status == BookingStatusType.depositing,
+        isStaffEnroute: isStaffEnroute,
+        isStaffArrived: isStaffArrived,
+        isSuggested: isSuggested,
+        isReviewed: status == BookingStatusType.reviewed,
+        isInProgress: status == BookingStatusType.inProgress,
+        isCompleted: status == BookingStatusType.completed);
   }, [booking, isReviewOnline]);
 }
 
@@ -174,9 +168,9 @@ String determineStatusMessage(
 ) {
   switch (status) {
     case BookingStatusType.assigned:
-      return canCreateSchedule 
-        ? "Chờ bạn xếp lịch với khách hàng"
-        : "Đã được phân công";
+      return canCreateSchedule
+          ? "Chờ bạn xếp lịch với khách hàng"
+          : "Đã được phân công";
     case BookingStatusType.waiting:
       return "Đang chờ khách hàng chấp nhận lịch";
     case BookingStatusType.depositing:

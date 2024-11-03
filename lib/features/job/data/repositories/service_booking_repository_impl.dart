@@ -149,7 +149,7 @@ class BookingRepositoryImpl extends RemoteBaseRepository
   @override
   Future<SuccessModel> updateStateReviewer({
     required String accessToken,
-    required ReviewerStatusRequest request,
+     ReviewerStatusRequest? request,
     required int id,
   }) async {
     return getDataOf(

@@ -178,7 +178,7 @@ class JobDetailsScreen extends HookConsumerWidget {
                   groupedImages: groupedImages,
                 ),
                 const SizedBox(height: 10),
-                UpdateStatusButton(job: job),
+                // UpdateStatusButton(job: job),
               ],
             ),
           ),

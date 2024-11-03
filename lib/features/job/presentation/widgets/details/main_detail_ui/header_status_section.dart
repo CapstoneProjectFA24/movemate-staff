@@ -8,6 +8,8 @@ import 'package:movemate_staff/features/job/presentation/widgets/dialog_schedule
 import 'package:movemate_staff/hooks/use_booking_status.dart';
 import 'package:movemate_staff/hooks/use_fetch.dart';
 import 'package:movemate_staff/services/realtime_service/booking_status_realtime/booking_status_stream_provider.dart';
+import 'package:movemate_staff/utils/commons/widgets/form_input/label_text.dart';
+import 'package:movemate_staff/utils/constants/asset_constant.dart';
 
 class BookingHeaderStatusSection extends HookConsumerWidget {
   final bool isReviewOnline;
@@ -151,7 +153,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
         isCompleted: !status.canConfirmMoving && status.isStaffEnroute,
         action: status.canConfirmMoving ? 'Bắt đầu' : null,
         onPressed:
-            status.canConfirmMoving ? () => _confirmMoving(context) : null,
+            status.canConfirmMoving ? () => _confirmMoving(context, ref) : null,
       ),
       _TimelineStep(
         title: 'Đang đến',
@@ -159,8 +161,9 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
         isActive: status.isStaffEnroute,
         isCompleted: !status.isStaffEnroute && status.isStaffArrived,
         action: status.canConfirmArrival ? 'Đã tới' : null,
-        onPressed:
-            status.canConfirmArrival ? () => _confirmArrival(context) : null,
+        onPressed: status.canConfirmArrival
+            ? () => _confirmArrival(context, ref)
+            : null,
       ),
       _TimelineStep(
         title: 'Cập nhật dịch vụ',
@@ -301,7 +304,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
     );
   }
 
-  // Dialog and navigation methods
+  // Dialog and navigation methods -- done
   void _showScheduleDialog(BuildContext context, WidgetRef ref) {
     showDialog(
       context: context,
@@ -325,12 +328,90 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
     // Implementation for confirming review assignment
   }
 
-  void _confirmMoving(BuildContext context) {
-    // Implementation for confirming moving
+  // done
+  void _confirmMoving(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Bắt đầu di chuyển'),
+        content: const Text('Bạn có chắc là bắt đầu chưa'),
+        backgroundColor: AssetsConstants.whiteColor,
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const LabelText(
+              content: "Đóng",
+              size: 16,
+              fontWeight: FontWeight.bold,
+              color: AssetsConstants.blackColor,
+            ),
+          ),
+          TextButton(
+            onPressed: () async {
+              try {
+                await ref
+                    .read(reviewerUpdateControllerProvider.notifier)
+                    .updateReviewerStatus(id: job.id, context: context);
+                if (context.mounted) {
+                  Navigator.of(context).pop();
+                }
+              } catch (error) {
+                print("Error updating reviewer status: $error");
+              }
+            },
+            child: const LabelText(
+              content: "Xác nhận",
+              size: 16,
+              fontWeight: FontWeight.bold,
+              color: AssetsConstants.primaryLight,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
-  void _confirmArrival(BuildContext context) {
-    // Implementation for confirming arrival
+  // done
+  void _confirmArrival(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Xác nhận đã tới'),
+        content: const Text('Bạn có chắc là tới nơi chưa'),
+        backgroundColor: AssetsConstants.whiteColor,
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const LabelText(
+              content: "Đóng",
+              size: 16,
+              fontWeight: FontWeight.bold,
+              color: AssetsConstants.blackColor,
+            ),
+          ),
+          TextButton(
+            onPressed: () async {
+              try {
+                await ref
+                    .read(reviewerUpdateControllerProvider.notifier)
+                    .updateReviewerStatus(id: job.id, context: context);
+                if (context.mounted) {
+                  Navigator.of(context).pop();
+                }
+              } catch (error) {
+                print("Error updating reviewer status: $error");
+              }
+            },
+            child: const LabelText(
+              content: "Xác nhận",
+              size: 16,
+              fontWeight: FontWeight.bold,
+              color: AssetsConstants.primaryLight,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   void _navigateToServiceUpdate(BuildContext context) {

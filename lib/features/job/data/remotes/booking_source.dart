@@ -99,7 +99,7 @@ abstract class BookingSource {
   Future<HttpResponse<SuccessModel>> updateStateReviewer(
     @Header(APIConstants.contentHeader) String contentType,
     @Header(APIConstants.authHeader) String accessToken,
-    @Body() ReviewerStatusRequest request,
+    @Body() ReviewerStatusRequest? request,
     @Path('id') int id,
   );
 
