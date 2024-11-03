@@ -4,33 +4,47 @@ import 'package:movemate_staff/utils/enums/booking_status_type.dart';
 
 class BookingStatusResult {
   final String statusMessage;
+  
+  // Reviewer states
   final bool canReviewOffline;
   final bool canReviewOnline;
-  final bool isWaitingForPayment;
+  final bool canCreateSchedule;
+  final bool canConfirmReview;
+  final bool canUpdateServices;
+  final bool canConfirmArrival;
+  final bool canConfirmMoving;
+  final bool canConfirmSuggestion;
+  
+  // Status indicators
+  final bool isWaitingCustomer;
+  final bool isWaitingPayment;
   final bool isStaffEnroute;
   final bool isStaffArrived;
-  final bool isReviewed;
-  final bool isInProgress;
-  final bool isInTransit;
-  final bool isDelivered;
-  final bool isCompleted;
   final bool isSuggested;
-  final bool canCreateSchedule;
+  final bool isReviewed;
+  
+  // Driver/Porter states
+  final bool isInProgress;
+  final bool isCompleted;
 
   BookingStatusResult({
     required this.statusMessage,
-    required this.canReviewOffline,
-    required this.canReviewOnline,
-    required this.isWaitingForPayment,
-    required this.isStaffEnroute,
-    required this.isStaffArrived,
-    required this.isReviewed,
-    required this.isInProgress,
-    required this.isInTransit,
-    required this.isDelivered,
-    required this.isCompleted,
-    required this.isSuggested,
-    required this.canCreateSchedule,
+    this.canReviewOffline = false,
+    this.canReviewOnline = false,
+    this.canCreateSchedule = false,
+    this.canConfirmReview = false,
+    this.canUpdateServices = false,
+    this.canConfirmArrival = false,
+    this.canConfirmMoving = false,
+    this.canConfirmSuggestion = false,
+    this.isWaitingCustomer = false,
+    this.isWaitingPayment = false,
+    this.isStaffEnroute = false,
+    this.isStaffArrived = false,
+    this.isSuggested = false,
+    this.isReviewed = false,
+    this.isInProgress = false,
+    this.isCompleted = false,
   });
 }
 
@@ -38,134 +52,154 @@ BookingStatusResult useBookingStatus(
     BookingRealtimeEntity? booking, bool isReviewOnline) {
   return useMemoized(() {
     if (booking == null) {
-      return BookingStatusResult(
-        statusMessage: "",
-        canReviewOffline: false,
-        canReviewOnline: false,
-        isWaitingForPayment: false,
-        isStaffEnroute: false,
-        isStaffArrived: false,
-        isReviewed: false,
-        isInProgress: false,
-        isInTransit: false,
-        isDelivered: false,
-        isCompleted: false,
-        isSuggested: false,
-        canCreateSchedule: false,
-      );
+      return BookingStatusResult(statusMessage: "");
     }
 
-    final assignments = booking.assignments ?? [];
     final status = booking.status.toBookingTypeEnum();
+    final assignments = booking.assignments ?? [];
+    
+    // Helper functions
+    bool hasAssignmentWithStatus(String staffType, AssignmentsStatusType status) {
+      return assignments.any((a) => 
+        a.staffType == staffType && 
+        a.status.toAssignmentsTypeEnum() == status);
+    }
 
-    // Check for offline reviewer assignment
-    final hasReviewer = assignments.any((assignment) =>
-        assignment.status.toAssignmentsTypeEnum() ==
-            AssignmentsStatusType.suggested &&
-        assignment.staffType == "REVIEWER");
+    // Xác định reviewer assignment
+    final hasReviewerAssignment = hasAssignmentWithStatus(
+      "REVIEWER",
+      AssignmentsStatusType.assigned
+    );
 
-    // Check if any assignment is in SUGGESTED state
-    final isSuggested = assignments.any((assignment) =>
-        assignment.status.toAssignmentsTypeEnum() ==
-        AssignmentsStatusType.suggested);
+    // Trạng thái của assignments
+    final isStaffEnroute = hasAssignmentWithStatus(
+      "REVIEWER",
+      AssignmentsStatusType.enroute
+    );
+    
+    final isStaffArrived = hasAssignmentWithStatus(
+      "REVIEWER",
+      AssignmentsStatusType.arrived
+    );
 
-    // Determine review capabilities
-    final canReviewOffline = hasReviewer &&
-        (status == BookingStatusType.reviewing && !isReviewOnline);
+    final isSuggested = hasAssignmentWithStatus(
+      "REVIEWER",
+      AssignmentsStatusType.suggested
+    );
 
-    final canReviewOnline =
-        isReviewOnline && status == BookingStatusType.reviewing;
+    // Logic cho Reviewer Offline
+    bool canReviewOffline = false;
+    bool canCreateSchedule = false;
+    bool canConfirmMoving = false;
+    bool canConfirmArrival = false;
+    bool canUpdateServices = false;
+    bool canConfirmSuggestion = false;
 
-    // Check staff status
-    final isStaffEnroute = assignments.any((a) =>
-        a.status.toAssignmentsTypeEnum() == AssignmentsStatusType.enroute);
+    if (!isReviewOnline && hasReviewerAssignment) {
+      switch (status) {
+        case BookingStatusType.assigned:
+          canCreateSchedule = true;
+          break;
+        case BookingStatusType.reviewing:
+          if (!isStaffEnroute && !isStaffArrived) {
+            canConfirmMoving = true;
+          } else if (isStaffEnroute && !isStaffArrived) {
+            canConfirmArrival = true;
+          } else if (isStaffArrived && !isSuggested) {
+            canUpdateServices = true;
+          } else if (isSuggested) {
+            canConfirmSuggestion = true;
+          }
+          break;
+        default:
+          break;
+      }
+    }
 
-    final isStaffArrived = assignments.any((a) =>
-        a.status.toAssignmentsTypeEnum() == AssignmentsStatusType.arrived);
+    // Logic cho Reviewer Online
+    bool canReviewOnline = false;
+    bool canConfirmReview = false;
 
-    // Check delivery status
-    final isInProgress = assignments.any((a) =>
-        a.status.toAssignmentsTypeEnum() == AssignmentsStatusType.inProgress);
-
-    final isInTransit = status ==
-        // BookingStatusType.inTransit ||
-        assignments.any((a) =>
-            a.status.toAssignmentsTypeEnum() ==
-            AssignmentsStatusType.inTransit);
-
-    final isDelivered = assignments.any((a) =>
-        a.status.toAssignmentsTypeEnum() == AssignmentsStatusType.delivered);
-
-    final isCompleted = status == BookingStatusType.completed ||
-        assignments.any((a) =>
-            a.status.toAssignmentsTypeEnum() ==
-            AssignmentsStatusType.completed);
-
-    // Determine status message
-    String statusMessage = "";
-    switch (status) {
-      case BookingStatusType.pending:
-        statusMessage = "Chờ xác nhận";
-        break;
-      case BookingStatusType.depositing:
-        statusMessage = "Chờ khách hàng thanh toán";
-        break;
-      case BookingStatusType.assigned:
-        statusMessage = canReviewOffline
-            ? "Chờ bạn xếp lịch với khách hàng"
-            : "Đã được phân công";
-        break;
-      case BookingStatusType.waiting:
-        statusMessage = "Đang chờ khách hàng chấp nhận lịch";
-        break;
-      case BookingStatusType.reviewing:
-        if (isStaffEnroute) {
-          statusMessage = "Nhân viên đang di chuyển";
-        } else if (isStaffArrived) {
-          statusMessage = "Nhân viên đã đến";
-        } else {
-          statusMessage = "Đang đợi bạn đánh giá";
-        }
-        break;
-      case BookingStatusType.reviewed:
-        statusMessage = "Đã đánh giá xong";
-        break;
-      case BookingStatusType.inProgress:
-        statusMessage = "Đang thực hiện";
-        break;
-      // case BookingStatusType.inTransit:
-      //   statusMessage = "Đang vận chuyển";
-      //   break;
-      // case BookingStatusType.delivered:
-      //   statusMessage = "Đã giao hàng";
-      //   break;
-      case BookingStatusType.completed:
-        statusMessage = "Hoàn thành";
-        break;
-      case BookingStatusType.cancelled:
-        statusMessage = "Đã hủy";
-        break;
-      case BookingStatusType.refunded:
-        statusMessage = "Đã hoàn tiền";
-        break;
-      default:
-        statusMessage = "Không xác định";
+    if (isReviewOnline && hasReviewerAssignment) {
+      switch (status) {
+        case BookingStatusType.assigned:
+          canConfirmReview = true;
+          break;
+        case BookingStatusType.reviewing:
+          if (!isSuggested) {
+            canUpdateServices = true;
+          } else {
+            canConfirmSuggestion = true;
+          }
+          break;
+        default:
+          break;
+      }
     }
 
     return BookingStatusResult(
-      statusMessage: statusMessage,
+      statusMessage: determineStatusMessage(
+        status,
+        isReviewOnline,
+        isStaffEnroute,
+        isStaffArrived,
+        canCreateSchedule
+      ),
       canReviewOffline: canReviewOffline,
       canReviewOnline: canReviewOnline,
-      isWaitingForPayment: status == BookingStatusType.depositing,
+      canCreateSchedule: canCreateSchedule,
+      canConfirmReview: canConfirmReview,
+      canUpdateServices: canUpdateServices,
+      canConfirmArrival: canConfirmArrival,
+      canConfirmMoving: canConfirmMoving,
+      canConfirmSuggestion: canConfirmSuggestion,
+      isWaitingCustomer: status == BookingStatusType.waiting,
+      isWaitingPayment: status == BookingStatusType.depositing,
       isStaffEnroute: isStaffEnroute,
       isStaffArrived: isStaffArrived,
-      isReviewed: status == BookingStatusType.reviewed,
-      isInProgress: isInProgress,
-      isInTransit: isInTransit,
-      isDelivered: isDelivered,
-      isCompleted: isCompleted,
       isSuggested: isSuggested,
-      canCreateSchedule: status == BookingStatusType.assigned,
+      isReviewed: status == BookingStatusType.reviewed,
+      isInProgress: status == BookingStatusType.inProgress,
+      isCompleted: status == BookingStatusType.completed
     );
-  }, [booking]);
+  }, [booking, isReviewOnline]);
+}
+
+String determineStatusMessage(
+  BookingStatusType status,
+  bool isReviewOnline,
+  bool isStaffEnroute,
+  bool isStaffArrived,
+  bool canCreateSchedule,
+) {
+  switch (status) {
+    case BookingStatusType.assigned:
+      return canCreateSchedule 
+        ? "Chờ bạn xếp lịch với khách hàng"
+        : "Đã được phân công";
+    case BookingStatusType.waiting:
+      return "Đang chờ khách hàng chấp nhận lịch";
+    case BookingStatusType.depositing:
+      return "Chờ khách hàng thanh toán";
+    case BookingStatusType.reviewing:
+      if (isStaffEnroute) return "Nhân viên đang di chuyển";
+      if (isStaffArrived) return "Nhân viên đã đến";
+      return "Đang đợi bạn đánh giá";
+    case BookingStatusType.reviewed:
+      return "Đã đánh giá xong";
+    case BookingStatusType.coming:
+      return "Đang đến";
+    case BookingStatusType.inProgress:
+      return "Đang thực hiện";
+    case BookingStatusType.completed:
+      return "Hoàn thành";
+    case BookingStatusType.cancelled:
+      return "Đã hủy";
+    case BookingStatusType.refunded:
+      return "Đã hoàn tiền";
+    case BookingStatusType.pending:
+      return "Chờ xác nhận";
+    default:
+      return "Không xác định";
+  }
 }
