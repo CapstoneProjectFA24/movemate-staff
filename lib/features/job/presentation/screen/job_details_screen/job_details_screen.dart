@@ -9,11 +9,10 @@ import 'package:movemate_staff/configs/routes/app_router.dart';
 
 // Models & Entities
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
-import 'package:movemate_staff/features/job/presentation/widgets/details/main_detail_ui/contact_info_section.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/main_detail_ui/detail_info_basic.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/main_detail_ui/header_status_section.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/main_detail_ui/image_info_section.dart';
-import 'package:movemate_staff/features/job/presentation/widgets/details/main_detail_ui/price_service_section.dart';
+import 'package:movemate_staff/features/job/presentation/widgets/details/update_status_button.dart';
 import 'package:movemate_staff/features/test/domain/entities/house_entities.dart';
 import 'package:movemate_staff/hooks/use_booking_status.dart';
 import 'package:movemate_staff/models/request/paging_model.dart';
@@ -47,14 +46,9 @@ class JobDetailsScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isExpanded = useState(false);
-    final isExpanded1 = useState(false);
 
     void toggleDropdown() {
       isExpanded.value = !isExpanded.value;
-    }
-
-    void toggleDropdown1() {
-      isExpanded1.value = !isExpanded1.value;
     }
 
     final bookingNotifier = ref.read(bookingProvider.notifier);
@@ -166,7 +160,7 @@ class JobDetailsScreen extends HookConsumerWidget {
         ),
         body: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.only(left: 2.0, top: 40),
+            padding: const EdgeInsets.only(left: 2.0, top: 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -175,25 +169,16 @@ class JobDetailsScreen extends HookConsumerWidget {
                   job: job,
                   fetchResult: fetchResult,
                 ),
-                const SizedBox(height: 50),
-                DetailInfoBasicCard(
+                const SizedBox(height: 20),
+                CombinedInfoSection(
                   job: job,
                   useFetchHouseResult: useFetchHouseResult,
-                ),
-                const SizedBox(height: 20),
-                ContactInfoSection(
                   isExpanded: isExpanded,
                   toggleDropdown: () => isExpanded.value = !isExpanded.value,
-                  job: job,
-                ),
-                const SizedBox(height: 10),
-                ImageInfoSection(
-                  isExpanded1: isExpanded1,
-                  toggleDropdown1: () => isExpanded1.value = !isExpanded1.value,
                   groupedImages: groupedImages,
                 ),
-                const SizedBox(height: 20),
-                PriceDetailsContainer(job: job)
+                const SizedBox(height: 10),
+                UpdateStatusButton(job: job),
               ],
             ),
           ),
