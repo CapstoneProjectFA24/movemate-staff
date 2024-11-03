@@ -22,7 +22,11 @@ enum AssignmentsStatusType {
   arrived('ARRIVED'),
   reviewing('REVIEWING'),
   suggested('SUGGESTED'),
-  reviewed('REVIEWED');
+  reviewed('REVIEWED'),
+  inProgress('IN_PROGRESS'),
+  inTransit('IN_TRANSIT'),
+  delivered('DELIVERED'),
+  completed('COMPLETED');
 
   final String type;
   const AssignmentsStatusType(this.type);
@@ -74,6 +78,14 @@ extension ConvertOrderPartnerStatus on String {
         return AssignmentsStatusType.suggested;
       case 'REVIEWED':
         return AssignmentsStatusType.reviewed;
+      case 'IN_PROGRESS':
+        return AssignmentsStatusType.inProgress;
+      case 'IN_TRANSIT':
+        return AssignmentsStatusType.inTransit;
+      case 'DELIVERED':
+        return AssignmentsStatusType.delivered;
+      case 'COMPLETED':
+        return AssignmentsStatusType.completed;
       default:
         return AssignmentsStatusType.enroute;
     }

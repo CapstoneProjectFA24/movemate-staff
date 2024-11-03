@@ -138,23 +138,61 @@ BookingStatusInfo getBookingStatusAssigmentText(AssignmentsStatusType status) {
         description: 'Đang trong quá trình đánh giá',
         nextStep: 'Đã hoàn thành',
       );
+
     case AssignmentsStatusType.enroute:
       return BookingStatusInfo(
         statusText: 'Người đánh giá đang trên đường',
         description: 'Đang trong quá trình đánh giá',
         nextStep: 'Đã hoàn thành',
       );
+
     case AssignmentsStatusType.arrived:
       return BookingStatusInfo(
         statusText: 'Người đánh giá đã đến',
         description: 'Đang trong quá trình đánh giá',
         nextStep: 'Đã hoàn thành',
       );
+
     case AssignmentsStatusType.suggested:
       return BookingStatusInfo(
         statusText: 'Đề nghị từ người đánh giá',
         description: 'Đang trong quá trình đánh giá',
         nextStep: 'Đã hoàn thành',
+      );
+
+    case AssignmentsStatusType.inProgress:
+      return BookingStatusInfo(
+        statusText: 'Đang tiến hành',
+        description: 'Đang trong quá trình thực hiện nhiệm vụ',
+        nextStep: 'Tiến hành các bước tiếp theo',
+      );
+
+    case AssignmentsStatusType.inTransit:
+      return BookingStatusInfo(
+        statusText: 'Đang vận chuyển',
+        description: 'Nhiệm vụ đang trong quá trình vận chuyển',
+        nextStep: 'Chờ giao hàng',
+      );
+
+    case AssignmentsStatusType.delivered:
+      return BookingStatusInfo(
+        statusText: 'Đã giao hàng',
+        description: 'Nhiệm vụ đã hoàn thành giai đoạn giao hàng',
+        nextStep: 'Kiểm tra và xác nhận',
+      );
+
+    case AssignmentsStatusType.completed:
+      return BookingStatusInfo(
+        statusText: 'Hoàn thành',
+        description: 'Nhiệm vụ đã hoàn tất',
+        nextStep: 'Không có bước tiếp theo',
+      );
+
+    default:
+      return BookingStatusInfo(
+        statusText: 'Trạng thái không xác định',
+        description: 'Trạng thái hiện tại chưa được xác định',
+        nextStep: 'Liên hệ hỗ trợ',
       );
   }
 }

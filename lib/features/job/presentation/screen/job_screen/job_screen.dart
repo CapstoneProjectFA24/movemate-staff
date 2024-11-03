@@ -192,7 +192,8 @@ class JobScreen extends HookConsumerWidget {
                             job: filteredBookings[index],
                             onCallback: fetchResult.refresh,
                             isReviewOnline: isReviewOnline,
-                            currentTab: currentTabStatus.value,
+                            currentTab: currentTabStatus
+                                .value, 
                           );
                         },
                       ),
