@@ -74,7 +74,7 @@ abstract class BookingRepository {
 
   Future<SuccessModel> updateStateReviewer({
     required String accessToken,
-    required ReviewerStatusRequest request,
+    ReviewerStatusRequest? request,
     required int id,
   });
   Future<SuccessModel> updateCreateScheduleReview({

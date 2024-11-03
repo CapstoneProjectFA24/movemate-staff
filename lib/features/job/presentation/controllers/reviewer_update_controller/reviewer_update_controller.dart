@@ -71,8 +71,7 @@ class ReviewerUpdateController extends _$ReviewerUpdateController {
   }
 
   Future<void> updateReviewerStatus({
-    // required String accessToken,
-    required ReviewerStatusRequest request,
+     ReviewerStatusRequest? request,
     required int id,
     required BuildContext context,
   }) async {
