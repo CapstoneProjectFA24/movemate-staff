@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:movemate_staff/configs/routes/app_router.dart';
+import 'package:movemate_staff/features/job/data/model/request/reviewer_status_request.dart';
 import 'package:movemate_staff/features/job/data/model/request/reviewer_time_request.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/presentation/controllers/reviewer_update_controller/reviewer_update_controller.dart';
@@ -90,20 +93,24 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
         title: 'Phân công',
         icon: Icons.assignment_ind,
         isActive: status.canConfirmReview,
-        isCompleted: !status.canConfirmReview && status.isReviewed,
+        isCompleted: !status.canConfirmReview &&
+            (status.canUpdateServices ||
+                status.canConfirmSuggestion ||
+                status.isReviewed),
         action: status.canConfirmReview ? 'Xác nhận' : null,
         onPressed: status.canConfirmReview
-            ? () => _confirmReviewAssignment(context)
+            ? () => _confirmReviewAssignment(context, ref)
             : null,
       ),
       _TimelineStep(
         title: 'Cập nhật dịch vụ',
         icon: Icons.edit,
         isActive: status.canUpdateServices,
-        isCompleted: !status.canUpdateServices && status.isSuggested,
+        isCompleted: !status.canUpdateServices &&
+            (status.canConfirmSuggestion || status.isReviewed),
         action: status.canUpdateServices ? 'Cập nhật' : null,
         onPressed: status.canUpdateServices
-            ? () => _navigateToServiceUpdate(context)
+            ? () => _navigateToServiceUpdate(context, ref)
             : null,
       ),
       _TimelineStep(
@@ -113,7 +120,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
         isCompleted: !status.canConfirmSuggestion && status.isReviewed,
         action: status.canConfirmSuggestion ? 'Hoàn thành' : null,
         onPressed: status.canConfirmSuggestion
-            ? () => _completeProposal(context)
+            ? () => _completeProposal(context, ref)
             : null,
       ),
       _TimelineStep(
@@ -144,13 +151,16 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
         isActive: status.isWaitingCustomer || status.isWaitingPayment,
         isCompleted: !status.isWaitingCustomer &&
             !status.isWaitingPayment &&
-            status.isReviewed,
+            !status.canCreateSchedule,
       ),
       _TimelineStep(
         title: 'Di chuyển',
         icon: Icons.directions_car,
         isActive: status.canConfirmMoving,
-        isCompleted: !status.canConfirmMoving && status.isStaffEnroute,
+        isCompleted: status.isStaffEnroute ||
+            status.isStaffArrived ||
+            status.isSuggested ||
+            status.isReviewed,
         action: status.canConfirmMoving ? 'Bắt đầu' : null,
         onPressed:
             status.canConfirmMoving ? () => _confirmMoving(context, ref) : null,
@@ -159,7 +169,8 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
         title: 'Đang đến',
         icon: Icons.near_me,
         isActive: status.isStaffEnroute,
-        isCompleted: !status.isStaffEnroute && status.isStaffArrived,
+        isCompleted:
+            status.isStaffArrived || status.isSuggested || status.isReviewed,
         action: status.canConfirmArrival ? 'Đã tới' : null,
         onPressed: status.canConfirmArrival
             ? () => _confirmArrival(context, ref)
@@ -169,10 +180,10 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
         title: 'Cập nhật dịch vụ',
         icon: Icons.edit,
         isActive: status.canUpdateServices,
-        isCompleted: !status.canUpdateServices && status.isSuggested,
+        isCompleted: status.isSuggested || status.isReviewed,
         action: status.canUpdateServices ? 'Cập nhật' : null,
         onPressed: status.canUpdateServices
-            ? () => _navigateToServiceUpdate(context)
+            ? () => _navigateToServiceUpdate(context, ref)
             : null,
       ),
       _TimelineStep(
@@ -182,11 +193,11 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
         isCompleted: !status.canConfirmSuggestion && status.isReviewed,
         action: status.canConfirmSuggestion ? 'Hoàn thành' : null,
         onPressed: status.canConfirmSuggestion
-            ? () => _completeProposal(context)
+            ? () => _completeProposal(context, ref)
             : null,
       ),
       _TimelineStep(
-        title: 'Hoàn thành',
+        title: 'Hoàn tất',
         icon: Icons.check_circle,
         isActive: status.isReviewed,
         isCompleted: false,
@@ -324,8 +335,47 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
     );
   }
 
-  void _confirmReviewAssignment(BuildContext context) {
-    // Implementation for confirming review assignment
+  void _confirmReviewAssignment(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Xác nhận đánh giá'),
+        content: const Text('Vui lòng bấm xác nhận '),
+        backgroundColor: AssetsConstants.whiteColor,
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const LabelText(
+              content: "Đóng",
+              size: 16,
+              fontWeight: FontWeight.bold,
+              color: AssetsConstants.blackColor,
+            ),
+          ),
+          TextButton(
+            onPressed: () async {
+              try {
+                await ref
+                    .read(reviewerUpdateControllerProvider.notifier)
+                    .updateReviewerStatus(id: job.id, context: context);
+                fetchResult.refresh();
+                if (context.mounted) {
+                  Navigator.of(context).pop();
+                }
+              } catch (error) {
+                print("Error updating reviewer status: $error");
+              }
+            },
+            child: const LabelText(
+              content: "Xác nhận",
+              size: 16,
+              fontWeight: FontWeight.bold,
+              color: AssetsConstants.primaryLight,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   // done
@@ -352,6 +402,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
                 await ref
                     .read(reviewerUpdateControllerProvider.notifier)
                     .updateReviewerStatus(id: job.id, context: context);
+                fetchResult.refresh();
                 if (context.mounted) {
                   Navigator.of(context).pop();
                 }
@@ -395,6 +446,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
                 await ref
                     .read(reviewerUpdateControllerProvider.notifier)
                     .updateReviewerStatus(id: job.id, context: context);
+                fetchResult.refresh();
                 if (context.mounted) {
                   Navigator.of(context).pop();
                 }
@@ -414,12 +466,258 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
     );
   }
 
-  void _navigateToServiceUpdate(BuildContext context) {
-    // Implementation for navigating to service update
+  void _navigateToServiceUpdate(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Bạn có muốn cập nhật dịch không'),
+        content:
+            const Text('Vui lòng qua trang cập nhật danh sách dịch vụ nếu cần'),
+        backgroundColor: AssetsConstants.whiteColor,
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const LabelText(
+              content: "Đóng",
+              size: 16,
+              fontWeight: FontWeight.bold,
+              color: AssetsConstants.blackColor,
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              context.router.push(
+                GenerateNewJobScreenRoute(job: job),
+              );
+            },
+            child: const LabelText(
+              content: "Cập nhật dịch vụ",
+              size: 16,
+              fontWeight: FontWeight.bold,
+              color: AssetsConstants.primaryLight,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
-  void _completeProposal(BuildContext context) {
-    // Implementation for completing proposal
+  // need fix the resourses list image to complete
+  void _completeProposal(BuildContext context, WidgetRef ref) {
+    final TextEditingController timeController = TextEditingController();
+    final timeTypeNotifier = ValueNotifier<String>('hour');
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        title: const Text(
+          'Xác nhận đề suất cho khách hàng',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
+        ),
+        contentPadding: const EdgeInsets.all(20),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Xác nhận để hoàn thành tiến trình đánh giá',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
+            // Radio buttons for selecting hour or minute
+            ValueListenableBuilder(
+              valueListenable: timeTypeNotifier,
+              builder: (context, timeType, child) => Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // "Giờ" Button
+                  Expanded(
+                    child: Container(
+                      height: 40, // Compact height
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      decoration: BoxDecoration(
+                        color: timeType == 'hour'
+                            ? AssetsConstants.primaryLighter.withOpacity(0.2)
+                            : Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: timeType == 'hour'
+                              ? AssetsConstants.primaryLighter
+                              : Colors.grey,
+                          width: 1.2,
+                        ),
+                      ),
+                      child: RadioListTile<String>(
+                        title: Text(
+                          'Giờ',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: timeType == 'hour'
+                                ? AssetsConstants.primaryLighter
+                                : Colors.grey,
+                          ),
+                        ),
+                        value: 'hour',
+                        groupValue: timeType,
+                        onChanged: (value) {
+                          timeTypeNotifier.value = value!;
+                          timeController.clear();
+                        },
+                        contentPadding: EdgeInsets.zero,
+                        dense: true,
+                        activeColor: AssetsConstants.primaryLighter,
+                      ),
+                    ),
+                  ),
+                  // "Phút" Button
+                  Expanded(
+                    child: Container(
+                      height: 40, // Compact height
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      decoration: BoxDecoration(
+                        color: timeType == 'minute'
+                            ? AssetsConstants.primaryLighter.withOpacity(0.2)
+                            : Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: timeType == 'minute'
+                              ? AssetsConstants.primaryLighter
+                              : Colors.grey,
+                          width: 1.2,
+                        ),
+                      ),
+                      child: RadioListTile<String>(
+                        title: Text(
+                          'Phút',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: timeType == 'minute'
+                                ? AssetsConstants.primaryLighter
+                                : Colors.grey,
+                          ),
+                        ),
+                        value: 'minute',
+                        groupValue: timeType,
+                        onChanged: (value) {
+                          timeTypeNotifier.value = value!;
+                          timeController.clear();
+                        },
+                        contentPadding: EdgeInsets.zero,
+                        dense: true,
+                        activeColor: AssetsConstants.primaryLighter,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 16),
+            // Input field with dynamic label
+            ValueListenableBuilder(
+              valueListenable: timeTypeNotifier,
+              builder: (context, timeType, child) => TextField(
+                controller: timeController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText:
+                      'Thời gian dự kiến (${timeType == 'hour' ? 'giờ' : 'phút'})',
+                  hintText: 'Nhập thời gian dự kiến',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: AssetsConstants.primaryLighter,
+                      width: 2,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                      color: Colors.grey,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  labelStyle: TextStyle(
+                    color: timeController.text.isNotEmpty
+                        ? AssetsConstants.primaryLighter
+                        : Colors.grey,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: AssetsConstants.whiteColor,
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const LabelText(
+              content: "Đóng",
+              size: 16,
+              fontWeight: FontWeight.bold,
+              color: AssetsConstants.blackColor,
+            ),
+          ),
+          TextButton(
+            onPressed: () async {
+              try {
+                final double? inputTime = double.tryParse(timeController.text);
+
+                if (inputTime == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Vui lòng nhập thời gian hợp lệ'),
+                    ),
+                  );
+                  return;
+                }
+
+                final double estimatedTime = timeTypeNotifier.value == 'minute'
+                    ? inputTime / 60
+                    : inputTime;
+
+                final request = ReviewerStatusRequest(
+                  estimatedDeliveryTime: estimatedTime,
+                );
+
+                await ref
+                    .read(reviewerUpdateControllerProvider.notifier)
+                    .updateReviewerStatus(
+                      id: job.id,
+                      context: context,
+                      request: request,
+                    );
+                fetchResult.refresh();
+                if (context.mounted) {
+                  Navigator.of(context).pop();
+                }
+              } catch (error) {
+                print("Error updating reviewer status: $error");
+              }
+            },
+            child: const LabelText(
+              content: "Xác nhận",
+              size: 16,
+              fontWeight: FontWeight.bold,
+              color: AssetsConstants.primaryLight,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
