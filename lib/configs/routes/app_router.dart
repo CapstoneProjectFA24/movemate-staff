@@ -28,7 +28,7 @@ import 'package:movemate_staff/features/profile/presentation/screens/info_screen
 import 'package:movemate_staff/features/profile/presentation/screens/profile_screen/profile_screen.dart';
 import 'package:movemate_staff/features/profile/presentation/screens/contact/contact_screen.dart';
 import 'package:movemate_staff/features/porter/presentation/screens/porter_detail_screen/porter_detail_screen.dart';
-
+import 'package:movemate_staff/features/test_cloudinary/test_cloudinary_screen.dart';
 import 'package:movemate_staff/features/job/presentation/screen/job_details_screen/job_details_screen.dart';
 import 'package:movemate_staff/features/job/presentation/screen/job_screen/job_screen.dart';
 import 'package:movemate_staff/features/job/presentation/screen/add_job_screen/add_job_screen.dart';
@@ -72,7 +72,7 @@ class AppRouter extends _$AppRouter {
         // Màn hình chính
         AutoRoute(
           page: TabViewScreenRoute.page,
-          initial: true,
+          // initial: true,
           guards: [
             // OnboardingGuard(ref: _ref),
             AuthGuard(ref: _ref),
@@ -148,6 +148,9 @@ class AppRouter extends _$AppRouter {
             RoleGuard(_ref, [UserRole.reviewer, UserRole.poster])
           ],
         ),
+
+        // test
+        AutoRoute(page: TestCloudinaryScreenRoute.page, initial: true)
       ];
 }
 
