@@ -62,11 +62,6 @@ BookingStatusResult useBookingStatus(
     bool hasAssignmentWithStatus(
         String staffType, AssignmentsStatusType status) {
       return assignments.any((a) {
-        // print('Checking assignment: ${a.toJson()}');
-        // print('check bool type : ${a.staffType == staffType.toString()}');
-        // print('normal state $status');
-        // print(
-        //     'check bool state : ${a.status.toAssignmentsTypeEnum() == status}');
         return a.staffType == staffType.toString() &&
             a.status.toAssignmentsTypeEnum() == status;
       });
@@ -94,16 +89,15 @@ BookingStatusResult useBookingStatus(
     bool canUpdateServices = false;
     bool canConfirmSuggestion = false;
 
-   
     if (!isReviewOnline) {
       switch (status) {
         case BookingStatusType.assigned:
           canCreateSchedule = true;
           break;
         case BookingStatusType.reviewing:
-          if (!isStaffEnroute && !isStaffArrived) {
+          if (!isStaffEnroute && !isStaffArrived && !isSuggested) {
             canConfirmMoving = true;
-          } else if (isStaffEnroute && !isStaffArrived) {
+          } else if (isStaffEnroute && !isStaffArrived && !isSuggested) {
             canConfirmArrival = true;
           } else if (isStaffArrived && !isSuggested) {
             canUpdateServices = true;
@@ -120,15 +114,17 @@ BookingStatusResult useBookingStatus(
     bool canReviewOnline = false;
     bool canConfirmReview = false;
 
-    if (isReviewOnline && hasReviewerAssignment) {
+    if (isReviewOnline) {
       switch (status) {
         case BookingStatusType.assigned:
-          canConfirmReview = true;
+          if (hasReviewerAssignment) {
+            canConfirmReview = true;
+          }
           break;
         case BookingStatusType.reviewing:
           if (!isSuggested) {
             canUpdateServices = true;
-          } else {
+          } else if (isSuggested) {
             canConfirmSuggestion = true;
           }
           break;
@@ -138,24 +134,25 @@ BookingStatusResult useBookingStatus(
     }
 
     return BookingStatusResult(
-        statusMessage: determineStatusMessage(status, isReviewOnline,
-            isStaffEnroute, isStaffArrived, canCreateSchedule),
-        canReviewOffline: canReviewOffline,
-        canReviewOnline: canReviewOnline,
-        canCreateSchedule: canCreateSchedule,
-        canConfirmReview: canConfirmReview,
-        canUpdateServices: canUpdateServices,
-        canConfirmArrival: canConfirmArrival,
-        canConfirmMoving: canConfirmMoving,
-        canConfirmSuggestion: canConfirmSuggestion,
-        isWaitingCustomer: status == BookingStatusType.waiting,
-        isWaitingPayment: status == BookingStatusType.depositing,
-        isStaffEnroute: isStaffEnroute,
-        isStaffArrived: isStaffArrived,
-        isSuggested: isSuggested,
-        isReviewed: status == BookingStatusType.reviewed,
-        isInProgress: status == BookingStatusType.inProgress,
-        isCompleted: status == BookingStatusType.completed);
+      statusMessage: determineStatusMessage(status, isReviewOnline,
+          isStaffEnroute, isStaffArrived, canCreateSchedule),
+      canReviewOffline: canReviewOffline,
+      canReviewOnline: canReviewOnline,
+      canCreateSchedule: canCreateSchedule,
+      canConfirmReview: canConfirmReview,
+      canUpdateServices: canUpdateServices,
+      canConfirmArrival: canConfirmArrival,
+      canConfirmMoving: canConfirmMoving,
+      canConfirmSuggestion: canConfirmSuggestion,
+      isWaitingCustomer: status == BookingStatusType.waiting,
+      isWaitingPayment: status == BookingStatusType.depositing,
+      isStaffEnroute: isStaffEnroute,
+      isStaffArrived: isStaffArrived,
+      isSuggested: isSuggested,
+      isReviewed: status == BookingStatusType.reviewed,
+      isInProgress: status == BookingStatusType.inProgress,
+      isCompleted: status == BookingStatusType.completed,
+    );
   }, [booking, isReviewOnline]);
 }
 
@@ -176,8 +173,9 @@ String determineStatusMessage(
     case BookingStatusType.depositing:
       return "Chờ khách hàng thanh toán";
     case BookingStatusType.reviewing:
-      if (isStaffEnroute) return "Nhân viên đang di chuyển";
-      if (isStaffArrived) return "Nhân viên đã đến";
+      if (isStaffEnroute) return "Xác nhận để di chuyển";
+      if (isStaffArrived)
+        return "Bạn đã đến vui lòng đánh giá tình trạng của nhà";
       return "Đang đợi bạn đánh giá";
     case BookingStatusType.reviewed:
       return "Đã đánh giá xong";

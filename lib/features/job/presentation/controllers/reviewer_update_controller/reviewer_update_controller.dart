@@ -71,13 +71,14 @@ class ReviewerUpdateController extends _$ReviewerUpdateController {
   }
 
   Future<void> updateReviewerStatus({
-     ReviewerStatusRequest? request,
+    ReviewerStatusRequest? request,
     required int id,
     required BuildContext context,
   }) async {
     state = const AsyncLoading();
     final authRepository = ref.read(authRepositoryProvider);
     final user = await SharedPreferencesUtils.getInstance('user_token');
+
     state = await AsyncValue.guard(() async {
       final response = await ref
           .read(bookingRepositoryProvider)

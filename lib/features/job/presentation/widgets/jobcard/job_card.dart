@@ -136,14 +136,14 @@ class JobCard extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Deposit: ${job.deposit.toStringAsFixed(2)}',
+                            'Đặt cọc: ${job.deposit.toStringAsFixed(2)}',
                             style: const TextStyle(
                               color: Colors.white70,
                               fontSize: 13,
                             ),
                           ),
                           Text(
-                            'Total: ${job.total.toStringAsFixed(2)}',
+                            'Tổng đơn: ${job.total.toStringAsFixed(2)}',
                             style: const TextStyle(
                               color: Colors.white70,
                               fontSize: 13,
