@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // You can keep this for standard date formatting
 import 'package:auto_route/auto_route.dart';
+import 'package:movemate_staff/configs/routes/app_router.dart';
 
 @RoutePage()
 class PorterScreen extends StatefulWidget {
@@ -70,7 +71,7 @@ class _PorterScreenState extends State<PorterScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          DateFormat.E().format(day), // Default day formatting
+                          DateFormat.E().format(day),
                           style: TextStyle(
                             color: isSelected ? Colors.white : Colors.black,
                             fontWeight: FontWeight.bold,
@@ -78,7 +79,7 @@ class _PorterScreenState extends State<PorterScreen> {
                         ),
                         const SizedBox(height: 5),
                         Text(
-                          DateFormat.d().format(day), // Default date formatting
+                          DateFormat.d().format(day),
                           style: TextStyle(
                             color: isSelected ? Colors.white : Colors.black87,
                             fontSize: 18,
@@ -127,111 +128,118 @@ class _PorterScreenState extends State<PorterScreen> {
 
                     // Job Card
                     Expanded(
-                      child: Card(
-                        margin: const EdgeInsets.only(bottom: 10),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        elevation: 4,
-                        child: Container(
-                          padding: const EdgeInsets.all(15),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: job.status == 'Đã vận chuyển'
-                                  ? [
-                                      Colors.green.shade700,
-                                      Colors.green.shade400
-                                    ]
-                                  : [
-                                      Colors.orange.shade700,
-                                      Colors.orange.shade400
-                                    ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
+                      child: GestureDetector(
+                        onTap: () {
+                          context.router.push(const PorterDetailScreenRoute());
+                        },
+                        child: Card(
+                          margin: const EdgeInsets.only(bottom: 10),
+                          shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(15),
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    job.title,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      color: job.status == 'Đã vận chuyển'
-                                          ? Colors.greenAccent
-                                          : Colors.redAccent,
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: Text(
-                                      job.status,
+                          elevation: 4,
+                          child: Container(
+                            padding: const EdgeInsets.all(15),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: job.status == 'Đã vận chuyển'
+                                    ? [
+                                        Colors.green.shade700,
+                                        Colors.green.shade400
+                                      ]
+                                    : [
+                                        Colors.orange.shade700,
+                                        Colors.orange.shade400
+                                      ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      job.title,
                                       style: const TextStyle(
                                         color: Colors.white,
-                                        fontSize: 12,
+                                        fontSize: 18,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 10),
-                              Row(
-                                children: [
-                                  const Icon(Icons.access_time,
-                                      color: Colors.white70, size: 18),
-                                  const SizedBox(width: 5),
-                                  Text(
-                                    '${DateFormat.Hm().format(job.startTime)} - ${DateFormat.Hm().format(job.endTime)}', // Default time formatting
-                                    style: const TextStyle(
-                                        color: Colors.white70, fontSize: 14),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 5),
-                              Row(
-                                children: [
-                                  const Icon(Icons.location_on,
-                                      color: Colors.white70, size: 18),
-                                  const SizedBox(width: 5),
-                                  Expanded(
-                                    child: Text(
-                                      job.pickupAddress,
-                                      style: const TextStyle(
-                                          color: Colors.white70, fontSize: 13),
-                                      overflow: TextOverflow.ellipsis,
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 4),
+                                      decoration: BoxDecoration(
+                                        color: job.status == 'Đã vận chuyển'
+                                            ? Colors.greenAccent
+                                            : Colors.redAccent,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Text(
+                                        job.status,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 5),
-                              Row(
-                                children: [
-                                  const Icon(Icons.flag,
-                                      color: Colors.white70, size: 18),
-                                  const SizedBox(width: 5),
-                                  Expanded(
-                                    child: Text(
-                                      job.dropoffAddress,
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+                                Row(
+                                  children: [
+                                    const Icon(Icons.access_time,
+                                        color: Colors.white70, size: 18),
+                                    const SizedBox(width: 5),
+                                    Text(
+                                      '${DateFormat.Hm().format(job.startTime)} - ${DateFormat.Hm().format(job.endTime)}', // Default time formatting
                                       style: const TextStyle(
-                                          color: Colors.white70, fontSize: 13),
-                                      overflow: TextOverflow.ellipsis,
+                                          color: Colors.white70, fontSize: 14),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ],
+                                  ],
+                                ),
+                                const SizedBox(height: 5),
+                                Row(
+                                  children: [
+                                    const Icon(Icons.location_on,
+                                        color: Colors.white70, size: 18),
+                                    const SizedBox(width: 5),
+                                    Expanded(
+                                      child: Text(
+                                        job.pickupAddress,
+                                        style: const TextStyle(
+                                            color: Colors.white70,
+                                            fontSize: 13),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 5),
+                                Row(
+                                  children: [
+                                    const Icon(Icons.flag,
+                                        color: Colors.white70, size: 18),
+                                    const SizedBox(width: 5),
+                                    Expanded(
+                                      child: Text(
+                                        job.dropoffAddress,
+                                        style: const TextStyle(
+                                            color: Colors.white70,
+                                            fontSize: 13),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -246,7 +254,6 @@ class _PorterScreenState extends State<PorterScreen> {
     );
   }
 
- 
   List<BookingJob> _getJobsForSelectedDate() {
     final allJobs = [
       BookingJob(
