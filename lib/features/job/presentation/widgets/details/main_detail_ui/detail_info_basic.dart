@@ -6,6 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 // Entities
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
+import 'package:movemate_staff/features/profile/domain/entities/profile_entity.dart';
 import 'package:movemate_staff/features/test/domain/entities/house_entities.dart';
 
 // Widgets
@@ -21,6 +22,7 @@ import 'package:movemate_staff/utils/constants/asset_constant.dart';
 class CombinedInfoSection extends HookConsumerWidget {
   final BookingResponseEntity job;
   final FetchObjectResult<HouseEntities> useFetchHouseResult;
+  final FetchObjectResult<ProfileEntity> useFetchUserResult;
   final ValueNotifier<bool> isExpanded;
   final Function() toggleDropdown;
   final Map<String, List<String>> groupedImages;
@@ -29,6 +31,7 @@ class CombinedInfoSection extends HookConsumerWidget {
     Key? key,
     required this.job,
     required this.useFetchHouseResult,
+    required this.useFetchUserResult,
     required this.isExpanded,
     required this.toggleDropdown,
     required this.groupedImages,
@@ -68,8 +71,10 @@ class CombinedInfoSection extends HookConsumerWidget {
           ]),
           const Divider(height: 32, thickness: 1),
           _buildSection('Thông tin khách hàng', [
-            _buildInfoRow(context, 'Tên khách hàng', 'Vinh'),
-            _buildInfoRow(context, 'Số điện thoại', '0382703625'),
+            _buildInfoRow(context, 'Tên khách hàng',
+                useFetchUserResult.data?.name ?? "Không có thông tin"),
+            _buildInfoRow(context, 'Số điện thoại',
+                useFetchUserResult.data?.phone ?? "Không có sdt"),
           ]),
           const Divider(height: 32, thickness: 1),
           _buildImageSection(),

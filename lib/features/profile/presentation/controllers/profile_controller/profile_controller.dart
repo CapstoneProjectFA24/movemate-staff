@@ -25,91 +25,46 @@ class ProfileController extends _$ProfileController {
   @override
   FutureOr<void> build() {}
 
-  // Future<List<ProfileEntity>> getProfile(
-  //   PagingModel request,
-  //   BuildContext context,
-  // ) async {
-  //   List<ProfileEntity> profile = [];
+  Future<ProfileEntity?> getUserInfo(
+    int id,
+    BuildContext context,
+  ) async {
+    ProfileEntity? userInfo;
 
-  //   // state = const AsyncLoading();
-  //   final profileRepository = ref.read(profileRepositoryProvider);
-  //   final authRepository = ref.read(authRepositoryProvider);
-  //   final user = await SharedPreferencesUtils.getInstance('user_token');
+    final profileRepository = ref.read(profileRepositoryProvider);
+    final authRepository = ref.read(authRepositoryProvider);
+    final user = await SharedPreferencesUtils.getInstance('user_token');
 
-  //   state = await AsyncValue.guard(() async {
-  //     final response = await profileRepository.getprofiles(
-  //       accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
-  //       request: request,
-  //     );
-  //     profile = response.payload;
-  //     // print("controller ${profile.length}");
-  //   });
+    final result = await AsyncValue.guard(() async {
+      final response = await profileRepository.getUserInfo(
+        accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
+        id: id,
+      );
 
-  //   if (state.hasError) {
-  //     state = await AsyncValue.guard(() async {
-  //       final statusCode = (state.error as DioException).onStatusDio();
-  //       await handleAPIError(
-  //         statusCode: statusCode,
-  //         stateError: state.error!,
-  //         context: context,
-  //         onCallBackGenerateToken: () async => await reGenerateToken(
-  //           authRepository,
-  //           context,
-  //         ),
-  //       );
+      return response.payload;
+    });
 
-  //       if (state.hasError) {
-  //         await ref.read(signInControllerProvider.notifier).signOut(context);
-  //       }
+    state = result;
 
-  //       if (statusCode != StatusCodeType.unauthentication.type) {}
-  //     });
-  //   }
+    if (result.hasError) {
+      final statusCode = (result.error as DioException).onStatusDio();
+      await handleAPIError(
+        statusCode: statusCode,
+        stateError: result.error!,
+        context: context,
+        onCallBackGenerateToken: () async => await reGenerateToken(
+          authRepository,
+          context,
+        ),
+      );
 
-  //   return profile;
-  // }
+      if (statusCode != StatusCodeType.unauthentication.type) {}
+    }
 
-  // Future<HouseEntities?> getHouseDetails(
-  //   int id,
-  //   BuildContext context,
-  // ) async {
-  //   HouseEntities? houseDetails;
-
-  //   // state = const AsyncLoading();
-  //   final profileRepository = ref.read(bookingRepositoryProvider);
-  //   final authRepository = ref.read(authRepositoryProvider);
-  //   final user = await SharedPreferencesUtils.getInstance('user_token');
-
-  //   final result = await AsyncValue.guard(() async {
-  //     final response = await houseTypeRepository.getHouseDetails(
-  //       accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
-  //       id: id,
-  //     );
-  //     // print("controller ${response.payload}");
-  //     return response.payload;
-  //   });
-
-  //   state = result;
-
-  //   if (result.hasError) {
-  //     final statusCode = (result.error as DioException).onStatusDio();
-  //     await handleAPIError(
-  //       statusCode: statusCode,
-  //       stateError: result.error!,
-  //       context: context,
-  //       onCallBackGenerateToken: () async => await reGenerateToken(
-  //         authRepository,
-  //         context,
-  //       ),
-  //     );
-
-  //     if (statusCode != StatusCodeType.unauthentication.type) {}
-  //   }
-
-  //   if (result is AsyncData<HouseEntities>) {
-  //     return result.value;
-  //   } else {
-  //     return null;
-  //   }
-  // }
+    if (result is AsyncData<ProfileEntity>) {
+      return result.value;
+    } else {
+      return null;
+    }
+  }
 }
