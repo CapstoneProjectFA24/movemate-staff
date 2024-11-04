@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/presentation/screen/job_details_screen/job_details_screen.dart';
+import 'package:movemate_staff/hooks/use_booking_status.dart';
+import 'package:movemate_staff/services/realtime_service/booking_status_realtime/booking_status_stream_provider.dart';
 
-class JobCard extends StatelessWidget {
+class JobCard extends HookConsumerWidget {
   final BookingResponseEntity job;
   final VoidCallback onCallback;
   final bool isReviewOnline;
@@ -19,226 +22,290 @@ class JobCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final bookingAsync = ref.watch(bookingStreamProvider(job.id.toString()));
+    final bookingStatus = useBookingStatus(bookingAsync.value, isReviewOnline);
+
     return FadeInUp(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Column(
-            children: [
-              Icon(
-                _getStatusIcon(job.status),
-                color: _getStatusColor(job.status),
-                size: 24,
-              ),
-              Container(
-                height: 60,
-                width: 2,
-                color: _getStatusColor(job.status).withOpacity(0.4),
-              ),
-            ],
-          ),
+          _buildStatusIndicator(),
           const SizedBox(width: 10),
           Expanded(
-            child: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => JobDetailsScreen(job: job),
-                  ),
-                );
-              },
-              child: Card(
-                margin: const EdgeInsets.only(bottom: 10),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                elevation: 4,
-                child: Container(
-                  padding: const EdgeInsets.all(15),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: _getCardGradientColors(job.status),
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "Mã đơn dọn nhà: ${job.id}",
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: _getStatusColor(job.status),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              job.status,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      _buildDateInfo(),
-                      const SizedBox(height: 5),
-                      Row(
-                        children: [
-                          const Icon(Icons.location_on,
-                              color: Colors.white70, size: 18),
-                          const SizedBox(width: 5),
-                          Expanded(
-                            child: Text(
-                              job.pickupAddress,
-                              style: const TextStyle(
-                                  color: Colors.white70, fontSize: 13),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 5),
-                      Row(
-                        children: [
-                          const Icon(Icons.flag,
-                              color: Colors.white70, size: 18),
-                          const SizedBox(width: 5),
-                          Expanded(
-                            child: Text(
-                              job.deliveryAddress,
-                              style: const TextStyle(
-                                  color: Colors.white70, fontSize: 13),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Đặt cọc: ${job.deposit.toStringAsFixed(2)}',
-                            style: const TextStyle(
-                              color: Colors.white70,
-                              fontSize: 13,
-                            ),
-                          ),
-                          Text(
-                            'Tổng đơn: ${job.total.toStringAsFixed(2)}',
-                            style: const TextStyle(
-                              color: Colors.white70,
-                              fontSize: 13,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+            child: _buildCardContent(context, bookingStatus),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildDateInfo() {
-    if (currentTab == "Đang đợi đánh giá") {
-      if (isReviewOnline) {
-        return Row(
-          children: [
-            const Icon(Icons.calendar_today, color: Colors.white70, size: 18),
-            const SizedBox(width: 5),
-            Text(
-              'Ngày đặt: ${_formatTime(job.bookingAt)}',
-              style: const TextStyle(color: Colors.white70, fontSize: 14),
-            ),
-          ],
-        );
-      } else {
-        return Row(
-          children: [
-            const Icon(Icons.rate_review, color: Colors.white70, size: 18),
-            const SizedBox(width: 5),
-            Text(
-              'Review Date: ${_formatTime(job.reviewAt)}',
-              style: const TextStyle(color: Colors.white70, fontSize: 14),
-            ),
-          ],
-        );
-      }
-    } else if (currentTab == "Đã đánh giá") {
-      if (!isReviewOnline) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const Icon(Icons.rate_review, color: Colors.white70, size: 18),
-                const SizedBox(width: 5),
-                Text(
-                  'Ngày đánh giá: ${_formatTime(job.reviewAt)}',
-                  style: const TextStyle(color: Colors.white70, fontSize: 14),
-                ),
-              ],
-            ),
-            const SizedBox(height: 5),
-            Row(
-              children: [
-                const Icon(Icons.access_time, color: Colors.white70, size: 18),
-                const SizedBox(width: 5),
-                Text(
-                  'Thời gian ước tính: ${job.estimatedDeliveryTime ?? 'N/A'}',
-                  style: const TextStyle(color: Colors.white70, fontSize: 14),
-                ),
-              ],
-            ),
-          ],
-        );
-      } else {
-        return Row(
-          children: [
-            const Icon(Icons.rate_review, color: Colors.white70, size: 18),
-            const SizedBox(width: 5),
-            Text(
-              'Ngày đặt: ${_formatTime(job.bookingAt)}',
-              style: const TextStyle(color: Colors.white70, fontSize: 14),
-            ),
-          ],
-        );
-      }
-    }
-
-    return const SizedBox.shrink();
+  Widget _buildStatusIndicator() {
+    return Column(
+      children: [
+        Icon(
+          _getStatusIcon(job.status),
+          color: _getStatusColor(job.status),
+          size: 24,
+        ),
+        Container(
+          height: 60,
+          width: 2,
+          color: _getStatusColor(job.status).withOpacity(0.4),
+        ),
+      ],
+    );
   }
 
-  String _formatTime(String? time) {
-    if (time == null) return "N/A";
-    try {
-      DateTime dateTime = DateFormat("MM/dd/yyyy HH:mm:ss").parse(time);
-      return "${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')} ${DateFormat('dd/MM/yyyy').format(dateTime)}";
-    } catch (e) {
-      return "Invalid Date";
+  Widget _buildCardContent(BuildContext context, BookingStatusResult status) {
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => JobDetailsScreen(job: job)),
+      ),
+      child: Card(
+        margin: const EdgeInsets.only(bottom: 10),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        elevation: 4,
+        child: Container(
+          padding: const EdgeInsets.all(15),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: _getCardGradientColors(),
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(status),
+              const SizedBox(height: 10),
+              _buildStatusMessage(status),
+              const SizedBox(height: 10),
+              _buildAddressInfo(),
+              const SizedBox(height: 10),
+              _buildPaymentInfo(),
+              if (_shouldShowActionButton(status)) ...[
+                const SizedBox(height: 10),
+                _buildActionButton(status),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader(BookingStatusResult status) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          "Mã đơn dọn nhà: ${job.id}",
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        _buildStatusBadge(),
+      ],
+    );
+  }
+
+  Widget _buildStatusBadge() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: _getStatusColor(job.status),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        _getDisplayStatus(job.status),
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 12,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatusMessage(BookingStatusResult status) {
+    return Text(
+      status.statusMessage,
+      style: const TextStyle(color: Colors.white70, fontSize: 14),
+    );
+  }
+
+  Widget _buildAddressInfo() {
+    return Column(
+      children: [
+        Row(
+          children: [
+            const Icon(Icons.location_on, color: Colors.white70, size: 18),
+            const SizedBox(width: 5),
+            Expanded(
+              child: Text(
+                job.pickupAddress,
+                style: const TextStyle(color: Colors.white70, fontSize: 13),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 5),
+        Row(
+          children: [
+            const Icon(Icons.flag, color: Colors.white70, size: 18),
+            const SizedBox(width: 5),
+            Expanded(
+              child: Text(
+                job.deliveryAddress,
+                style: const TextStyle(color: Colors.white70, fontSize: 13),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPaymentInfo() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          'Đặt cọc: ${NumberFormat('#,###').format(job.deposit)}đ',
+          style: const TextStyle(color: Colors.white70, fontSize: 13),
+        ),
+        Text(
+          'Tổng đơn: ${NumberFormat('#,###').format(job.total)}đ',
+          style: const TextStyle(color: Colors.white70, fontSize: 13),
+        ),
+      ],
+    );
+  }
+
+  bool _shouldShowActionButton(BookingStatusResult status) {
+    if (isReviewOnline) {
+      return status.canConfirmReview ||
+          status.canUpdateServices ||
+          status.canConfirmSuggestion;
+    } else {
+      return status.canCreateSchedule ||
+          status.canConfirmMoving ||
+          status.canConfirmArrival ||
+          status.canUpdateServices ||
+          status.canConfirmSuggestion;
+    }
+  }
+
+  Widget _buildActionButton(BookingStatusResult status) {
+    String buttonText = _getActionButtonText(status);
+    if (buttonText.isEmpty) return const SizedBox.shrink();
+
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: onCallback,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.white,
+          foregroundColor: _getStatusColor(job.status),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+        child: Text(buttonText),
+      ),
+    );
+  }
+
+  String _getActionButtonText(BookingStatusResult status) {
+    if (isReviewOnline) {
+      if (status.canConfirmReview) return 'Xác nhận đánh giá';
+      if (status.canUpdateServices) return 'Cập nhật dịch vụ';
+      if (status.canConfirmSuggestion) return 'Hoàn thành đề xuất';
+    } else {
+      if (status.canCreateSchedule) return 'Xếp lịch';
+      if (status.canConfirmMoving) return 'Xác nhận di chuyển';
+      if (status.canConfirmArrival) return 'Xác nhận đã đến';
+      if (status.canUpdateServices) return 'Cập nhật dịch vụ';
+      if (status.canConfirmSuggestion) return 'Hoàn thành đề xuất';
+    }
+    return '';
+  }
+
+  List<Color> _getCardGradientColors() {
+    switch (job.status) {
+      case 'PENDING':
+        return [
+          Colors.yellow.shade700,
+          Colors.yellow.shade400
+        ]; // Yellow for pending
+      case 'ASSIGNED':
+        return [
+          Colors.orange.shade700,
+          Colors.orange.shade400
+        ]; // Orange for assigned/in progress
+      case 'REVIEWING':
+        return [
+          Colors.orange.shade700,
+          Colors.orange.shade400
+        ]; // Orange for reviewing/in progress
+      case 'REVIEWED':
+        return [
+          Colors.green.shade700,
+          Colors.green.shade400
+        ]; // Green for reviewed/completed
+      case 'COMING':
+        return [
+          Colors.orange.shade700,
+          Colors.orange.shade400
+        ]; // Orange for coming/on the way
+      case 'IN_PROGRESS':
+        return [
+          Colors.orange.shade700,
+          Colors.orange.shade400
+        ]; // Orange for in progress
+      case 'COMPLETED':
+        return [
+          Colors.green.shade900,
+          Colors.green.shade600
+        ]; // Green for completed
+      case 'CANCELLED':
+        return [
+          Colors.redAccent.shade100,
+          Colors.red.shade400
+        ]; // Light red for canceled
+      default:
+        return [Colors.grey.shade700, Colors.grey.shade400];
+    }
+  }
+
+  Color _getStatusColor(String status) {
+    switch (job.status) {
+      case 'PENDING':
+        return Colors.yellow;
+      case 'ASSIGNED':
+        return Colors.orange;
+      case 'REVIEWING':
+        return Colors.orange;
+      case 'REVIEWED':
+        return Colors.green;
+      case 'COMING':
+        return Colors.orange;
+      case 'IN_PROGRESS':
+        return Colors.orange;
+      case 'COMPLETED':
+        return Colors.green;
+      case 'CANCELLED':
+        return Colors.redAccent.shade100;
+      default:
+        return Colors.grey;
     }
   }
 
@@ -247,7 +314,13 @@ class JobCard extends StatelessWidget {
       case 'PENDING':
         return Icons.hourglass_empty;
       case 'ASSIGNED':
-        return Icons.assignment_turned_in;
+        return Icons.assignment_ind;
+      case 'REVIEWING':
+        return Icons.rate_review;
+      case 'REVIEWED':
+        return Icons.thumb_up;
+      case 'COMING':
+        return Icons.directions_car;
       case 'IN_PROGRESS':
         return Icons.local_shipping;
       case 'COMPLETED':
@@ -259,37 +332,26 @@ class JobCard extends StatelessWidget {
     }
   }
 
-  Color _getStatusColor(String status) {
+  String _getDisplayStatus(String status) {
     switch (status) {
       case 'PENDING':
-        return Colors.orange;
+        return 'Chờ xử lý';
       case 'ASSIGNED':
-        return Colors.blue;
+        return 'Đã phân công';
+      case 'REVIEWING':
+        return 'Đang đánh giá';
+      case 'REVIEWED':
+        return 'Đã đánh giá';
+      case 'COMING':
+        return 'Đang đến';
       case 'IN_PROGRESS':
-        return Colors.teal;
+        return 'Đang thực hiện';
       case 'COMPLETED':
-        return Colors.green;
+        return 'Hoàn thành';
       case 'CANCELLED':
-        return Colors.red;
+        return 'Đã hủy';
       default:
-        return Colors.grey;
-    }
-  }
-
-  List<Color> _getCardGradientColors(String status) {
-    switch (status) {
-      case 'PENDING':
-        return [Colors.orange.shade700, Colors.orange.shade400];
-      case 'ASSIGNED':
-        return [Colors.blue.shade700, Colors.blue.shade400];
-      case 'IN_PROGRESS':
-        return [Colors.teal.shade700, Colors.teal.shade400];
-      case 'COMPLETED':
-        return [Colors.green.shade700, Colors.green.shade400];
-      case 'CANCELLED':
-        return [Colors.red.shade700, Colors.red.shade400];
-      default:
-        return [Colors.grey.shade700, Colors.grey.shade400];
+        return 'Không xác định';
     }
   }
 }

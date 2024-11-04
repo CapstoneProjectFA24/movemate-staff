@@ -12,9 +12,7 @@ import 'package:movemate_staff/features/job/domain/entities/booking_response_ent
 import 'package:movemate_staff/features/job/presentation/widgets/details/main_detail_ui/detail_info_basic.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/main_detail_ui/header_status_section.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/main_detail_ui/image_info_section.dart';
-import 'package:movemate_staff/features/job/presentation/widgets/details/update_status_button.dart';
 import 'package:movemate_staff/features/test/domain/entities/house_entities.dart';
-import 'package:movemate_staff/hooks/use_booking_status.dart';
 import 'package:movemate_staff/models/request/paging_model.dart';
 
 // Controllers & Providers
@@ -23,16 +21,13 @@ import 'package:movemate_staff/features/job/presentation/controllers/house_type_
 import 'package:movemate_staff/features/job/presentation/providers/booking_provider.dart';
 
 // Widgets
-import 'package:movemate_staff/features/job/presentation/widgets/details/action_button.dart';
 import 'package:movemate_staff/utils/commons/widgets/app_bar.dart';
 import 'package:movemate_staff/utils/commons/widgets/loading_overlay.dart';
 
 // Hooks & Utils
 import 'package:movemate_staff/hooks/use_fetch_obj.dart';
 import 'package:movemate_staff/hooks/use_fetch.dart';
-import 'package:movemate_staff/utils/enums/enums_export.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
-import 'package:movemate_staff/services/realtime_service/booking_status_realtime/booking_status_stream_provider.dart';
 
 @RoutePage()
 class JobDetailsScreen extends HookConsumerWidget {
@@ -46,7 +41,7 @@ class JobDetailsScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isExpanded = useState(false);
-
+    final state = ref.watch(bookingControllerProvider);
     void toggleDropdown() {
       isExpanded.value = !isExpanded.value;
     }
@@ -56,8 +51,6 @@ class JobDetailsScreen extends HookConsumerWidget {
     final Map<String, List<String>> groupedImages =
         getGroupedImages(job.bookingTrackers);
 
-    final statusBooking = job.status.toBookingTypeEnum();
-    // Truy cập BookingController
     final houseTypeController = ref.read(houseTypeControllerProvider.notifier);
 
     final useFetchHouseResult = useFetchObject<HouseEntities>(
@@ -66,19 +59,6 @@ class JobDetailsScreen extends HookConsumerWidget {
       context: context,
     );
 
-    AssignmentsStatusType? statusAssignment;
-    if (job.assignments.isNotEmpty) {
-      statusAssignment = job.assignments.first.status.toAssignmentsTypeEnum();
-    } else {
-      statusAssignment = null;
-      print('Warning: Assignments list is empty.');
-    }
-
-    final buttonState = statusAssignment != null
-        ? ButtonStateManager.getButtonState(statusBooking, statusAssignment)
-        : ButtonState(isVisible: false);
-
-    final state = ref.watch(bookingControllerProvider);
     final fetchResult = useFetch<BookingResponseEntity>(
       function: (model, context) => ref
           .read(bookingControllerProvider.notifier)
@@ -89,48 +69,6 @@ class JobDetailsScreen extends HookConsumerWidget {
       ),
       context: context,
     );
-
-    final statusAsync = ref.watch(orderStatusStreamProvider(job.id.toString()));
-    // final statusAsyncAssignment =
-    //     ref.watch(orderStatusAssignmentStreamProvider(job.id.toString()));
-
-    final statusAsyncAssignment = ref
-        .watch(orderStatusAssignmentStreamProvider(job.id.toString()))
-        .when<AsyncValue<AssignmentsStatusType>>(
-          data: (statusList) {
-            if (statusList.isEmpty || statusList.first == null) {
-              return AsyncValue.data(AssignmentsStatusType
-                  .arrived); // Giá trị mặc định nếu list rỗng
-            }
-            return AsyncValue.data(statusList.first);
-          },
-          loading: () => const AsyncValue.loading(),
-          error: (err, stack) => AsyncValue.error(err, stack),
-        );
-
-    final debounce = useRef<Timer?>(null);
-    final statusOrders = statusAsync.when(
-      data: (status) => status,
-      loading: () => const CircularProgressIndicator(),
-      error: (err, stack) => Text('Error: $err'),
-    );
-    // useEffect(() {
-    //   statusAsync.whenData((status) {
-    //     debounce.value?.cancel();
-    //     debounce.value = Timer(const Duration(milliseconds: 300), () {
-    //       fetchResult.refresh();
-    //     });
-    //   });
-    //   statusAsyncAssignment.whenData((status) {
-    //     debounce.value?.cancel();
-    //     debounce.value = Timer(const Duration(milliseconds: 300), () {
-    //       fetchResult.refresh();
-    //     });
-    //   });
-    //   return () {
-    //     debounce.value?.cancel();
-    //   };
-    // }, [statusAsync, statusAsyncAssignment]);
 
     return LoadingOverlay(
       isLoading: state.isLoading,

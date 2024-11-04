@@ -6,6 +6,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/presentation/controllers/booking_controller/booking_controller.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/jobcard/job_card.dart';
+import 'package:movemate_staff/hooks/use_booking_status.dart';
 import 'package:movemate_staff/hooks/use_fetch.dart';
 import 'package:movemate_staff/models/request/paging_model.dart';
 import 'package:movemate_staff/services/realtime_service/booking_status_realtime/booking_status_stream_provider.dart';
@@ -28,6 +29,7 @@ class JobScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final tabController = useTabController(initialLength: 2);
     final currentTabStatus = useState<String>("Đang đợi đánh giá");
+    //TÔi thêm mẫu trước ở đây
 
     tabController.addListener(() {
       if (!tabController.indexIsChanging) {
@@ -192,8 +194,7 @@ class JobScreen extends HookConsumerWidget {
                             job: filteredBookings[index],
                             onCallback: fetchResult.refresh,
                             isReviewOnline: isReviewOnline,
-                            currentTab: currentTabStatus
-                                .value, 
+                            currentTab: currentTabStatus.value,
                           );
                         },
                       ),

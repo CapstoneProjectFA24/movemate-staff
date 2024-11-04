@@ -59,8 +59,7 @@ BookingStatusResult useBookingStatus(
     final assignments = booking.assignments ?? [];
 
     // Helper functions
-    bool hasAssignmentWithStatus(
-        String staffType, AssignmentsStatusType status) {
+    bool hasAssignmentWithStatus(String staffType, AssignmentsStatusType status) {
       return assignments.any((a) {
         return a.staffType == staffType.toString() &&
             a.status.toAssignmentsTypeEnum() == status;
@@ -163,35 +162,63 @@ String determineStatusMessage(
   bool isStaffArrived,
   bool canCreateSchedule,
 ) {
-  switch (status) {
-    case BookingStatusType.assigned:
-      return canCreateSchedule
-          ? "Chờ bạn xếp lịch với khách hàng"
-          : "Đã được phân công";
-    case BookingStatusType.waiting:
-      return "Đang chờ khách hàng chấp nhận lịch";
-    case BookingStatusType.depositing:
-      return "Chờ khách hàng thanh toán";
-    case BookingStatusType.reviewing:
-      if (isStaffEnroute) return "Xác nhận để di chuyển";
-      if (isStaffArrived)
-        return "Bạn đã đến vui lòng đánh giá tình trạng của nhà";
-      return "Đang đợi bạn đánh giá";
-    case BookingStatusType.reviewed:
-      return "Đã đánh giá xong";
-    case BookingStatusType.coming:
-      return "Đang đến";
-    case BookingStatusType.inProgress:
-      return "Đang thực hiện";
-    case BookingStatusType.completed:
-      return "Hoàn thành";
-    case BookingStatusType.cancelled:
-      return "Đã hủy";
-    case BookingStatusType.refunded:
-      return "Đã hoàn tiền";
-    case BookingStatusType.pending:
-      return "Chờ xác nhận";
-    default:
-      return "Không xác định";
+  if (isReviewOnline) {
+    switch (status) {
+      case BookingStatusType.assigned:
+        return "Đã được phân công";
+      case BookingStatusType.reviewing:
+        if (isStaffArrived) return "Bạn đang đánh giá tình trạng của nhà";
+        return "Đang đợi bạn đánh giá";
+      case BookingStatusType.reviewed:
+        return "Đã đánh giá xong";
+      case BookingStatusType.depositing:
+        return "Chờ khách hàng thanh toán";
+      case BookingStatusType.coming:
+        return "Đang đến";
+      case BookingStatusType.inProgress:
+        return "Đang thực hiện";
+      case BookingStatusType.completed:
+        return "Hoàn thành";
+      case BookingStatusType.cancelled:
+        return "Đã hủy";
+      case BookingStatusType.refunded:
+        return "Đã hoàn tiền";
+      case BookingStatusType.pending:
+        return "Chờ xác nhận";
+      default:
+        return "Không xác định";
+    }
+  } else {
+    switch (status) {
+      case BookingStatusType.assigned:
+        return canCreateSchedule
+            ? "Chờ bạn xếp lịch với khách hàng"
+            : "Đã được phân công";
+      case BookingStatusType.waiting:
+        return "Đang chờ khách hàng chấp nhận lịch";
+      case BookingStatusType.depositing:
+        return "Chờ khách hàng thanh toán";
+      case BookingStatusType.reviewing:
+        if (isStaffEnroute) return "Xác nhận để di chuyển";
+        if (isStaffArrived)
+          return "Bạn đã đến vui lòng đánh giá tình trạng của nhà";
+        return "Đang đợi bạn đánh giá";
+      case BookingStatusType.reviewed:
+        return "Đã đánh giá xong";
+      case BookingStatusType.coming:
+        return "Đang đến";
+      case BookingStatusType.inProgress:
+        return "Đang thực hiện";
+      case BookingStatusType.completed:
+        return "Hoàn thành";
+      case BookingStatusType.cancelled:
+        return "Đã hủy";
+      case BookingStatusType.refunded:
+        return "Đã hoàn tiền";
+      case BookingStatusType.pending:
+        return "Chờ xác nhận";
+      default:
+        return "Không xác định";
+    }
   }
 }
