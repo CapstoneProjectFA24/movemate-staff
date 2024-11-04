@@ -1,13 +1,21 @@
+// External packages
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+// Entities
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/test/domain/entities/house_entities.dart';
+
+// Widgets
 import 'package:movemate_staff/features/job/presentation/widgets/details/image_section.dart';
-import 'package:movemate_staff/hooks/use_fetch_obj.dart';
-import 'package:movemate_staff/features/job/presentation/widgets/details/update_status_button.dart';
 import 'package:movemate_staff/utils/commons/widgets/form_input/label_text.dart';
+
+// Hooks
+import 'package:movemate_staff/hooks/use_fetch_obj.dart';
+
+// Constants
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
 
 class CombinedInfoSection extends HookConsumerWidget {
