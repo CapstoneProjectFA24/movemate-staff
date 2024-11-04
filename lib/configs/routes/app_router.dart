@@ -27,12 +27,12 @@ import 'package:movemate_staff/features/profile/presentation/screens/profile_det
 import 'package:movemate_staff/features/profile/presentation/screens/info_screen/info_screen.dart';
 import 'package:movemate_staff/features/profile/presentation/screens/profile_screen/profile_screen.dart';
 import 'package:movemate_staff/features/profile/presentation/screens/contact/contact_screen.dart';
-import 'package:movemate_staff/features/job/presentation/screen/porter_detail_screen/porter_detail_screen.dart';
+import 'package:movemate_staff/features/porter/presentation/screens/porter_detail_screen/porter_detail_screen.dart';
 
 import 'package:movemate_staff/features/job/presentation/screen/job_details_screen/job_details_screen.dart';
 import 'package:movemate_staff/features/job/presentation/screen/job_screen/job_screen.dart';
 import 'package:movemate_staff/features/job/presentation/screen/add_job_screen/add_job_screen.dart';
-import 'package:movemate_staff/features/job/presentation/screen/porter_screen/porter_screen.dart';
+import 'package:movemate_staff/features/porter/presentation/screens/porter_screen/porter_screen.dart';
 import 'package:movemate_staff/features/history/presentation/screen/history_screen.dart';
 import 'package:movemate_staff/features/test-map/map_test_screen.dart';
 import 'package:movemate_staff/splash_screen.dart';
