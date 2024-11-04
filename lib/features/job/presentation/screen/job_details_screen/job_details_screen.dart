@@ -12,6 +12,8 @@ import 'package:movemate_staff/features/job/domain/entities/booking_response_ent
 import 'package:movemate_staff/features/job/presentation/widgets/details/main_detail_ui/detail_info_basic.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/main_detail_ui/header_status_section.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/main_detail_ui/image_info_section.dart';
+import 'package:movemate_staff/features/profile/domain/entities/profile_entity.dart';
+import 'package:movemate_staff/features/profile/presentation/controllers/profile_controller/profile_controller.dart';
 import 'package:movemate_staff/features/test/domain/entities/house_entities.dart';
 import 'package:movemate_staff/models/request/paging_model.dart';
 
@@ -51,11 +53,16 @@ class JobDetailsScreen extends HookConsumerWidget {
     final Map<String, List<String>> groupedImages =
         getGroupedImages(job.bookingTrackers);
 
-    final houseTypeController = ref.read(houseTypeControllerProvider.notifier);
-
     final useFetchHouseResult = useFetchObject<HouseEntities>(
-      function: (context) =>
-          houseTypeController.getHouseDetails(job.houseTypeId, context),
+      function: (context) => ref
+          .read(houseTypeControllerProvider.notifier)
+          .getHouseDetails(job.houseTypeId, context),
+      context: context,
+    );
+    final useFetchUserResult = useFetchObject<ProfileEntity>(
+      function: (context) => ref
+          .read(profileControllerProvider.notifier)
+          .getUserInfo(job.userId, context),
       context: context,
     );
 
@@ -111,6 +118,7 @@ class JobDetailsScreen extends HookConsumerWidget {
                 CombinedInfoSection(
                   job: job,
                   useFetchHouseResult: useFetchHouseResult,
+                  useFetchUserResult: useFetchUserResult,
                   isExpanded: isExpanded,
                   toggleDropdown: () => isExpanded.value = !isExpanded.value,
                   groupedImages: groupedImages,
