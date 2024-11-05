@@ -334,7 +334,7 @@ class BookingUpdateRequest {
   factory BookingUpdateRequest.fromBookingUpdate(Booking booking) {
     // Khởi tạo danh sách bookingDetails
     List<ServiceDetail> bookingDetails = [];
-    List<ServiceDetail> selectedVehicle = [];
+
     // Thêm selectedSubServices vào bookingDetails
     bookingDetails.addAll(booking.selectedSubServices.map((subService) {
       return ServiceDetail(
@@ -343,15 +343,32 @@ class BookingUpdateRequest {
       );
     }).toList());
 
-    if (booking.selectedVehicle != null) {
-      selectedVehicle.add(
+    if (booking.selectedVehicleOld != null) {
+      bookingDetails.add(
         ServiceDetail(
-          serviceId: booking.selectedVehicle!.id,
-          quantity: 1, // Giá trị mặc định là 1
+          serviceId: booking.selectedVehicleOld!.id,
+          quantity: 0,
         ),
       );
     }
-    bookingDetails.addAll(selectedVehicle);
+    if (booking.selectedVehicle != null) {
+      bookingDetails.add(
+        ServiceDetail(
+          serviceId: booking.selectedVehicle!.id,
+          quantity: 1,
+        ),
+      );
+    }
+
+    // Thêm selectedVehicle mới vào bookingDetails
+    if (booking.selectedVehicle != null) {
+      bookingDetails.add(
+        ServiceDetail(
+          serviceId: booking.selectedVehicle!.id,
+          quantity: 1,
+        ),
+      );
+    }
 
     // Thêm selectedPackages với số lượng vào bookingDetails
     bookingDetails.addAll(booking.selectedPackages
@@ -366,8 +383,6 @@ class BookingUpdateRequest {
     // Chuyển đổi thời gian đặt chỗ sang định dạng ISO8601
     String bookingAt = booking.bookingDate?.toIso8601String() ??
         DateTime.now().add(Duration(days: 2)).toIso8601String();
-
-
 
     return BookingUpdateRequest(
       truckCategoryId: booking.selectedVehicle?.truckCategory?.id ?? 0,

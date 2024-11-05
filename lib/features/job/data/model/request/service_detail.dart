@@ -16,10 +16,20 @@ class ServiceDetail {
     };
   }
 
+  ServiceDetail copyWith({
+    int? serviceId,
+    int? quantity,
+  }) {
+    return ServiceDetail(
+      serviceId: serviceId ?? this.serviceId,
+      quantity: quantity ?? this.quantity,
+    );
+  }
+
   factory ServiceDetail.fromMap(Map<String, dynamic> map) {
     return ServiceDetail(
       serviceId: map['serviceId'] ?? 0,
-      quantity: map['quantity'] ?? 1,
+      quantity: map['quantity'] ?? 0,
     );
   }
 

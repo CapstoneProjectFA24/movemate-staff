@@ -104,6 +104,10 @@ class BookingNotifier extends StateNotifier<Booking> {
     calculateAndUpdateTotalPrice();
   }
 
+  void updateSelectedVehicleOld(ServiceEntity vehicle) {
+    state = state.copyWith(selectedVehicleOld: vehicle);
+  }
+
   void updateServicePackageQuantity(
     ServicesPackageEntity servicePackage,
     int newQuantity,

@@ -23,6 +23,7 @@ class Booking {
   final List<Vehicle> availableVehicles;
   final double totalPrice;
   final ServiceEntity? selectedVehicle;
+  final ServiceEntity? selectedVehicleOld;
 
   final double packagePrice;
   final bool isRoundTrip;
@@ -73,6 +74,7 @@ class Booking {
     this.servicesFeeList = const [],
     // Booking select packages
     this.selectedVehicle,
+    this.selectedVehicleOld,
     this.selectedPackageIndex,
     this.additionalServiceQuantities = const [0, 0, 0],
     // Added fields
@@ -116,6 +118,7 @@ class Booking {
     List<ServicesFeeSystemEntity>? servicesFeeList,
     // Booking select package
     ServiceEntity? selectedVehicle,
+    ServiceEntity? selectedVehicleOld,
     int? selectedPackageIndex,
     List<int>? additionalServiceQuantities,
     // Added fields
@@ -153,6 +156,7 @@ class Booking {
       servicesFeeList: servicesFeeList ?? this.servicesFeeList,
       // Booking select package
       selectedVehicle: selectedVehicle ?? this.selectedVehicle,
+      selectedVehicleOld: selectedVehicleOld ?? this.selectedVehicleOld,
 
       selectedPackageIndex: selectedPackageIndex ?? this.selectedPackageIndex,
       additionalServiceQuantities:

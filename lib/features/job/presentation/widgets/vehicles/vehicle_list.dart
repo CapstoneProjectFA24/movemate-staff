@@ -46,6 +46,9 @@ class VehicleList extends StatelessWidget {
     }
     // Kiểm tra xem người dùng đã chọn vehicle mới chưa
     bool hasUserSelection = bookingState.selectedVehicle != null;
+    final serviceIdOld = job.bookingDetails
+        .where((detail) => detail.type == "TRUCK")
+        .map((truckDetail) => truckDetail.serviceId);
 
     return ListView.builder(
       itemCount: fetchResult.items.length + 1,
@@ -64,7 +67,7 @@ class VehicleList extends StatelessWidget {
             ? service.id == bookingState.selectedVehicle?.id
             : job.bookingDetails
                 .any((detail) => detail.serviceId == service.id);
-                
+
         // print("Service ID: ${service.id}");
         // print(
         //     "Booking Details Service IDs: ${job.bookingDetails.map((e) => e.serviceId).toList()}");
@@ -74,8 +77,35 @@ class VehicleList extends StatelessWidget {
             print("service name được chọn là: ${service.name}");
             print("service được chọn là: ${service.id}");
             print("Xe được chọn là: ${service.truckCategory?.id}");
+            print(
+                "Booking Details Service IDs: ${job.bookingDetails.map((e) => e.serviceId).toList()}");
+            // Tìm serviceEntity cũ từ job.bookingDetails
+            final oldServiceId = job.bookingDetails
+                .where((detail) => detail.type == "TRUCK")
+                .map((truckDetail) => truckDetail.serviceId)
+                .firstOrNull;
 
-            bookingNotifier.updateSelectedVehicle(service);
+            if (oldServiceId != null) {
+              final serviceEntityOld = fetchResult.items.firstWhere(
+                (entity) => entity.id == oldServiceId,
+                orElse: () => ServiceEntity(
+                  id: 0,
+                  name: '',
+                  description: '',
+                  imageUrl: '',
+                  amount: 0,
+                  truckCategory: null,
+                  isActived: false,
+                  tier: 0,
+                  type: '',
+                  discountRate: 0,
+                ),
+              );
+              bookingNotifier.updateSelectedVehicle(service);
+              bookingNotifier.updateSelectedVehicleOld(serviceEntityOld);
+            } else {
+              bookingNotifier.updateSelectedVehicle(service);
+            }
           },
           child:
               VehicleCard(service: service, isSelected: isSelected, job: job),
