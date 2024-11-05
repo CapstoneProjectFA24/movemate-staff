@@ -56,14 +56,14 @@ class AvailableVehiclesScreen extends HookConsumerWidget {
       context: context,
     );
 
-    try {
-      // print(
-      //     ' (AvailableVehiclesScreen) Direct print - Selected numberOfFloors: ${bookingState.numberOfFloors}');
-      // print(
-      //     ' (AvailableVehiclesScreen) Direct print - Selected numberOfRooms: ${bookingState.numberOfRooms}');
-    } catch (e) {
-      print("lỗi rồi $e");
-    }
+    // try {
+    //   print(
+    //       ' (AvailableVehiclesScreen) Direct print - Selected numberOfFloors: ${bookingState.numberOfFloors}');
+    //   print(
+    //       ' (AvailableVehiclesScreen) Direct print - Selected numberOfRooms: ${bookingState.numberOfRooms}');
+    // } catch (e) {
+    //   print("lỗi rồi $e");
+    // }
 
     useEffect(() {
       scrollController.onScrollEndsListener(fetchResult.loadMore);
@@ -74,6 +74,7 @@ class AvailableVehiclesScreen extends HookConsumerWidget {
     final gettruck = job.bookingDetails
         .where((detail) => detail.type == "TRUCK")
         .map((truckDetail) => truckDetail.serviceId);
+        // print("provider room ${}");
 
     return Scaffold(
       appBar: CustomAppBar(
@@ -104,6 +105,8 @@ class AvailableVehiclesScreen extends HookConsumerWidget {
         // totalPrice: bookingState.totalPrice ?? 0.0,
         isButtonEnabled: bookingState.selectedVehicle != null,
         onPlacePress: () async {
+
+          
           if (bookingState.selectedVehicle != null
               // &&bookingState.selectedVehicle?.id == gettruck.first
               ) {

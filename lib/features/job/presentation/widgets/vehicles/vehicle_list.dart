@@ -74,11 +74,20 @@ class VehicleList extends StatelessWidget {
         // print("Is Service Selected: $isSelected");
         return GestureDetector(
           onTap: () {
-            print("service name được chọn là: ${service.name}");
-            print("service được chọn là: ${service.id}");
-            print("Xe được chọn là: ${service.truckCategory?.id}");
-            print(
-                "Booking Details Service IDs: ${job.bookingDetails.map((e) => e.serviceId).toList()}");
+            // print("service name được chọn là: ${service.name}");
+            // print("service được chọn là: ${service.id}");
+            // print("Xe được chọn là: ${service.truckCategory?.id}");
+            // print(
+            //     "Booking Details Service IDs: ${job.bookingDetails.map((e) => e.serviceId).toList()}");
+
+            try {
+              print(
+                  ' (AvailableVehiclesScreen) Direct print - Selected numberOfFloors: ${bookingState.numberOfFloors}');
+              print(
+                  ' (AvailableVehiclesScreen) Direct print - Selected numberOfRooms: ${bookingState.numberOfRooms}');
+            } catch (e) {
+              print("lỗi rồi $e");
+            }
             // Tìm serviceEntity cũ từ job.bookingDetails
             final oldServiceId = job.bookingDetails
                 .where((detail) => detail.type == "TRUCK")
