@@ -343,6 +343,33 @@ class BookingUpdateRequest {
       );
     }).toList());
 
+    if (booking.selectedVehicleOld != null) {
+      bookingDetails.add(
+        ServiceDetail(
+          serviceId: booking.selectedVehicleOld!.id,
+          quantity: 0,
+        ),
+      );
+    }
+    if (booking.selectedVehicle != null) {
+      bookingDetails.add(
+        ServiceDetail(
+          serviceId: booking.selectedVehicle!.id,
+          quantity: 1,
+        ),
+      );
+    }
+
+    // Thêm selectedVehicle mới vào bookingDetails
+    if (booking.selectedVehicle != null) {
+      bookingDetails.add(
+        ServiceDetail(
+          serviceId: booking.selectedVehicle!.id,
+          quantity: 1,
+        ),
+      );
+    }
+
     // Thêm selectedPackages với số lượng vào bookingDetails
     bookingDetails.addAll(booking.selectedPackages
         .where((package) => package.quantity != null && package.quantity! > 0)

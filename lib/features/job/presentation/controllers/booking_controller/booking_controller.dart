@@ -189,7 +189,7 @@ class BookingController extends _$BookingController {
     }
     state = const AsyncLoading();
     final bookingState = ref.read(bookingProvider);
-    final bookingRequest = BookingUpdateRequest.fromBookingUpdate(bookingState);
+    final bookingRequest = BookingUpdateRequest.fromBookingUpdate(bookingState );
     final bookingRepository = ref.read(bookingRepositoryProvider);
     final user = await SharedPreferencesUtils.getInstance('user_token');
 
