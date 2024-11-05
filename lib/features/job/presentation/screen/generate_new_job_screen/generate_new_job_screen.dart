@@ -67,22 +67,11 @@ class GenerateNewJobScreen extends HookConsumerWidget {
     final floorsNumberController =
         useTextEditingController(text: job.floorsNumber?.toString() ?? "1");
 
-    //  Đồng bộ state với controller khi state thay đổi từ bên ngoài
-    useEffect(() {
-      if (bookingState.numberOfRooms != null &&
-          bookingState.numberOfRooms.toString() != roomNumberController.text) {
-        roomNumberController.text = bookingState.numberOfRooms.toString();
-      }
+    // print(" so phong ngu controler${roomNumberController}");
+    // print(" so phong ngu controler${job.floorsNumber?.toString()}");
 
-      if (bookingState.numberOfFloors != null &&
-          bookingState.numberOfFloors.toString() !=
-              floorsNumberController.text) {
-        floorsNumberController.text = bookingState.numberOfFloors.toString();
-      }
+    // print("loai nha ${bookingState.houseType?.name} ");
 
-      return null;
-    }, [bookingState.numberOfRooms, bookingState.numberOfFloors]);
-    print("loai nha ${bookingState.houseType?.name} ");
     return Scaffold(
       appBar: CustomAppBar(
         backgroundColor: AssetsConstants.primaryMain,
