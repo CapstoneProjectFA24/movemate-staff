@@ -18,6 +18,7 @@ import 'package:movemate_staff/features/auth/presentation/screens/sign_up/sign_u
 import 'package:movemate_staff/features/auth/presentation/screens/privacy_term/privacy_screen.dart';
 import 'package:movemate_staff/features/auth/presentation/screens/privacy_term/term_screen.dart';
 import 'package:movemate_staff/features/auth/presentation/screens/otp_verification/otp_verification_screen.dart';
+import 'package:movemate_staff/features/porter/presentation/screens/porter_confirm_upload/porter_confirm_upload.dart';
 
 import 'package:movemate_staff/features/test/presentation/screens/test_screen/test_screen.dart';
 
@@ -141,6 +142,9 @@ class AppRouter extends _$AppRouter {
         ),
         AutoRoute(
           page: BookingScreenServiceRoute.page,
+        ),
+         AutoRoute(
+          page: PorterConfirmScreenRoute.page,
         ),
         AutoRoute(
           page: ProfileScreenRoute.page,

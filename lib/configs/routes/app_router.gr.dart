@@ -124,6 +124,12 @@ abstract class _$AppRouter extends RootStackRouter {
         child: const OrderScreen(),
       );
     },
+    PorterConfirmScreenRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const PorterConfirmScreen(),
+      );
+    },
     PorterDetailScreenRoute.name: (routeData) {
       return AutoRoutePage<dynamic>(
         routeData: routeData,
@@ -558,6 +564,20 @@ class OrderScreenRoute extends PageRouteInfo<void> {
         );
 
   static const String name = 'OrderScreenRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [PorterConfirmScreen]
+class PorterConfirmScreenRoute extends PageRouteInfo<void> {
+  const PorterConfirmScreenRoute({List<PageRouteInfo>? children})
+      : super(
+          PorterConfirmScreenRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'PorterConfirmScreenRoute';
 
   static const PageInfo<void> page = PageInfo<void>(name);
 }
