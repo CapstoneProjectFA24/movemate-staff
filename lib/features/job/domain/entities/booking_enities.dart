@@ -1,6 +1,5 @@
 // booking_entities.dart
 
-import 'package:movemate_staff/features/job/domain/entities/house_type_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/image_data.dart';
 import 'package:movemate_staff/features/job/domain/entities/location_model_entities.dart';
 import 'package:movemate_staff/features/job/domain/entities/service_entity.dart';

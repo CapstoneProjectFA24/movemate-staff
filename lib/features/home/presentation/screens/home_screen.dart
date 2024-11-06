@@ -158,7 +158,7 @@ class HomeScreen extends StatelessWidget {
                         DashboardCard(
                           icon: Icons.online_prediction_rounded,
                           color: Colors.greenAccent,
-                          title: 'Đánh giá online',
+                          title: 'Đánh giá trực tuyến',
                           description: 'Nhưng yêu cầu online đag chờ bạn',
                           onTap: () {
                             context.router
@@ -171,8 +171,7 @@ class HomeScreen extends StatelessWidget {
                           title: 'Công việc bốc vác',
                           description: 'Công việc của bạn',
                           onTap: () {
-                            context.router
-                                .push(const PorterScreenRoute());
+                            context.router.push(const PorterScreenRoute());
                           },
                         ),
 

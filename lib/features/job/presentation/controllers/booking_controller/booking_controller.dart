@@ -202,7 +202,7 @@ class BookingController extends _$BookingController {
         accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
         id: id,
       );
-      print("bookingResponse ${bookingResponse}");
+      print("bookingResponse $bookingResponse");
       print(
           'Booking bookingResponse.payload.toMap : ${jsonEncode(bookingResponse.payload.toMap())}');
 

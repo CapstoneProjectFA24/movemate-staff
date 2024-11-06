@@ -28,14 +28,14 @@ class CombinedInfoSection extends HookConsumerWidget {
   final Map<String, List<String>> groupedImages;
 
   const CombinedInfoSection({
-    Key? key,
+    super.key,
     required this.job,
     required this.useFetchHouseResult,
     required this.useFetchUserResult,
     required this.isExpanded,
     required this.toggleDropdown,
     required this.groupedImages,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -269,7 +269,7 @@ class CombinedInfoSection extends HookConsumerWidget {
                   fontWeight: FontWeight.bold,
                   color: AssetsConstants.whiteColor)),
           Text(
-            '${formatPrice(job.totalReal.toString())}',
+            formatPrice(job.totalReal.toString()),
             style: const TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
@@ -441,11 +441,11 @@ String getDisplayTitle(String resourceCode) {
 }
 
 class DashedDivider extends StatelessWidget {
-  const DashedDivider({Key? key}) : super(key: key);
+  const DashedDivider({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: 1,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,

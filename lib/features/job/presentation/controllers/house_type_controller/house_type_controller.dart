@@ -4,7 +4,6 @@ import 'package:movemate_staff/features/job/domain/repositories/service_booking_
 import 'package:movemate_staff/features/test/domain/entities/house_entities.dart';
 
 import 'package:movemate_staff/models/request/paging_model.dart';
-import 'package:movemate_staff/models/response/success_model.dart';
 import 'package:movemate_staff/utils/commons/functions/shared_preference_utils.dart';
 import 'package:movemate_staff/utils/constants/api_constant.dart';
 import 'package:movemate_staff/utils/enums/enums_export.dart';

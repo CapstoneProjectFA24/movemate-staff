@@ -361,14 +361,14 @@ class BookingUpdateRequest {
     }
 
     // Thêm selectedVehicle mới vào bookingDetails
-    if (booking.selectedVehicle != null) {
-      bookingDetails.add(
-        ServiceDetail(
-          serviceId: booking.selectedVehicle!.id,
-          quantity: 1,
-        ),
-      );
-    }
+    // if (booking.selectedVehicle != null) {
+    //   bookingDetails.add(
+    //     ServiceDetail(
+    //       serviceId: booking.selectedVehicle!.id,
+    //       quantity: 1,
+    //     ),
+    //   );
+    // }
 
     // Thêm selectedPackages với số lượng vào bookingDetails
     bookingDetails.addAll(booking.selectedPackages
@@ -382,7 +382,7 @@ class BookingUpdateRequest {
 
     // Chuyển đổi thời gian đặt chỗ sang định dạng ISO8601
     String bookingAt = booking.bookingDate?.toIso8601String() ??
-        DateTime.now().add(Duration(days: 2)).toIso8601String();
+        DateTime.now().add(const Duration(days: 2)).toIso8601String();
 
     return BookingUpdateRequest(
       truckCategoryId: booking.selectedVehicle?.truckCategory?.id ?? 0,

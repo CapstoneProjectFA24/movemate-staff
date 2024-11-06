@@ -35,11 +35,11 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
   final FetchResult<BookingResponseEntity> fetchResult;
 
   const BookingHeaderStatusSection({
-    Key? key,
+    super.key,
     required this.isReviewOnline,
     required this.job,
     required this.fetchResult,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

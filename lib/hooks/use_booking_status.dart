@@ -200,8 +200,9 @@ String determineStatusMessage(
         return "Chờ khách hàng thanh toán";
       case BookingStatusType.reviewing:
         if (isStaffEnroute) return "Xác nhận để di chuyển";
-        if (isStaffArrived)
+        if (isStaffArrived) {
           return "Bạn đã đến vui lòng đánh giá tình trạng của nhà";
+        }
         return "Đang đợi bạn đánh giá";
       case BookingStatusType.reviewed:
         return "Đã đánh giá xong";

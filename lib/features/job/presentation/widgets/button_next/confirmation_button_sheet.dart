@@ -38,8 +38,8 @@ class ConfirmationBottomSheet extends StatelessWidget {
           ),
           const SizedBox(height: 32),
           FadeInUp(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24.0),
               child: Text(
                 "Bạn có muốn kiểm tra thông tin một lần nữa không?",
                 style: TextStyle(

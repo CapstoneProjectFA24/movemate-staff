@@ -16,7 +16,7 @@ import 'package:movemate_staff/utils/enums/enums_export.dart';
 class UpdateStatusButton extends ConsumerWidget {
   final BookingResponseEntity job;
 
-  const UpdateStatusButton({Key? key, required this.job}) : super(key: key);
+  const UpdateStatusButton({super.key, required this.job});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -28,8 +28,8 @@ class UpdateStatusButton extends ConsumerWidget {
         .watch(orderStatusAssignmentStreamProvider(job.id.toString()))
         .when<AsyncValue<AssignmentsStatusType>>(
           data: (statusList) {
-            if (statusList.isEmpty || statusList.first == null) {
-              return AsyncValue.data(AssignmentsStatusType
+            if (statusList.isEmpty) {
+              return const AsyncValue.data(AssignmentsStatusType
                   .arrived); // Giá trị mặc định nếu list rỗng
             }
             return AsyncValue.data(statusList.first);

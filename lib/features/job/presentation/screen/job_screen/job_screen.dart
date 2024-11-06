@@ -59,7 +59,7 @@ class JobScreen extends HookConsumerWidget {
 
     final selectedDate = useState(DateTime.now());
 
-    List<BookingResponseEntity> _getJobsForSelectedDate() {
+    List<BookingResponseEntity> getJobsForSelectedDate() {
       return fetchResult.items.where((booking) {
         DateTime bookingDate =
             DateFormat("MM/dd/yyyy HH:mm:ss").parse(booking.bookingAt);
@@ -69,7 +69,7 @@ class JobScreen extends HookConsumerWidget {
     }
 
     Widget buildTabContent(String tabName) {
-      List<BookingResponseEntity> filteredBookings = _getJobsForSelectedDate();
+      List<BookingResponseEntity> filteredBookings = getJobsForSelectedDate();
 
       switch (tabName) {
         case "Đang đợi đánh giá":

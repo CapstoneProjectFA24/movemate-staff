@@ -12,10 +12,7 @@ import 'package:movemate_staff/features/job/data/model/response/services_package
 import 'package:movemate_staff/features/job/data/model/response/services_response.dart';
 import 'package:movemate_staff/features/job/data/model/response/update_booking_response.dart';
 import 'package:movemate_staff/features/job/data/remotes/booking_source.dart';
-import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
-import 'package:movemate_staff/features/job/domain/entities/house_type_entity.dart';
 import 'package:movemate_staff/features/job/domain/repositories/service_booking_repository.dart';
-import 'package:movemate_staff/features/test/domain/entities/house_entities.dart';
 import 'package:movemate_staff/models/request/paging_model.dart';
 import 'package:movemate_staff/models/response/success_model.dart';
 import 'package:movemate_staff/utils/constants/api_constant.dart';

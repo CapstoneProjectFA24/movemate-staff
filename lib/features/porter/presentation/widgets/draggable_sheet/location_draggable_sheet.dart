@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class DeliveryDetailsBottomSheet extends StatelessWidget {
-  const DeliveryDetailsBottomSheet({Key? key}) : super(key: key);
+  const DeliveryDetailsBottomSheet({super.key});
 
   @override
   Widget build(BuildContext context) {

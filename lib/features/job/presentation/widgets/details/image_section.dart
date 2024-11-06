@@ -6,10 +6,10 @@ class Section extends StatelessWidget {
   final List<String> imageUrls;
 
   const Section({
-    Key? key,
+    super.key,
     required this.title,
     required this.imageUrls,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

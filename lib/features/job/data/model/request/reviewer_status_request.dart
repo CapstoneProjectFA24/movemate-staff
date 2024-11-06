@@ -24,7 +24,7 @@ class ReviewerStatusRequest {
   factory ReviewerStatusRequest.fromMap(Map<String, dynamic> map) {
     return ReviewerStatusRequest(
       status:  map['status'] != null ?(map['status'] as String).toBookingTypeEnum(): null,
-      estimatedDeliveryTime: map['estimatedDeliveryTime'] ?? null,
+      estimatedDeliveryTime: map['estimatedDeliveryTime'],
     );
   }
 
