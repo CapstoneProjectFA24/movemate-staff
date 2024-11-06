@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:movemate_staff/configs/routes/app_router.dart';
+import 'package:movemate_staff/features/porter/presentation/screens/porter_confirm_upload/porter_confirm_upload.dart';
 
 class DeliveryDetailsBottomSheet extends StatelessWidget {
   const DeliveryDetailsBottomSheet({Key? key}) : super(key: key);
@@ -16,7 +18,7 @@ class DeliveryDetailsBottomSheet extends StatelessWidget {
             children: [
               _buildDeliveryStatusCard(),
               _buildTrackingInfoCard(),
-              _buildDetailsSheet(),
+              _buildDetailsSheet(context),
             ],
           ),
         );
@@ -132,7 +134,7 @@ class DeliveryDetailsBottomSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailsSheet() {
+  Widget _buildDetailsSheet(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0),
       child: Container(
@@ -176,7 +178,7 @@ class DeliveryDetailsBottomSheet extends StatelessWidget {
                   const SizedBox(height: 16),
                   _buildCustomerInfo(),
                   const SizedBox(height: 3),
-                  _buildConfirmationImageLink(),
+                  _buildConfirmationImageLink(context),
                   const SizedBox(height: 20),
                 ],
               ),
@@ -352,10 +354,13 @@ class DeliveryDetailsBottomSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildConfirmationImageLink() {
+  Widget _buildConfirmationImageLink(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const PorterConfirmScreen()),
+        );
       },
       child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,

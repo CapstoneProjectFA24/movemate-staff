@@ -10,6 +10,7 @@ class CloudinaryCameraUploadWidget extends HookWidget {
   final Function(String url, String publicId) onImageUploaded;
   final Function(String publicId) onImageRemoved;
   final List<String> imagePublicIds;
+  final Function(String) onImageTapped;
 
   const CloudinaryCameraUploadWidget({
     super.key,
@@ -17,6 +18,7 @@ class CloudinaryCameraUploadWidget extends HookWidget {
     required this.onImageUploaded,
     required this.onImageRemoved,
     required this.imagePublicIds,
+    required this.onImageTapped,
   });
 
   @override
@@ -104,7 +106,8 @@ class CloudinaryCameraUploadWidget extends HookWidget {
                                 value: loadingProgress.expectedTotalBytes !=
                                         null
                                     ? loadingProgress.cumulativeBytesLoaded /
-                                        (loadingProgress.expectedTotalBytes ?? 1)
+                                        (loadingProgress.expectedTotalBytes ??
+                                            1)
                                     : null,
                               ),
                             );
@@ -153,6 +156,14 @@ class CloudinaryCameraUploadWidget extends HookWidget {
         const SizedBox(height: 16),
         ElevatedButton.icon(
           onPressed: disabled ? null : uploadImageFromCamera,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFFFF6B00), // Orange background
+            foregroundColor: Colors.white, // White text
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
           icon: isLoading.value
               ? const SizedBox(
                   width: 24,
