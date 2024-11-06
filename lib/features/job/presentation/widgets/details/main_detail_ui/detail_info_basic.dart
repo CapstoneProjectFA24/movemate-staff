@@ -109,9 +109,17 @@ class CombinedInfoSection extends HookConsumerWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Expanded(child: _buildInfo(label1, value1)),
-        const VerticalDivider(thickness: 1, color: Colors.grey, width: 20),
+        VerticalDivider(
+          thickness: 1,
+          color: Colors.grey.withOpacity(0.1),
+          width: 20,
+        ),
         Expanded(child: _buildInfo(label2, value2)),
-        const VerticalDivider(thickness: 1, color: Colors.grey, width: 20),
+        VerticalDivider(
+          thickness: 1,
+          color: Colors.grey.withOpacity(0.1),
+          width: 20,
+        ),
         Expanded(child: _buildInfo(label3, value3)),
       ],
     );
@@ -131,67 +139,71 @@ class CombinedInfoSection extends HookConsumerWidget {
   Widget _buildInfoRow(BuildContext context, String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-              flex: 3,
-              child: Text(label,
-                  style: const TextStyle(fontSize: 16, color: Colors.grey))),
-          Expanded(
-            flex: 7,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
+          Text(label,
+              style: const TextStyle(fontSize: 16, color: Colors.black)),
+          const SizedBox(
+            height: 5,
+          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Text(
                   value,
                   style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.w500),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey,
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                if (value.length > 20)
-                  GestureDetector(
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title:
-                              Text(label, style: const TextStyle(fontSize: 18)),
-                          backgroundColor: AssetsConstants.whiteColor,
-                          content: SingleChildScrollView(
-                            child: Text(
-                              value,
-                              style: const TextStyle(fontSize: 16),
+              ),
+              if (value.length > 20)
+                GestureDetector(
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title:
+                            Text(label, style: const TextStyle(fontSize: 18)),
+                        backgroundColor: AssetsConstants.whiteColor,
+                        content: SingleChildScrollView(
+                          child: Text(
+                            value,
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const LabelText(
+                              content: "Đóng",
+                              size: 16,
+                              fontWeight: FontWeight.bold,
+                              color: AssetsConstants.blackColor,
                             ),
                           ),
-                          actions: [
-                            TextButton(
-                                onPressed: () => Navigator.pop(context),
-                                child: const LabelText(
-                                  content: "Đóng",
-                                  size: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: AssetsConstants.blackColor,
-                                )),
-                          ],
-                        ),
-                      );
-                    },
-                    child: const Padding(
-                      padding: EdgeInsets.only(top: 4),
-                      child: Text(
-                        'Xem thêm',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AssetsConstants.primaryLight,
-                          fontWeight: FontWeight.w500,
-                        ),
+                        ],
+                      ),
+                    );
+                  },
+                  child: const Padding(
+                    padding: EdgeInsets.only(left: 4),
+                    child: Text(
+                      'Xem thêm',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: AssetsConstants.primaryLight,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),
-              ],
-            ),
+                ),
+            ],
           ),
         ],
       ),

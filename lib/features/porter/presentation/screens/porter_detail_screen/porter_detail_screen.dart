@@ -282,25 +282,30 @@ class LocationSelectionScreenState extends ConsumerState<PorterDetailScreen> {
                   Stack(
                     children: [
                       Positioned(
-                        top: 0,
+                        top: 20,
                         left: 0,
                         right: 0,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 4,
-                              ),
-                            ],
-                          ),
-                          child: SafeArea(
-                            child: Row(
+                        child: Padding(
+                          padding:
+                              const EdgeInsets.only(left: 10.0, right: 10.0),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 4,
+                                ),
+                              ],
+                            ),
+                            child: SafeArea(
+                                child: Row(
                               children: [
-                                const BackButton(),
+                                const BackButton(
+                                  color: AssetsConstants.primaryMain,
+                                ),
                                 const Text(
                                   'Đã giao hàng',
                                   style: TextStyle(
@@ -311,14 +316,16 @@ class LocationSelectionScreenState extends ConsumerState<PorterDetailScreen> {
                                 const Spacer(),
                                 IconButton(
                                   icon: const Icon(Icons.refresh),
+                                  color: AssetsConstants.primaryMain,
                                   onPressed: () {},
                                 ),
                                 IconButton(
                                   icon: const Icon(Icons.info_outline),
+                                  color: AssetsConstants.primaryMain,
                                   onPressed: () {},
                                 ),
                               ],
-                            ),
+                            )),
                           ),
                         ),
                       ),

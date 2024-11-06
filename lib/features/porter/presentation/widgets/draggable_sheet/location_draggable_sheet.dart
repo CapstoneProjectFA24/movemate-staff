@@ -8,7 +8,7 @@ class DeliveryDetailsBottomSheet extends StatelessWidget {
     return DraggableScrollableSheet(
       initialChildSize: 0.4,
       minChildSize: 0.25,
-      maxChildSize: 0.85,
+      maxChildSize: 0.8,
       builder: (context, scrollController) {
         return SingleChildScrollView(
           controller: scrollController,
@@ -355,7 +355,7 @@ class DeliveryDetailsBottomSheet extends StatelessWidget {
   Widget _buildConfirmationImageLink() {
     return GestureDetector(
       onTap: () {
-        // Handle navigation
+        
       },
       child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
