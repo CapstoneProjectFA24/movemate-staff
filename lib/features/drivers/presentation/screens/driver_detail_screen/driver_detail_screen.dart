@@ -1,302 +1,231 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:movemate_staff/features/drivers/presentation/widgets/draggable_sheet/location_draggable_sheet.dart';
-import 'package:movemate_staff/features/drivers/presentation/widgets/map_widget/location_info_card.dart';
-import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
-
-import 'package:movemate_staff/services/map_services/location_service.dart';
-import 'package:movemate_staff/services/map_services/map_service.dart';
-import 'package:movemate_staff/utils/constants/api_constant.dart';
-import 'package:movemate_staff/utils/constants/asset_constant.dart';
-import 'package:vietmap_flutter_gl/vietmap_flutter_gl.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:movemate_staff/features/drivers/presentation/widgets/draggable_sheet/location_draggable_sheet.dart';
+import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
+import 'package:movemate_staff/utils/constants/api_constant.dart';
+import 'package:vietmap_flutter_navigation/vietmap_flutter_navigation.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 @RoutePage()
-class DriverDetailScreen extends ConsumerStatefulWidget {
+class DriverDetailScreen extends StatefulWidget {
   final BookingResponseEntity job;
   const DriverDetailScreen({super.key, required this.job});
 
   static const String apiKey = APIConstants.apiVietMapKey;
 
   @override
-  ConsumerState<DriverDetailScreen> createState() =>
-      LocationSelectionScreenState();
+  State<DriverDetailScreen> createState() => _DriverDetailScreenState();
 }
 
-class LocationSelectionScreenState extends ConsumerState<DriverDetailScreen> {
-  VietmapController? mapController;
-  Position? currentPosition;
-  Line? currentRoute;
-  bool isTracking = false;
+class _DriverDetailScreenState extends State<DriverDetailScreen> {
+  MapNavigationViewController? _navigationController; // Thay đổi thành nullable
+  late MapOptions _navigationOption;
+  final _vietmapNavigationPlugin = VietMapNavigationPlugin();
+  Position? _currentPosition; // Thay đổi thành nullable
+  bool _isMapReady = false; // Thêm biến để track trạng thái map
+
+  Widget recenterButton = const SizedBox.shrink();
+  Widget instructionImage = const SizedBox.shrink();
+
+  RouteProgressEvent? routeProgressEvent;
 
   @override
   void initState() {
     super.initState();
-    initializeLocationGPS();
+    _initNavigation();
+    _getCurrentLocation();
   }
 
-  @override
-  void dispose() {
-    clearCurrentRoute();
-    mapController?.dispose();
-    super.dispose();
+  Future<void> _initNavigation() async {
+    if (!mounted) return;
+    _navigationOption = _vietmapNavigationPlugin.getDefaultOptions();
+    _navigationOption.simulateRoute = false;
+    _navigationOption.apiKey = APIConstants.apiVietMapKey;
+    _navigationOption.mapStyle =
+        "https://maps.vietmap.vn/api/maps/light/styles.json?apikey=${APIConstants.apiVietMapKey}";
+    _vietmapNavigationPlugin.setDefaultOptions(_navigationOption);
   }
 
-  Future<void> clearCurrentRoute() async {
-    if (mapController != null) {
-      await MapService.clearRoute(mapController!);
-      currentRoute = null;
-    }
-  }
-
-  Future<void> drawRouteBetweenLocations(BookingResponseEntity job) async {
-    final pickupCoords = job.pickupPoint.split(',');
-    final pickupLat = double.parse(pickupCoords[0].trim());
-    final pickupLng = double.parse(pickupCoords[1].trim());
-
-    final deliveryCoords = job.deliveryPoint.split(',');
-    final deliveryLat = double.parse(deliveryCoords[0].trim());
-    final deliveryLng = double.parse(deliveryCoords[1].trim());
-
-    if (mapController == null ||
-        job.pickupPoint == null ||
-        job.deliveryPoint == null) {
-      return;
-    }
-
-    await clearCurrentRoute();
-
-    currentRoute = await MapService.drawRoute(
-      controller: mapController!,
-      origin: LatLng(pickupLat, pickupLng),
-      destination: LatLng(deliveryLat, deliveryLng),
-      routeColor: Colors.orange,
-      routeWidth: 4.0,
-    );
-  }
-
-  Future<void> initializeLocationGPS() async {
-    if (await LocationService.checkLocationPermission()) {
-      if (await LocationService.isLocationServiceEnabled()) {
-        startLocationTracking();
-      } else {
-        LocationService.showEnableLocationDialog(context);
+  Future<void> _getCurrentLocation() async {
+    try {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        // Xử lý khi location service bị tắt
+        return;
       }
-    } else {
-      LocationService.showPermissionDeniedDialog(context);
+
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          return;
+        }
+      }
+
+      final position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+
+      if (mounted) {
+        setState(() {
+          _currentPosition = position;
+          _buildInitialRoute(); // Thêm hàm này để build route ngay khi có vị trí
+        });
+      }
+    } catch (e) {
+      print("Không thể lấy vị trí hiện tại: $e");
     }
   }
 
-  void startLocationTracking() {
-    setState(() => isTracking = true);
+  void _buildInitialRoute() {
+    if (_navigationController != null && _currentPosition != null) {
+      List<String> deliveryPointCoordinates =
+          widget.job.deliveryPoint.split(',');
+      LatLng deliveryPoint = LatLng(
+          double.parse(deliveryPointCoordinates[0].trim()),
+          double.parse(deliveryPointCoordinates[1].trim()));
 
-    LocationService.getPositionStream().listen((Position position) {
-      setState(() => currentPosition = position);
-
-      if (mapController != null) {
-        MapService.focusOnLocation(
-          mapController!,
-          LatLng(position.latitude, position.longitude),
-        );
-      }
-    });
-  }
-
-  List<Marker> buildMarkers(BookingResponseEntity job) {
-    final markers = <Marker>[];
-
-    final pickupCoords = job.pickupPoint.split(',');
-    final pickupLat = double.parse(pickupCoords[0].trim());
-    final pickupLng = double.parse(pickupCoords[1].trim());
-
-    final deliveryCoords = job.deliveryPoint.split(',');
-    final deliveryLat = double.parse(deliveryCoords[0].trim());
-    final deliveryLng = double.parse(deliveryCoords[1].trim());
-
-    if (job.pickupPoint != null) {
-      markers.add(
-        Marker(
-          alignment: Alignment.bottomCenter,
-          child: const Icon(Icons.location_on, color: Colors.green, size: 50),
-          latLng: LatLng(pickupLat, pickupLng),
-        ),
+      _navigationController?.buildRoute(
+        waypoints: [
+          LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
+          deliveryPoint
+        ],
+        profile: DrivingProfile.cycling,
       );
     }
-
-    if (job.deliveryPoint != null) {
-      markers.add(
-        Marker(
-          alignment: Alignment.bottomCenter,
-          child: const Icon(Icons.location_on, color: Colors.red, size: 50),
-          latLng: LatLng(deliveryLat, deliveryLng),
-        ),
-      );
-    }
-
-    return markers;
-  }
-
-  List<LatLng> getLocations(BookingResponseEntity job) {
-    final locations = <LatLng>[];
-
-    final pickupCoords = job.pickupPoint.split(',');
-    final pickupLat = double.parse(pickupCoords[0].trim());
-    final pickupLng = double.parse(pickupCoords[1].trim());
-
-    final deliveryCoords = job.deliveryPoint.split(',');
-    final deliveryLat = double.parse(deliveryCoords[0].trim());
-    final deliveryLng = double.parse(deliveryCoords[1].trim());
-
-    locations.add(LatLng(pickupLat, pickupLng));
-    locations.add(LatLng(deliveryLat, deliveryLng));
-
-    return locations;
   }
 
   @override
   Widget build(BuildContext context) {
-    final markers = buildMarkers(widget.job);
-    final locations = getLocations(widget.job);
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (locations.isNotEmpty && mapController != null) {
-        MapService.focusOnAllMarkers(mapController!, locations);
-
-        if (locations.length == 2) {
-          drawRouteBetweenLocations(widget.job);
-        }
-      }
-    });
+    List<String> deliveryPointCoordinates = widget.job.deliveryPoint.split(',');
+    LatLng deliveryPoint = LatLng(
+        double.parse(deliveryPointCoordinates[0].trim()),
+        double.parse(deliveryPointCoordinates[1].trim()));
 
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
+            BannerInstructionView(
+              routeProgressEvent: routeProgressEvent,
+              instructionIcon: instructionImage,
+            ),
             Expanded(
               child: Stack(
                 children: [
-                  VietmapGL(
-                    trackCameraPosition: true,
-                    myLocationTrackingMode: MyLocationTrackingMode.TrackingGPS,
-                    myLocationEnabled: true,
-                    myLocationRenderMode: MyLocationRenderMode.COMPASS,
-                    styleString:
-                        "https://maps.vietmap.vn/api/maps/light/styles.json?apikey=${DriverDetailScreen.apiKey}",
-                    initialCameraPosition: const CameraPosition(
-                      target: LatLng(10.762317, 106.654551),
-                      zoom: 15,
-                    ),
-                    onStyleLoadedCallback: () => debugPrint("Map style loaded"),
+                  NavigationView(
+                    mapOptions: _navigationOption,
                     onMapCreated: (controller) {
                       setState(() {
-                        mapController = controller;
-                        if (locations.isNotEmpty) {
-                          MapService.focusOnAllMarkers(controller, locations);
-                          if (locations.length == 2) {
-                            drawRouteBetweenLocations(widget.job);
-                          }
-                        }
+                        _navigationController = controller;
+                        _isMapReady = true;
+                        _buildInitialRoute(); // Build route khi map đã sẵn sàng
                       });
                     },
+                    onRouteProgressChange:
+                        (RouteProgressEvent routeProgressEvent) {
+                      if (mounted) {
+                        setState(() {
+                          this.routeProgressEvent = routeProgressEvent;
+                          _setInstructionImage(
+                              routeProgressEvent.currentModifier,
+                              routeProgressEvent.currentModifierType);
+                        });
+                      }
+                    },
                   ),
-                  if (mapController != null && markers.isNotEmpty)
-                    MarkerLayer(
-                      ignorePointer: true,
-                      mapController: mapController!,
-                      markers: markers,
-                    ),
-                  if (currentPosition != null)
-                    Positioned(
-                      bottom: 80,
-                      left: 16,
-                      child: LocationInfoCard(position: currentPosition!),
-                    ),
                   Positioned(
-                    right: 16,
                     bottom: 0,
-                    child: MapActionButtons(
-                      onMyLocationPressed: () {
-                        if (currentPosition != null && mapController != null) {
-                          MapService.focusOnLocation(
-                            mapController!,
-                            LatLng(currentPosition!.latitude,
-                                currentPosition!.longitude),
-                          );
-                        }
-                      },
-                      showFocusAllMarkers: markers.length > 1,
-                      onFocusAllMarkersPressed: markers.length > 1
-                          ? () => MapService.focusOnAllMarkers(
-                              mapController!, locations)
-                          : null,
-                      showDrawRoute: locations.length == 2,
-                      onDrawRoutePressed: locations.length == 2
-                          ? () => drawRouteBetweenLocations(widget.job)
-                          : null,
+                    left: 0,
+                    right: 0,
+                    child: BottomActionView(
+                      recenterButton: recenterButton,
+                      controller: _navigationController,
+                      routeProgressEvent: routeProgressEvent,
                     ),
-                  ),
-                  Stack(
-                    children: [
-                      Positioned(
-                        top: 20,
-                        left: 0,
-                        right: 0,
-                        child: Padding(
-                          padding:
-                              const EdgeInsets.only(left: 10.0, right: 10.0),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 8),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 4,
-                                ),
-                              ],
-                            ),
-                            child: SafeArea(
-                                child: Row(
-                              children: [
-                                const BackButton(
-                                  color: AssetsConstants.primaryMain,
-                                ),
-                                const Text(
-                                  'Đã giao hàng',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                const Spacer(),
-                                IconButton(
-                                  icon: const Icon(Icons.refresh),
-                                  color: AssetsConstants.primaryMain,
-                                  onPressed: () {},
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.info_outline),
-                                  color: AssetsConstants.primaryMain,
-                                  onPressed: () {},
-                                ),
-                              ],
-                            )),
-                          ),
-                        ),
-                      ),
-                      DeliveryDetailsBottomSheet(
-                        job: widget.job,
-                      ),
-                    ],
                   ),
                 ],
               ),
             ),
+            instructionImage,
           ],
         ),
       ),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            onPressed: _isMapReady
+                ? () async {
+                    try {
+                      await _navigationController?.startNavigation();
+                    } catch (e) {
+                      print("Lỗi khi bắt đầu điều hướng: $e");
+                    }
+                  }
+                : null, // Disable nút khi map chưa sẵn sàng
+            child: const Icon(Icons.directions),
+          ),
+          const SizedBox(height: 10),
+          FloatingActionButton(
+            onPressed: _isMapReady
+                ? () {
+                    _navigationController?.overview();
+                  }
+                : null,
+            child: const Icon(Icons.route),
+          ),
+          const SizedBox(height: 10),
+          FloatingActionButton(
+            onPressed: _isMapReady
+                ? () {
+                    _navigationController?.recenter();
+                  }
+                : null,
+            child: const Icon(Icons.center_focus_strong),
+          ),
+          const SizedBox(height: 10),
+          FloatingActionButton(
+            onPressed: _isMapReady
+                ? () {
+                    _navigationController?.finishNavigation();
+                  }
+                : null,
+            child: const Icon(Icons.close),
+          ),
+        ],
+      ),
     );
+  }
+
+  void _setInstructionImage(String? modifier, String? type) {
+    if (modifier != null && type != null) {
+      List<String> data = [
+        type.replaceAll(' ', '_'),
+        modifier.replaceAll(' ', '_')
+      ];
+      String path = 'assets/navigation_symbol/${data.join('_')}.svg';
+      if (mounted) {
+        setState(() {
+          instructionImage = SvgPicture.asset(path, color: Colors.white);
+        });
+      }
+    } else {
+      if (mounted) {
+        setState(() {
+          instructionImage = const SizedBox.shrink();
+        });
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _navigationController?.onDispose();
+    super.dispose();
   }
 }
