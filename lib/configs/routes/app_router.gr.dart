@@ -47,10 +47,26 @@ abstract class _$AppRouter extends RootStackRouter {
         child: const ContactScreen(),
       );
     },
+    DriverDetailScreenRoute.name: (routeData) {
+      final args = routeData.argsAs<DriverDetailScreenRouteArgs>();
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: DriverDetailScreen(
+          key: args.key,
+          job: args.job,
+        ),
+      );
+    },
     DriverScreenRoute.name: (routeData) {
       return AutoRoutePage<dynamic>(
         routeData: routeData,
         child: const DriverScreen(),
+      );
+    },
+    DriversScreenRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const DriversScreen(),
       );
     },
     GenerateNewJobScreenRoute.name: (routeData) {
@@ -326,6 +342,45 @@ class ContactScreenRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
+/// [DriverDetailScreen]
+class DriverDetailScreenRoute
+    extends PageRouteInfo<DriverDetailScreenRouteArgs> {
+  DriverDetailScreenRoute({
+    Key? key,
+    required BookingResponseEntity job,
+    List<PageRouteInfo>? children,
+  }) : super(
+          DriverDetailScreenRoute.name,
+          args: DriverDetailScreenRouteArgs(
+            key: key,
+            job: job,
+          ),
+          initialChildren: children,
+        );
+
+  static const String name = 'DriverDetailScreenRoute';
+
+  static const PageInfo<DriverDetailScreenRouteArgs> page =
+      PageInfo<DriverDetailScreenRouteArgs>(name);
+}
+
+class DriverDetailScreenRouteArgs {
+  const DriverDetailScreenRouteArgs({
+    this.key,
+    required this.job,
+  });
+
+  final Key? key;
+
+  final BookingResponseEntity job;
+
+  @override
+  String toString() {
+    return 'DriverDetailScreenRouteArgs{key: $key, job: $job}';
+  }
+}
+
+/// generated route for
 /// [DriverScreen]
 class DriverScreenRoute extends PageRouteInfo<void> {
   const DriverScreenRoute({List<PageRouteInfo>? children})
@@ -335,6 +390,20 @@ class DriverScreenRoute extends PageRouteInfo<void> {
         );
 
   static const String name = 'DriverScreenRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [DriversScreen]
+class DriversScreenRoute extends PageRouteInfo<void> {
+  const DriversScreenRoute({List<PageRouteInfo>? children})
+      : super(
+          DriversScreenRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'DriversScreenRoute';
 
   static const PageInfo<void> page = PageInfo<void>(name);
 }

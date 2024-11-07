@@ -171,8 +171,7 @@ class HomeScreen extends StatelessWidget {
                           title: 'Công việc bốc vác',
                           description: 'Công việc của bạn',
                           onTap: () {
-                            context.router
-                                .push(const PorterScreenRoute());
+                            context.router.push(const PorterScreenRoute());
                           },
                         ),
 
@@ -200,7 +199,7 @@ class HomeScreen extends StatelessWidget {
                           title: 'Tài xế',
                           description: 'tài xế theo yêu cầu.',
                           onTap: () {
-                            context.router.push(const DriverScreenRoute());
+                            context.router.push(const DriversScreenRoute());
                           },
                         ),
                       ],
