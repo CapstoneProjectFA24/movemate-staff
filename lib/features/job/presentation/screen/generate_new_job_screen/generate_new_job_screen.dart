@@ -69,15 +69,13 @@ class GenerateNewJobScreen extends HookConsumerWidget {
     // print("object ${job.roomNumber} ");
 
     useEffect(() {
-      if (floorsNumberController != null) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          bookingNotifier
-              .updateNumberOfRooms(int.tryParse(job.roomNumber) ?? 1);
-          bookingNotifier
-              .updateNumberOfFloors(int.tryParse(job.floorsNumber) ?? 1);
-        });
-      }
-      return null;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        bookingNotifier
+            .updateNumberOfRooms(int.tryParse(job.roomNumber) ?? 1);
+        bookingNotifier
+            .updateNumberOfFloors(int.tryParse(job.floorsNumber) ?? 1);
+      });
+          return null;
     }, [roomNumberController, floorsNumberController]);
 
     return Scaffold(
