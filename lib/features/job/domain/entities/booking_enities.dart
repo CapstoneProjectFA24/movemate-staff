@@ -43,11 +43,12 @@ class Booking {
   final List<ServicesPackageEntity> selectedPackagesWithQuantity;
 
   // Image lists for each room
-  final List<ImageData> livingRoomImages;
+  final List<ImageData>? livingRoomImages;
   final List<ImageData> bedroomImages;
   final List<ImageData> diningRoomImages;
   final List<ImageData> officeRoomImages;
   final List<ImageData> bathroomImages;
+  final bool? isUploadingLivingRoomImage;
 
   // Location
   final bool isSelectingPickUp;
@@ -92,6 +93,7 @@ class Booking {
     List<ImageData>? diningRoomImages,
     List<ImageData>? officeRoomImages,
     List<ImageData>? bathroomImages,
+    this.isUploadingLivingRoomImage = false,
   })  : checklistValues = checklistValues ?? List.filled(10, false),
         livingRoomImages = livingRoomImages ?? [],
         bedroomImages = bedroomImages ?? [],
@@ -136,6 +138,7 @@ class Booking {
     List<ImageData>? diningRoomImages,
     List<ImageData>? officeRoomImages,
     List<ImageData>? bathroomImages,
+    bool? isUploadingLivingRoomImage,
   }) {
     return Booking(
       houseType: houseType ?? this.houseType,
@@ -177,6 +180,8 @@ class Booking {
       diningRoomImages: diningRoomImages ?? this.diningRoomImages,
       officeRoomImages: officeRoomImages ?? this.officeRoomImages,
       bathroomImages: bathroomImages ?? this.bathroomImages,
+      isUploadingLivingRoomImage:
+          isUploadingLivingRoomImage ?? this.isUploadingLivingRoomImage,
     );
   }
 }

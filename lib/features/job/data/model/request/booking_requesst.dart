@@ -186,7 +186,7 @@ class BookingRequest {
           )));
     }
 
-    addImagesToResourceList(booking.livingRoomImages, 'living_room');
+    addImagesToResourceList(booking.livingRoomImages ?? [], 'living_room');
     addImagesToResourceList(booking.bedroomImages, 'bedroom');
     addImagesToResourceList(booking.diningRoomImages, 'dining_room');
     addImagesToResourceList(booking.officeRoomImages, 'office_room');

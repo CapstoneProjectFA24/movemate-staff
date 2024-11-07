@@ -12,6 +12,7 @@ import 'package:movemate_staff/features/job/domain/entities/sub_service_entity.d
 import 'package:movemate_staff/features/test/domain/entities/house_entities.dart';
 
 class BookingNotifier extends StateNotifier<Booking> {
+  static const int maxImages = 5; // Giới hạn hình ảnh tối đa
   BookingNotifier()
       : super(Booking(
           totalPrice: 0.0,
@@ -200,34 +201,84 @@ class BookingNotifier extends StateNotifier<Booking> {
     state = state.copyWith(notes: notes);
   }
 
-  // Method to add image to a room
-  void addImageToRoom(RoomType roomType, ImageData imageData) {
+// Phương thức lấy danh sách hình ảnh cho một loại phòng
+  List<ImageData> getImages(RoomType roomType) {
+    if (state == null) return [];
     switch (roomType) {
       case RoomType.livingRoom:
-        state = state.copyWith(
-          livingRoomImages: [...state.livingRoomImages, imageData],
-        );
-        break;
+        return state!.livingRoomImages ?? [];
       case RoomType.bedroom:
-        state = state.copyWith(
-          bedroomImages: [...state.bedroomImages, imageData],
-        );
-        break;
+        return state.bedroomImages;
       case RoomType.diningRoom:
-        state = state.copyWith(
-          diningRoomImages: [...state.diningRoomImages, imageData],
-        );
-        break;
+        return state.diningRoomImages;
       case RoomType.officeRoom:
-        state = state.copyWith(
-          officeRoomImages: [...state.officeRoomImages, imageData],
-        );
-        break;
+        return state.officeRoomImages;
       case RoomType.bathroom:
-        state = state.copyWith(
-          bathroomImages: [...state.bathroomImages, imageData],
-        );
-        break;
+        return state.bathroomImages;
+    }
+  }
+
+  // Method to set the loading state for uploading living room images
+  void setUploadingLivingRoomImage(bool isUploading) {
+    if (state != null) {
+      state = state!.copyWith(isUploadingLivingRoomImage: isUploading);
+    }
+  }
+
+  bool canAddImage(RoomType roomType) {
+    if (state == null) return true;
+    final images = getImages(roomType);
+    return images.length < BookingNotifier.maxImages;
+  }
+
+  // Method to add image to a room
+  Future<void> addImageToRoom(RoomType roomType, ImageData imageData) async {
+    if (!canAddImage(roomType)) {
+      // Không thêm hình ảnh nếu đã đạt giới hạn
+      return;
+    }
+
+    // Set loading state if roomType is livingRoom
+    if (roomType == RoomType.livingRoom) {
+      setUploadingLivingRoomImage(true);
+    }
+
+    try {
+      switch (roomType) {
+        case RoomType.livingRoom:
+          final currentImages =
+              List<ImageData>.from(state!.livingRoomImages ?? []);
+          if (currentImages.length < BookingNotifier.maxImages) {
+            currentImages.add(imageData);
+            state = state!.copyWith(livingRoomImages: currentImages);
+          }
+          break;
+        case RoomType.bedroom:
+          state = state.copyWith(
+            bedroomImages: [...state.bedroomImages, imageData],
+          );
+          break;
+        case RoomType.diningRoom:
+          state = state.copyWith(
+            diningRoomImages: [...state.diningRoomImages, imageData],
+          );
+          break;
+        case RoomType.officeRoom:
+          state = state.copyWith(
+            officeRoomImages: [...state.officeRoomImages, imageData],
+          );
+          break;
+        case RoomType.bathroom:
+          state = state.copyWith(
+            bathroomImages: [...state.bathroomImages, imageData],
+          );
+          break;
+      }
+    } finally {
+      // Reset loading state
+      if (roomType == RoomType.livingRoom) {
+        setUploadingLivingRoomImage(false);
+      }
     }
   }
 
@@ -235,11 +286,11 @@ class BookingNotifier extends StateNotifier<Booking> {
   void removeImageFromRoom(RoomType roomType, ImageData imageData) {
     switch (roomType) {
       case RoomType.livingRoom:
-        state = state.copyWith(
-          livingRoomImages: state.livingRoomImages
-              .where((img) => img.publicId != imageData.publicId)
-              .toList(),
-        );
+        final currentImages =
+            List<ImageData>.from(state!.livingRoomImages ?? []);
+        currentImages
+            .removeWhere((image) => image.publicId == imageData.publicId);
+        state = state!.copyWith(livingRoomImages: currentImages);
         break;
       case RoomType.bedroom:
         state = state.copyWith(
