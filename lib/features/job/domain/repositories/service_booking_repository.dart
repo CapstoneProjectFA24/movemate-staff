@@ -64,6 +64,10 @@ abstract class BookingRepository {
     required String accessToken,
     required PagingModel request,
   });
+  Future<BookingResponse> getBookingsDriver({
+    required String accessToken,
+    required PagingModel request,
+  });
 
   Future<BookingResponse> postValuationBooking({
     required BookingRequest request,

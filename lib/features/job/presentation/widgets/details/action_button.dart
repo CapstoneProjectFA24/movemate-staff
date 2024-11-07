@@ -18,7 +18,7 @@ class ButtonStateManager {
           onPressedAction: ButtonAction.updateReviewerStatus,
         );
 
-      case AssignmentsStatusType.enroute:
+      case AssignmentsStatusType.coming:
         return ButtonState(
           isVisible: true,
           buttonText: "Đã đến",

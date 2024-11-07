@@ -1,64 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-
-import 'package:movemate_staff/features/porter/presentation/widgets/draggable_sheet/location_draggable_sheet.dart';
-import 'package:movemate_staff/features/porter/presentation/widgets/map_widget/location_info_card.dart';
+import 'package:movemate_staff/features/drivers/presentation/widgets/draggable_sheet/location_draggable_sheet.dart';
+import 'package:movemate_staff/features/drivers/presentation/widgets/map_widget/location_info_card.dart';
+import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 
 import 'package:movemate_staff/services/map_services/location_service.dart';
 import 'package:movemate_staff/services/map_services/map_service.dart';
 import 'package:movemate_staff/utils/constants/api_constant.dart';
+import 'package:movemate_staff/utils/constants/asset_constant.dart';
 import 'package:vietmap_flutter_gl/vietmap_flutter_gl.dart';
 import 'package:geolocator/geolocator.dart';
 
-class Location {
-  final double latitude;
-  final double longitude;
-
-  Location({required this.latitude, required this.longitude});
-}
-
-class Booking {
-  final String id;
-  final String name;
-  final Location? pickUpLocation;
-  final Location? dropOffLocation;
-
-  Booking({
-    required this.id,
-    required this.name,
-    this.pickUpLocation,
-    this.dropOffLocation,
-  });
-}
-
-final fakeBookingProvider = Provider<Booking>((ref) {
-  return Booking(
-    id: 'fake_booking_123',
-    name: 'Test Booking',
-    pickUpLocation: Location(
-      latitude: 10.762622,
-      longitude: 106.660172,
-    ),
-    dropOffLocation: Location(
-      latitude: 10.776889,
-      longitude: 106.700981,
-    ),
-  );
-});
-
 @RoutePage()
-class PorterDetailScreen extends ConsumerStatefulWidget {
-  const PorterDetailScreen({super.key});
+class DriverDetailScreen extends ConsumerStatefulWidget {
+  final BookingResponseEntity job;
+  const DriverDetailScreen({super.key, required this.job});
 
   static const String apiKey = APIConstants.apiVietMapKey;
 
   @override
-  ConsumerState<PorterDetailScreen> createState() =>
+  ConsumerState<DriverDetailScreen> createState() =>
       LocationSelectionScreenState();
 }
 
-class LocationSelectionScreenState extends ConsumerState<PorterDetailScreen> {
+class LocationSelectionScreenState extends ConsumerState<DriverDetailScreen> {
   VietmapController? mapController;
   Position? currentPosition;
   Line? currentRoute;
@@ -84,28 +50,27 @@ class LocationSelectionScreenState extends ConsumerState<PorterDetailScreen> {
     }
   }
 
-  // todo draw -- notwork
-  Future<void> drawRouteBetweenLocations(Booking bookingState) async {
+  Future<void> drawRouteBetweenLocations(BookingResponseEntity job) async {
+    final pickupCoords = job.pickupPoint.split(',');
+    final pickupLat = double.parse(pickupCoords[0].trim());
+    final pickupLng = double.parse(pickupCoords[1].trim());
+
+    final deliveryCoords = job.deliveryPoint.split(',');
+    final deliveryLat = double.parse(deliveryCoords[0].trim());
+    final deliveryLng = double.parse(deliveryCoords[1].trim());
+
     if (mapController == null ||
-        bookingState.pickUpLocation == null ||
-        bookingState.dropOffLocation == null) {
+        job.pickupPoint == null ||
+        job.deliveryPoint == null) {
       return;
     }
 
-    // Xóa route cũ nếu có
     await clearCurrentRoute();
 
-    // Vẽ route mới
     currentRoute = await MapService.drawRoute(
       controller: mapController!,
-      origin: LatLng(
-        bookingState.pickUpLocation!.latitude,
-        bookingState.pickUpLocation!.longitude,
-      ),
-      destination: LatLng(
-        bookingState.dropOffLocation!.latitude,
-        bookingState.dropOffLocation!.longitude,
-      ),
+      origin: LatLng(pickupLat, pickupLng),
+      destination: LatLng(deliveryLat, deliveryLng),
       routeColor: Colors.orange,
       routeWidth: 4.0,
     );
@@ -114,7 +79,6 @@ class LocationSelectionScreenState extends ConsumerState<PorterDetailScreen> {
   Future<void> initializeLocationGPS() async {
     if (await LocationService.checkLocationPermission()) {
       if (await LocationService.isLocationServiceEnabled()) {
-        print("oke gps ");
         startLocationTracking();
       } else {
         LocationService.showEnableLocationDialog(context);
@@ -139,31 +103,33 @@ class LocationSelectionScreenState extends ConsumerState<PorterDetailScreen> {
     });
   }
 
-  List<Marker> buildMarkers(Booking bookingState) {
+  List<Marker> buildMarkers(BookingResponseEntity job) {
     final markers = <Marker>[];
 
-    if (bookingState.pickUpLocation != null) {
+    final pickupCoords = job.pickupPoint.split(',');
+    final pickupLat = double.parse(pickupCoords[0].trim());
+    final pickupLng = double.parse(pickupCoords[1].trim());
+
+    final deliveryCoords = job.deliveryPoint.split(',');
+    final deliveryLat = double.parse(deliveryCoords[0].trim());
+    final deliveryLng = double.parse(deliveryCoords[1].trim());
+
+    if (job.pickupPoint != null) {
       markers.add(
         Marker(
           alignment: Alignment.bottomCenter,
           child: const Icon(Icons.location_on, color: Colors.green, size: 50),
-          latLng: LatLng(
-            bookingState.pickUpLocation!.latitude,
-            bookingState.pickUpLocation!.longitude,
-          ),
+          latLng: LatLng(pickupLat, pickupLng),
         ),
       );
     }
 
-    if (bookingState.dropOffLocation != null) {
+    if (job.deliveryPoint != null) {
       markers.add(
         Marker(
           alignment: Alignment.bottomCenter,
           child: const Icon(Icons.location_on, color: Colors.red, size: 50),
-          latLng: LatLng(
-            bookingState.dropOffLocation!.latitude,
-            bookingState.dropOffLocation!.longitude,
-          ),
+          latLng: LatLng(deliveryLat, deliveryLng),
         ),
       );
     }
@@ -171,38 +137,34 @@ class LocationSelectionScreenState extends ConsumerState<PorterDetailScreen> {
     return markers;
   }
 
-  List<LatLng> getLocations(Booking bookingState) {
+  List<LatLng> getLocations(BookingResponseEntity job) {
     final locations = <LatLng>[];
 
-    if (bookingState.pickUpLocation != null) {
-      locations.add(LatLng(
-        bookingState.pickUpLocation!.latitude,
-        bookingState.pickUpLocation!.longitude,
-      ));
-    }
+    final pickupCoords = job.pickupPoint.split(',');
+    final pickupLat = double.parse(pickupCoords[0].trim());
+    final pickupLng = double.parse(pickupCoords[1].trim());
 
-    if (bookingState.dropOffLocation != null) {
-      locations.add(LatLng(
-        bookingState.dropOffLocation!.latitude,
-        bookingState.dropOffLocation!.longitude,
-      ));
-    }
+    final deliveryCoords = job.deliveryPoint.split(',');
+    final deliveryLat = double.parse(deliveryCoords[0].trim());
+    final deliveryLng = double.parse(deliveryCoords[1].trim());
+
+    locations.add(LatLng(pickupLat, pickupLng));
+    locations.add(LatLng(deliveryLat, deliveryLng));
 
     return locations;
   }
 
   @override
   Widget build(BuildContext context) {
-    final bookingState = ref.watch(fakeBookingProvider);
-    final markers = buildMarkers(bookingState);
-    final locations = getLocations(bookingState);
+    final markers = buildMarkers(widget.job);
+    final locations = getLocations(widget.job);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (locations.isNotEmpty && mapController != null) {
         MapService.focusOnAllMarkers(mapController!, locations);
 
         if (locations.length == 2) {
-          drawRouteBetweenLocations(bookingState);
+          drawRouteBetweenLocations(widget.job);
         }
       }
     });
@@ -220,7 +182,7 @@ class LocationSelectionScreenState extends ConsumerState<PorterDetailScreen> {
                     myLocationEnabled: true,
                     myLocationRenderMode: MyLocationRenderMode.COMPASS,
                     styleString:
-                        "https://maps.vietmap.vn/api/maps/light/styles.json?apikey=${PorterDetailScreen.apiKey}",
+                        "https://maps.vietmap.vn/api/maps/light/styles.json?apikey=${DriverDetailScreen.apiKey}",
                     initialCameraPosition: const CameraPosition(
                       target: LatLng(10.762317, 106.654551),
                       zoom: 15,
@@ -231,9 +193,8 @@ class LocationSelectionScreenState extends ConsumerState<PorterDetailScreen> {
                         mapController = controller;
                         if (locations.isNotEmpty) {
                           MapService.focusOnAllMarkers(controller, locations);
-                          // Vẽ route khi khởi tạo map nếu có đủ điểm
                           if (locations.length == 2) {
-                            drawRouteBetweenLocations(bookingState);
+                            drawRouteBetweenLocations(widget.job);
                           }
                         }
                       });
@@ -271,7 +232,7 @@ class LocationSelectionScreenState extends ConsumerState<PorterDetailScreen> {
                           : null,
                       showDrawRoute: locations.length == 2,
                       onDrawRoutePressed: locations.length == 2
-                          ? () => drawRouteBetweenLocations(bookingState)
+                          ? () => drawRouteBetweenLocations(widget.job)
                           : null,
                     ),
                   ),
@@ -325,7 +286,9 @@ class LocationSelectionScreenState extends ConsumerState<PorterDetailScreen> {
                           ),
                         ),
                       ),
-                      const DeliveryDetailsBottomSheet(),
+                      DeliveryDetailsBottomSheet(
+                        job: widget.job,
+                      ),
                     ],
                   ),
                 ],

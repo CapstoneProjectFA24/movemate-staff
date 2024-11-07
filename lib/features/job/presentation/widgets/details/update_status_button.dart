@@ -79,7 +79,7 @@ class UpdateStatusButton extends ConsumerWidget {
           };
           break;
 
-        case AssignmentsStatusType.enroute:
+        case AssignmentsStatusType.coming:
           buttonText = "đã đến";
           onConfirm = () async {
             try {

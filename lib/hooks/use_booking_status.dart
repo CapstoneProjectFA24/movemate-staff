@@ -59,7 +59,8 @@ BookingStatusResult useBookingStatus(
     final assignments = booking.assignments ?? [];
 
     // Helper functions
-    bool hasAssignmentWithStatus(String staffType, AssignmentsStatusType status) {
+    bool hasAssignmentWithStatus(
+        String staffType, AssignmentsStatusType status) {
       return assignments.any((a) {
         return a.staffType == staffType.toString() &&
             a.status.toAssignmentsTypeEnum() == status;
@@ -72,7 +73,7 @@ BookingStatusResult useBookingStatus(
 
     // Trạng thái của assignments
     final isStaffEnroute =
-        hasAssignmentWithStatus("REVIEWER", AssignmentsStatusType.enroute);
+        hasAssignmentWithStatus("REVIEWER", AssignmentsStatusType.coming);
 
     final isStaffArrived =
         hasAssignmentWithStatus("REVIEWER", AssignmentsStatusType.arrived);

@@ -1,21 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:movemate_staff/features/drivers/presentation/controllers/driver_controller/driver_controller.dart';
+import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
+import 'package:movemate_staff/hooks/use_fetch.dart';
+import 'package:movemate_staff/models/request/paging_model.dart';
 
 @RoutePage()
-class PorterScreen extends HookConsumerWidget {
-  const PorterScreen({super.key});
+class DriversScreen extends HookConsumerWidget {
+  const DriversScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(driverControllerProvider);
     final selectedDate = useState(DateTime.now());
-    final jobs = _getJobsForSelectedDate(selectedDate.value);
+    final fetchResult = useFetch<BookingResponseEntity>(
+      function: (model, context) => ref
+          .read(driverControllerProvider.notifier)
+          .getBookingsByDriver(model, context),
+      initialPagingModel: PagingModel(),
+      context: context,
+    );
 
-    jobs.sort((a, b) => a.startTime.compareTo(b.startTime));
+    final jobs = _getJobsFromBookingResponseEntity(
+        fetchResult.items, selectedDate.value);
 
     return Scaffold(
       appBar: AppBar(
@@ -87,14 +98,19 @@ class PorterScreen extends HookConsumerWidget {
             ),
           ),
           const Divider(),
-
-          // List of Job Cards for the selected day, displayed as a timeline
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.all(10),
               itemCount: jobs.length,
               itemBuilder: (context, index) {
                 final job = jobs[index];
+                final startTime =
+                    DateFormat('MM/dd/yyyy HH:mm:ss').parse(job.bookingAt);
+                final endTime = startTime.add(
+                  Duration(
+                      minutes: int.parse(job.estimatedDeliveryTime ?? '0')),
+                );
+
                 return Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -102,8 +118,7 @@ class PorterScreen extends HookConsumerWidget {
                     Column(
                       children: [
                         Text(
-                          DateFormat.Hm()
-                              .format(job.startTime), // Default time formatting
+                          DateFormat.Hm().format(startTime),
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
@@ -119,12 +134,12 @@ class PorterScreen extends HookConsumerWidget {
                       ],
                     ),
                     const SizedBox(width: 10),
-
                     // Job Card
                     Expanded(
                       child: GestureDetector(
                         onTap: () {
-                          context.router.push(const PorterDetailScreenRoute());
+                          context.router
+                              .push(DriverDetailScreenRoute(job: job));
                         },
                         child: Card(
                           margin: const EdgeInsets.only(bottom: 10),
@@ -158,7 +173,7 @@ class PorterScreen extends HookConsumerWidget {
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
-                                      job.title,
+                                      job.id.toString(),
                                       style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 18,
@@ -192,7 +207,7 @@ class PorterScreen extends HookConsumerWidget {
                                         color: Colors.white70, size: 18),
                                     const SizedBox(width: 5),
                                     Text(
-                                      '${DateFormat.Hm().format(job.startTime)} - ${DateFormat.Hm().format(job.endTime)}', // Default time formatting
+                                      '${DateFormat.Hm().format(startTime)} - ${DateFormat.Hm().format(endTime)}',
                                       style: const TextStyle(
                                           color: Colors.white70, fontSize: 14),
                                     ),
@@ -223,7 +238,7 @@ class PorterScreen extends HookConsumerWidget {
                                     const SizedBox(width: 5),
                                     Expanded(
                                       child: Text(
-                                        job.dropoffAddress,
+                                        job.deliveryAddress,
                                         style: const TextStyle(
                                             color: Colors.white70,
                                             fontSize: 13),
@@ -242,72 +257,23 @@ class PorterScreen extends HookConsumerWidget {
                 );
               },
             ),
-          ),
+          )
         ],
       ),
     );
   }
 
-  List<BookingJob> _getJobsForSelectedDate(DateTime selectedDate) {
-    final allJobs = [
-      BookingJob(
-        id: 'JOB001',
-        title: 'Chuyển nhà',
-        description: 'Chuyển nhà từ quận 1 đến quận 7',
-        status: 'Đã vận chuyển',
-        startTime: DateTime.now().add(const Duration(hours: 2)),
-        endTime: DateTime.now().add(const Duration(hours: 4)),
-        pickupAddress: '123 Đường A, Quận 1, TP. HCM',
-        dropoffAddress: '456 Đường B, Quận 7, TP. HCM',
-      ),
-      BookingJob(
-        id: 'JOB002',
-        title: 'Chuyển kho hàng',
-        description: 'Chuyển kho hàng từ quận 5 đến quận 8',
-        status: 'Chưa vận chuyển',
-        startTime: DateTime.now().add(const Duration(hours: 6)),
-        endTime: DateTime.now().add(const Duration(hours: 8)),
-        pickupAddress: '111 Đường E, Quận 5, TP. HCM',
-        dropoffAddress: '222 Đường F, Quận 8, TP. HCM',
-      ),
-      BookingJob(
-        id: 'JOB003',
-        title: 'Chuyển kho hàng',
-        description: 'Chuyển kho hàng từ quận 5 đến quận 8',
-        status: 'Chưa vận chuyển',
-        startTime: DateTime.now().add(const Duration(hours: 15)),
-        endTime: DateTime.now().add(const Duration(hours: 18)),
-        pickupAddress: '111 Đường E, Quận 5, TP. HCM',
-        dropoffAddress: '222 Đường F, Quận 8, TP. HCM',
-      ),
-    ];
-
-    return allJobs.where((job) {
-      return DateFormat.yMd().format(job.startTime) ==
-          DateFormat.yMd().format(selectedDate);
-    }).toList();
+  List<BookingResponseEntity> _getJobsFromBookingResponseEntity(
+      List<BookingResponseEntity> bookingResponseEntities,
+      DateTime selectedDate) {
+    return bookingResponseEntities
+        .where((entity) =>
+            DateFormat('MM/dd/yyyy').parse(entity.bookingAt).day ==
+                selectedDate.day &&
+            DateFormat('MM/dd/yyyy').parse(entity.bookingAt).month ==
+                selectedDate.month &&
+            DateFormat('MM/dd/yyyy').parse(entity.bookingAt).year ==
+                selectedDate.year)
+        .toList();
   }
-}
-
-// Job model with hourly start and end times
-class BookingJob {
-  final String id;
-  final String title;
-  final String description;
-  final String status;
-  final DateTime startTime;
-  final DateTime endTime;
-  final String pickupAddress;
-  final String dropoffAddress;
-
-  BookingJob({
-    required this.id,
-    required this.title,
-    required this.description,
-    required this.status,
-    required this.startTime,
-    required this.endTime,
-    required this.pickupAddress,
-    required this.dropoffAddress,
-  });
 }

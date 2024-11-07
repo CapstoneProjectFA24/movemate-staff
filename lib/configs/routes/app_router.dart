@@ -18,6 +18,7 @@ import 'package:movemate_staff/features/auth/presentation/screens/sign_up/sign_u
 import 'package:movemate_staff/features/auth/presentation/screens/privacy_term/privacy_screen.dart';
 import 'package:movemate_staff/features/auth/presentation/screens/privacy_term/term_screen.dart';
 import 'package:movemate_staff/features/auth/presentation/screens/otp_verification/otp_verification_screen.dart';
+import 'package:movemate_staff/features/porter/presentation/screens/porter_confirm_upload/porter_confirm_upload.dart';
 
 import 'package:movemate_staff/features/test/presentation/screens/test_screen/test_screen.dart';
 
@@ -38,7 +39,8 @@ import 'package:movemate_staff/features/test-map/map_test_screen.dart';
 import 'package:movemate_staff/splash_screen.dart';
 import 'package:movemate_staff/tab_screen.dart';
 // import 'package:movemate_staff/onboarding_screen.dart';
-
+import 'package:movemate_staff/features/drivers/presentation/screens/driver_detail_screen/driver_detail_screen.dart';
+import 'package:movemate_staff/features/drivers/presentation/screens/driver_screen/drivers_screen.dart';
 // model
 // import 'package:movemate_staff/features/promotion/data/models/promotion_model.dart';
 
@@ -134,6 +136,12 @@ class AppRouter extends _$AppRouter {
           page: DriverScreenRoute.page,
         ),
         AutoRoute(
+          page: DriversScreenRoute.page,
+        ),
+        AutoRoute(
+          page: DriverDetailScreenRoute.page,
+        ),
+        AutoRoute(
           page: GenerateNewJobScreenRoute.page,
         ),
         AutoRoute(
@@ -141,6 +149,9 @@ class AppRouter extends _$AppRouter {
         ),
         AutoRoute(
           page: BookingScreenServiceRoute.page,
+        ),
+         AutoRoute(
+          page: PorterConfirmScreenRoute.page,
         ),
         AutoRoute(
           page: ProfileScreenRoute.page,
