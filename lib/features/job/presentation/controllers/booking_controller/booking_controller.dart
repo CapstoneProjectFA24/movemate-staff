@@ -90,6 +90,8 @@ class BookingController extends _$BookingController {
     return bookings;
   }
 
+
+
   Future<List<ServiceEntity>> getVehicle(
     PagingModel request,
     BuildContext context,

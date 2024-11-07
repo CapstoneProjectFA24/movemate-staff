@@ -39,7 +39,8 @@ import 'package:movemate_staff/features/test-map/map_test_screen.dart';
 import 'package:movemate_staff/splash_screen.dart';
 import 'package:movemate_staff/tab_screen.dart';
 // import 'package:movemate_staff/onboarding_screen.dart';
-
+import 'package:movemate_staff/features/drivers/presentation/screens/driver_detail_screen/driver_detail_screen.dart';
+import 'package:movemate_staff/features/drivers/presentation/screens/driver_screen/drivers_screen.dart';
 // model
 // import 'package:movemate_staff/features/promotion/data/models/promotion_model.dart';
 
@@ -133,6 +134,12 @@ class AppRouter extends _$AppRouter {
         ),
         AutoRoute(
           page: DriverScreenRoute.page,
+        ),
+        AutoRoute(
+          page: DriversScreenRoute.page,
+        ),
+        AutoRoute(
+          page: DriverDetailScreenRoute.page,
         ),
         AutoRoute(
           page: GenerateNewJobScreenRoute.page,
