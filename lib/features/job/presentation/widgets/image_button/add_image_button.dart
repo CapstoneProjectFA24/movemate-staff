@@ -23,7 +23,7 @@ class AddImageButton extends ConsumerWidget {
     final booking = ref.watch(bookingProvider);
     final bookingNotifier = ref.read(bookingProvider.notifier);
     final isUploading = booking.isUploadingLivingRoomImage ?? false;
-
+    print('loanh ânhr  ${bookingNotifier.getImages(roomType)}');
     return Container(
       width: 50,
       height: 50,
@@ -46,10 +46,6 @@ class AddImageButton extends ConsumerWidget {
             )
           : InkWell(
               onTap: () => _takePhoto(context, bookingNotifier),
-              // child: const Icon(
-              //   Icons.add_a_photo,
-              //   color: AssetsConstants.primaryLight,
-              // ),
               child: Container(
                 width: 100, // Ensure size matches SizedBox
                 height: 50, // Ensure size matches SizedBox
@@ -90,6 +86,7 @@ class AddImageButton extends ConsumerWidget {
         final cloudinary =
             CloudinaryPublic('dkpnkjnxs', 'movemate', cache: false);
         try {
+          print('loanh ânhr');
           final CloudinaryResponse response = await cloudinary.uploadFile(
             CloudinaryFile.fromFile(
               pickedFile.path,
@@ -104,6 +101,7 @@ class AddImageButton extends ConsumerWidget {
           );
 
           await bookingNotifier.addImageToRoom(roomType, imageData);
+          print('${imageData.url}');
         } catch (e) {
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
