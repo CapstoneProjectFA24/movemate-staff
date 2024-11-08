@@ -41,7 +41,7 @@ class DriverScreen extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               const SectionTitle(title: 'My Drivers'),
-              SearchBar(),
+              const SearchBar(),
               const SizedBox(height: 10),
               Wrap(
                 spacing: 10,

@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/services/realtime_service/booking_realtime_entity/booking_realtime_entity.dart';
 import 'package:movemate_staff/utils/enums/booking_status_type.dart';
 

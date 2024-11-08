@@ -1,6 +1,5 @@
 // Flutter and external packages
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -14,9 +13,11 @@ import 'package:movemate_staff/features/job/domain/entities/booking_response_ent
 
 // Controllers
 import 'package:movemate_staff/features/job/presentation/controllers/reviewer_update_controller/reviewer_update_controller.dart';
+import 'package:movemate_staff/features/job/presentation/providers/booking_provider.dart';
 
 // Widgets
 import 'package:movemate_staff/features/job/presentation/widgets/dialog_schedule/schedule_dialog.dart';
+import 'package:movemate_staff/features/job/presentation/widgets/image_button/room_media_section.dart';
 import 'package:movemate_staff/utils/commons/widgets/form_input/label_text.dart';
 
 // Hooks
@@ -35,11 +36,11 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
   final FetchResult<BookingResponseEntity> fetchResult;
 
   const BookingHeaderStatusSection({
-    Key? key,
+    super.key,
     required this.isReviewOnline,
     required this.job,
     required this.fetchResult,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -402,127 +403,373 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Xác nhận đề suất cho khách hàng',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-        contentPadding: const EdgeInsets.all(20),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Xác nhận để hoàn thành tiến trình đánh giá',
-                style: TextStyle(fontSize: 16, color: Colors.grey),
-                textAlign: TextAlign.center),
-            const SizedBox(height: 20),
-            ValueListenableBuilder(
-              valueListenable: timeTypeNotifier,
-              builder: (context, timeType, child) => Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: ['hour', 'minute'].map((type) {
-                  final selected = timeType == type;
-                  return Expanded(
-                    child: Container(
-                      height: 40,
-                      margin: const EdgeInsets.symmetric(horizontal: 4),
-                      decoration: BoxDecoration(
-                        color: selected
-                            ? AssetsConstants.primaryLighter.withOpacity(0.2)
-                            : Colors.white,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                            color: selected
-                                ? AssetsConstants.primaryLighter
-                                : Colors.grey,
-                            width: 1.2),
-                      ),
-                      child: RadioListTile<String>(
-                        title: Text(
-                          type == 'hour' ? 'Giờ' : 'Phút',
-                          style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: selected
-                                  ? AssetsConstants.primaryLighter
-                                  : Colors.grey),
-                        ),
-                        value: type,
-                        groupValue: timeType,
-                        onChanged: (value) {
-                          timeTypeNotifier.value = value!;
-                          timeController.clear();
-                        },
-                        contentPadding: EdgeInsets.zero,
-                        dense: true,
-                        activeColor: AssetsConstants.primaryLighter,
-                      ),
+      barrierDismissible: false,
+      barrierColor: Colors.black87,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width * 0.9,
+            maxHeight: MediaQuery.of(context).size.height * 0.9,
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Header với gradient background
+                Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        AssetsConstants.primaryLighter,
+                        AssetsConstants.primaryLighter.withOpacity(0.8),
+                      ],
                     ),
-                  );
-                }).toList(),
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: timeController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText:
-                    'Thời gian dự kiến (${timeTypeNotifier.value == 'hour' ? 'giờ' : 'phút'})',
-                hintText: 'Nhập thời gian dự kiến',
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(
-                      color: AssetsConstants.primaryLighter, width: 2),
-                  borderRadius: BorderRadius.circular(8),
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(24),
+                      topRight: Radius.circular(24),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'Xác nhận đề suất',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w800,
+                              fontSize: 24,
+                              color: Colors.white,
+                              letterSpacing: -0.5,
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () => Navigator.pop(context),
+                            icon: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Icon(
+                                Icons.close,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                            ),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: const Text(
+                          'Hoàn thành tiến trình đánh giá',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.grey),
-                    borderRadius: BorderRadius.circular(8)),
-              ),
+
+                // Content Section
+                Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Time Type Selection
+                      ValueListenableBuilder(
+                        valueListenable: timeTypeNotifier,
+                        builder: (context, timeType, child) => Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade100,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Row(
+                            children: ['hour', 'minute'].map((type) {
+                              final selected = timeType == type;
+                              return Expanded(
+                                child: GestureDetector(
+                                  onTap: () {
+                                    timeTypeNotifier.value = type;
+                                    timeController.clear();
+                                  },
+                                  child: Container(
+                                    height: 50,
+                                    margin: const EdgeInsets.all(4),
+                                    decoration: BoxDecoration(
+                                      color: selected
+                                          ? AssetsConstants.primaryLighter
+                                          : Colors.transparent,
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        type == 'hour' ? 'Giờ' : 'Phút',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                          color: selected
+                                              ? Colors.white
+                                              : Colors.grey.shade600,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 24),
+
+                      // Time Input Field with floating label
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.shade200,
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: TextField(
+                          controller: timeController,
+                          keyboardType: TextInputType.number,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          decoration: InputDecoration(
+                            labelText: 'Thời gian dự kiến',
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
+                            hintText: timeTypeNotifier.value == 'hour'
+                                ? 'Giờ'
+                                : 'Phút',
+                            prefixIcon: Container(
+                              padding: const EdgeInsets.all(12),
+                              child: const Icon(
+                                Icons.schedule_rounded,
+                                color: AssetsConstants.primaryLighter,
+                              ),
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              borderSide: BorderSide.none,
+                            ),
+                            filled: true,
+                            fillColor: Colors.white,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 16,
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 24),
+
+                      // Room Media Section with modern styling
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade50,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: Colors.grey.shade100),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: AssetsConstants.primaryLighter
+                                        .withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: const Icon(
+                                    Icons.add_photo_alternate_rounded,
+                                    color: AssetsConstants.primaryLighter,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                const Text(
+                                  'Tải ảnh lên',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            RoomMediaSection(
+                              roomTitle: '',
+                              roomType: RoomType.livingRoom,
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 32),
+
+                      // Modern Action Buttons
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              style: TextButton.styleFrom(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 16),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                              ),
+                              child: Text(
+                                "Đóng",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.grey.shade700,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            flex: 2,
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                final inputTime =
+                                    double.tryParse(timeController.text);
+                                if (inputTime == null) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 8,
+                                          horizontal: 16,
+                                        ),
+                                        child: const Row(
+                                          children: [
+                                            Icon(
+                                              Icons.warning_rounded,
+                                              color: Colors.white,
+                                            ),
+                                            SizedBox(width: 12),
+                                            Text(
+                                                'Vui lòng nhập thời gian hợp lệ'),
+                                          ],
+                                        ),
+                                      ),
+                                      behavior: SnackBarBehavior.floating,
+                                      backgroundColor: Colors.redAccent,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                    ),
+                                  );
+                                  return;
+                                }
+                                final estimatedTime =
+                                    timeTypeNotifier.value == 'minute'
+                                        ? inputTime / 60
+                                        : inputTime;
+                                await ref
+                                    .read(reviewerUpdateControllerProvider
+                                        .notifier)
+                                    .updateReviewerStatus(
+                                      id: job.id,
+                                      context: context,
+                                      request: ReviewerStatusRequest(
+                                        estimatedDeliveryTime: estimatedTime,
+                                      ),
+                                    );
+                                fetchResult.refresh();
+                                Navigator.pop(context);
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AssetsConstants.primaryLighter,
+                                foregroundColor: Colors.white,
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 16),
+                                elevation: 0,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                              ),
+                              child: const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "Xác nhận",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  SizedBox(width: 8),
+                                  Icon(Icons.arrow_forward_rounded, size: 20),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
-        backgroundColor: AssetsConstants.whiteColor,
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const LabelText(
-                content: "Đóng",
-                size: 16,
-                fontWeight: FontWeight.bold,
-                color: AssetsConstants.blackColor),
-          ),
-          TextButton(
-            onPressed: () async {
-              final inputTime = double.tryParse(timeController.text);
-              if (inputTime == null) {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content: Text('Vui lòng nhập thời gian hợp lệ')));
-                return;
-              }
-              final estimatedTime = timeTypeNotifier.value == 'minute'
-                  ? inputTime / 60
-                  : inputTime;
-              await ref
-                  .read(reviewerUpdateControllerProvider.notifier)
-                  .updateReviewerStatus(
-                    id: job.id,
-                    context: context,
-                    request: ReviewerStatusRequest(
-                        estimatedDeliveryTime: estimatedTime),
-                  );
-              fetchResult.refresh();
-              Navigator.pop(context);
-            },
-            child: const LabelText(
-                content: "Xác nhận",
-                size: 16,
-                fontWeight: FontWeight.bold,
-                color: AssetsConstants.primaryLight),
-          ),
-        ],
       ),
     );
   }
+
+//
+//
 }
 
 class _TimelineStep {

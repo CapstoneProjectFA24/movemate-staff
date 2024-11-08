@@ -11,10 +11,10 @@ class HouseDetailsFetcher extends HookConsumerWidget {
   final void Function(HouseEntities?) onHouseTypeUpdate;
 
   const HouseDetailsFetcher({
-    Key? key,
+    super.key,
     required this.job,
     required this.onHouseTypeUpdate,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

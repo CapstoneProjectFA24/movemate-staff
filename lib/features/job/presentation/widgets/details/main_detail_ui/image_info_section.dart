@@ -9,11 +9,11 @@ class ImageInfoSection extends StatelessWidget {
   final Map<String, List<String>> groupedImages;
 
   const ImageInfoSection({
-    Key? key,
+    super.key,
     required this.isExpanded1,
     required this.toggleDropdown1,
     required this.groupedImages,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

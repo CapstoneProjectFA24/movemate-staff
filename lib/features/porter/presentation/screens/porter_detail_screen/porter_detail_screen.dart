@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'package:movemate_staff/features/job/presentation/providers/booking_provider.dart';
 import 'package:movemate_staff/features/porter/presentation/widgets/draggable_sheet/location_draggable_sheet.dart';
-import 'package:movemate_staff/features/porter/presentation/widgets/map_widget/button_custom.dart';
-import 'package:movemate_staff/features/porter/presentation/widgets/map_widget/location_bottom_sheet.dart';
 import 'package:movemate_staff/features/porter/presentation/widgets/map_widget/location_info_card.dart';
 
 import 'package:movemate_staff/services/map_services/location_service.dart';

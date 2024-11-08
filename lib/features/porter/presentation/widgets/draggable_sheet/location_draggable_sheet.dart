@@ -3,7 +3,7 @@ import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/features/porter/presentation/screens/porter_confirm_upload/porter_confirm_upload.dart';
 
 class DeliveryDetailsBottomSheet extends StatelessWidget {
-  const DeliveryDetailsBottomSheet({Key? key}) : super(key: key);
+  const DeliveryDetailsBottomSheet({super.key});
 
   @override
   Widget build(BuildContext context) {

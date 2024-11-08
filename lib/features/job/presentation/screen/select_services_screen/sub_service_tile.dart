@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 
 import 'package:movemate_staff/features/job/domain/entities/sub_service_entity.dart';
 import 'package:movemate_staff/features/job/presentation/providers/booking_provider.dart';

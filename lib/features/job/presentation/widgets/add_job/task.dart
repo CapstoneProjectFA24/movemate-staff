@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:movemate_staff/features/job/domain/entities/task_entity.dart';
-import 'package:movemate_staff/features/job/presentation/screen/generate_new_job_screen/generate_new_job_screen.dart';
-import 'package:movemate_staff/features/job/presentation/screen/job_details_screen/job_details_screen.dart';
 
 class TaskListWidget extends StatelessWidget {
   final List<Task> tasks;

@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -6,14 +5,11 @@ import 'package:auto_route/auto_route.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/presentation/controllers/booking_controller/booking_controller.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/jobcard/job_card.dart';
-import 'package:movemate_staff/hooks/use_booking_status.dart';
 import 'package:movemate_staff/hooks/use_fetch.dart';
 import 'package:movemate_staff/models/request/paging_model.dart';
-import 'package:movemate_staff/services/realtime_service/booking_status_realtime/booking_status_stream_provider.dart';
 import 'package:movemate_staff/utils/commons/widgets/widgets_common_export.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
 import 'package:movemate_staff/utils/enums/enums_export.dart';
-import 'package:movemate_staff/utils/extensions/scroll_controller.dart';
 import 'package:intl/intl.dart';
 
 @RoutePage()
@@ -59,7 +55,7 @@ class JobScreen extends HookConsumerWidget {
 
     final selectedDate = useState(DateTime.now());
 
-    List<BookingResponseEntity> _getJobsForSelectedDate() {
+    List<BookingResponseEntity> getJobsForSelectedDate() {
       return fetchResult.items.where((booking) {
         DateTime bookingDate =
             DateFormat("MM/dd/yyyy HH:mm:ss").parse(booking.bookingAt);
@@ -69,7 +65,7 @@ class JobScreen extends HookConsumerWidget {
     }
 
     Widget buildTabContent(String tabName) {
-      List<BookingResponseEntity> filteredBookings = _getJobsForSelectedDate();
+      List<BookingResponseEntity> filteredBookings = getJobsForSelectedDate();
 
       switch (tabName) {
         case "Đang đợi đánh giá":

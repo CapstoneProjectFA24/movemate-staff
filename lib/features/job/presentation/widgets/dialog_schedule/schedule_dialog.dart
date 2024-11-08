@@ -29,10 +29,10 @@ class ScheduleDialog extends StatefulWidget {
   final String? orderId;
 
   const ScheduleDialog({
-    Key? key,
+    super.key,
     required this.onDateTimeSelected,
     this.orderId,
-  }) : super(key: key);
+  });
 
   @override
   State<ScheduleDialog> createState() => _ScheduleDialogState();

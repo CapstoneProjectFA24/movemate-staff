@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
-import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
 import 'package:animate_do/animate_do.dart';
@@ -38,8 +37,8 @@ class ConfirmationBottomSheet extends StatelessWidget {
           ),
           const SizedBox(height: 32),
           FadeInUp(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24.0),
               child: Text(
                 "Bạn có muốn kiểm tra thông tin một lần nữa không?",
                 style: TextStyle(

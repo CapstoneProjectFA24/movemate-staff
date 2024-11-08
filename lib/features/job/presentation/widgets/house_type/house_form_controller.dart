@@ -12,13 +12,13 @@ class HouseFormController extends HookConsumerWidget {
   final void Function(int) onFloorsNumberUpdate;
   
   const HouseFormController({
-    Key? key,
+    super.key,
     required this.roomNumberController,
     required this.floorsNumberController,
     required this.onHouseTypeUpdate,
     required this.onRoomNumberUpdate,
     required this.onFloorsNumberUpdate,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

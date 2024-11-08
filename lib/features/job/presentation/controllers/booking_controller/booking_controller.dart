@@ -1,20 +1,15 @@
 import 'dart:convert';
 
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/features/auth/presentation/screens/sign_in/sign_in_controller.dart';
 import 'package:movemate_staff/features/job/data/model/request/booking_requesst.dart';
-import 'package:movemate_staff/features/job/data/model/request/resource.dart';
-import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/assignment_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/service_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/services_package_entity.dart';
 import 'package:movemate_staff/features/job/domain/repositories/service_booking_repository.dart';
 import 'package:movemate_staff/features/job/presentation/providers/booking_provider.dart';
-import 'package:movemate_staff/features/job/presentation/screen/job_details_screen/job_details_screen.dart';
 
 import 'package:movemate_staff/models/request/paging_model.dart';
 import 'package:movemate_staff/utils/commons/functions/shared_preference_utils.dart';
@@ -204,7 +199,7 @@ class BookingController extends _$BookingController {
         accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
         id: id,
       );
-      print("bookingResponse ${bookingResponse}");
+      print("bookingResponse $bookingResponse");
       print(
           'Booking bookingResponse.payload.toMap : ${jsonEncode(bookingResponse.payload.toMap())}');
 

@@ -1,10 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:movemate_staff/features/auth/domain/repositories/auth_repository.dart';
-import 'package:movemate_staff/features/auth/presentation/screens/sign_in/sign_in_controller.dart';
 import 'package:movemate_staff/features/profile/domain/entities/profile_entity.dart';
 import 'package:movemate_staff/features/profile/domain/repositories/profile_repository.dart';
-import 'package:movemate_staff/models/request/paging_model.dart';
 import 'package:movemate_staff/utils/commons/functions/api_utils.dart';
 import 'package:movemate_staff/utils/commons/functions/shared_preference_utils.dart';
 import 'package:movemate_staff/utils/constants/api_constant.dart';
