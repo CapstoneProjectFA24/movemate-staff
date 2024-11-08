@@ -645,7 +645,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
                               ],
                             ),
                             const SizedBox(height: 16),
-                            RoomMediaSection(
+                            const RoomMediaSection(
                               roomTitle: '',
                               roomType: RoomType.livingRoom,
                             ),

@@ -102,6 +102,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
   @override
   Widget build(BuildContext context) {
     List<String> deliveryPointCoordinates = widget.job.deliveryPoint.split(',');
+
     LatLng deliveryPoint = LatLng(
         double.parse(deliveryPointCoordinates[0].trim()),
         double.parse(deliveryPointCoordinates[1].trim()));
@@ -126,6 +127,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                         _buildInitialRoute(); // Build route khi map đã sẵn sàng
                       });
                     },
+                    
                     onRouteProgressChange:
                         (RouteProgressEvent routeProgressEvent) {
                       if (mounted) {

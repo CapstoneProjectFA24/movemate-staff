@@ -25,7 +25,7 @@ class JobCard extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final bookingAsync = ref.watch(bookingStreamProvider(job.id.toString()));
     final bookingStatus = useBookingStatus(bookingAsync.value, isReviewOnline);
-
+    print(bookingStatus.statusMessage);
     return FadeInUp(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,12 +110,12 @@ class JobCard extends HookConsumerWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        _buildStatusBadge(),
+        _buildStatusBadge(status),
       ],
     );
   }
 
-  Widget _buildStatusBadge() {
+  Widget _buildStatusBadge(BookingStatusResult bookingStatus) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
@@ -123,7 +123,8 @@ class JobCard extends HookConsumerWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
-        _getDisplayStatus(job.status),
+        // _getDisplayStatus(job.status),
+        '${bookingStatus.statusMessage}',
         style: const TextStyle(
           color: Colors.white,
           fontSize: 12,
