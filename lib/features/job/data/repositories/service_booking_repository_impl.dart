@@ -15,6 +15,7 @@ import 'package:movemate_staff/features/job/data/remotes/booking_source.dart';
 import 'package:movemate_staff/features/job/domain/repositories/service_booking_repository.dart';
 import 'package:movemate_staff/models/request/paging_model.dart';
 import 'package:movemate_staff/models/response/success_model.dart';
+import 'package:movemate_staff/utils/commons/functions/shared_preference_utils.dart';
 import 'package:movemate_staff/utils/constants/api_constant.dart';
 import 'package:movemate_staff/utils/resources/remote_base_repository.dart';
 
@@ -116,17 +117,20 @@ class BookingRepositoryImpl extends RemoteBaseRepository
     required String accessToken,
     required PagingModel request,
   }) async {
+    final user = await SharedPreferencesUtils.getInstance('user_token');
     final bookingQueries = BookingQueries(
       page: request.pageNumber,
       perPage: request.pageSize,
+      userId: user!.id,
       IsReviewOnl: request.isReviewOnline,
     );
-    
+
     return getDataOf(
       request: () => _bookingSource.getBookings(
           APIConstants.contentType, accessToken, bookingQueries),
     );
   }
+
   @override
   Future<BookingResponse> getBookingsDriver({
     required String accessToken,
@@ -136,7 +140,7 @@ class BookingRepositoryImpl extends RemoteBaseRepository
       page: request.pageNumber,
       perPage: request.pageSize,
     );
-    
+
     return getDataOf(
       request: () => _bookingSource.getBookings(
           APIConstants.contentType, accessToken, bookingQueries),
@@ -161,9 +165,10 @@ class BookingRepositoryImpl extends RemoteBaseRepository
   @override
   Future<SuccessModel> updateStateReviewer({
     required String accessToken,
-     ReviewerStatusRequest? request,
+    ReviewerStatusRequest? request,
     required int id,
   }) async {
+    print("repo log ${request!.toJson()}");
     return getDataOf(
       request: () => _bookingSource.updateStateReviewer(
           APIConstants.contentType, accessToken, request, id),

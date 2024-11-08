@@ -5,11 +5,13 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 // Routing
 import 'package:movemate_staff/configs/routes/app_router.dart';
+import 'package:movemate_staff/features/job/data/model/request/resource.dart';
 
 // Data models and entities
 import 'package:movemate_staff/features/job/data/model/request/reviewer_status_request.dart';
 import 'package:movemate_staff/features/job/data/model/request/reviewer_time_request.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
+import 'package:movemate_staff/features/job/domain/entities/image_data.dart';
 
 // Controllers
 import 'package:movemate_staff/features/job/presentation/controllers/reviewer_update_controller/reviewer_update_controller.dart';
@@ -716,6 +718,23 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
                                     timeTypeNotifier.value == 'minute'
                                         ? inputTime / 60
                                         : inputTime;
+
+                                final images =
+                                    ref.read(bookingProvider).livingRoomImages;
+
+                                // convert list image with type ImageData => Resource
+                                List<Resource> convertImage(
+                                    List<ImageData>? images) {
+                                  return images!
+                                      .map((image) => Resource(
+                                            type: 'IMG',
+                                            resourceUrl: image.url,
+                                            resourceCode: 'LIVING_ROOM',
+                                          ))
+                                      .toList();
+                                }
+
+                                final resourseListReq = convertImage(images);
                                 await ref
                                     .read(reviewerUpdateControllerProvider
                                         .notifier)
@@ -724,6 +743,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
                                       context: context,
                                       request: ReviewerStatusRequest(
                                         estimatedDeliveryTime: estimatedTime,
+                                        resourceList: resourseListReq,
                                       ),
                                     );
                                 fetchResult.refresh();
