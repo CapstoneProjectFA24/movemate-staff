@@ -102,12 +102,15 @@ class JobCard extends HookConsumerWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          "Mã đơn dọn nhà: ${job.id}",
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
+        Padding(
+          padding: const EdgeInsets.only(right: 15.0),
+          child: Text(
+            "Mã đơn dọn nhà: ${job.id}",
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
         _buildStatusBadge(status),
@@ -116,19 +119,22 @@ class JobCard extends HookConsumerWidget {
   }
 
   Widget _buildStatusBadge(BookingStatusResult bookingStatus) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: _getStatusColor(job.status),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Text(
-        // _getDisplayStatus(job.status),
-        '${bookingStatus.statusMessage}',
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 12,
-          fontWeight: FontWeight.bold,
+    return Flexible(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+        decoration: BoxDecoration(
+          color: _getStatusColor(job.status),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Text(
+          '${bookingStatus.statusMessage}',
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+          ),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
         ),
       ),
     );
@@ -138,6 +144,9 @@ class JobCard extends HookConsumerWidget {
     return Text(
       status.statusMessage,
       style: const TextStyle(color: Colors.white70, fontSize: 14),
+      // textAlign: TextAlign.end,
+      overflow: TextOverflow.visible,
+      maxLines: 1,
     );
   }
 
@@ -277,6 +286,11 @@ class JobCard extends HookConsumerWidget {
           Colors.green.shade900,
           Colors.green.shade600
         ]; // Green for completed
+      case 'DEPOSITING':
+        return [
+          Colors.blue.shade800,
+          Colors.blue.shade600
+        ]; // Green for completed
       case 'CANCELLED':
         return [
           Colors.redAccent.shade100,
@@ -292,15 +306,17 @@ class JobCard extends HookConsumerWidget {
       case 'PENDING':
         return Colors.yellow;
       case 'ASSIGNED':
-        return Colors.orange;
+        return Colors.orange.shade900;
       case 'REVIEWING':
-        return Colors.orange;
+        return Colors.orange.shade900;
       case 'REVIEWED':
-        return Colors.green;
+        return Colors.green.shade700;
       case 'COMING':
-        return Colors.orange;
+        return Colors.orange.shade900;
       case 'IN_PROGRESS':
-        return Colors.orange;
+        return Colors.orange.shade900;
+      case 'DEPOSITING':
+        return Colors.blue.shade800;
       case 'COMPLETED':
         return Colors.green;
       case 'CANCELLED':
