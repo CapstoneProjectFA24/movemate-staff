@@ -295,7 +295,7 @@ class _BookingSource implements BookingSource {
     };
     _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
-    _data.addAll(request.toMap() ?? <String, dynamic>{});
+    _data.addAll(request?.toMap() ?? <String, dynamic>{});
     final _options =
         _setStreamType<HttpResponse<UpdateBookingResponse>>(Options(
       method: 'PUT',
@@ -383,7 +383,7 @@ class _BookingSource implements BookingSource {
     };
     _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
-    _data.addAll(request.toMap() ?? <String, dynamic>{});
+    _data.addAll(request?.toMap() ?? <String, dynamic>{});
     final _options = _setStreamType<HttpResponse<BookingResponse>>(Options(
       method: 'POST',
       headers: _headers,
@@ -474,7 +474,7 @@ class _BookingSource implements BookingSource {
     };
     _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
-    _data.addAll(request.toMap() ?? <String, dynamic>{});
+    _data.addAll(request?.toMap() ?? <String, dynamic>{});
     final _options = _setStreamType<HttpResponse<SuccessModel>>(Options(
       method: 'PUT',
       headers: _headers,
