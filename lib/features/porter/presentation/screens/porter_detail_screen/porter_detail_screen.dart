@@ -11,51 +11,8 @@ import 'package:movemate_staff/services/map_services/location_service.dart';
 import 'package:movemate_staff/services/map_services/map_service.dart';
 import 'package:movemate_staff/utils/constants/api_constant.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
-import 'package:vietmap_flutter_gl/vietmap_flutter_gl.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:vietmap_flutter_navigation/embedded/controller.dart';
-import 'package:vietmap_flutter_navigation/models/options.dart';
-import 'package:vietmap_flutter_navigation/models/route_progress_event.dart';
-import 'package:vietmap_flutter_navigation/navigation_plugin.dart';
 import 'package:vietmap_flutter_navigation/vietmap_flutter_navigation.dart';
-import 'package:vietmap_flutter_navigation/views/banner_instruction.dart';
-import 'package:vietmap_flutter_navigation/views/bottom_action.dart';
-
-class Location {
-  final double latitude;
-  final double longitude;
-
-  Location({required this.latitude, required this.longitude});
-}
-
-class Booking {
-  final String id;
-  final String name;
-  final Location? pickUpLocation;
-  final Location? dropOffLocation;
-
-  Booking({
-    required this.id,
-    required this.name,
-    this.pickUpLocation,
-    this.dropOffLocation,
-  });
-}
-
-final fakeBookingProvider = Provider<Booking>((ref) {
-  return Booking(
-    id: 'fake_booking_123',
-    name: 'Test Booking',
-    pickUpLocation: Location(
-      latitude: 10.762622,
-      longitude: 106.660172,
-    ),
-    dropOffLocation: Location(
-      latitude: 10.776889,
-      longitude: 106.700981,
-    ),
-  );
-});
 
 @RoutePage()
 class PorterDetailScreen extends StatefulWidget {
@@ -319,7 +276,6 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
                     onPressed: _isMapReady ? _startNavigation : null,
                     child: const Icon(Icons.directions),
                   ),
-
               ],
             )
           : null,
