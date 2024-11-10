@@ -6,7 +6,7 @@ part of 'driver_controller.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$driverControllerHash() => r'2899b7539a4167dff2733a51e7716eda71535306';
+String _$driverControllerHash() => r'2f0cd7d2a09925239eb8fdf3e79a8e2e04b97619';
 
 /// See also [DriverController].
 @ProviderFor(DriverController)

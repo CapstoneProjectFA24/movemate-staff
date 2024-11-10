@@ -20,6 +20,7 @@ part 'driver_controller.g.dart';
 
 @riverpod
 class DriverController extends _$DriverController {
+  @override
   FutureOr<void> build() {}
 
   Future<List<BookingResponseEntity>> getBookingsByDriver(

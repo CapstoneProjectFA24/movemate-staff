@@ -78,7 +78,11 @@ class ReviewerUpdateController extends _$ReviewerUpdateController {
     state = const AsyncLoading();
     final authRepository = ref.read(authRepositoryProvider);
     final user = await SharedPreferencesUtils.getInstance('user_token');
-    print("resourceLisst : $request");
+    print("resourceLisst request: $request");
+    print("resourceLisst request status: ${request?.status}");
+    print(
+        "resourceLisst request estimatedDeliveryTime: ${request?.estimatedDeliveryTime}");
+    // print("resourceLisst request: $request");
     state = await AsyncValue.guard(() async {
       final response = await ref
           .read(bookingRepositoryProvider)
@@ -87,7 +91,7 @@ class ReviewerUpdateController extends _$ReviewerUpdateController {
             request: request,
             id: id,
           );
-
+      print('resourceLisst response: $response');
       showSnackBar(
         context: context,
         content: "Cập nhật trạng thái thành công",

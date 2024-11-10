@@ -5,7 +5,7 @@ import 'package:movemate_staff/features/porter/presentation/screens/porter_confi
 
 class DeliveryDetailsBottomSheet extends StatelessWidget {
   final BookingResponseEntity job;
-  const DeliveryDetailsBottomSheet({Key? key, required this.job}) : super(key: key);
+  const DeliveryDetailsBottomSheet({super.key, required this.job});
 
   @override
   Widget build(BuildContext context) {

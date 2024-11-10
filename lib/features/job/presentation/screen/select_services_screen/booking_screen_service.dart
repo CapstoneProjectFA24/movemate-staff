@@ -1,9 +1,13 @@
 // booking_screen_service.dart
 //route
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:movemate_staff/configs/routes/app_router.dart';
+import 'package:movemate_staff/features/job/data/model/request/booking_requesst.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_details_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/services_package_entity.dart';
@@ -134,6 +138,14 @@ class BookingScreenService extends HookConsumerWidget {
         // totalPrice: price ?? 0.0,
         isButtonEnabled: true,
         onPlacePress: () {
+          final bookingRequest =
+              BookingUpdateRequest.fromBookingUpdate(bookingState);
+          final bookingstate = ref.watch(bookingProvider);
+          print(
+              'tuan Booking bookingstate pickUpLocation service: ${jsonEncode(bookingstate.pickUpLocation)}');
+          print(
+              'tuan Booking bookingstate dropOffLocation service: ${jsonEncode(bookingstate.dropOffLocation)}');
+          print('tuan Booking Request: ${jsonEncode(bookingRequest.toMap())}');
           showDialog(
             context: context,
             builder: (context) => AlertDialog(
@@ -180,6 +192,11 @@ class BookingScreenService extends HookConsumerWidget {
                                       JobDetailsScreen(job: bookingResponse),
                                 ),
                               );
+                              // context.router.pushAll([
+                              //   JobDetailsScreenRoute(job: bookingResponse),
+                              //   // Các tuyến đường khác nếu cần
+                              // ]);
+
                               print("context.mounted ${context.mounted}");
                               // context.router.push(
                               //   JobDetailsScreenRoute(job: bookingResponse),

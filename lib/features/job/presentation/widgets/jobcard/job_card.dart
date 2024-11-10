@@ -127,7 +127,7 @@ class JobCard extends HookConsumerWidget {
           borderRadius: BorderRadius.circular(12),
         ),
         child: Text(
-          '${bookingStatus.statusMessage}',
+          bookingStatus.statusMessage,
           style: const TextStyle(
             color: Colors.white,
             fontSize: 12,

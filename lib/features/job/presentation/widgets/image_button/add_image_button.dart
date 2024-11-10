@@ -101,7 +101,7 @@ class AddImageButton extends ConsumerWidget {
           );
 
           await bookingNotifier.addImageToRoom(roomType, imageData);
-          print('${imageData.url}');
+          print(imageData.url);
         } catch (e) {
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(

@@ -203,10 +203,9 @@ class BookingNotifier extends StateNotifier<Booking> {
 
 // Phương thức lấy danh sách hình ảnh cho một loại phòng
   List<ImageData> getImages(RoomType roomType) {
-    if (state == null) return [];
     switch (roomType) {
       case RoomType.livingRoom:
-        return state!.livingRoomImages ?? [];
+        return state.livingRoomImages ?? [];
       case RoomType.bedroom:
         return state.bedroomImages;
       case RoomType.diningRoom:
@@ -220,13 +219,10 @@ class BookingNotifier extends StateNotifier<Booking> {
 
   // Method to set the loading state for uploading living room images
   void setUploadingLivingRoomImage(bool isUploading) {
-    if (state != null) {
-      state = state!.copyWith(isUploadingLivingRoomImage: isUploading);
+    state = state!.copyWith(isUploadingLivingRoomImage: isUploading);
     }
-  }
 
   bool canAddImage(RoomType roomType) {
-    if (state == null) return true;
     final images = getImages(roomType);
     return images.length < BookingNotifier.maxImages;
   }
@@ -247,10 +243,10 @@ class BookingNotifier extends StateNotifier<Booking> {
       switch (roomType) {
         case RoomType.livingRoom:
           final currentImages =
-              List<ImageData>.from(state!.livingRoomImages ?? []);
+              List<ImageData>.from(state.livingRoomImages ?? []);
           if (currentImages.length < BookingNotifier.maxImages) {
             currentImages.add(imageData);
-            state = state!.copyWith(livingRoomImages: currentImages);
+            state = state.copyWith(livingRoomImages: currentImages);
           }
           break;
         case RoomType.bedroom:
@@ -287,10 +283,10 @@ class BookingNotifier extends StateNotifier<Booking> {
     switch (roomType) {
       case RoomType.livingRoom:
         final currentImages =
-            List<ImageData>.from(state!.livingRoomImages ?? []);
+            List<ImageData>.from(state.livingRoomImages ?? []);
         currentImages
             .removeWhere((image) => image.publicId == imageData.publicId);
-        state = state!.copyWith(livingRoomImages: currentImages);
+        state = state.copyWith(livingRoomImages: currentImages);
         break;
       case RoomType.bedroom:
         state = state.copyWith(

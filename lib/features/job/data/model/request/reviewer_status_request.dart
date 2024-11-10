@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:movemate_staff/features/job/data/model/request/resource.dart';
-import 'package:movemate_staff/features/job/domain/entities/booking_enities.dart';
 import 'package:movemate_staff/features/job/domain/entities/image_data.dart';
 import 'package:movemate_staff/utils/enums/booking_status_type.dart';
 

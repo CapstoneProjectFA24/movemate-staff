@@ -73,7 +73,7 @@ BookingStatusResult useBookingStatus(
 
     // Trạng thái của assignments
     final isStaffEnroute =
-        hasAssignmentWithStatus("REVIEWER", AssignmentsStatusType.coming);
+        hasAssignmentWithStatus("REVIEWER", AssignmentsStatusType.incoming);
 
     final isStaffArrived =
         hasAssignmentWithStatus("REVIEWER", AssignmentsStatusType.arrived);

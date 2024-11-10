@@ -2,30 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
-import 'package:movemate_staff/features/job/domain/entities/house_type_entity.dart';
 import 'package:movemate_staff/features/job/presentation/controllers/house_type_controller/house_type_controller.dart';
 import 'package:movemate_staff/features/job/presentation/providers/booking_provider.dart';
-import 'package:movemate_staff/features/job/presentation/widgets/button_next/confirmation_button_sheet.dart'
-    as confirm_button_sheet;
-import 'package:movemate_staff/features/job/presentation/widgets/function/popup.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/function/image.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/function/label.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/function/number_input.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/function/text_input.dart';
-import 'package:movemate_staff/features/job/presentation/widgets/house_type/house_form_controller.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/house_type/house_type_selection_modal.dart';
+import 'package:movemate_staff/features/porter/presentation/screens/porter_detail_screen/porter_detail_screen.dart';
 import 'package:movemate_staff/features/test/domain/entities/house_entities.dart';
 import 'package:movemate_staff/hooks/use_fetch_obj.dart';
-import 'package:movemate_staff/models/request/paging_model.dart';
 import 'package:movemate_staff/utils/commons/widgets/app_bar.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
-import 'package:animate_do/animate_do.dart';
-import 'package:movemate_staff/utils/enums/enums_export.dart';
 // Hooks
-import 'package:movemate_staff/hooks/use_fetch.dart';
 
 @RoutePage()
 class GenerateNewJobScreen extends HookConsumerWidget {
@@ -70,12 +61,11 @@ class GenerateNewJobScreen extends HookConsumerWidget {
 
     useEffect(() {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        bookingNotifier
-            .updateNumberOfRooms(int.tryParse(job.roomNumber) ?? 1);
+        bookingNotifier.updateNumberOfRooms(int.tryParse(job.roomNumber) ?? 1);
         bookingNotifier
             .updateNumberOfFloors(int.tryParse(job.floorsNumber) ?? 1);
       });
-          return null;
+      return null;
     }, [roomNumberController, floorsNumberController]);
 
     return Scaffold(
@@ -181,7 +171,7 @@ class GenerateNewJobScreen extends HookConsumerWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                buildLabel("Số phòng ngủ"),
+                                buildLabel("Số phòng"),
                                 buildNumberInput(
                                   controller: roomNumberController,
                                   onChanged: (value) {
@@ -219,37 +209,43 @@ class GenerateNewJobScreen extends HookConsumerWidget {
 
                       const SizedBox(height: 16),
                       // Customer-Provided Images
-                      buildLabel("Hình ảnh khách hàng cung cấp"),
-                      buildImageRow(),
+                      // buildLabel("Hình ảnh khách hàng cung cấp"),
+                      // buildImageRow(),
                       const SizedBox(height: 16),
                     ],
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(
-                      bottom: 30.0, top: 30, right: 10, left: 10),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      context.router
-                          .push(AvailableVehiclesScreenRoute(job: job));
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFFF9900),
-                      padding: const EdgeInsets.symmetric(vertical: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          bottom: 30.0, top: 30, right: 10, left: 10),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          context.router
+                              .push(AvailableVehiclesScreenRoute(job: job));
+                          // bookingNotifier.updateDropOffLocation(Location(latitude: job.pickupPoint, longitude: job.deliveryPoint));
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFFF9900),
+                          padding: const EdgeInsets.symmetric(vertical: 15),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          fixedSize: const Size(400, 50),
+                        ),
+                        child: const Text(
+                          'Bước tiếp theo',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
-                      fixedSize: const Size(400, 50),
                     ),
-                    child: const Text(
-                      'Bước tiếp theo',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
+                  ],
                 ),
               ],
             ),

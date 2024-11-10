@@ -29,6 +29,7 @@ class APIConstants {
   static const bookings = '/bookings';
 
   // reviwer-status
+  // static const reviewer_state = '/bookingdetails/reviewer/update-status';
   static const reviewer_state = '/bookingdetails/reviewer/update-status';
   static const reviewer_at = '/bookings/reviewer/review-at';
 

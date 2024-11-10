@@ -139,7 +139,7 @@ BookingStatusInfo getBookingStatusAssigmentText(AssignmentsStatusType status) {
         nextStep: 'Đã hoàn thành',
       );
 
-    case AssignmentsStatusType.coming:
+    case AssignmentsStatusType.incoming:
       return BookingStatusInfo(
         statusText: 'Người đánh giá đang trên đường',
         description: 'Đang trong quá trình đánh giá',

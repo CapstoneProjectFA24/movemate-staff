@@ -32,12 +32,11 @@ import 'package:movemate_staff/utils/constants/asset_constant.dart';
 
 @RoutePage()
 class JobDetailsScreen extends HookConsumerWidget {
+  final BookingResponseEntity job;
   const JobDetailsScreen({
     super.key,
     required this.job,
   });
-
-  final BookingResponseEntity job;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

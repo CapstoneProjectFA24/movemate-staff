@@ -62,9 +62,9 @@ class UpdateStatusButton extends ConsumerWidget {
                   .updateReviewerStatus(
                     id: job.id,
                     context: context, // Ensure this enum exists
-                    request: ReviewerStatusRequest(
-                      status: BookingStatusType.reviewing,
-                    ),
+                    // request: ReviewerStatusRequest(
+                    //     // status: BookingStatusType.reviewing,
+                    //     ),
                   );
               // Optionally, show a success message
               ScaffoldMessenger.of(context).showSnackBar(
@@ -79,18 +79,19 @@ class UpdateStatusButton extends ConsumerWidget {
           };
           break;
 
-        case AssignmentsStatusType.coming:
+        case AssignmentsStatusType.incoming:
           buttonText = "đã đến";
           onConfirm = () async {
             try {
+              print('id: đã đến ${job.id}');
               await ref
                   .read(reviewerUpdateControllerProvider.notifier)
                   .updateReviewerStatus(
                     id: job.id,
                     context: context, // Ensure this enum exists
-                    request: ReviewerStatusRequest(
-                      status: BookingStatusType.reviewing,
-                    ),
+                    // request: ReviewerStatusRequest(
+                    //   status: BookingStatusType.reviewing,
+                    // ),
                   );
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Đã đến thành công')),

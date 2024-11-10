@@ -6,6 +6,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
+import 'package:movemate_staff/features/job/domain/entities/location_model_entities.dart';
 import 'package:movemate_staff/features/job/domain/entities/service_entity.dart';
 import 'package:movemate_staff/features/job/presentation/controllers/booking_controller/booking_controller.dart';
 import 'package:movemate_staff/features/job/presentation/providers/booking_provider.dart';
@@ -56,15 +57,6 @@ class AvailableVehiclesScreen extends HookConsumerWidget {
       context: context,
     );
 
-    // try {
-    //   print(
-    //       ' (AvailableVehiclesScreen) Direct print - Selected numberOfFloors: ${bookingState.numberOfFloors}');
-    //   print(
-    //       ' (AvailableVehiclesScreen) Direct print - Selected numberOfRooms: ${bookingState.numberOfRooms}');
-    // } catch (e) {
-    //   print("lỗi rồi $e");
-    // }
-
     useEffect(() {
       scrollController.onScrollEndsListener(fetchResult.loadMore);
 
@@ -74,7 +66,11 @@ class AvailableVehiclesScreen extends HookConsumerWidget {
     final gettruck = job.bookingDetails
         .where((detail) => detail.type == "TRUCK")
         .map((truckDetail) => truckDetail.serviceId);
-        // print("provider room ${}");
+
+    print('tuan pickupAddress ${job.pickupAddress}');
+    print('tuan pickupPoint ${job.pickupPoint}');
+    print('tuan deliveryPoint ${job.deliveryPoint}');
+    // final location = LocationModel(
 
     return Scaffold(
       appBar: CustomAppBar(
@@ -105,11 +101,46 @@ class AvailableVehiclesScreen extends HookConsumerWidget {
         // totalPrice: bookingState.totalPrice ?? 0.0,
         isButtonEnabled: bookingState.selectedVehicle != null,
         onPlacePress: () async {
-
-          
           if (bookingState.selectedVehicle != null
               // &&bookingState.selectedVehicle?.id == gettruck.first
               ) {
+            // Tách pickupPoint và deliveryPoint từ chuỗi
+            final List<String> pickupCoordinates = job.pickupPoint.split(",");
+            final double pickupLatitude = double.parse(pickupCoordinates[0]);
+            final double pickupLongitude = double.parse(pickupCoordinates[1]);
+
+            final List<String> deliveryCoordinates =
+                job.deliveryPoint.split(",");
+
+            final double deliveryLatitude =
+                double.parse(deliveryCoordinates[0]);
+
+            final double deliveryLongitude =
+                double.parse(deliveryCoordinates[1]);
+
+            // Tạo đối tượng LocationModel cho pickupPoint
+            final pickupLocation = LocationModel(
+              label: 'Điểm đón',
+              address: job.pickupAddress,
+              latitude: pickupLatitude,
+              longitude: pickupLongitude,
+              distance: job.estimatedDistance,
+            );
+
+            // Tạo đối tượng LocationModel cho deliveryPoint
+            final deliveryLocation = LocationModel(
+              label: 'Điểm giao',
+              address: job
+                  .deliveryAddress, // Có thể sử dụng một trường phù hợp từ job hoặc để trống nếu không có sẵn
+              latitude: deliveryLatitude,
+              longitude: deliveryLongitude,
+              distance: job.estimatedDistance,
+            );
+
+            // Cập nhật vào BookingProvider
+            bookingNotifier.updatePickUpLocation(pickupLocation);
+            bookingNotifier.updateDropOffLocation(deliveryLocation);
+
             // Hiển thị một dialog chờ
             showDialog(
               context: context,
