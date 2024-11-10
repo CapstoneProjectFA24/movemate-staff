@@ -27,7 +27,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
   final _vietmapNavigationPlugin = VietMapNavigationPlugin();
   Position? _currentPosition; // Thay đổi thành nullable
   bool _isMapReady = false; // Thêm biến để track trạng thái map
-
+  bool _showNavigationButton = true;
   Widget recenterButton = const SizedBox.shrink();
   Widget instructionImage = const SizedBox.shrink();
   bool _isNavigationStarted = false;
@@ -167,6 +167,73 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                     },
                   ),
                   if (!_isNavigationStarted)
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          left: 14.0, right: 14.0, top: 20),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.1),
+                              spreadRadius: 1,
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            // Back Button
+                            GestureDetector(
+                              onTap: () => context.router.pop(),
+                              child: const Icon(
+                                Icons.arrow_back,
+                                color: Colors.black54,
+                                size: 24,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            // Title
+                            const Text(
+                              'Đã giao hàng',
+                              style: TextStyle(
+                                color: Colors.black54,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const Spacer(),
+                            // Support Icon
+                            IconButton(
+                              icon: const Icon(
+                                Icons.headset_mic_outlined,
+                                color: Colors.black54,
+                                size: 24,
+                              ),
+                              onPressed: () {
+                                // Add support action
+                              },
+                            ),
+                            // Help Icon
+                            IconButton(
+                              icon: const Icon(
+                                Icons.help_outline,
+                                color: Colors.black54,
+                                size: 24,
+                              ),
+                              onPressed: () {
+                                // Add help action
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  if (!_isNavigationStarted)
                     DeliveryDetailsBottomSheet(
                       job: widget.job,
                     ),
@@ -181,6 +248,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                         setState(() {
                           instructionImage = const SizedBox.shrink();
                           routeProgressEvent = null;
+                          _stopNavigation();
                         });
                       },
                       recenterButton: recenterButton,
@@ -195,23 +263,18 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
           ],
         ),
       ),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          if (!_isNavigationStarted)
-            FloatingActionButton(
-              onPressed: _isMapReady ? _startNavigation : null,
-              child: const Icon(Icons.directions),
-            ),
-          if (!_isNavigationStarted) const SizedBox(height: 10),
-          // Nút kết thúc điều hướng chỉ hiển thị khi đang trong chế độ điều hướng
-          if (_isNavigationStarted)
-            FloatingActionButton(
-              onPressed: _isMapReady ? _stopNavigation : null,
-              child: const Icon(Icons.close),
-            ),
-        ],
-      ),
+      floatingActionButton: _showNavigationButton
+          ? Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                if (!_isNavigationStarted)
+                  FloatingActionButton(
+                    onPressed: _isMapReady ? _startNavigation : null,
+                    child: const Icon(Icons.directions),
+                  ),
+              ],
+            )
+          : null,
     );
   }
 
