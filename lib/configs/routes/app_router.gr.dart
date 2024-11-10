@@ -147,9 +147,13 @@ abstract class _$AppRouter extends RootStackRouter {
       );
     },
     PorterDetailScreenRoute.name: (routeData) {
+      final args = routeData.argsAs<PorterDetailScreenRouteArgs>();
       return AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const PorterDetailScreen(),
+        child: PorterDetailScreen(
+          key: args.key,
+          job: args.job,
+        ),
       );
     },
     PorterScreenRoute.name: (routeData) {
@@ -653,16 +657,41 @@ class PorterConfirmScreenRoute extends PageRouteInfo<void> {
 
 /// generated route for
 /// [PorterDetailScreen]
-class PorterDetailScreenRoute extends PageRouteInfo<void> {
-  const PorterDetailScreenRoute({List<PageRouteInfo>? children})
-      : super(
+class PorterDetailScreenRoute
+    extends PageRouteInfo<PorterDetailScreenRouteArgs> {
+  PorterDetailScreenRoute({
+    Key? key,
+    required BookingResponseEntity job,
+    List<PageRouteInfo>? children,
+  }) : super(
           PorterDetailScreenRoute.name,
+          args: PorterDetailScreenRouteArgs(
+            key: key,
+            job: job,
+          ),
           initialChildren: children,
         );
 
   static const String name = 'PorterDetailScreenRoute';
 
-  static const PageInfo<void> page = PageInfo<void>(name);
+  static const PageInfo<PorterDetailScreenRouteArgs> page =
+      PageInfo<PorterDetailScreenRouteArgs>(name);
+}
+
+class PorterDetailScreenRouteArgs {
+  const PorterDetailScreenRouteArgs({
+    this.key,
+    required this.job,
+  });
+
+  final Key? key;
+
+  final BookingResponseEntity job;
+
+  @override
+  String toString() {
+    return 'PorterDetailScreenRouteArgs{key: $key, job: $job}';
+  }
 }
 
 /// generated route for
