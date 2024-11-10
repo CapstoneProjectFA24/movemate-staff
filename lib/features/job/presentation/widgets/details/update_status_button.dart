@@ -79,7 +79,7 @@ class UpdateStatusButton extends ConsumerWidget {
           };
           break;
 
-        case AssignmentsStatusType.coming:
+        case AssignmentsStatusType.incoming:
           buttonText = "đã đến";
           onConfirm = () async {
             try {

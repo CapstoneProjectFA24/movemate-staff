@@ -378,6 +378,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
           ),
           TextButton(
             onPressed: () async {
+              print("log here go");
               await ref
                   .read(reviewerUpdateControllerProvider.notifier)
                   .updateReviewerStatus(id: job.id, context: context);

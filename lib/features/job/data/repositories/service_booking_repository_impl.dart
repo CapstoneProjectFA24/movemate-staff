@@ -168,7 +168,6 @@ class BookingRepositoryImpl extends RemoteBaseRepository
     ReviewerStatusRequest? request,
     required int id,
   }) async {
-    print("repo log ${request!.toJson()}");
     return getDataOf(
       request: () => _bookingSource.updateStateReviewer(
           APIConstants.contentType, accessToken, request, id),

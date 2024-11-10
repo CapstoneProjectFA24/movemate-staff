@@ -78,13 +78,13 @@ class ReviewerUpdateController extends _$ReviewerUpdateController {
     state = const AsyncLoading();
     final authRepository = ref.read(authRepositoryProvider);
     final user = await SharedPreferencesUtils.getInstance('user_token');
-    print("resourceLisst : $request");
+
     state = await AsyncValue.guard(() async {
+      print("log here go 1");
       final response = await ref
           .read(bookingRepositoryProvider)
           .updateStateReviewer(
             accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
-            request: request,
             id: id,
           );
 
