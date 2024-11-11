@@ -3,7 +3,7 @@ class BookingDetailsResponseEntity {
   final int serviceId;
   final int bookingId;
   final int quantity;
-  final String? price;
+  final double? price; // Đã chuyển từ String? sang double?
   final String? status;
   final String? type;
   final String? isQuantity;
@@ -17,7 +17,7 @@ class BookingDetailsResponseEntity {
     required this.quantity,
     this.status,
     this.type,
-    this.price,
+    this.price, // Cập nhật kiểu dữ liệu
     this.isQuantity,
     this.name,
     this.description,
@@ -31,7 +31,8 @@ class BookingDetailsResponseEntity {
       quantity: json['quantity'] ?? 0,
       status: json['status']?.toString(),
       type: json['type']?.toString(),
-      price: json['price']?.toString(),
+      price:
+          (json['price'] as num).toDouble(), // Sử dụng hàm hỗ trợ để chuyển đổi
       isQuantity: json['isQuantity']?.toString(),
       name: json['name']?.toString(),
       description: json['description'],
@@ -46,7 +47,7 @@ class BookingDetailsResponseEntity {
       'quantity': quantity,
       'status': status,
       'type': type,
-      'price': price,
+      'price': price, // Giữ kiểu double
       'isQuantity': isQuantity,
       'name': name,
       'description': description,
@@ -55,5 +56,16 @@ class BookingDetailsResponseEntity {
 
   Map<String, dynamic> toJson() {
     return toMap();
+  }
+
+  /// Hàm hỗ trợ chuyển đổi giá trị sang double?
+  static double? _parseDouble(dynamic value) {
+    if (value == null) return null;
+    if (value is double) return value;
+    if (value is int) return value.toDouble();
+    if (value is String) {
+      return double.tryParse(value);
+    }
+    return null;
   }
 }
