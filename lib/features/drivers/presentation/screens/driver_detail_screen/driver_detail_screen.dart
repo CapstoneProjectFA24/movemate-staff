@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:movemate_staff/features/drivers/presentation/widgets/draggable_sheet/location_draggable_sheet.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/utils/constants/api_constant.dart';
 import 'package:vietmap_flutter_navigation/vietmap_flutter_navigation.dart';
@@ -24,10 +25,10 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
   final _vietmapNavigationPlugin = VietMapNavigationPlugin();
   Position? _currentPosition; // Thay đổi thành nullable
   bool _isMapReady = false; // Thêm biến để track trạng thái map
-
+  bool _showNavigationButton = true;
   Widget recenterButton = const SizedBox.shrink();
   Widget instructionImage = const SizedBox.shrink();
-
+  bool _isNavigationStarted = false;
   RouteProgressEvent? routeProgressEvent;
 
   @override
@@ -96,6 +97,33 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
     }
   }
 
+  // Thêm hàm để xử lý bắt đầu điều hướng
+  Future<void> _startNavigation() async {
+    if (_isMapReady) {
+      try {
+        setState(() {
+          _isNavigationStarted = true;
+        });
+        await _navigationController?.startNavigation();
+      } catch (e) {
+        print("Lỗi khi bắt đầu điều hướng: $e");
+        // Nếu có lỗi, đặt lại trạng thái
+        setState(() {
+          _isNavigationStarted = false;
+        });
+      }
+    }
+  }
+
+  // Thêm hàm để xử lý kết thúc điều hướng
+  void _stopNavigation() {
+    setState(() {
+      _isNavigationStarted = false;
+    });
+    _navigationController?.finishNavigation();
+    _buildInitialRoute(); // Xây dựng lại tuyến đường ban đầu
+  }
+
   @override
   Widget build(BuildContext context) {
     List<String> deliveryPointCoordinates = widget.job.deliveryPoint.split(',');
@@ -124,7 +152,6 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                         _buildInitialRoute(); // Build route khi map đã sẵn sàng
                       });
                     },
-                    
                     onRouteProgressChange:
                         (RouteProgressEvent routeProgressEvent) {
                       if (mounted) {
@@ -137,11 +164,91 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                       }
                     },
                   ),
+                  if (!_isNavigationStarted)
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          left: 14.0, right: 14.0, top: 20),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.1),
+                              spreadRadius: 1,
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            // Back Button
+                            GestureDetector(
+                              onTap: () => context.router.pop(),
+                              child: const Icon(
+                                Icons.arrow_back,
+                                color: Colors.black54,
+                                size: 24,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            // Title
+                            const Text(
+                              'Đã giao hàng',
+                              style: TextStyle(
+                                color: Colors.black54,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const Spacer(),
+                            // Support Icon
+                            IconButton(
+                              icon: const Icon(
+                                Icons.headset_mic_outlined,
+                                color: Colors.black54,
+                                size: 24,
+                              ),
+                              onPressed: () {
+                                // Add support action
+                              },
+                            ),
+                            // Help Icon
+                            IconButton(
+                              icon: const Icon(
+                                Icons.help_outline,
+                                color: Colors.black54,
+                                size: 24,
+                              ),
+                              onPressed: () {
+                                // Add help action
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  if (!_isNavigationStarted)
+                    DeliveryDetailsBottomSheet(
+                      job: widget.job,
+                    ),
                   Positioned(
-                    bottom: 0,
+                    bottom: _isNavigationStarted
+                        ? 20
+                        : 280, // Điều chỉnh vị trí dựa trên trạng thái điều hướng
                     left: 0,
                     right: 0,
                     child: BottomActionView(
+                      onStopNavigationCallback: () {
+                        setState(() {
+                          instructionImage = const SizedBox.shrink();
+                          routeProgressEvent = null;
+                          _stopNavigation();
+                        });
+                      },
                       recenterButton: recenterButton,
                       controller: _navigationController,
                       routeProgressEvent: routeProgressEvent,
@@ -154,50 +261,18 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
           ],
         ),
       ),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          FloatingActionButton(
-            onPressed: _isMapReady
-                ? () async {
-                    try {
-                      await _navigationController?.startNavigation();
-                    } catch (e) {
-                      print("Lỗi khi bắt đầu điều hướng: $e");
-                    }
-                  }
-                : null, // Disable nút khi map chưa sẵn sàng
-            child: const Icon(Icons.directions),
-          ),
-          const SizedBox(height: 10),
-          FloatingActionButton(
-            onPressed: _isMapReady
-                ? () {
-                    _navigationController?.overview();
-                  }
-                : null,
-            child: const Icon(Icons.route),
-          ),
-          const SizedBox(height: 10),
-          FloatingActionButton(
-            onPressed: _isMapReady
-                ? () {
-                    _navigationController?.recenter();
-                  }
-                : null,
-            child: const Icon(Icons.center_focus_strong),
-          ),
-          const SizedBox(height: 10),
-          FloatingActionButton(
-            onPressed: _isMapReady
-                ? () {
-                    _navigationController?.finishNavigation();
-                  }
-                : null,
-            child: const Icon(Icons.close),
-          ),
-        ],
-      ),
+      floatingActionButton: _showNavigationButton
+          ? Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                if (!_isNavigationStarted)
+                  FloatingActionButton(
+                    onPressed: _isMapReady ? _startNavigation : null,
+                    child: const Icon(Icons.directions),
+                  ),
+              ],
+            )
+          : null,
     );
   }
 

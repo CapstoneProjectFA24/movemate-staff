@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 
 import 'package:movemate_staff/features/porter/presentation/widgets/draggable_sheet/location_draggable_sheet.dart';
 import 'package:movemate_staff/features/porter/presentation/widgets/map_widget/location_info_card.dart';
@@ -9,332 +11,301 @@ import 'package:movemate_staff/services/map_services/location_service.dart';
 import 'package:movemate_staff/services/map_services/map_service.dart';
 import 'package:movemate_staff/utils/constants/api_constant.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
-import 'package:vietmap_flutter_gl/vietmap_flutter_gl.dart';
 import 'package:geolocator/geolocator.dart';
-
-class Location {
-  final double latitude;
-  final double longitude;
-
-  Location({required this.latitude, required this.longitude});
-}
-
-class Booking {
-  final String id;
-  final String name;
-  final Location? pickUpLocation;
-  final Location? dropOffLocation;
-
-  Booking({
-    required this.id,
-    required this.name,
-    this.pickUpLocation,
-    this.dropOffLocation,
-  });
-}
-
-final fakeBookingProvider = Provider<Booking>((ref) {
-  return Booking(
-    id: 'fake_booking_123',
-    name: 'Test Booking',
-    pickUpLocation: Location(
-      latitude: 10.762622,
-      longitude: 106.660172,
-    ),
-    dropOffLocation: Location(
-      latitude: 10.776889,
-      longitude: 106.700981,
-    ),
-  );
-});
+import 'package:vietmap_flutter_navigation/vietmap_flutter_navigation.dart';
 
 @RoutePage()
-class PorterDetailScreen extends ConsumerStatefulWidget {
-  const PorterDetailScreen({super.key});
+class PorterDetailScreen extends StatefulWidget {
+  final BookingResponseEntity job;
+  const PorterDetailScreen({super.key, required this.job});
 
   static const String apiKey = APIConstants.apiVietMapKey;
 
   @override
-  ConsumerState<PorterDetailScreen> createState() =>
-      LocationSelectionScreenState();
+  State<PorterDetailScreen> createState() => _PorterDetailScreenScreenState();
 }
 
-class LocationSelectionScreenState extends ConsumerState<PorterDetailScreen> {
-  VietmapController? mapController;
-  Position? currentPosition;
-  Line? currentRoute;
-  bool isTracking = false;
+class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
+  MapNavigationViewController? _navigationController; // Thay đổi thành nullable
+  late MapOptions _navigationOption;
+  final _vietmapNavigationPlugin = VietMapNavigationPlugin();
+  Position? _currentPosition; // Thay đổi thành nullable
+  bool _isMapReady = false; // Thêm biến để track trạng thái map
+  bool _showNavigationButton = true;
+  Widget recenterButton = const SizedBox.shrink();
+  Widget instructionImage = const SizedBox.shrink();
+  bool _isNavigationStarted = false;
+  RouteProgressEvent? routeProgressEvent;
 
   @override
   void initState() {
     super.initState();
-    initializeLocationGPS();
+    _initNavigation();
+    _getCurrentLocation();
   }
 
-  @override
-  void dispose() {
-    clearCurrentRoute();
-    mapController?.dispose();
-    super.dispose();
+  Future<void> _initNavigation() async {
+    if (!mounted) return;
+    _navigationOption = _vietmapNavigationPlugin.getDefaultOptions();
+    _navigationOption.simulateRoute = false;
+    _navigationOption.apiKey = APIConstants.apiVietMapKey;
+    _navigationOption.mapStyle =
+        "https://maps.vietmap.vn/api/maps/light/styles.json?apikey=${APIConstants.apiVietMapKey}";
+    _vietmapNavigationPlugin.setDefaultOptions(_navigationOption);
   }
 
-  Future<void> clearCurrentRoute() async {
-    if (mapController != null) {
-      await MapService.clearRoute(mapController!);
-      currentRoute = null;
-    }
-  }
-
-  // todo draw -- notwork
-  Future<void> drawRouteBetweenLocations(Booking bookingState) async {
-    if (mapController == null ||
-        bookingState.pickUpLocation == null ||
-        bookingState.dropOffLocation == null) {
-      return;
-    }
-
-    // Xóa route cũ nếu có
-    await clearCurrentRoute();
-
-    // Vẽ route mới
-    currentRoute = await MapService.drawRoute(
-      controller: mapController!,
-      origin: LatLng(
-        bookingState.pickUpLocation!.latitude,
-        bookingState.pickUpLocation!.longitude,
-      ),
-      destination: LatLng(
-        bookingState.dropOffLocation!.latitude,
-        bookingState.dropOffLocation!.longitude,
-      ),
-      routeColor: Colors.orange,
-      routeWidth: 4.0,
-    );
-  }
-
-  Future<void> initializeLocationGPS() async {
-    if (await LocationService.checkLocationPermission()) {
-      if (await LocationService.isLocationServiceEnabled()) {
-        print("oke gps ");
-        startLocationTracking();
-      } else {
-        LocationService.showEnableLocationDialog(context);
+  Future<void> _getCurrentLocation() async {
+    try {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        // Xử lý khi location service bị tắt
+        return;
       }
-    } else {
-      LocationService.showPermissionDeniedDialog(context);
+
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          return;
+        }
+      }
+
+      final position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+
+      if (mounted) {
+        setState(() {
+          _currentPosition = position;
+          _buildInitialRoute(); // Thêm hàm này để build route ngay khi có vị trí
+        });
+      }
+    } catch (e) {
+      print("Không thể lấy vị trí hiện tại: $e");
     }
   }
 
-  void startLocationTracking() {
-    setState(() => isTracking = true);
+  void _buildInitialRoute() {
+    if (_navigationController != null && _currentPosition != null) {
+      List<String> deliveryPointCoordinates =
+          widget.job.deliveryPoint.split(',');
+      LatLng deliveryPoint = LatLng(
+          double.parse(deliveryPointCoordinates[0].trim()),
+          double.parse(deliveryPointCoordinates[1].trim()));
 
-    LocationService.getPositionStream().listen((Position position) {
-      setState(() => currentPosition = position);
+      _navigationController?.buildRoute(
+        waypoints: [
+          LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
+          deliveryPoint
+        ],
+        profile: DrivingProfile.cycling,
+      );
+    }
+  }
 
-      if (mapController != null) {
-        MapService.focusOnLocation(
-          mapController!,
-          LatLng(position.latitude, position.longitude),
-        );
+  // Thêm hàm để xử lý bắt đầu điều hướng
+  Future<void> _startNavigation() async {
+    if (_isMapReady) {
+      try {
+        setState(() {
+          _isNavigationStarted = true;
+        });
+        await _navigationController?.startNavigation();
+      } catch (e) {
+        print("Lỗi khi bắt đầu điều hướng: $e");
+        // Nếu có lỗi, đặt lại trạng thái
+        setState(() {
+          _isNavigationStarted = false;
+        });
       }
+    }
+  }
+
+  // Thêm hàm để xử lý kết thúc điều hướng
+  void _stopNavigation() {
+    setState(() {
+      _isNavigationStarted = false;
     });
-  }
-
-  List<Marker> buildMarkers(Booking bookingState) {
-    final markers = <Marker>[];
-
-    if (bookingState.pickUpLocation != null) {
-      markers.add(
-        Marker(
-          alignment: Alignment.bottomCenter,
-          child: const Icon(Icons.location_on, color: Colors.green, size: 50),
-          latLng: LatLng(
-            bookingState.pickUpLocation!.latitude,
-            bookingState.pickUpLocation!.longitude,
-          ),
-        ),
-      );
-    }
-
-    if (bookingState.dropOffLocation != null) {
-      markers.add(
-        Marker(
-          alignment: Alignment.bottomCenter,
-          child: const Icon(Icons.location_on, color: Colors.red, size: 50),
-          latLng: LatLng(
-            bookingState.dropOffLocation!.latitude,
-            bookingState.dropOffLocation!.longitude,
-          ),
-        ),
-      );
-    }
-
-    return markers;
-  }
-
-  List<LatLng> getLocations(Booking bookingState) {
-    final locations = <LatLng>[];
-
-    if (bookingState.pickUpLocation != null) {
-      locations.add(LatLng(
-        bookingState.pickUpLocation!.latitude,
-        bookingState.pickUpLocation!.longitude,
-      ));
-    }
-
-    if (bookingState.dropOffLocation != null) {
-      locations.add(LatLng(
-        bookingState.dropOffLocation!.latitude,
-        bookingState.dropOffLocation!.longitude,
-      ));
-    }
-
-    return locations;
+    _navigationController?.finishNavigation();
+    _buildInitialRoute(); // Xây dựng lại tuyến đường ban đầu
   }
 
   @override
   Widget build(BuildContext context) {
-    final bookingState = ref.watch(fakeBookingProvider);
-    final markers = buildMarkers(bookingState);
-    final locations = getLocations(bookingState);
+    List<String> deliveryPointCoordinates = widget.job.deliveryPoint.split(',');
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (locations.isNotEmpty && mapController != null) {
-        MapService.focusOnAllMarkers(mapController!, locations);
-
-        if (locations.length == 2) {
-          drawRouteBetweenLocations(bookingState);
-        }
-      }
-    });
+    LatLng deliveryPoint = LatLng(
+        double.parse(deliveryPointCoordinates[0].trim()),
+        double.parse(deliveryPointCoordinates[1].trim()));
 
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
+            BannerInstructionView(
+              routeProgressEvent: routeProgressEvent,
+              instructionIcon: instructionImage,
+            ),
             Expanded(
               child: Stack(
                 children: [
-                  VietmapGL(
-                    trackCameraPosition: true,
-                    myLocationTrackingMode: MyLocationTrackingMode.TrackingGPS,
-                    myLocationEnabled: true,
-                    myLocationRenderMode: MyLocationRenderMode.COMPASS,
-                    styleString:
-                        "https://maps.vietmap.vn/api/maps/light/styles.json?apikey=${PorterDetailScreen.apiKey}",
-                    initialCameraPosition: const CameraPosition(
-                      target: LatLng(10.762317, 106.654551),
-                      zoom: 15,
-                    ),
-                    onStyleLoadedCallback: () => debugPrint("Map style loaded"),
+                  NavigationView(
+                    mapOptions: _navigationOption,
                     onMapCreated: (controller) {
                       setState(() {
-                        mapController = controller;
-                        if (locations.isNotEmpty) {
-                          MapService.focusOnAllMarkers(controller, locations);
-                          // Vẽ route khi khởi tạo map nếu có đủ điểm
-                          if (locations.length == 2) {
-                            drawRouteBetweenLocations(bookingState);
-                          }
-                        }
+                        _navigationController = controller;
+                        _isMapReady = true;
+                        _buildInitialRoute(); // Build route khi map đã sẵn sàng
                       });
                     },
+                    onRouteProgressChange:
+                        (RouteProgressEvent routeProgressEvent) {
+                      if (mounted) {
+                        setState(() {
+                          this.routeProgressEvent = routeProgressEvent;
+                          _setInstructionImage(
+                              routeProgressEvent.currentModifier,
+                              routeProgressEvent.currentModifierType);
+                        });
+                      }
+                    },
                   ),
-                  if (mapController != null && markers.isNotEmpty)
-                    MarkerLayer(
-                      ignorePointer: true,
-                      mapController: mapController!,
-                      markers: markers,
-                    ),
-                  if (currentPosition != null)
-                    Positioned(
-                      bottom: 80,
-                      left: 16,
-                      child: LocationInfoCard(position: currentPosition!),
-                    ),
-                  Positioned(
-                    right: 16,
-                    bottom: 0,
-                    child: MapActionButtons(
-                      onMyLocationPressed: () {
-                        if (currentPosition != null && mapController != null) {
-                          MapService.focusOnLocation(
-                            mapController!,
-                            LatLng(currentPosition!.latitude,
-                                currentPosition!.longitude),
-                          );
-                        }
-                      },
-                      showFocusAllMarkers: markers.length > 1,
-                      onFocusAllMarkersPressed: markers.length > 1
-                          ? () => MapService.focusOnAllMarkers(
-                              mapController!, locations)
-                          : null,
-                      showDrawRoute: locations.length == 2,
-                      onDrawRoutePressed: locations.length == 2
-                          ? () => drawRouteBetweenLocations(bookingState)
-                          : null,
-                    ),
-                  ),
-                  Stack(
-                    children: [
-                      Positioned(
-                        top: 20,
-                        left: 0,
-                        right: 0,
-                        child: Padding(
-                          padding:
-                              const EdgeInsets.only(left: 10.0, right: 10.0),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 8),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 4,
-                                ),
-                              ],
+                  if (!_isNavigationStarted)
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          left: 14.0, right: 14.0, top: 20),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.1),
+                              spreadRadius: 1,
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
                             ),
-                            child: SafeArea(
-                                child: Row(
-                              children: [
-                                const BackButton(
-                                  color: AssetsConstants.primaryMain,
-                                ),
-                                const Text(
-                                  'Đã giao hàng',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                const Spacer(),
-                                IconButton(
-                                  icon: const Icon(Icons.refresh),
-                                  color: AssetsConstants.primaryMain,
-                                  onPressed: () {},
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.info_outline),
-                                  color: AssetsConstants.primaryMain,
-                                  onPressed: () {},
-                                ),
-                              ],
-                            )),
-                          ),
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            // Back Button
+                            GestureDetector(
+                              onTap: () => context.router.pop(),
+                              child: const Icon(
+                                Icons.arrow_back,
+                                color: Colors.black54,
+                                size: 24,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            // Title
+                            const Text(
+                              'Đã giao hàng',
+                              style: TextStyle(
+                                color: Colors.black54,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const Spacer(),
+                            // Support Icon
+                            IconButton(
+                              icon: const Icon(
+                                Icons.headset_mic_outlined,
+                                color: Colors.black54,
+                                size: 24,
+                              ),
+                              onPressed: () {
+                                // Add support action
+                              },
+                            ),
+                            // Help Icon
+                            IconButton(
+                              icon: const Icon(
+                                Icons.help_outline,
+                                color: Colors.black54,
+                                size: 24,
+                              ),
+                              onPressed: () {
+                                // Add help action
+                              },
+                            ),
+                          ],
                         ),
                       ),
-                      const DeliveryDetailsBottomSheet(),
-                    ],
+                    ),
+                  if (!_isNavigationStarted)
+                    DeliveryDetailsBottomSheet(
+                      job: widget.job,
+                    ),
+                  Positioned(
+                    bottom: _isNavigationStarted
+                        ? 20
+                        : 280, // Điều chỉnh vị trí dựa trên trạng thái điều hướng
+                    left: 0,
+                    right: 0,
+                    child: BottomActionView(
+                      onStopNavigationCallback: () {
+                        setState(() {
+                          instructionImage = const SizedBox.shrink();
+                          routeProgressEvent = null;
+                          _stopNavigation();
+                        });
+                      },
+                      recenterButton: recenterButton,
+                      controller: _navigationController,
+                      routeProgressEvent: routeProgressEvent,
+                    ),
                   ),
                 ],
               ),
             ),
+            instructionImage,
           ],
         ),
       ),
+      floatingActionButton: _showNavigationButton
+          ? Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                if (!_isNavigationStarted)
+                  FloatingActionButton(
+                    onPressed: _isMapReady ? _startNavigation : null,
+                    child: const Icon(Icons.directions),
+                  ),
+              ],
+            )
+          : null,
     );
+  }
+
+  void _setInstructionImage(String? modifier, String? type) {
+    if (modifier != null && type != null) {
+      List<String> data = [
+        type.replaceAll(' ', '_'),
+        modifier.replaceAll(' ', '_')
+      ];
+      String path = 'assets/navigation_symbol/${data.join('_')}.svg';
+      if (mounted) {
+        setState(() {
+          instructionImage = SvgPicture.asset(path, color: Colors.white);
+        });
+      }
+    } else {
+      if (mounted) {
+        setState(() {
+          instructionImage = const SizedBox.shrink();
+        });
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _navigationController?.onDispose();
+    super.dispose();
   }
 }

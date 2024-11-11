@@ -7,7 +7,7 @@ import 'package:movemate_staff/utils/enums/booking_status_type.dart';
 class ReviewerStatusRequest {
   final BookingStatusType? status;
   final double? estimatedDeliveryTime;
-  final List<Resource> resourceList;
+  final List<Resource>? resourceList;
 
   ReviewerStatusRequest({
     this.status,
@@ -21,12 +21,14 @@ class ReviewerStatusRequest {
       map['status'] = status!.type;
     }
     map['estimatedDeliveryTime'] = estimatedDeliveryTime;
-    map['resourceList'] = resourceList.map((e) => e.toMap()).toList();
+    if (status != null) {
+      map['resourceList'] = resourceList?.map((e) => e.toMap()).toList();
+    }
     return map;
   }
 
   void addImagesToResourceList(List<ImageData> images, String resourceCode) {
-    resourceList.addAll(images.map((imageData) => Resource(
+    resourceList?.addAll(images.map((imageData) => Resource(
           type: 'IMG',
           resourceUrl: imageData.url,
           resourceCode: resourceCode,

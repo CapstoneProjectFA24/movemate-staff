@@ -7,7 +7,7 @@ part of 'reviewer_update_controller.dart';
 // **************************************************************************
 
 String _$reviewerUpdateControllerHash() =>
-    r'001dac69dcf3d70c87cb50f8cdd79741f2e603d5';
+    r'dd753383168aeeaa0ca7a3d7f2b74ca55c0ed9f2';
 
 /// See also [ReviewerUpdateController].
 @ProviderFor(ReviewerUpdateController)
