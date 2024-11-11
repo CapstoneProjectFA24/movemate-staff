@@ -39,7 +39,7 @@ class Booking {
 
   // Added from booking_provider_these.dart
   final List<ServicesPackageEntity> selectedPackages;
-  final List<SubServiceEntity> selectedSubServices;
+  final List<ServicesPackageEntity> selectedSubServices;
   final List<ServicesPackageEntity> selectedPackagesWithQuantity;
 
   // Image lists for each room
@@ -127,7 +127,7 @@ class Booking {
     List<int>? additionalServiceQuantities,
     // Added fields
     List<ServicesPackageEntity>? selectedPackages,
-    List<SubServiceEntity>? selectedSubServices,
+    List<ServicesPackageEntity>? selectedSubServices,
     List<ServicesPackageEntity>? selectedPackagesWithQuantity,
 
     // Location

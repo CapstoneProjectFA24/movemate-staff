@@ -40,14 +40,14 @@ class BookingNotifier extends StateNotifier<Booking> {
   //   pendingBookingDetails[detail.serviceId] = detail.quantity;
   // }
 
-  void updateSubServiceQuantity(SubServiceEntity subService, int newQuantity) {
+  void updateSubServiceQuantity(ServicesPackageEntity subService, int newQuantity) {
     int finalQuantity = newQuantity;
     if (subService.quantityMax != null &&
         newQuantity > subService.quantityMax!) {
       finalQuantity = subService.quantityMax!;
     }
 
-    List<SubServiceEntity> updatedSubServices =
+    List<ServicesPackageEntity> updatedSubServices =
         List.from(state.selectedSubServices);
 
     final index = updatedSubServices.indexWhere((s) => s.id == subService.id);
