@@ -67,9 +67,9 @@ class AvailableVehiclesScreen extends HookConsumerWidget {
         .where((detail) => detail.type == "TRUCK")
         .map((truckDetail) => truckDetail.serviceId);
 
-    print('tuan pickupAddress ${job.pickupAddress}');
-    print('tuan pickupPoint ${job.pickupPoint}');
-    print('tuan deliveryPoint ${job.deliveryPoint}');
+    // print('tuan pickupAddress ${job.pickupAddress}');
+    // print('tuan pickupPoint ${job.pickupPoint}');
+    // print('tuan deliveryPoint ${job.deliveryPoint}');
     // final location = LocationModel(
 
     return Scaffold(

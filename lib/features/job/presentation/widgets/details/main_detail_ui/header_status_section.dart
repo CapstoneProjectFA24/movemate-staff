@@ -531,7 +531,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
                                     timeController.clear();
                                   },
                                   child: Container(
-                                    height: 50,
+                                    height: 40,
                                     margin: const EdgeInsets.all(4),
                                     decoration: BoxDecoration(
                                       color: selected
@@ -607,11 +607,11 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
                         ),
                       ),
 
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 12),
 
                       // Room Media Section with modern styling
                       Container(
-                        padding: const EdgeInsets.all(20),
+                        padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
                           color: Colors.grey.shade50,
                           borderRadius: BorderRadius.circular(16),

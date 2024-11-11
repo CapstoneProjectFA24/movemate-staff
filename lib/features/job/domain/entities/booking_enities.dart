@@ -55,6 +55,7 @@ class Booking {
   final LocationModel? pickUpLocation;
   final LocationModel? dropOffLocation;
   final DateTime? bookingDate;
+  final String? estimatedDistance;
 
   Booking({
     this.houseType,
@@ -87,6 +88,8 @@ class Booking {
     this.pickUpLocation,
     this.dropOffLocation,
     this.bookingDate,
+    this.estimatedDistance,
+
     // Initialize image lists (empty by default)
     List<ImageData>? livingRoomImages,
     List<ImageData>? bedroomImages,
@@ -132,6 +135,8 @@ class Booking {
     LocationModel? pickUpLocation,
     LocationModel? dropOffLocation,
     DateTime? bookingDate,
+    String? estimatedDistance,
+
     //add image
     List<ImageData>? livingRoomImages,
     List<ImageData>? bedroomImages,
@@ -174,6 +179,8 @@ class Booking {
       pickUpLocation: pickUpLocation ?? this.pickUpLocation,
       dropOffLocation: dropOffLocation ?? this.dropOffLocation,
       bookingDate: bookingDate ?? this.bookingDate,
+      estimatedDistance: estimatedDistance ?? this.estimatedDistance,
+
       //add image
       livingRoomImages: livingRoomImages ?? this.livingRoomImages,
       bedroomImages: bedroomImages ?? this.bedroomImages,

@@ -181,6 +181,7 @@ class BookingScreenService extends HookConsumerWidget {
                                 id: job.id,
                               );
                           print("bookingResponse screen $bookingResponse");
+                          print("booking id  ${job.id}");
                           if (bookingResponse != null) {
                             // Điều hướng tới JobDetailsScreen sau khi thành công
                             if (context.mounted) {

@@ -46,9 +46,6 @@ class VehicleList extends StatelessWidget {
     }
     // Kiểm tra xem người dùng đã chọn vehicle mới chưa
     bool hasUserSelection = bookingState.selectedVehicle != null;
-    final serviceIdOld = job.bookingDetails
-        .where((detail) => detail.type == "TRUCK")
-        .map((truckDetail) => truckDetail.serviceId);
 
     return ListView.builder(
       itemCount: fetchResult.items.length + 1,
@@ -71,7 +68,7 @@ class VehicleList extends StatelessWidget {
         // print("Service ID: ${service.id}");
         // print(
         //     "Booking Details Service IDs: ${job.bookingDetails.map((e) => e.serviceId).toList()}");
-        // print("Is Service Selected: $isSelected");
+        print("Is Service Selected: $isSelected");
         return GestureDetector(
           onTap: () {
             // print("service name được chọn là: ${service.name}");
@@ -80,14 +77,14 @@ class VehicleList extends StatelessWidget {
             // print(
             //     "Booking Details Service IDs: ${job.bookingDetails.map((e) => e.serviceId).toList()}");
 
-            try {
-              print(
-                  ' (AvailableVehiclesScreen) Direct print - Selected numberOfFloors: ${bookingState.numberOfFloors}');
-              print(
-                  ' (AvailableVehiclesScreen) Direct print - Selected numberOfRooms: ${bookingState.numberOfRooms}');
-            } catch (e) {
-              print("lỗi rồi $e");
-            }
+            // try {
+            //   // print(
+            //   //     ' (AvailableVehiclesScreen) Direct print - Selected numberOfFloors: ${bookingState.numberOfFloors}');
+            //   // print(
+            //   //     ' (AvailableVehiclesScreen) Direct print - Selected numberOfRooms: ${bookingState.numberOfRooms}');
+            // } catch (e) {
+            //   print("lỗi rồi $e");
+            // }
             // Tìm serviceEntity cũ từ job.bookingDetails
             final oldServiceId = job.bookingDetails
                 .where((detail) => detail.type == "TRUCK")
@@ -110,8 +107,12 @@ class VehicleList extends StatelessWidget {
                   discountRate: 0,
                 ),
               );
+              print(
+                  "Before Update: SelectedVehicle: ${bookingState.selectedVehicle?.id}, SelectedVehicleOld: ${bookingState.selectedVehicleOld?.id}");
               bookingNotifier.updateSelectedVehicle(service);
               bookingNotifier.updateSelectedVehicleOld(serviceEntityOld);
+              print(
+                  "After Update: SelectedVehicle: ${bookingNotifier.state.selectedVehicle?.id}, SelectedVehicleOld: ${bookingNotifier.state.selectedVehicleOld?.id}");
             } else {
               bookingNotifier.updateSelectedVehicle(service);
             }

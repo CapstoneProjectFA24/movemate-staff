@@ -206,11 +206,11 @@ class BookingRequest {
     return BookingRequest(
       pickupAddress: booking.pickUpLocation?.address ?? '',
       pickupPoint: booking.pickUpLocation != null
-          ? '${booking.pickUpLocation!.latitude},${booking.pickUpLocation!.longitude}'
+          ? '${booking.pickUpLocation?.latitude},${booking.pickUpLocation?.longitude}'
           : '',
       deliveryAddress: booking.dropOffLocation?.address ?? 'string',
       deliveryPoint: booking.dropOffLocation != null
-          ? '${booking.dropOffLocation!.latitude},${booking.dropOffLocation!.longitude}'
+          ? '${booking.dropOffLocation?.latitude},${booking.dropOffLocation?.longitude}'
           : '',
       estimatedDistance: estimatedDistance,
       houseTypeId: booking.houseType?.id ?? 1,
@@ -343,18 +343,20 @@ class BookingUpdateRequest {
       );
     }).toList());
 
-    if (booking.selectedVehicleOld != null) {
+    final selectedVehicleOld = booking.selectedVehicleOld;
+    if (selectedVehicleOld != null) {
       bookingDetails.add(
         ServiceDetail(
-          serviceId: booking.selectedVehicleOld!.id,
+          serviceId: selectedVehicleOld.id,
           quantity: 0,
         ),
       );
     }
-    if (booking.selectedVehicle != null) {
+    final selectedVehicle = booking.selectedVehicle;
+    if (selectedVehicle != null) {
       bookingDetails.add(
         ServiceDetail(
-          serviceId: booking.selectedVehicle!.id,
+          serviceId: selectedVehicle.id,
           quantity: 1,
         ),
       );
@@ -389,13 +391,14 @@ class BookingUpdateRequest {
       houseTypeId: booking.houseType?.id ?? 1,
       pickupAddress: booking.pickUpLocation?.address ?? '',
       pickupPoint: booking.pickUpLocation != null
-          ? '${booking.pickUpLocation!.latitude},${booking.pickUpLocation!.longitude}'
+          ? '${booking.pickUpLocation?.latitude},${booking.pickUpLocation?.longitude}'
           : '',
       deliveryAddress: booking.dropOffLocation?.address ?? '',
       deliveryPoint: booking.dropOffLocation != null
-          ? '${booking.dropOffLocation!.latitude},${booking.dropOffLocation!.longitude}'
+          ? '${booking.dropOffLocation?.latitude},${booking.dropOffLocation?.longitude}'
           : '',
-      estimatedDistance: '3', // Có thể tính toán dựa trên tọa độ
+      estimatedDistance:
+          booking.estimatedDistance ?? '10', // Có thể tính toán dựa trên tọa độ
       isRoundTrip: booking.isRoundTrip,
       typeBooking: 'string', // Thiết lập typeBooking theo nhu cầu
       roomNumber: (booking.numberOfRooms ?? 1).toString(),
