@@ -1,6 +1,7 @@
 // booking_screen_service.dart
 //route
 import 'dart:convert';
+import 'package:collection/collection.dart';
 
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
@@ -56,6 +57,51 @@ class BookingScreenService extends HookConsumerWidget {
       context: context,
     );
 
+    final selectedServices = useState<List<ServicesPackageEntity>>([]);
+    final quantities = useState<Map<String, int>>({});
+
+    final bookingDetails = job.bookingDetails;
+    final services = fetchResult.items;
+
+    useEffect(() {
+      if (bookingDetails.isNotEmpty && services.isNotEmpty) {
+        final initialSelectedServices = <ServicesPackageEntity>[];
+        final initialQuantities = <String, int>{};
+
+        for (final service in services) {
+          final mainServiceInBooking = bookingDetails
+              .firstWhereOrNull((bd) => bd.serviceId == service.id);
+          if (mainServiceInBooking != null) {
+            final serviceWithQuantity = service.copyWith(
+              quantity: mainServiceInBooking.quantity,
+            );
+            initialSelectedServices.add(serviceWithQuantity);
+            initialQuantities[service.id.toString()] =
+                mainServiceInBooking.quantity;
+          }
+
+          for (final childService in service.inverseParentService ?? []) {
+            final childServiceInBooking = bookingDetails
+                .firstWhereOrNull((bd) => bd.serviceId == childService.id);
+            if (childServiceInBooking != null) {
+              final childServiceWithQuantity = childService.copyWith(
+                quantity: childServiceInBooking.quantity,
+              );
+              initialSelectedServices.add(childServiceWithQuantity);
+              initialQuantities[childService.id.toString()] =
+                  childServiceInBooking.quantity;
+            }
+          }
+        }
+
+        selectedServices.value = initialSelectedServices;
+        quantities.value = initialQuantities;
+      }
+      return null;
+    }, [bookingDetails, services]);
+
+    // print('vinh log ${selectedServices.value.map((e) => e.toJson())}');
+    // print('vinh log ${quantities.value}');
     // Sử dụng useEffect để init data một lần duy nhất
     // useEffect(() {
     //   if (!hasInitialized.value) {
@@ -119,7 +165,12 @@ class BookingScreenService extends HookConsumerWidget {
                               : Container();
                         }
                         final package = fetchResult.items[index];
-                        return ServicePackageTile(servicePackage: package);
+                        return ServicePackageTile(
+                          servicePackage: package,
+                          job: job,
+                          selectedServices: selectedServices,
+                          quantities: quantities,
+                        );
                         // return ServicePackageList(servicePackages: servicePackages);
                       },
                     ),
