@@ -7,6 +7,7 @@ class PagingModel {
   final String? filterSystemContent;
   final String? searchDateFrom;
   final String? searchDateTo;
+  final String? sortColumn;
   final bool? isReviewOnline;
 
   PagingModel({
@@ -18,6 +19,7 @@ class PagingModel {
     this.filterSystemContent,
     this.searchDateFrom,
     this.searchDateTo,
+    this.sortColumn,
     this.isReviewOnline,
   });
 }

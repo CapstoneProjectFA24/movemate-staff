@@ -31,7 +31,10 @@ class ServicePackageTile extends HookConsumerWidget {
     // Check if the current service package is in the selectedServices list
     final isSelected = selectedServices.value.contains(servicePackage);
 
-    // quantities  => {19: 1, 18: 1, 9: 1, 2: 1}
+    quantities.value.forEach((key, value) => print("key: $key, value: $value"));
+
+    print('check ${quantities}');
+    // quantities  => {32: 1, 20: 1, 19: 1, 18: 1, 9: 1, 10: 4, 2: 1, 3: 2, 4: 1, 5: 3}
     //             string is id off isSelected , value int is the quantity to show
 
     final currentPackage = bookingState.selectedPackages.firstWhere(
@@ -41,15 +44,40 @@ class ServicePackageTile extends HookConsumerWidget {
     // final int quantity = quantities.value[servicePackage.id.toString()] ??
     //     currentPackage.quantity ??
     //     0;
-    final int quantity = currentPackage.quantity ?? 0;
+    print('check ${currentPackage.quantity}');
+    final int quantity = quantities.value[servicePackage.id.toString()] ??
+        currentPackage.quantity ??
+        0;
     var isExpanded = useState(isSelected).value;
+
+    // Handler for quantity changes
+    void handleQuantityChanged(int newQuantity) {
+      // Update quantities map
+      quantities.value = {
+        ...quantities.value,
+        servicePackage.id.toString(): newQuantity,
+      };
+
+      // Update selected services list
+      if (newQuantity > 0 && !isSelected) {
+        selectedServices.value = [...selectedServices.value, servicePackage];
+      } else if (newQuantity == 0 && isSelected) {
+        selectedServices.value = selectedServices.value
+            .where((service) => service.id != servicePackage.id)
+            .toList();
+      }
+
+      // Update booking provider
+      bookingNotifier.updateServicePackageQuantity(servicePackage, newQuantity);
+      bookingNotifier.calculateAndUpdateTotalPrice();
+    }
 
     if (servicePackage.inverseParentService.isNotEmpty) {
       // Display package with sub-services
       return Container(
         margin: const EdgeInsets.symmetric(vertical: 8),
         child: ExpansionTile(
-          initiallyExpanded: isExpanded,
+          initiallyExpanded: isExpanded = true,
           onExpansionChanged: (bool expanded) {
             isExpanded = expanded;
           },
@@ -97,9 +125,10 @@ class ServicePackageTile extends HookConsumerWidget {
                 child: FaIcon(
                   isExpanded
                       ? FontAwesomeIcons.circleChevronDown
+                      // ignore: dead_code
                       : FontAwesomeIcons.circleChevronUp,
                   color: isExpanded
-                      ? AssetsConstants.greyColor
+                      ? AssetsConstants.primaryDark
                       : AssetsConstants.primaryDark,
                   size: 20, // Kích thước của icon
                 ),
@@ -107,11 +136,25 @@ class ServicePackageTile extends HookConsumerWidget {
             ],
           ),
           children: servicePackage.inverseParentService.map((subService) {
-            // Check if the sub-service is in the selectedServices list
-            final isSubSelected = selectedServices.value.contains(subService);
+            // Get quantity for sub-service from quantities map
+            final subQuantity = quantities.value[subService.id.toString()] ?? 0;
+
             return SubServiceTile(
               subService: subService,
-              isSelected: isSubSelected,
+              isSelected: selectedServices.value.contains(subService),
+              quantity: subQuantity,
+              onQuantityChanged: (newQuantity) {
+                // Update quantities map for sub-service
+                quantities.value = {
+                  ...quantities.value,
+                  subService.id.toString(): newQuantity,
+                };
+
+                // Update booking provider for sub-service
+                bookingNotifier.updateSubServiceQuantity(
+                    subService, newQuantity);
+                bookingNotifier.calculateAndUpdateTotalPrice();
+              },
             );
           }).toList(),
         ),
@@ -119,28 +162,51 @@ class ServicePackageTile extends HookConsumerWidget {
     } else {
       // Display package without sub-services
       return Card(
+        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
         color: Colors.white,
         elevation: 2,
+        shadowColor: Colors.black12,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(
+            color: Colors.grey.shade100,
+            width: 1,
+          ),
         ),
         child: ListTile(
-          contentPadding: const EdgeInsets.all(12),
-          title: Text(
-            servicePackage.name.trim(),
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
+          contentPadding: const EdgeInsets.all(16),
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                servicePackage.name.trim(),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                  letterSpacing: 0.2,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Container(
+                width: servicePackage.name.trim().length * 8.0,
+                height: 1,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor.withOpacity(0.7),
+                  borderRadius: BorderRadius.circular(1),
+                ),
+              ),
+            ],
           ),
           subtitle: Padding(
-            padding: const EdgeInsets.only(top: 8.0),
+            padding: const EdgeInsets.only(top: 12.0),
             child: Text(
               servicePackage.description,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
-                color: Colors.black,
+                height: 1.5,
+                color: Colors.black87.withOpacity(0.75),
+                letterSpacing: 0.2,
               ),
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
@@ -148,12 +214,9 @@ class ServicePackageTile extends HookConsumerWidget {
           ),
           trailing: ServiceTrailingWidget(
             quantity: quantity,
-            addService: isSelected,
-            onQuantityChanged: (newQuantity) {
-              bookingNotifier.updateServicePackageQuantity(
-                  servicePackage, newQuantity);
-              bookingNotifier.calculateAndUpdateTotalPrice();
-            },
+            addService: !servicePackage.isQuantity,
+            quantityMax: servicePackage.quantityMax,
+            onQuantityChanged: handleQuantityChanged,
           ),
         ),
       );

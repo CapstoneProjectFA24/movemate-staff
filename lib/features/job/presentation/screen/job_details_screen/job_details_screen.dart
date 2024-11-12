@@ -30,6 +30,7 @@ import 'package:movemate_staff/hooks/use_fetch_obj.dart';
 import 'package:movemate_staff/hooks/use_fetch.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
 
+
 @RoutePage()
 class JobDetailsScreen extends HookConsumerWidget {
   final BookingResponseEntity job;

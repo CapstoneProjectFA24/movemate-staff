@@ -2,6 +2,7 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:intl/intl.dart';
 
 // Entities
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
@@ -18,6 +19,11 @@ import 'package:movemate_staff/hooks/use_fetch_obj.dart';
 // Constants
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
 
+// Hàm hỗ trợ để định dạng giá
+// String formatPrice(int price) {
+//   final formatter = NumberFormat('#,###', 'vi_VN');
+//   return '${formatter.format(price)} đ';
+// }
 class CombinedInfoSection extends HookConsumerWidget {
   final BookingResponseEntity job;
   final FetchObjectResult<HouseEntities> useFetchHouseResult;
@@ -224,7 +230,7 @@ class CombinedInfoSection extends HookConsumerWidget {
           const SizedBox(height: 16),
           ...job.bookingDetails.map((detail) => buildPriceItem(
                 detail.name ?? 'Dịch vụ không xác định',
-                formatPrice(detail.price),
+                formatPrice(detail.price?.toInt() ?? 0),
                 detail.quantity.toString(),
                 detail.type ?? 'Không có loại',
               )),
@@ -280,7 +286,7 @@ class CombinedInfoSection extends HookConsumerWidget {
                   fontWeight: FontWeight.bold,
                   color: AssetsConstants.whiteColor)),
           Text(
-            formatPrice(job.totalReal.toString()),
+            formatPrice(job.totalReal.toInt()),
             style: const TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
@@ -426,12 +432,17 @@ class CombinedInfoSection extends HookConsumerWidget {
   }
 }
 
-String formatPrice(String? price) {
-  if (price == null) return '0 đ';
-  double? numericPrice = double.tryParse(price);
-  return numericPrice != null
-      ? '${numericPrice.toStringAsFixed(0)} đ'
-      : '$price đ';
+// String formatPrice(String? price) {
+//   if (price == null) return '0 đ';
+//   double? numericPrice = double.tryParse(price);
+//   return numericPrice != null
+//       ? '${numericPrice.toStringAsFixed(0)} đ'
+//       : '$price đ';
+// }
+// Hàm hỗ trợ để định dạng giá
+String formatPrice(int price) {
+  final formatter = NumberFormat('#,###', 'vi_VN');
+  return '${formatter.format(price)} đ';
 }
 
 String getDisplayTitle(String resourceCode) {

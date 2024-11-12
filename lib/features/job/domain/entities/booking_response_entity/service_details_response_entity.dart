@@ -3,7 +3,7 @@ class ServiceDetailsResponseEntity {
   final int serviceId;
   final int bookingId;
   final int quantity;
-  final String? price;
+  final double? price; // Đã chuyển từ String? sang double?
   final String? isQuantity;
   final String? description;
 
@@ -12,7 +12,7 @@ class ServiceDetailsResponseEntity {
     required this.serviceId,
     required this.bookingId,
     required this.quantity,
-    this.price,
+    this.price, // Cập nhật kiểu dữ liệu
     this.isQuantity,
     this.description,
   });
@@ -23,7 +23,7 @@ class ServiceDetailsResponseEntity {
       serviceId: json['serviceId'] ?? 0,
       bookingId: json['bookingId'] ?? 0,
       quantity: json['quantity'] ?? 0,
-      price: json['price']?.toString(),
+      price: (json['price'] as num).toDouble(),
       isQuantity: json['isQuantity']?.toString(),
       description: json['description'],
     );
@@ -35,7 +35,7 @@ class ServiceDetailsResponseEntity {
       'serviceId': serviceId,
       'bookingId': bookingId,
       'quantity': quantity,
-      'price': price,
+      'price': price, // Giữ kiểu double
       'isQuantity': isQuantity,
       'description': description,
     };
