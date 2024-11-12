@@ -97,10 +97,154 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
         ? _buildOnlineReviewerSteps(bookingStatus, context, ref)
         : _buildOfflineReviewerSteps(bookingStatus, context, ref);
 
-    return Wrap(
-      spacing: 8,
-      runSpacing: 16,
-      children: _buildTimelineRows(steps),
+    // Chia steps thành 2 hàng, mỗi hàng tối đa 4 items
+    final firstRow = steps.take(4).toList();
+    final secondRow = steps.skip(4).toList();
+
+    return Column(
+      children: [
+        // First row
+        _buildTimelineRow(firstRow, true),
+
+        if (secondRow.isNotEmpty) ...[
+          const SizedBox(height: 32), // Space between rows
+          _buildTimelineRow(secondRow, false),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildTimelineRow(List<_TimelineStep> steps, bool isFirstRow) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: steps.asMap().entries.map((entry) {
+        final index = entry.key;
+        final step = entry.value;
+
+        return Expanded(
+          child: Row(
+            children: [
+              // Step indicator
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Icon circle
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: step.isCompleted
+                            ? Colors.green.withOpacity(0.1)
+                            : step.isActive
+                                ? Colors.blue.withOpacity(0.1)
+                                : Colors.grey.shade100,
+                      ),
+                      child: Icon(
+                        step.isCompleted ? Icons.check : step.icon,
+                        size: 20,
+                        color: step.isCompleted
+                            ? Colors.green
+                            : step.isActive
+                                ? Colors.blue
+                                : Colors.grey,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+
+                    // Title and Action button in a row
+                    Flexible(
+                      child: Container(
+                        width: double.infinity,
+                        child: Wrap(
+                          alignment: WrapAlignment.center,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          spacing: 4, // horizontal space between items
+                          runSpacing: 4, // vertical space between lines
+                          children: [
+                            // Title
+                            Text(
+                              step.title,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: step.isCompleted
+                                    ? Colors.green
+                                    : step.isActive
+                                        ? Colors.blue
+                                        : Colors.grey,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+
+                            // Action button
+                            if (step.action != null)
+                              Container(
+                                height: 26,
+                                child: TextButton(
+                                  onPressed: step.onPressed,
+                                  style: TextButton.styleFrom(
+                                    minimumSize: Size.zero,
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 4,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    backgroundColor:
+                                        Colors.blue.withOpacity(0.1),
+                                  ),
+                                  child: Text(
+                                    step.action!,
+                                    style: const TextStyle(
+                                      color: Colors.blue,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Connector line
+              if (index < steps.length - 1)
+                Container(
+                  width: 20, // Fixed width for connector line
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Container(
+                        height: 2,
+                        color: step.isCompleted
+                            ? Colors.green
+                            : Colors.grey.shade300,
+                      ),
+                      if (!isFirstRow)
+                        Container(
+                          width: 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            color: step.isCompleted
+                                ? Colors.green
+                                : Colors.grey.shade300,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+        );
+      }).toList(),
     );
   }
 
@@ -334,6 +478,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
   }
 
   void _showScheduleDialog(BuildContext context, WidgetRef ref) {
+    final bookingstate = ref.watch(bookingProvider);
     showDialog(
       context: context,
       builder: (context) => ScheduleDialog(
@@ -342,7 +487,9 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
           await ref
               .read(reviewerUpdateControllerProvider.notifier)
               .updateCreateScheduleReview(
-                request: ReviewerTimeRequest(reviewAt: selectedDateTime),
+                request: ReviewerTimeRequest(
+                  reviewAt: selectedDateTime,
+                ),
                 id: job.id,
                 context: context,
               );
@@ -832,7 +979,7 @@ class ZigzagConnectorPainter extends CustomPainter {
     canvas.drawPath(
         path,
         Paint()
-          ..color = Colors.grey.withOpacity(0.3)
+          ..color = Colors.white.withOpacity(0.7)
           ..style = PaintingStyle.stroke
           ..strokeWidth = 1.0);
   }

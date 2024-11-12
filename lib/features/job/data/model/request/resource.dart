@@ -28,7 +28,9 @@ class Resource {
   }
 
   String toJson() => json.encode(toMap());
-
+  @override
+  String toString() =>
+      'Resource(type: $type, resourceUrl: $resourceUrl, resourceCode: $resourceCode)';
   factory Resource.fromJson(String source) =>
       Resource.fromMap(json.decode(source));
 }

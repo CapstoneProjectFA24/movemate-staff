@@ -17,4 +17,7 @@ class ImageData {
       'publicId': publicId,
     };
   }
+
+  @override
+  String toString() => 'ImageData(url: $url, publicId: $publicId)';
 }

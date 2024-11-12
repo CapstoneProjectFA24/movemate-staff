@@ -188,8 +188,8 @@ class BookingRepositoryImpl extends RemoteBaseRepository
     required ReviewerTimeRequest request,
     required int id,
   }) async {
-    print("repo log ${request.toJson()}");
-    print("repo log $id");
+    // print("repo log ${request.toJson()}");
+    // print("repo log $id");
 
     return getDataOf(
       request: () => _bookingSource.updateCreateScheduleReview(
