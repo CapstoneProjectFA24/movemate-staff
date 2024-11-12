@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-
+import 'package:flutter_hooks/flutter_hooks.dart';
 // Routing
 import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/features/job/data/model/request/resource.dart';
@@ -16,6 +16,7 @@ import 'package:movemate_staff/features/job/domain/entities/image_data.dart';
 // Controllers
 import 'package:movemate_staff/features/job/presentation/controllers/reviewer_update_controller/reviewer_update_controller.dart';
 import 'package:movemate_staff/features/job/presentation/providers/booking_provider.dart';
+import 'package:movemate_staff/features/job/presentation/widgets/details/main_detail_ui/custom_tab_container.dart';
 
 // Widgets
 import 'package:movemate_staff/features/job/presentation/widgets/dialog_schedule/schedule_dialog.dart';
@@ -48,28 +49,65 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final bookingAsync = ref.watch(bookingStreamProvider(job.id.toString()));
     final bookingStatus = useBookingStatus(bookingAsync.value, isReviewOnline);
+    // Thêm ValueNotifier để quản lý trạng thái mở rộng
+    final isExpanded = useState(false);
 
-    return Container(
-      padding: const EdgeInsets.all(12.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
+    // Dữ liệu mẫu cho CustomTabContainer
+    final porterItems = [
+      'Porter 1',
+      'Porter 2',
+      'Porter 3',
+      'Porter 4',
+      'Porter 5'
+    ];
+    final driverItems = [
+      'Driver 1',
+      'Driver 2',
+      'Driver 3',
+      'Driver 4',
+      'Driver 5'
+    ];
+
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(12.0),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 8,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildStatusMessage(bookingStatus.statusMessage),
-          const SizedBox(height: 12),
-          _buildTimeline(context, bookingStatus, ref),
-        ],
-      ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildStatusMessage(bookingStatus.statusMessage),
+              const SizedBox(height: 12),
+              _buildTimeline(context, bookingStatus, ref, isExpanded),
+            ],
+          ),
+        ),
+        // Hiển thị CustomTabContainer khi isExpanded là true
+        AnimatedCrossFade(
+          firstChild: const SizedBox.shrink(),
+          secondChild: Padding(
+            padding: const EdgeInsets.only(top: 16),
+            child: CustomTabContainer(
+              porterItems: porterItems,
+              driverItems: driverItems,
+            ),
+          ),
+          crossFadeState: isExpanded.value
+              ? CrossFadeState.showSecond
+              : CrossFadeState.showFirst,
+          duration: const Duration(milliseconds: 300),
+        ),
+      ],
     );
   }
 
@@ -91,11 +129,11 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
     );
   }
 
-  Widget _buildTimeline(
-      BuildContext context, BookingStatusResult bookingStatus, WidgetRef ref) {
+  Widget _buildTimeline(BuildContext context, BookingStatusResult bookingStatus,
+      WidgetRef ref, ValueNotifier<bool> isExpanded) {
     final steps = isReviewOnline
-        ? _buildOnlineReviewerSteps(bookingStatus, context, ref)
-        : _buildOfflineReviewerSteps(bookingStatus, context, ref);
+        ? _buildOnlineReviewerSteps(bookingStatus, context, ref, isExpanded)
+        : _buildOfflineReviewerSteps(bookingStatus, context, ref, isExpanded);
 
     // Chia steps thành 2 hàng, mỗi hàng tối đa 4 items
     final firstRow = steps.take(4).toList();
@@ -249,8 +287,8 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
     );
   }
 
-  List<_TimelineStep> _buildOnlineReviewerSteps(
-      BookingStatusResult status, BuildContext context, WidgetRef ref) {
+  List<_TimelineStep> _buildOnlineReviewerSteps(BookingStatusResult status,
+      BuildContext context, WidgetRef ref, ValueNotifier<bool> isExpanded) {
     bool isStepCompleted(int currentStep, List<bool> conditions) {
       for (int i = currentStep; i < conditions.length; i++) {
         if (conditions[i]) return true;
@@ -264,6 +302,8 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
       status.canConfirmSuggestion,
       status.isReviewed,
       status.isWaitingPayment,
+      status.isReviewed,
+      status.isBookingComing,
       status.isCompleted,
     ];
 
@@ -311,6 +351,18 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
         isCompleted: isStepCompleted(5, progressionStates),
       ),
       _TimelineStep(
+        title: 'Tiến trình',
+        icon: Icons.cleaning_services,
+        isActive: status.isBookingComing && !status.isCompleted,
+        isCompleted: isStepCompleted(6, progressionStates),
+        action: status.isBookingComing
+            ? (isExpanded.value ? 'Thu gọn' : 'Mở rộng')
+            : null,
+        onPressed: status.isBookingComing
+            ? () => isExpanded.value = !isExpanded.value
+            : null,
+      ),
+      _TimelineStep(
         title: 'Hoàn tất',
         icon: Icons.check_circle,
         isActive: status.isCompleted,
@@ -319,8 +371,8 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
     ];
   }
 
-  List<_TimelineStep> _buildOfflineReviewerSteps(
-      BookingStatusResult status, BuildContext context, WidgetRef ref) {
+  List<_TimelineStep> _buildOfflineReviewerSteps(BookingStatusResult status,
+      BuildContext context, WidgetRef ref, ValueNotifier<bool> isExpanded) {
     bool isStepCompleted(int currentStep, List<bool> conditions) {
       for (int i = currentStep; i < conditions.length; i++) {
         if (conditions[i]) return true;
@@ -335,8 +387,9 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
       status.isStaffEnroute,
       status.canUpdateServices,
       status.canConfirmSuggestion,
-      status.isInProgress,
       status.isReviewed,
+      status.isBookingComing,
+      status.isInProgress,
       status.isCompleted,
     ];
 
@@ -397,14 +450,12 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
             : null,
       ),
       _TimelineStep(
-        title: 'Trong quá trình dọn nhà',
+        title: 'Tiến trình',
         icon: Icons.cleaning_services,
         isActive: status.isInProgress,
         isCompleted: isStepCompleted(7, progressionStates),
-        action: status.isReviewed ? 'Đang đợi' : null,
-        onPressed: status.canConfirmSuggestion
-            ? () => _completeProposal(context, ref)
-            : null,
+        action: status.isBookingComing ? 'Đang đợi' : null,
+        onPressed: status.canConfirmSuggestion ? () => {} : null,
       ),
       _TimelineStep(
         title: 'Hoàn tất',

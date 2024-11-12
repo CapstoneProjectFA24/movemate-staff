@@ -15,6 +15,7 @@ class BookingStatusResult {
   final bool canConfirmArrival;
   final bool canConfirmMoving;
   final bool canConfirmSuggestion;
+  final bool canExpandStatus;
 
   // Status indicators
   final bool isWaitingCustomer;
@@ -23,6 +24,7 @@ class BookingStatusResult {
   final bool isStaffArrived;
   final bool isSuggested;
   final bool isReviewed;
+  final bool isBookingComing;
   final bool isInProgress;
   final bool isCompleted;
 
@@ -65,11 +67,13 @@ class BookingStatusResult {
     this.isSuggested = false,
     this.isReviewed = false,
     this.isInProgress = false,
+    this.isBookingComing = false,
     this.isCompleted = false,
     this.canDriverConfirmIncoming = false,
     this.canDriverConfirmArrived = false,
     this.canDriverStartMoving = false,
     this.canDriverCompleteDelivery = false,
+    this.canExpandStatus = false,
     this.isDriverAssigned = false,
     this.isDriverWaiting = false,
     this.isDriverMoving = false,
@@ -198,6 +202,7 @@ BookingStatusResult useBookingStatus(
     bool canConfirmArrival = false;
     bool canUpdateServices = false;
     bool canConfirmSuggestion = false;
+    bool canExpandStatus = false;
 
     if (!isReviewOnline) {
       switch (status) {
@@ -215,6 +220,10 @@ BookingStatusResult useBookingStatus(
             canConfirmSuggestion = true;
           }
           break;
+        case BookingStatusType.coming:
+          if (isDriverAssigned && isPorterAssigned) {
+            canExpandStatus = true;
+          }
         default:
           break;
       }
@@ -238,6 +247,10 @@ BookingStatusResult useBookingStatus(
             canConfirmSuggestion = true;
           }
           break;
+          case BookingStatusType.coming:
+          if (isDriverAssigned && isPorterAssigned) {
+            canExpandStatus = true;
+          }
         default:
           break;
       }
@@ -286,6 +299,7 @@ BookingStatusResult useBookingStatus(
       isStaffArrived: isStaffArrived,
       isSuggested: isSuggested,
       isReviewed: status == BookingStatusType.reviewed,
+      isBookingComing: status == BookingStatusType.coming,
       isInProgress: status == BookingStatusType.inProgress,
       isCompleted: status == BookingStatusType.completed,
       canDriverConfirmIncoming: canDriverConfirmIncoming,
