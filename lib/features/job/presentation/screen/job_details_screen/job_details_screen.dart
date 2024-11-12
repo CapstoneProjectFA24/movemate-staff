@@ -11,6 +11,7 @@ import 'package:movemate_staff/features/job/domain/entities/booking_response_ent
 import 'package:movemate_staff/features/job/presentation/widgets/details/main_detail_ui/detail_info_basic.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/main_detail_ui/header_status_section.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/main_detail_ui/image_info_section.dart';
+import 'package:movemate_staff/features/job/presentation/widgets/details/main_detail_ui/status_driver_poster_timeline.dart';
 import 'package:movemate_staff/features/profile/domain/entities/profile_entity.dart';
 import 'package:movemate_staff/features/profile/presentation/controllers/profile_controller/profile_controller.dart';
 import 'package:movemate_staff/features/test/domain/entities/house_entities.dart';
@@ -29,7 +30,6 @@ import 'package:movemate_staff/utils/commons/widgets/loading_overlay.dart';
 import 'package:movemate_staff/hooks/use_fetch_obj.dart';
 import 'package:movemate_staff/hooks/use_fetch.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
-
 
 @RoutePage()
 class JobDetailsScreen extends HookConsumerWidget {
@@ -75,6 +75,23 @@ class JobDetailsScreen extends HookConsumerWidget {
       ),
       context: context,
     );
+    // Dữ liệu cho Tab Container
+    final porterItems = [
+      'Porter 1',
+      'Porter 2',
+      'Porter 3',
+      'Porter 4',
+      'Porter 5',
+      'Porter 6'
+    ]; // Thay đổi theo dữ liệu thực tế
+    final driverItems = [
+      'Driver 1',
+      'Driver 2',
+      'Driver 3',
+      'Driver 4',
+      'Driver 5',
+      'Driver 6'
+    ]; // Thay đổi theo dữ liệu thực tế
 
     return LoadingOverlay(
       isLoading: state.isLoading,
@@ -112,6 +129,12 @@ class JobDetailsScreen extends HookConsumerWidget {
                   isReviewOnline: job.isReviewOnline,
                   job: job,
                   fetchResult: fetchResult,
+                ),
+                const SizedBox(height: 20),
+                // Thêm CustomTabContainer ở đây
+                CustomTabContainer(
+                  porterItems: porterItems,
+                  driverItems: driverItems,
                 ),
                 const SizedBox(height: 20),
                 CombinedInfoSection(

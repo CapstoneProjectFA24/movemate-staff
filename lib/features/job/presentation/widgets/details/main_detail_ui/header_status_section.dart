@@ -77,7 +77,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.blue.withOpacity(0.1),
+        color: Colors.orange.withOpacity(0.1),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
@@ -85,7 +85,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
         style: const TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w600,
-          color: Colors.blue,
+          color: Colors.orange,
         ),
       ),
     );
@@ -136,18 +136,18 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: step.isCompleted
-                            ? Colors.green.withOpacity(0.1)
+                            ? Colors.orange.withOpacity(0.1)
                             : step.isActive
-                                ? Colors.blue.withOpacity(0.1)
+                                ? Colors.orange.withOpacity(0.1)
                                 : Colors.grey.shade100,
                       ),
                       child: Icon(
                         step.isCompleted ? Icons.check : step.icon,
                         size: 20,
                         color: step.isCompleted
-                            ? Colors.green
+                            ? Colors.orange
                             : step.isActive
-                                ? Colors.blue
+                                ? Colors.orange
                                 : Colors.grey,
                       ),
                     ),
@@ -170,9 +170,9 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
                               style: TextStyle(
                                 fontSize: 13,
                                 color: step.isCompleted
-                                    ? Colors.green
+                                    ? Colors.orange
                                     : step.isActive
-                                        ? Colors.blue
+                                        ? Colors.orangeAccent
                                         : Colors.grey,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -182,6 +182,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
                             if (step.action != null)
                               Container(
                                 height: 26,
+                                width: step.action!.length * 8.0,
                                 child: TextButton(
                                   onPressed: step.onPressed,
                                   style: TextButton.styleFrom(
@@ -194,13 +195,13 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
                                       borderRadius: BorderRadius.circular(20),
                                     ),
                                     backgroundColor:
-                                        Colors.blue.withOpacity(0.1),
+                                        Colors.orange.withOpacity(0.1),
                                   ),
                                   child: Text(
                                     step.action!,
                                     style: const TextStyle(
-                                      color: Colors.blue,
-                                      fontSize: 13,
+                                      color: Colors.orange,
+                                      fontSize: 12,
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
@@ -224,7 +225,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
                       Container(
                         height: 2,
                         color: step.isCompleted
-                            ? Colors.green
+                            ? Colors.orange
                             : Colors.grey.shade300,
                       ),
                       if (!isFirstRow)
@@ -233,7 +234,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
                           height: 8,
                           decoration: BoxDecoration(
                             color: step.isCompleted
-                                ? Colors.green
+                                ? Colors.orange
                                 : Colors.grey.shade300,
                             shape: BoxShape.circle,
                           ),
@@ -334,7 +335,9 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
       status.isStaffEnroute,
       status.canUpdateServices,
       status.canConfirmSuggestion,
+      status.isInProgress,
       status.isReviewed,
+      status.isCompleted,
     ];
 
     return [
@@ -394,9 +397,19 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
             : null,
       ),
       _TimelineStep(
+        title: 'Trong quá trình dọn nhà',
+        icon: Icons.cleaning_services,
+        isActive: status.isInProgress,
+        isCompleted: isStepCompleted(7, progressionStates),
+        action: status.isReviewed ? 'Đang đợi' : null,
+        onPressed: status.canConfirmSuggestion
+            ? () => _completeProposal(context, ref)
+            : null,
+      ),
+      _TimelineStep(
         title: 'Hoàn tất',
         icon: Icons.check_circle,
-        isActive: status.isReviewed,
+        isActive: status.isCompleted,
         isCompleted: false,
       ),
     ];
@@ -440,7 +453,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
     final color = step.isActive
         ? Colors.blue
         : step.isCompleted
-            ? Colors.green
+            ? Colors.orange
             : Colors.grey;
 
     return Column(
