@@ -582,7 +582,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
               children: [
                 // Header với gradient background
                 Container(
-                  padding: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
@@ -615,7 +615,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
                           IconButton(
                             onPressed: () => Navigator.pop(context),
                             icon: Container(
-                              padding: const EdgeInsets.all(8),
+                              padding: const EdgeInsets.all(4),
                               decoration: BoxDecoration(
                                 color: Colors.white.withOpacity(0.2),
                                 borderRadius: BorderRadius.circular(12),
@@ -656,7 +656,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
 
                 // Content Section
                 Padding(
-                  padding: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

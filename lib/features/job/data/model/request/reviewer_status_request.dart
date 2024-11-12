@@ -21,7 +21,7 @@ class ReviewerStatusRequest {
       map['status'] = status!.type;
     }
     map['estimatedDeliveryTime'] = estimatedDeliveryTime;
-    if (status != null) {
+    if (resourceList != null) {
       map['resourceList'] = resourceList?.map((e) => e.toMap()).toList();
     }
     return map;
