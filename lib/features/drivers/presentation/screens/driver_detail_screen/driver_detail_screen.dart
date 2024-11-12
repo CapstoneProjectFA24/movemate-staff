@@ -66,7 +66,6 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
   }
 
   void updateLocationFormStaff(Position position) {
-    print("gohere");
     for (var assignment in widget.job.assignments) {
       if (assignment.userId == user?.id) {
         String role = assignment.staffType;
@@ -83,20 +82,17 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
     _positionStreamSubscription = Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
         accuracy: LocationAccuracy.high,
-        distanceFilter: 0,
+        distanceFilter: 10, // chỉnh ở đây nếu muốn timing nhanh hơn nhé
       ),
     ).listen((Position position) {
       if (mounted) {
         setState(() {
           _currentPosition = position;
-          // _lastPosition = position;
+          _lastPosition = position;
         });
 
         _locationUpdateTimer =
-            Timer.periodic(const Duration(seconds: 20), (timer) {
-          setState(() {
-            _lastPosition = position;
-          });
+            Timer.periodic(const Duration(seconds: 10), (timer) {
           if (_lastPosition != null) {
             updateLocationFormStaff(_lastPosition!);
             print('Location updated to Firebase at ${DateTime.now()}');
@@ -374,7 +370,14 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
   void dispose() {
     _positionStreamSubscription?.cancel();
     _locationUpdateTimer?.cancel();
-    _navigationController?.onDispose();
+    _getCurrentLocation();
+    _startTrackingLocation();
+    if (_navigationController != null) {
+      _navigationController!.onDispose();
+    }
+    if (_isNavigationStarted) {
+      _stopNavigation();
+    }
     super.dispose();
   }
 }

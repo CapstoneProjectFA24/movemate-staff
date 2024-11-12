@@ -67,6 +67,7 @@ abstract class BookingRepository {
   Future<BookingResponse> getBookingsDriver({
     required String accessToken,
     required PagingModel request,
+    String? filterStatusType,
   });
 
   Future<BookingResponse> postValuationBooking({

@@ -143,15 +143,16 @@ class BookingRepositoryImpl extends RemoteBaseRepository
   Future<BookingResponse> getBookingsDriver({
     required String accessToken,
     required PagingModel request,
+    String? filterStatusType,
   }) async {
     final user = await SharedPreferencesUtils.getInstance('user_token');
     final bookingQueries = BookingQueries(
       page: request.pageNumber,
       perPage: request.pageSize,
       userId: user!.id,
-      status: request.filterContent,
+      status: filterStatusType,
     );
-    print(bookingQueries.toJson());
+   
     return getDataOf(
       request: () => _bookingSource.getBookings(
           APIConstants.contentType, accessToken, bookingQueries),
