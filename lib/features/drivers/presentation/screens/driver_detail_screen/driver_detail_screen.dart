@@ -1,9 +1,11 @@
-
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:movemate_staff/features/drivers/presentation/widgets/draggable_sheet/location_draggable_sheet.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
+import 'package:movemate_staff/models/user_model.dart';
+import 'package:movemate_staff/utils/commons/functions/functions_common_export.dart';
 import 'package:movemate_staff/utils/constants/api_constant.dart';
 import 'package:vietmap_flutter_navigation/vietmap_flutter_navigation.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -31,11 +33,59 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
   bool _isNavigationStarted = false;
   RouteProgressEvent? routeProgressEvent;
 
+  // realtime
+  UserModel? user;
+  final DatabaseReference locationRef =
+      FirebaseDatabase.instance.ref().child('tracking_locations');
+
   @override
   void initState() {
     super.initState();
+    _initUserId();
     _initNavigation();
     _getCurrentLocation();
+    _startTrackingLocation();
+  }
+
+  void _updateLocation(Position position, String role) {
+    final String bookingId = widget.job.id.toString();
+    if (user?.id != null) {
+      locationRef.child('$bookingId/$role/${user?.id}').set({
+        'lat': position.latitude,
+        'long': position.longitude,
+        'timestamp': DateTime.now().millisecondsSinceEpoch,
+      });
+    }
+  }
+
+  void updateLocationFormStaff(Position position) {
+    for (var assignment in widget.job.assignments) {
+      if (assignment.userId == user?.id) {
+        String role = assignment.staffType;
+        _updateLocation(position, role);
+        break;
+      }
+    }
+  }
+
+  void _startTrackingLocation() {
+    Geolocator.getPositionStream(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 10,
+      ),
+    ).listen((Position position) {
+      if (mounted) {
+        setState(() {
+          _currentPosition = position;
+        });
+        updateLocationFormStaff(position); // Cập nhật vị trí cho staff phù hợp
+      }
+    });
+  }
+
+  Future<void> _initUserId() async {
+    user = await SharedPreferencesUtils.getInstance("user_token");
   }
 
   Future<void> _initNavigation() async {
