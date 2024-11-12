@@ -34,17 +34,15 @@ class DriversScreen extends HookConsumerWidget {
     final systemStatus = ref.watch(filterSystemStatus);
     final scrollController = useScrollController();
     final selectedDate = useState(DateTime.now());
+
     final fetchResult = useFetch<BookingResponseEntity>(
       function: (model, context) => ref
           .read(driverControllerProvider.notifier)
           .getBookingsByDriver(model, context),
-      initialPagingModel:
-          PagingModel(filterContent: ref.read(filterSystemStatus).type),
+      initialPagingModel: PagingModel(filterContent: systemStatus.type),
       context: context,
     );
 
-    print("test data ${fetchResult.items.length}");
-    print("log filter ${ref.read(filterSystemStatus).type}");
     useEffect(() {
       scrollController.onScrollEndsListener(fetchResult.loadMore);
 
@@ -62,20 +60,19 @@ class DriversScreen extends HookConsumerWidget {
     });
     return Scaffold(
       appBar: CustomAppBar(
-        title: 'Lịch công việc bốc vác',
-        backgroundColor: AssetsConstants.primaryMain,
-        backButtonColor: AssetsConstants.whiteColor,
-        iconFirst: Icons.refresh_rounded,
-        iconSecond: Icons.filter_list_alt,
-        onCallBackFirst: fetchResult.refresh,
-        onCallBackSecond: () => showDriverCustomBottomSheet(
-          onCallback: () {
-            fetchResult.refresh();
-          },
-          context: context,
-          size: size,
-        ),
-      ),
+          title: 'Lịch công việc bốc vác',
+          backgroundColor: AssetsConstants.primaryMain,
+          backButtonColor: AssetsConstants.whiteColor,
+          iconFirst: Icons.refresh_rounded,
+          iconSecond: Icons.filter_list_alt,
+          onCallBackFirst: fetchResult.refresh,
+          onCallBackSecond: () {
+            showDriverCustomBottomSheet(
+              onCallback: fetchResult.refresh,
+              context: context,
+              size: size,
+            );
+          }),
       body: Column(
         children: [
           SizedBox(
