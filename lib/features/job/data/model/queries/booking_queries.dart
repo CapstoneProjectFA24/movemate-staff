@@ -4,6 +4,7 @@ class BookingQueries {
   final String? search;
   final int page;
   final int perPage;
+  final String? status;
   final int? userId;
   final bool? IsReviewOnl;
 
@@ -12,6 +13,7 @@ class BookingQueries {
     required this.page,
     this.perPage = 10,
     this.userId,
+    this.status,
     this.IsReviewOnl,
   });
 
@@ -20,6 +22,9 @@ class BookingQueries {
 
     if (search != null) {
       result['Search'] = search;
+    }
+    if (status != null) {
+      result['status'] = status;
     }
     result['page'] = page;
     result['per_page'] = perPage;
@@ -36,6 +41,7 @@ class BookingQueries {
   factory BookingQueries.fromMap(Map<String, dynamic> map) {
     return BookingQueries(
       search: map['Search'],
+      status: map['status'],
       page: map['page']?.toInt() ?? 1,
       perPage: map['per_page']?.toInt() ?? 10,
       userId: map['UserId']?.toInt(),

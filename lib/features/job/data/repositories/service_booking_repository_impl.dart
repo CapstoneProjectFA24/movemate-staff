@@ -149,8 +149,9 @@ class BookingRepositoryImpl extends RemoteBaseRepository
       page: request.pageNumber,
       perPage: request.pageSize,
       userId: user!.id,
+      status: request.filterContent,
     );
-
+    print(bookingQueries.toJson());
     return getDataOf(
       request: () => _bookingSource.getBookings(
           APIConstants.contentType, accessToken, bookingQueries),
