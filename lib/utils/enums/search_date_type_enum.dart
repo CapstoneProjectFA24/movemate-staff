@@ -1,5 +1,5 @@
 enum SearchDateType {
-  ordersearch(0),
+  bookingsearch(0),
   transactionsearch(1);
 
   final int type;

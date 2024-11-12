@@ -1,9 +1,13 @@
+import 'dart:async';
 
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:movemate_staff/features/drivers/presentation/widgets/draggable_sheet/location_draggable_sheet.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
+import 'package:movemate_staff/models/user_model.dart';
+import 'package:movemate_staff/utils/commons/functions/functions_common_export.dart';
 import 'package:movemate_staff/utils/constants/api_constant.dart';
 import 'package:vietmap_flutter_navigation/vietmap_flutter_navigation.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -20,10 +24,11 @@ class DriverDetailScreen extends StatefulWidget {
 }
 
 class _DriverDetailScreenState extends State<DriverDetailScreen> {
-  MapNavigationViewController? _navigationController; // Thay đổi thành nullable
+  MapNavigationViewController? _navigationController;
   late MapOptions _navigationOption;
   final _vietmapNavigationPlugin = VietMapNavigationPlugin();
-  Position? _currentPosition; // Thay đổi thành nullable
+  Position? _currentPosition;
+  Position? _lastPosition;
   bool _isMapReady = false; // Thêm biến để track trạng thái map
   bool _showNavigationButton = true;
   Widget recenterButton = const SizedBox.shrink();
@@ -31,17 +36,85 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
   bool _isNavigationStarted = false;
   RouteProgressEvent? routeProgressEvent;
 
+  //Location tracking
+  StreamSubscription<Position>? _positionStreamSubscription;
+  Timer? _locationUpdateTimer;
+
+  // realtime
+  UserModel? user;
+  final DatabaseReference locationRef =
+      FirebaseDatabase.instance.ref().child('tracking_locations');
+
   @override
   void initState() {
     super.initState();
+    _initUserId();
     _initNavigation();
     _getCurrentLocation();
+    _startTrackingLocation();
+  }
+
+  void _updateLocation(Position position, String role) {
+    final String bookingId = widget.job.id.toString();
+    if (user?.id != null) {
+      locationRef.child('$bookingId/$role/${user?.id}').set({
+        'lat': position.latitude,
+        'long': position.longitude,
+        'timestamp': DateTime.now().millisecondsSinceEpoch,
+      });
+    }
+  }
+
+  void updateLocationFormStaff(Position position) {
+    print("gohere");
+    for (var assignment in widget.job.assignments) {
+      if (assignment.userId == user?.id) {
+        String role = assignment.staffType;
+        _updateLocation(position, role);
+        break;
+      }
+    }
+  }
+
+  void _startTrackingLocation() {
+    _positionStreamSubscription?.cancel();
+    _locationUpdateTimer?.cancel();
+
+    _positionStreamSubscription = Geolocator.getPositionStream(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 0,
+      ),
+    ).listen((Position position) {
+      if (mounted) {
+        setState(() {
+          _currentPosition = position;
+          // _lastPosition = position;
+        });
+
+        _locationUpdateTimer =
+            Timer.periodic(const Duration(seconds: 20), (timer) {
+          setState(() {
+            _lastPosition = position;
+          });
+          if (_lastPosition != null) {
+            updateLocationFormStaff(_lastPosition!);
+            print('Location updated to Firebase at ${DateTime.now()}');
+          }
+        });
+      }
+    });
+  }
+
+  Future<void> _initUserId() async {
+    user = await SharedPreferencesUtils.getInstance("user_token");
   }
 
   Future<void> _initNavigation() async {
     if (!mounted) return;
     _navigationOption = _vietmapNavigationPlugin.getDefaultOptions();
-    _navigationOption.simulateRoute = false;
+    _navigationOption.simulateRoute =
+        false; // chỉnh lại true khi muốn test trên máy thật
     _navigationOption.apiKey = APIConstants.apiVietMapKey;
     _navigationOption.mapStyle =
         "https://maps.vietmap.vn/api/maps/light/styles.json?apikey=${APIConstants.apiVietMapKey}";
@@ -299,6 +372,8 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
 
   @override
   void dispose() {
+    _positionStreamSubscription?.cancel();
+    _locationUpdateTimer?.cancel();
     _navigationController?.onDispose();
     super.dispose();
   }
