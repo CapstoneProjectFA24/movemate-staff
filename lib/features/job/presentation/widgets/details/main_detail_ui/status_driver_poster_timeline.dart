@@ -6,9 +6,10 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:movemate_staff/utils/commons/widgets/form_input/label_text.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
 
+/// Widget CustomTabContainer hiển thị các tab "Porter" và "Driver" kèm theo danh sách và các hành động tương ứng.
 class CustomTabContainer extends HookConsumerWidget {
-  final List<String> porterItems; // Danh sách cho Porter
-  final List<String> driverItems; // Danh sách cho Driver
+  final List<String> porterItems;
+  final List<String> driverItems;
 
   const CustomTabContainer({
     Key? key,
@@ -18,339 +19,384 @@ class CustomTabContainer extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Quản lý trạng thái tab hiện tại
     final selectedTab = useState<String>('Porter');
-    // Quản lý trạng thái chọn Porter và Driver
     final selectedPorter = useState<String?>(null);
     final selectedDriver = useState<String?>(null);
 
     return Container(
-      height: 400, // Chiều cao cố định cho container
+      height: 400,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 12,
+            spreadRadius: 2,
             offset: const Offset(0, 4),
           ),
         ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Tab Buttons
-            Row(
-              children: [
-                // Tab Porter
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () {
-                      selectedTab.value = 'Porter';
-                      // Không reset selection khi chuyển tab
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            color: selectedTab.value == 'Porter'
-                                ? Colors.blue
-                                : Colors.grey,
-                            width: 2,
-                          ),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.person,
-                            color: Colors.blue,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Porter',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: selectedTab.value == 'Porter'
-                                  ? Colors.blue
-                                  : Colors.grey,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                // Tab Driver
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () {
-                      selectedTab.value = 'Driver';
-                      // Không reset selection khi chuyển tab
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            color: selectedTab.value == 'Driver'
-                                ? Colors.blue
-                                : Colors.grey,
-                            width: 2,
-                          ),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.drive_eta,
-                            color: Colors.green,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Driver',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: selectedTab.value == 'Driver'
-                                  ? Colors.blue
-                                  : Colors.grey,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            // Hiển thị danh sách dựa trên tab được chọn với cuộn dọc
+            buildTabBar(selectedTab),
             Expanded(
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                transitionBuilder: (Widget child, Animation<double> animation) {
-                  return FadeTransition(opacity: animation, child: child);
-                },
-                child: selectedTab.value == 'Porter'
-                    ? _buildPorterList(porterItems, selectedPorter)
-                    : _buildDriverList(driverItems, selectedDriver),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 300),
+                        transitionBuilder: (child, animation) {
+                          return FadeTransition(
+                            opacity: animation,
+                            child: SlideTransition(
+                              position: Tween<Offset>(
+                                begin: const Offset(0.2, 0),
+                                end: Offset.zero,
+                              ).animate(animation),
+                              child: child,
+                            ),
+                          );
+                        },
+                        child: selectedTab.value == 'Porter'
+                            ? buildPorterList(porterItems, selectedPorter)
+                            : buildDriverList(driverItems, selectedDriver),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    buildActionButtons(
+                      selectedTab.value,
+                      selectedPorter.value,
+                      selectedDriver.value,
+                    ),
+                  ],
+                ),
               ),
             ),
-            const SizedBox(height: 10),
-            // Hiển thị các button điều kiện
-            _buildConditionalButtons(
-                selectedTab.value, selectedPorter.value, selectedDriver.value),
           ],
         ),
       ),
     );
   }
 
-  // Widget xây dựng danh sách Porter với cuộn dọc và Radio Button
-  Widget _buildPorterList(
-      List<String> items, ValueNotifier<String?> selectedPorter) {
+  /// Xây dựng thanh tab với hai tab "Porter" và "Driver".
+  Widget buildTabBar(ValueNotifier<String> selectedTab) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        border: Border(
+          bottom: BorderSide(color: Colors.grey.shade200),
+        ),
+      ),
+      child: Row(
+        children: [
+          buildTabItem(
+            selectedTab: selectedTab,
+            tabName: 'Porter',
+            icon: Icons.person_outlined,
+            iconColor: Colors.blue,
+          ),
+          buildTabItem(
+            selectedTab: selectedTab,
+            tabName: 'Driver',
+            icon: Icons.drive_eta_outlined,
+            iconColor: Colors.green,
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Xây dựng một tab đơn lẻ với biểu tượng và tên tab.
+  Widget buildTabItem({
+    required ValueNotifier<String> selectedTab,
+    required String tabName,
+    required IconData icon,
+    required Color iconColor,
+  }) {
+    final isSelected = selectedTab.value == tabName;
+
+    return Expanded(
+      child: InkWell(
+        onTap: () => selectedTab.value = tabName,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: isSelected ? Colors.blue : Colors.transparent,
+                width: 2,
+              ),
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                color: isSelected ? iconColor : Colors.grey,
+                size: 22,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                tabName,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: isSelected ? Colors.blue : Colors.grey,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Xây dựng một mục danh sách có thể chọn được, hiển thị thông tin về Porter hoặc Driver.
+  Widget buildListItem({
+    required String item,
+    required String? selectedValue,
+    required ValueNotifier<String?> selectionNotifier,
+    required IconData icon,
+    required Color iconColor,
+    required String subtitle,
+  }) {
+    final isSelected = selectedValue == item;
+
+    return Card(
+      elevation: 0,
+      margin: const EdgeInsets.symmetric(vertical: 4),
+      color: isSelected ? Colors.blue.shade50 : Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(
+          color: isSelected ? Colors.blue.shade100 : Colors.grey.shade200,
+          width: 1,
+        ),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () {
+          selectionNotifier.value = isSelected ? null : item;
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: iconColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(icon, color: iconColor, size: 20),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Radio<String>(
+                value: item,
+                groupValue: selectedValue,
+                onChanged: (value) {
+                  selectionNotifier.value = isSelected ? null : value;
+                },
+                activeColor: Colors.blue,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Xây dựng danh sách các porter.
+  Widget buildPorterList(
+    List<String> items,
+    ValueNotifier<String?> selectedPorter,
+  ) {
     return ListView.builder(
       key: const ValueKey('PorterList'),
-      scrollDirection: Axis.vertical, // Cuộn dọc
       itemCount: items.length,
       itemBuilder: (context, index) {
-        final item = items[index];
-        return Card(
-          color: Colors.white,
-          margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),
-          child: ListTile(
-            leading: const Icon(Icons.person, color: Colors.blue),
-            title: LabelText(
-              content: item,
-              size: 16,
-              fontWeight: FontWeight.bold,
-            ),
-            subtitle: const LabelText(
-              content: 'Thông tin bổ sung về Porter',
-              size: 14,
-              fontWeight: FontWeight.normal,
-            ),
-            trailing: Radio<String>(
-              value: item,
-              groupValue: selectedPorter.value,
-              onChanged: (value) {
-                // Nếu người dùng nhấn vào Radio Button đã chọn, bỏ chọn nó
-                if (selectedPorter.value == value) {
-                  selectedPorter.value = null;
-                } else {
-                  selectedPorter.value = value;
-                }
-              },
-            ),
-            onTap: () {
-              // Nếu người dùng nhấn vào ListTile đã chọn, bỏ chọn nó
-              if (selectedPorter.value == item) {
-                selectedPorter.value = null;
-              } else {
-                selectedPorter.value = item;
-              }
-            },
-          ),
+        return buildListItem(
+          item: items[index],
+          selectedValue: selectedPorter.value,
+          selectionNotifier: selectedPorter,
+          icon: Icons.person_outlined,
+          iconColor: Colors.blue,
+          subtitle: 'Thông tin Porter',
         );
       },
     );
   }
 
-  // Widget xây dựng danh sách Driver với cuộn dọc và Radio Button
-  Widget _buildDriverList(
-      List<String> items, ValueNotifier<String?> selectedDriver) {
+  /// Xây dựng danh sách các driver.
+  Widget buildDriverList(
+    List<String> items,
+    ValueNotifier<String?> selectedDriver,
+  ) {
     return ListView.builder(
       key: const ValueKey('DriverList'),
-      scrollDirection: Axis.vertical, // Cuộn dọc
       itemCount: items.length,
       itemBuilder: (context, index) {
-        final item = items[index];
-        return Card(
-          color: Colors.white,
-          margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),
-          child: ListTile(
-            leading: const Icon(Icons.drive_eta, color: Colors.green),
-            title: LabelText(
-              content: item,
-              size: 16,
-              fontWeight: FontWeight.bold,
-            ),
-            subtitle: const LabelText(
-              content: 'Thông tin bổ sung về Driver',
-              size: 14,
-              fontWeight: FontWeight.normal,
-            ),
-            trailing: Radio<String>(
-              value: item,
-              groupValue: selectedDriver.value,
-              onChanged: (value) {
-                // Nếu người dùng nhấn vào Radio Button đã chọn, bỏ chọn nó
-                if (selectedDriver.value == value) {
-                  selectedDriver.value = null;
-                } else {
-                  selectedDriver.value = value;
-                }
-              },
-            ),
-            onTap: () {
-              // Nếu người dùng nhấn vào ListTile đã chọn, bỏ chọn nó
-              if (selectedDriver.value == item) {
-                selectedDriver.value = null;
-              } else {
-                selectedDriver.value = item;
-              }
-            },
-          ),
+        return buildListItem(
+          item: items[index],
+          selectedValue: selectedDriver.value,
+          selectionNotifier: selectedDriver,
+          icon: Icons.drive_eta_outlined,
+          iconColor: Colors.green,
+          subtitle: 'Thông tin Driver',
         );
       },
     );
   }
 
-  // Widget để hiển thị các button điều kiện
-  Widget _buildConditionalButtons(
-      String selectedTab, String? selectedPorter, String? selectedDriver) {
-    if (selectedTab == 'Porter') {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          // Button 1: Enable nếu có Porter được chọn, disable nếu không
-          ElevatedButton(
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all(
-                  AssetsConstants.primaryLighter.withOpacity(0.7)),
-            ),
-            onPressed: selectedPorter != null
-                ? () {
-                    // Xử lý khi nhấn Button 1
-                    // Ví dụ: Gửi yêu cầu cho Porter đã chọn
-                    print('Button 1 pressed for $selectedPorter');
-                    // Thêm logic của bạn ở đây
-                  }
-                : null, // Disable nếu không có Porter được chọn
-            child: const LabelText(
-              content: 'Button 1',
-              size: 16,
-              fontWeight: FontWeight.bold,
-              color: AssetsConstants.primaryDarker,
-            ),
-          ),
-          // Button 2: Luôn luôn được enable
-          ElevatedButton(
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all(
-                  AssetsConstants.primaryLighter.withOpacity(0.7)),
-            ),
-            onPressed: () {
-              // Xử lý khi nhấn Button 2
-              // Ví dụ: Hủy chọn Porter đã chọn hoặc thực hiện hành động khác
-              print('Button 2 pressed');
-              // Thêm logic của bạn ở đây
-            },
-            child: const LabelText(
-              content: 'Button 2',
-              size: 16,
-              fontWeight: FontWeight.bold,
-              color: AssetsConstants.primaryDarker,
-            ),
-          ),
-        ],
-      );
-    } else if (selectedTab == 'Driver') {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          // Button 3: Enable nếu có Driver được chọn, disable nếu không
-          ElevatedButton(
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all(
-                  AssetsConstants.primaryLighter.withOpacity(0.7)),
-            ),
-            onPressed: selectedDriver != null
-                ? () {
-                    // Xử lý khi nhấn Button 3
-                    // Ví dụ: Gửi yêu cầu cho Driver đã chọn
-                    print('Button 3 pressed for $selectedDriver');
-                    // Thêm logic của bạn ở đây
-                  }
-                : null, // Disable nếu không có Driver được chọn
-            child: const LabelText(
-              content: 'Button 3',
-              size: 16,
-              fontWeight: FontWeight.bold,
-              color: AssetsConstants.primaryDarker,
-            ),
-          ),
-          // Button 4: Luôn luôn được enable
-          ElevatedButton(
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all(
-                  AssetsConstants.primaryLighter.withOpacity(0.7)),
-            ),
-            onPressed: () {
-              // Xử lý khi nhấn Button 4
-              // Ví dụ: Hủy chọn Driver đã chọn hoặc thực hiện hành động khác
-              print('Button 4 pressed');
-              // Thêm logic của bạn ở đây
-            },
-            child: const LabelText(
-              content: 'Button 4',
-              size: 16,
-              fontWeight: FontWeight.bold,
-              color: AssetsConstants.primaryDarker,
-            ),
-          ),
-        ],
-      );
-    } else {
-      return const SizedBox(); // Không hiển thị gì nếu không có tab nào được chọn
+  /// Xây dựng các nút hành động ở dưới cùng của container.
+  Widget buildActionButtons(
+    String selectedTab,
+    String? selectedPorter,
+    String? selectedDriver,
+  ) {
+    // Xác định nhãn và hành động dựa trên tab được chọn
+    String primaryLabel;
+    String secondaryLabel;
+    VoidCallback? primaryAction;
+    VoidCallback? secondaryAction;
+
+    switch (selectedTab) {
+      case 'Porter':
+        primaryLabel = 'Gán bốc vác';
+        secondaryLabel = 'Chọn bốc vác khác';
+        primaryAction = selectedPorter != null
+            ? () {
+                // Thực hiện hành động Gán bốc vác
+              }
+            : null;
+        //luôn luôn hiển thị nút chọn bốc vác khác
+        secondaryAction = selectedPorter != null || selectedPorter == null
+            ? () {
+                // Thực hiện hành động Chọn bốc vác khác
+              }
+            : null;
+        break;
+
+      case 'Driver':
+        primaryLabel = 'Gán tài xế';
+        secondaryLabel = 'Chọn tài xế khác';
+        primaryAction = selectedDriver != null
+            ? () {
+                // Thực hiện hành động Gán tài xế
+              }
+            : null;
+        //luôn luôn hiển thị nút chọn tài xế khác
+        secondaryAction = selectedDriver != null || selectedDriver == null
+            ? () {
+                // Thực hiện hành động Chọn tài xế khác
+              }
+            : null;
+        break;
+
+      default:
+        primaryLabel = 'Gán';
+        secondaryLabel = 'Chọn khác';
+        primaryAction = () {
+          // Thực hiện hành động Gán chung
+        };
+        secondaryAction = () {
+          // Thực hiện hành động Chọn khác
+        };
+        break;
     }
+
+    return Row(
+      children: [
+        Expanded(
+          child: buildButton(
+            onPressed: primaryAction,
+            label: primaryLabel,
+            isPrimary: true,
+            isEnabled: primaryAction != null,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: buildButton(
+            onPressed: secondaryAction,
+            label: secondaryLabel,
+            isPrimary: false,
+            isEnabled: true,
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Xây dựng một nút tùy chỉnh với các thuộc tính được định nghĩa.
+  Widget buildButton({
+    required VoidCallback? onPressed,
+    required String label,
+    required bool isPrimary,
+    required bool isEnabled,
+  }) {
+    // Xác định màu nền và màu chữ dựa trên trạng thái nút
+    Color backgroundColor;
+    Color textColor;
+
+    if (!isEnabled) {
+      backgroundColor = Colors.black.withOpacity(0.1);
+      textColor = Colors.grey.shade500;
+    } else if (isPrimary) {
+      backgroundColor = AssetsConstants.primaryDarker;
+      textColor = Colors.white;
+    } else {
+      backgroundColor = AssetsConstants.primaryLighter.withOpacity(0.7);
+      textColor = AssetsConstants.primaryDarker;
+    }
+
+    return ElevatedButton(
+      onPressed: isEnabled ? onPressed : null,
+      style: ElevatedButton.styleFrom(
+        foregroundColor: textColor,
+        backgroundColor: backgroundColor,
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        elevation: 0,
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          color: textColor,
+        ),
+      ),
+    );
   }
 }
