@@ -299,6 +299,9 @@ class CombinedInfoSection extends HookConsumerWidget {
 
   Widget buildPriceItem(
       String description, String price, String quantity, String type) {
+    // Lấy icon dựa trên type
+    IconData icon = getIconByType(type);
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       decoration: BoxDecoration(
@@ -324,8 +327,7 @@ class CombinedInfoSection extends HookConsumerWidget {
                     color: Colors.grey[100],
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Icon(Icons.cleaning_services_outlined,
-                      size: 18, color: Colors.grey),
+                  child: Icon(icon, size: 18, color: Colors.grey),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -479,5 +481,20 @@ class DashedDivider extends StatelessWidget {
         itemCount: 100,
       ),
     );
+  }
+}
+
+IconData getIconByType(String type) {
+  switch (type.toUpperCase()) {
+    case 'PORTER':
+      return Icons.person; // Icon cho PORTER
+    case 'DISASSEMBLE':
+      return Icons.build; // Icon cho DISASSEMBLE
+    case 'SYSTEM':
+      return Icons.settings; // Icon cho SYSTEM
+    case 'TRUCK':
+      return Icons.local_shipping; // Icon cho TRUCK
+    default:
+      return Icons.help_outline; // Icon mặc định
   }
 }
