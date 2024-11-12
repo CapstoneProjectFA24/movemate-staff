@@ -144,9 +144,11 @@ class BookingRepositoryImpl extends RemoteBaseRepository
     required String accessToken,
     required PagingModel request,
   }) async {
+    final user = await SharedPreferencesUtils.getInstance('user_token');
     final bookingQueries = BookingQueries(
       page: request.pageNumber,
       perPage: request.pageSize,
+      userId: user!.id,
     );
 
     return getDataOf(

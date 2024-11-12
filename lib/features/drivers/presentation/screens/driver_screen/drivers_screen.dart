@@ -5,9 +5,11 @@ import 'package:intl/intl.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/features/drivers/presentation/controllers/driver_controller/driver_controller.dart';
+import 'package:movemate_staff/features/drivers/presentation/widgets/driver_card.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/hooks/use_fetch.dart';
 import 'package:movemate_staff/models/request/paging_model.dart';
+import 'package:movemate_staff/utils/extensions/scroll_controller.dart';
 
 @RoutePage()
 class DriversScreen extends HookConsumerWidget {
@@ -16,6 +18,7 @@ class DriversScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(driverControllerProvider);
+    final scrollController = useScrollController();
     final selectedDate = useState(DateTime.now());
     final fetchResult = useFetch<BookingResponseEntity>(
       function: (model, context) => ref
@@ -25,9 +28,21 @@ class DriversScreen extends HookConsumerWidget {
       context: context,
     );
 
-    final jobs = _getJobsFromBookingResponseEntity(
-        fetchResult.items, selectedDate.value);
+    useEffect(() {
+      scrollController.onScrollEndsListener(fetchResult.loadMore);
 
+      return scrollController.dispose;
+    }, const []);
+
+    final jobs = _getJobsFromBookingResponseEntity(
+      fetchResult.items,
+      selectedDate.value,
+    );
+    jobs.sort((a, b) {
+      final aStartTime = DateFormat('MM/dd/yyyy HH:mm:ss').parse(a.bookingAt);
+      final bStartTime = DateFormat('MM/dd/yyyy HH:mm:ss').parse(b.bookingAt);
+      return aStartTime.compareTo(bStartTime);
+    });
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -136,121 +151,8 @@ class DriversScreen extends HookConsumerWidget {
                     const SizedBox(width: 10),
                     // Job Card
                     Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          context.router
-                              .push(DriverDetailScreenRoute(job: job));
-                        },
-                        child: Card(
-                          margin: const EdgeInsets.only(bottom: 10),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          elevation: 4,
-                          child: Container(
-                            padding: const EdgeInsets.all(15),
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: job.status == 'Đã vận chuyển'
-                                    ? [
-                                        Colors.green.shade700,
-                                        Colors.green.shade400
-                                      ]
-                                    : [
-                                        Colors.orange.shade700,
-                                        Colors.orange.shade400
-                                      ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      job.id.toString(),
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 4),
-                                      decoration: BoxDecoration(
-                                        color: job.status == 'Đã vận chuyển'
-                                            ? Colors.greenAccent
-                                            : Colors.redAccent,
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      child: Text(
-                                        job.status,
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 10),
-                                Row(
-                                  children: [
-                                    const Icon(Icons.access_time,
-                                        color: Colors.white70, size: 18),
-                                    const SizedBox(width: 5),
-                                    Text(
-                                      '${DateFormat.Hm().format(startTime)} - ${DateFormat.Hm().format(endTime)}',
-                                      style: const TextStyle(
-                                          color: Colors.white70, fontSize: 14),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 5),
-                                Row(
-                                  children: [
-                                    const Icon(Icons.location_on,
-                                        color: Colors.white70, size: 18),
-                                    const SizedBox(width: 5),
-                                    Expanded(
-                                      child: Text(
-                                        job.pickupAddress,
-                                        style: const TextStyle(
-                                            color: Colors.white70,
-                                            fontSize: 13),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 5),
-                                Row(
-                                  children: [
-                                    const Icon(Icons.flag,
-                                        color: Colors.white70, size: 18),
-                                    const SizedBox(width: 5),
-                                    Expanded(
-                                      child: Text(
-                                        job.deliveryAddress,
-                                        style: const TextStyle(
-                                            color: Colors.white70,
-                                            fontSize: 13),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
+                      child: DriverCard(
+                        job: job,
                       ),
                     ),
                   ],
