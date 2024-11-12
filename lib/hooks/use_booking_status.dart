@@ -4,7 +4,8 @@ import 'package:movemate_staff/utils/enums/booking_status_type.dart';
 
 class BookingStatusResult {
   final String statusMessage;
-
+  final String? driverStatusMessage;
+  final String? porterStatusMessage;
   // Reviewer states
   final bool canReviewOffline;
   final bool canReviewOnline;
@@ -22,13 +23,33 @@ class BookingStatusResult {
   final bool isStaffArrived;
   final bool isSuggested;
   final bool isReviewed;
-
-  // Driver/Porter states
   final bool isInProgress;
   final bool isCompleted;
 
+  // Driver states
+  final bool canDriverConfirmIncoming;
+  final bool canDriverConfirmArrived;
+  final bool canDriverStartMoving;
+  final bool canDriverCompleteDelivery;
+  final bool isDriverAssigned;
+  final bool isDriverWaiting;
+  final bool isDriverMoving;
+
+  // Porter states
+  final bool canPorterConfirmIncoming;
+  final bool canPorterConfirmArrived;
+  final bool canPorterStartMoving;
+  final bool canPorterConfirmOngoing;
+  final bool canPorterConfirmDelivered;
+  final bool canPorterCompleteUnloading;
+  final bool isPorterAssigned;
+  final bool isPorterWaiting;
+  final bool isPorterMoving;
+
   BookingStatusResult({
     required this.statusMessage,
+    this.driverStatusMessage,
+    this.porterStatusMessage,
     this.canReviewOffline = false,
     this.canReviewOnline = false,
     this.canCreateSchedule = false,
@@ -45,6 +66,22 @@ class BookingStatusResult {
     this.isReviewed = false,
     this.isInProgress = false,
     this.isCompleted = false,
+    this.canDriverConfirmIncoming = false,
+    this.canDriverConfirmArrived = false,
+    this.canDriverStartMoving = false,
+    this.canDriverCompleteDelivery = false,
+    this.isDriverAssigned = false,
+    this.isDriverWaiting = false,
+    this.isDriverMoving = false,
+    this.canPorterConfirmIncoming = false,
+    this.canPorterConfirmArrived = false,
+    this.canPorterStartMoving = false,
+    this.canPorterConfirmOngoing = false,
+    this.canPorterConfirmDelivered = false,
+    this.canPorterCompleteUnloading = false,
+    this.isPorterAssigned = false,
+    this.isPorterWaiting = false,
+    this.isPorterMoving = false,
   });
 }
 
@@ -80,6 +117,79 @@ BookingStatusResult useBookingStatus(
 
     final isSuggested =
         hasAssignmentWithStatus("REVIEWER", AssignmentsStatusType.suggested);
+
+    // Driver states
+    final isDriverWaiting =
+        hasAssignmentWithStatus("DRIVER", AssignmentsStatusType.waiting);
+    final isDriverAssigned =
+        hasAssignmentWithStatus("DRIVER", AssignmentsStatusType.assigned);
+    final isDriverIncoming =
+        hasAssignmentWithStatus("DRIVER", AssignmentsStatusType.incoming);
+    final isDriverArrived =
+        hasAssignmentWithStatus("DRIVER", AssignmentsStatusType.arrived);
+    final isDriverInProgress =
+        hasAssignmentWithStatus("DRIVER", AssignmentsStatusType.inProgress);
+    final isDriverCompleted =
+        hasAssignmentWithStatus("DRIVER", AssignmentsStatusType.completed);
+
+    // Porter states
+    final isPorterWaiting =
+        hasAssignmentWithStatus("PORTER", AssignmentsStatusType.waiting);
+    final isPorterAssigned =
+        hasAssignmentWithStatus("PORTER", AssignmentsStatusType.assigned);
+    final isPorterIncoming =
+        hasAssignmentWithStatus("PORTER", AssignmentsStatusType.incoming);
+    final isPorterArrived =
+        hasAssignmentWithStatus("PORTER", AssignmentsStatusType.arrived);
+    final isPorterInProgress =
+        hasAssignmentWithStatus("PORTER", AssignmentsStatusType.inProgress);
+    final isPorterOngoing =
+        hasAssignmentWithStatus("PORTER", AssignmentsStatusType.ongoing);
+    final isPorterDelivered =
+        hasAssignmentWithStatus("PORTER", AssignmentsStatusType.delivered);
+    final isPorterCompleted =
+        hasAssignmentWithStatus("PORTER", AssignmentsStatusType.completed);
+
+    // Driver action flags
+    bool canDriverConfirmIncoming = false;
+    bool canDriverConfirmArrived = false;
+    bool canDriverStartMoving = false;
+    bool canDriverCompleteDelivery = false;
+
+    if (status == BookingStatusType.inProgress && isDriverAssigned) {
+      if (!isDriverIncoming) {
+        canDriverConfirmIncoming = true;
+      } else if (isDriverIncoming && !isDriverArrived) {
+        canDriverConfirmArrived = true;
+      } else if (isDriverArrived && !isDriverInProgress) {
+        canDriverStartMoving = true;
+      } else if (isDriverInProgress && !isDriverCompleted) {
+        canDriverCompleteDelivery = true;
+      }
+    }
+    // Porter action flags
+    bool canPorterConfirmIncoming = false;
+    bool canPorterConfirmArrived = false;
+    bool canPorterStartMoving = false;
+    bool canPorterConfirmOngoing = false;
+    bool canPorterConfirmDelivered = false;
+    bool canPorterCompleteUnloading = false;
+
+    if (status == BookingStatusType.inProgress && isPorterAssigned) {
+      if (!isPorterIncoming) {
+        canPorterConfirmIncoming = true;
+      } else if (isPorterIncoming && !isPorterArrived) {
+        canPorterConfirmArrived = true;
+      } else if (isPorterArrived && !isPorterInProgress) {
+        canPorterStartMoving = true;
+      } else if (isPorterInProgress && !isPorterOngoing) {
+        canPorterConfirmOngoing = true;
+      } else if (isPorterOngoing && !isPorterDelivered) {
+        canPorterConfirmDelivered = true;
+      } else if (isPorterDelivered && !isPorterCompleted) {
+        canPorterCompleteUnloading = true;
+      }
+    }
 
     // Logic cho Reviewer Offline
     bool canReviewOffline = false;
@@ -134,8 +244,34 @@ BookingStatusResult useBookingStatus(
     }
 
     return BookingStatusResult(
-      statusMessage: determineStatusMessage(status, isReviewOnline,
-          isStaffEnroute, isStaffArrived, canCreateSchedule),
+      statusMessage: determineStatusMessage(
+          status,
+          isReviewOnline,
+          isStaffEnroute,
+          isStaffArrived,
+          canCreateSchedule,
+          isDriverAssigned,
+          isPorterAssigned),
+      driverStatusMessage: determineDriverStatusMessage(
+        status,
+        isDriverWaiting,
+        isDriverAssigned,
+        isDriverIncoming,
+        isDriverArrived,
+        isDriverInProgress,
+        isDriverCompleted,
+      ),
+      porterStatusMessage: determinePorterStatusMessage(
+        status,
+        isPorterWaiting,
+        isPorterAssigned,
+        isPorterIncoming,
+        isPorterArrived,
+        isPorterInProgress,
+        isPorterOngoing,
+        isPorterDelivered,
+        isPorterCompleted,
+      ),
       canReviewOffline: canReviewOffline,
       canReviewOnline: canReviewOnline,
       canCreateSchedule: canCreateSchedule,
@@ -152,6 +288,22 @@ BookingStatusResult useBookingStatus(
       isReviewed: status == BookingStatusType.reviewed,
       isInProgress: status == BookingStatusType.inProgress,
       isCompleted: status == BookingStatusType.completed,
+      canDriverConfirmIncoming: canDriverConfirmIncoming,
+      canDriverConfirmArrived: canDriverConfirmArrived,
+      canDriverStartMoving: canDriverStartMoving,
+      canDriverCompleteDelivery: canDriverCompleteDelivery,
+      isDriverAssigned: isDriverAssigned,
+      isDriverWaiting: isDriverWaiting,
+      isDriverMoving: isDriverInProgress,
+      canPorterConfirmIncoming: canPorterConfirmIncoming,
+      canPorterConfirmArrived: canPorterConfirmArrived,
+      canPorterStartMoving: canPorterStartMoving,
+      canPorterConfirmOngoing: canPorterConfirmOngoing,
+      canPorterConfirmDelivered: canPorterConfirmDelivered,
+      canPorterCompleteUnloading: canPorterCompleteUnloading,
+      isPorterAssigned: isPorterAssigned,
+      isPorterWaiting: isPorterWaiting,
+      isPorterMoving: isPorterInProgress,
     );
   }, [booking, isReviewOnline]);
 }
@@ -162,6 +314,8 @@ String determineStatusMessage(
   bool isStaffEnroute,
   bool isStaffArrived,
   bool canCreateSchedule,
+  bool isDriverAssigned,
+  bool isPorterAssigned,
 ) {
   if (isReviewOnline) {
     switch (status) {
@@ -175,11 +329,22 @@ String determineStatusMessage(
       case BookingStatusType.depositing:
         return "Chờ khách hàng thanh toán";
       case BookingStatusType.coming:
-        return "Đang đến";
+        if (!isDriverAssigned && !isPorterAssigned) {
+          return "Chờ phân công nhân viên vận chuyển";
+        }
+        if (isDriverAssigned && !isPorterAssigned) {
+          return "Đã phân công tài xế - Chờ phân công porter";
+        }
+        if (!isDriverAssigned && isPorterAssigned) {
+          return "Đã phân công porter - Chờ phân công tài xế";
+        }
+        return "Đã phân công đầy đủ nhân viên vận chuyển";
+
       case BookingStatusType.inProgress:
-        return "Đang thực hiện";
+        return "Đang trong quá trình vận chuyển";
+
       case BookingStatusType.completed:
-        return "Hoàn thành";
+        return "Đã hoàn thành toàn bộ quy trình";
       case BookingStatusType.cancelled:
         return "Đã hủy";
       case BookingStatusType.refunded:
@@ -208,11 +373,22 @@ String determineStatusMessage(
       case BookingStatusType.reviewed:
         return "Đã đánh giá xong";
       case BookingStatusType.coming:
-        return "Đang đến";
+        if (!isDriverAssigned && !isPorterAssigned) {
+          return "Chờ phân công nhân viên vận chuyển";
+        }
+        if (isDriverAssigned && !isPorterAssigned) {
+          return "Đã phân công tài xế - Chờ phân công porter";
+        }
+        if (!isDriverAssigned && isPorterAssigned) {
+          return "Đã phân công porter - Chờ phân công tài xế";
+        }
+        return "Đã phân công đầy đủ nhân viên vận chuyển";
+
       case BookingStatusType.inProgress:
-        return "Đang thực hiện";
+        return "Đang trong quá trình vận chuyển";
+
       case BookingStatusType.completed:
-        return "Hoàn thành";
+        return "Đã hoàn thành toàn bộ quy trình";
       case BookingStatusType.cancelled:
         return "Đã hủy";
       case BookingStatusType.refunded:
@@ -223,4 +399,59 @@ String determineStatusMessage(
         return "Không xác định";
     }
   }
+}
+
+String? determinePorterStatusMessage(
+  BookingStatusType status,
+  bool isWaiting,
+  bool isAssigned,
+  bool isIncoming,
+  bool isArrived,
+  bool isInProgress,
+  bool isOngoing,
+  bool isDelivered,
+  bool isCompleted,
+) {
+  if (status != BookingStatusType.coming &&
+      status != BookingStatusType.inProgress) {
+    return null;
+  }
+
+  if (isWaiting) return "Đang chờ phân công";
+  if (isAssigned && !isIncoming)
+    return "Đã được phân công - Chờ xác nhận di chuyển";
+  if (isIncoming && !isArrived) return "Đang trên đường đến";
+  if (isArrived && !isInProgress) return "Đã đến - Chờ xác nhận bắt đầu dọn";
+  if (isInProgress && !isOngoing) return "Đang dọn hàng lên xe";
+  if (isOngoing && !isDelivered) return "Đang di chuyển đến điểm trả hàng";
+  if (isDelivered && !isCompleted) return "Đã đến điểm trả - Chờ dỡ hàng";
+  if (isCompleted) return "Đã hoàn thành dỡ hàng";
+
+  return "Trạng thái không xác định";
+}
+
+String? determineDriverStatusMessage(
+  BookingStatusType status,
+  bool isWaiting,
+  bool isAssigned,
+  bool isIncoming,
+  bool isArrived,
+  bool isInProgress,
+  bool isCompleted,
+) {
+  if (status != BookingStatusType.coming &&
+      status != BookingStatusType.inProgress) {
+    return null;
+  }
+
+  if (isWaiting) return "Đang chờ phân công";
+  if (isAssigned && !isIncoming)
+    return "Đã được phân công - Chờ xác nhận di chuyển tới nhà khách hàng";
+  if (isIncoming && !isArrived) return "Đang trên đường đến nhà khách hàng";
+  if (isArrived && !isInProgress)
+    return "Đã đến - Chờ xác nhận di chuyển tới điểm giao hàng cho khách";
+  if (isInProgress && !isCompleted) return "Đang vận chuyển hàng";
+  if (isCompleted) return "Đã hoàn thành vận chuyển";
+
+  return "Trạng thái không xác định";
 }

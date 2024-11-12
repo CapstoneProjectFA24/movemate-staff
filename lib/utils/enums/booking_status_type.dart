@@ -25,6 +25,9 @@ enum AssignmentsStatusType {
   reviewed('REVIEWED'),
   inProgress('IN_PROGRESS'),
   inTransit('IN_TRANSIT'),
+  ongoing('ONGOING'),
+  waiting('WAITING'),
+  unloaded('UNLOADED'),
   delivered('DELIVERED'),
   completed('COMPLETED');
 
@@ -80,6 +83,12 @@ extension ConvertOrderPartnerStatus on String {
         return AssignmentsStatusType.reviewed;
       case 'IN_PROGRESS':
         return AssignmentsStatusType.inProgress;
+      case 'ONGOING':
+        return AssignmentsStatusType.ongoing;
+      case 'UNLOADED':
+        return AssignmentsStatusType.unloaded;
+      case 'WAITING':
+        return AssignmentsStatusType.waiting;
       case 'IN_TRANSIT':
         return AssignmentsStatusType.inTransit;
       case 'DELIVERED':
