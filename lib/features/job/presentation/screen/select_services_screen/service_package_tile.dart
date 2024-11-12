@@ -31,7 +31,10 @@ class ServicePackageTile extends HookConsumerWidget {
     // Check if the current service package is in the selectedServices list
     final isSelected = selectedServices.value.contains(servicePackage);
 
-    // quantities  => {19: 1, 18: 1, 9: 1, 2: 1}
+    quantities.value.forEach((key, value) => print("key: $key, value: $value"));
+
+    print('check ${quantities}');
+    // quantities  => {32: 1, 20: 1, 19: 1, 18: 1, 9: 1, 10: 4, 2: 1, 3: 2, 4: 1, 5: 3}
     //             string is id off isSelected , value int is the quantity to show
 
     final currentPackage = bookingState.selectedPackages.firstWhere(
@@ -41,8 +44,33 @@ class ServicePackageTile extends HookConsumerWidget {
     // final int quantity = quantities.value[servicePackage.id.toString()] ??
     //     currentPackage.quantity ??
     //     0;
-    final int quantity = currentPackage.quantity ?? 0;
+    print('check ${currentPackage.quantity}');
+    final int quantity = quantities.value[servicePackage.id.toString()] ??
+        currentPackage.quantity ??
+        0;
     var isExpanded = useState(isSelected).value;
+
+    // Handler for quantity changes
+    void handleQuantityChanged(int newQuantity) {
+      // Update quantities map
+      quantities.value = {
+        ...quantities.value,
+        servicePackage.id.toString(): newQuantity,
+      };
+
+      // Update selected services list
+      if (newQuantity > 0 && !isSelected) {
+        selectedServices.value = [...selectedServices.value, servicePackage];
+      } else if (newQuantity == 0 && isSelected) {
+        selectedServices.value = selectedServices.value
+            .where((service) => service.id != servicePackage.id)
+            .toList();
+      }
+
+      // Update booking provider
+      bookingNotifier.updateServicePackageQuantity(servicePackage, newQuantity);
+      bookingNotifier.calculateAndUpdateTotalPrice();
+    }
 
     if (servicePackage.inverseParentService.isNotEmpty) {
       // Display package with sub-services
@@ -107,11 +135,25 @@ class ServicePackageTile extends HookConsumerWidget {
             ],
           ),
           children: servicePackage.inverseParentService.map((subService) {
-            // Check if the sub-service is in the selectedServices list
-            final isSubSelected = selectedServices.value.contains(subService);
+            // Get quantity for sub-service from quantities map
+            final subQuantity = quantities.value[subService.id.toString()] ?? 0;
+
             return SubServiceTile(
               subService: subService,
-              isSelected: isSubSelected,
+              isSelected: selectedServices.value.contains(subService),
+              quantity: subQuantity,
+              onQuantityChanged: (newQuantity) {
+                // Update quantities map for sub-service
+                quantities.value = {
+                  ...quantities.value,
+                  subService.id.toString(): newQuantity,
+                };
+
+                // Update booking provider for sub-service
+                bookingNotifier.updateSubServiceQuantity(
+                    subService, newQuantity);
+                bookingNotifier.calculateAndUpdateTotalPrice();
+              },
             );
           }).toList(),
         ),
@@ -148,12 +190,9 @@ class ServicePackageTile extends HookConsumerWidget {
           ),
           trailing: ServiceTrailingWidget(
             quantity: quantity,
-            addService: isSelected,
-            onQuantityChanged: (newQuantity) {
-              bookingNotifier.updateServicePackageQuantity(
-                  servicePackage, newQuantity);
-              bookingNotifier.calculateAndUpdateTotalPrice();
-            },
+            addService: !servicePackage.isQuantity,
+            quantityMax: servicePackage.quantityMax,
+            onQuantityChanged: handleQuantityChanged,
           ),
         ),
       );

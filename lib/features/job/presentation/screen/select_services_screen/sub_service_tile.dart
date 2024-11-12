@@ -7,28 +7,22 @@ import 'package:movemate_staff/features/job/presentation/widgets/select_services
 import 'package:movemate_staff/utils/commons/widgets/form_input/label_text.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
 
-class SubServiceTile extends ConsumerWidget {
+class SubServiceTile extends StatelessWidget {
   final ServicesPackageEntity subService;
   final bool isSelected;
+  final int quantity;
+  final Function(int) onQuantityChanged;
 
   const SubServiceTile({
     super.key,
     required this.subService,
-    this.isSelected = false,
+    required this.isSelected,
+    required this.quantity,
+    required this.onQuantityChanged,
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final bookingNotifier = ref.read(bookingProvider.notifier);
-    final bookingState = ref.watch(bookingProvider);
-
-    final currentSubService = bookingState.selectedSubServices.firstWhere(
-      (s) => s.id == subService.id,
-      orElse: () => subService.copyWith(quantity: 0),
-    );
-
-    final int quantity = currentSubService.quantity ?? 0;
-
+  Widget build(BuildContext context) {
     return Card(
       color: isSelected ? AssetsConstants.primaryLight : Colors.white,
       elevation: 2,
@@ -57,11 +51,7 @@ class SubServiceTile extends ConsumerWidget {
           quantity: quantity,
           addService: !subService.isQuantity,
           quantityMax: subService.quantityMax,
-          onQuantityChanged: (newQuantity) {
-            bookingNotifier.updateSubServiceQuantity(subService, newQuantity);
-            bookingNotifier.calculateAndUpdateTotalPrice();
-          },
-          // color: isSelected ? Colors.white : null,
+          onQuantityChanged: onQuantityChanged,
         ),
       ),
     );
