@@ -77,7 +77,7 @@ class ServicePackageTile extends HookConsumerWidget {
       return Container(
         margin: const EdgeInsets.symmetric(vertical: 8),
         child: ExpansionTile(
-          initiallyExpanded: isExpanded,
+          initiallyExpanded: isExpanded = true,
           onExpansionChanged: (bool expanded) {
             isExpanded = expanded;
           },
@@ -125,9 +125,10 @@ class ServicePackageTile extends HookConsumerWidget {
                 child: FaIcon(
                   isExpanded
                       ? FontAwesomeIcons.circleChevronDown
+                      // ignore: dead_code
                       : FontAwesomeIcons.circleChevronUp,
                   color: isExpanded
-                      ? AssetsConstants.greyColor
+                      ? AssetsConstants.primaryDark
                       : AssetsConstants.primaryDark,
                   size: 20, // Kích thước của icon
                 ),
@@ -161,28 +162,51 @@ class ServicePackageTile extends HookConsumerWidget {
     } else {
       // Display package without sub-services
       return Card(
+        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
         color: Colors.white,
         elevation: 2,
+        shadowColor: Colors.black12,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(
+            color: Colors.grey.shade100,
+            width: 1,
+          ),
         ),
         child: ListTile(
-          contentPadding: const EdgeInsets.all(12),
-          title: Text(
-            servicePackage.name.trim(),
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
+          contentPadding: const EdgeInsets.all(16),
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                servicePackage.name.trim(),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                  letterSpacing: 0.2,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Container(
+                width: servicePackage.name.trim().length * 8.0,
+                height: 1,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor.withOpacity(0.7),
+                  borderRadius: BorderRadius.circular(1),
+                ),
+              ),
+            ],
           ),
           subtitle: Padding(
-            padding: const EdgeInsets.only(top: 8.0),
+            padding: const EdgeInsets.only(top: 12.0),
             child: Text(
               servicePackage.description,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
-                color: Colors.black,
+                height: 1.5,
+                color: Colors.black87.withOpacity(0.75),
+                letterSpacing: 0.2,
               ),
               maxLines: 3,
               overflow: TextOverflow.ellipsis,

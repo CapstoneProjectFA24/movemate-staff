@@ -59,6 +59,7 @@ abstract class BookingSource {
   Future<HttpResponse<ServicesPackageResponse>> getServicesPackage(
     @Header(APIConstants.contentHeader) String contentType,
     @Header(APIConstants.authHeader) String accessToken,
+     @Queries() Map<String, dynamic> queries,
   );
 //Post , put
   // Post booking service

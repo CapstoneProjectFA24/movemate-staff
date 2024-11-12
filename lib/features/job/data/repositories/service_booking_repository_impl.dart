@@ -81,10 +81,18 @@ class BookingRepositoryImpl extends RemoteBaseRepository
     required PagingModel request,
     required String accessToken,
   }) async {
+    // Convert PagingModel to a Map of query parameters
+    final Map<String, dynamic> queries = {
+      'page': request.pageNumber,
+      'per_page': request.pageSize,
+      'SortColumn': request.sortColumn,
+      // Add other parameters if needed
+    };
     return getDataOf(
       request: () => _bookingSource.getServicesPackage(
         APIConstants.contentType,
         accessToken,
+        queries,
       ),
     );
   }

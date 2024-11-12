@@ -197,9 +197,11 @@ class _BookingSource implements BookingSource {
   Future<HttpResponse<ServicesPackageResponse>> getServicesPackage(
     String contentType,
     String accessToken,
+    Map<String, dynamic> queries,
   ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    queryParameters.addAll(queries);
     final _headers = <String, dynamic>{
       r'Content-Type': contentType,
       r'Authorization': accessToken,
