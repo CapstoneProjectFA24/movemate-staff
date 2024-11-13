@@ -11,6 +11,7 @@ import 'package:movemate_staff/utils/commons/widgets/widgets_common_export.dart'
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
 import 'package:movemate_staff/utils/enums/enums_export.dart';
 import 'package:intl/intl.dart';
+import 'package:movemate_staff/utils/extensions/scroll_controller.dart';
 
 @RoutePage()
 class JobScreen extends HookConsumerWidget {
@@ -25,7 +26,6 @@ class JobScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final tabController = useTabController(initialLength: 2);
     final currentTabStatus = useState<String>("Đang đợi đánh giá");
-    //TÔi thêm mẫu trước ở đây
 
     tabController.addListener(() {
       if (!tabController.indexIsChanging) {
@@ -47,14 +47,18 @@ class JobScreen extends HookConsumerWidget {
       ),
       context: context,
     );
-//theem option
+    useEffect(() {
+      scrollController.onScrollEndsListener(fetchResult.loadMore);
+
+      return scrollController.dispose;
+    }, const []);
     List<String> tabs = [
       "Đang đợi đánh giá",
       "Đã đánh giá",
     ];
 
     final selectedDate = useState(DateTime.now());
-
+    final todayIndex = useState(7);
     List<BookingResponseEntity> getJobsForSelectedDate() {
       return fetchResult.items.where((booking) {
         DateTime bookingDate =
@@ -101,15 +105,19 @@ class JobScreen extends HookConsumerWidget {
             SizedBox(
               height: 90,
               child: ListView.builder(
+                controller: useScrollController(
+                  initialScrollOffset: todayIndex.value * 80.0,
+                ),
                 scrollDirection: Axis.horizontal,
-                itemCount: 7,
+                itemCount: 14,
                 itemBuilder: (context, index) {
-                  final day = DateTime.now().add(Duration(days: index));
+                  final day = DateTime.now().add(Duration(days: index - 7));
                   bool isSelected = DateFormat.yMd().format(day) ==
                       DateFormat.yMd().format(selectedDate.value);
                   return GestureDetector(
                     onTap: () {
                       selectedDate.value = day;
+                      todayIndex.value = index;
                       fetchResult.refresh();
                     },
                     child: AnimatedContainer(
@@ -165,8 +173,7 @@ class JobScreen extends HookConsumerWidget {
                 : filteredBookings.isEmpty
                     ? const Align(
                         alignment: Alignment.topCenter,
-                        child:
-                            EmptyBox(title: 'Không có đơn để đánh giá hôm nay'),
+                        child: EmptyBox(title: 'Không có đơn để đánh giá '),
                       )
                     : ListView.builder(
                         itemCount: filteredBookings.length + 1,

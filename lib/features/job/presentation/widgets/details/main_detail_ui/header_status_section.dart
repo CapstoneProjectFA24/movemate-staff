@@ -49,24 +49,13 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final bookingAsync = ref.watch(bookingStreamProvider(job.id.toString()));
     final bookingStatus = useBookingStatus(bookingAsync.value, isReviewOnline);
-    // Thêm ValueNotifier để quản lý trạng thái mở rộng
+
     final isExpanded = useState(false);
 
-    // Dữ liệu mẫu cho CustomTabContainer
-    final porterItems = [
-      'Porter 1',
-      'Porter 2',
-      'Porter 3',
-      'Porter 4',
-      'Porter 5'
-    ];
-    final driverItems = [
-      'Driver 1',
-      'Driver 2',
-      'Driver 3',
-      'Driver 4',
-      'Driver 5'
-    ];
+    final porters =
+        job.assignments.where((e) => e.staffType == "PORTER").toList();
+    final drivers =
+        job.assignments.where((e) => e.staffType == "DRIVER").toList();
 
     return Column(
       children: [
@@ -92,14 +81,13 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
             ],
           ),
         ),
-        // Hiển thị CustomTabContainer khi isExpanded là true
         AnimatedCrossFade(
           firstChild: const SizedBox.shrink(),
           secondChild: Padding(
             padding: const EdgeInsets.only(top: 16),
             child: CustomTabContainer(
-              porterItems: porterItems,
-              driverItems: driverItems,
+              porterItems: porters,
+              driverItems: drivers,
             ),
           ),
           crossFadeState: isExpanded.value
@@ -193,7 +181,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
 
                     // Title and Action button in a row
                     Flexible(
-                      child: Container(
+                      child: SizedBox(
                         width: double.infinity,
                         child: Wrap(
                           alignment: WrapAlignment.center,
@@ -218,9 +206,9 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
 
                             // Action button
                             if (step.action != null)
-                              Container(
+                              SizedBox(
                                 height: 26,
-                                width: step.action!.length * 8.0,
+                                width: step.action!.length * 9.0,
                                 child: TextButton(
                                   onPressed: step.onPressed,
                                   style: TextButton.styleFrom(
@@ -253,10 +241,9 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
                 ),
               ),
 
-              // Connector line
               if (index < steps.length - 1)
-                Container(
-                  width: 20, // Fixed width for connector line
+                SizedBox(
+                  width: 20,
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
@@ -319,7 +306,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
             : null,
       ),
       _TimelineStep(
-        title: 'Cập nhật đơn',
+        title: 'Cập nhật',
         icon: Icons.edit,
         isActive: status.canUpdateServices,
         isCompleted: isStepCompleted(2, progressionStates),
@@ -339,7 +326,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
             : null,
       ),
       _TimelineStep(
-        title: 'Đã đánh giá xog',
+        title: 'Đã đánh giá ',
         icon: Icons.rate_review,
         isActive: status.isReviewed,
         isCompleted: isStepCompleted(4, progressionStates),
@@ -464,81 +451,6 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
         isCompleted: false,
       ),
     ];
-  }
-
-  List<Widget> _buildTimelineRows(List<_TimelineStep> steps) {
-    final rows = <Widget>[];
-    const itemsPerRow = 4;
-
-    for (var i = 0; i < steps.length; i += itemsPerRow) {
-      final rowItems = steps.skip(i).take(itemsPerRow).toList();
-      final isEvenRow = (i ~/ itemsPerRow) % 2 == 0;
-
-      rows.add(
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            ...rowItems
-                .map((step) => Expanded(child: _buildTimelineItem(step))),
-            if (rowItems.length < itemsPerRow)
-              ...List.generate(
-                  itemsPerRow - rowItems.length, (_) => const Spacer()),
-          ],
-        ),
-      );
-
-      if (i + itemsPerRow < steps.length) {
-        rows.add(SizedBox(
-          height: 20,
-          child: CustomPaint(
-              size: const Size(double.infinity, 20),
-              painter: ZigzagConnectorPainter(isEvenRow: isEvenRow)),
-        ));
-      }
-    }
-
-    return rows;
-  }
-
-  Widget _buildTimelineItem(_TimelineStep step) {
-    final color = step.isActive
-        ? Colors.blue
-        : step.isCompleted
-            ? Colors.orange
-            : Colors.grey;
-
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 32,
-          height: 32,
-          decoration: BoxDecoration(
-              shape: BoxShape.circle, color: color.withOpacity(0.1)),
-          child: Icon(step.isCompleted ? Icons.check : step.icon,
-              color: color, size: 16),
-        ),
-        const SizedBox(height: 4),
-        Text(step.title,
-            style: TextStyle(
-                fontSize: 12, color: color, fontWeight: FontWeight.w500),
-            textAlign: TextAlign.center),
-        if (step.action != null) ...[
-          const SizedBox(height: 4),
-          TextButton(
-            onPressed: step.onPressed,
-            style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              minimumSize: Size.zero,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              backgroundColor: color.withOpacity(0.1),
-            ),
-            child: Text(step.action!,
-                style: TextStyle(color: color, fontSize: 11)),
-          ),
-        ],
-      ],
-    );
   }
 
   void _showScheduleDialog(BuildContext context, WidgetRef ref) {
@@ -1020,34 +932,4 @@ class _TimelineStep {
     this.action,
     this.onPressed,
   });
-}
-
-class ZigzagConnectorPainter extends CustomPainter {
-  final bool isEvenRow;
-
-  ZigzagConnectorPainter({required this.isEvenRow});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final path = Path();
-    final segmentWidth = size.width / 4;
-
-    if (isEvenRow) {
-      path.moveTo(segmentWidth / 2, 0);
-      path.lineTo(size.width - segmentWidth / 2, size.height);
-    } else {
-      path.moveTo(size.width - segmentWidth / 2, 0);
-      path.lineTo(segmentWidth / 2, size.height);
-    }
-
-    canvas.drawPath(
-        path,
-        Paint()
-          ..color = Colors.white.withOpacity(0.7)
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 1.0);
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }

@@ -132,7 +132,6 @@ class BookingRepositoryImpl extends RemoteBaseRepository
       userId: user!.id,
       IsReviewOnl: request.isReviewOnline,
     );
-
     return getDataOf(
       request: () => _bookingSource.getBookings(
           APIConstants.contentType, accessToken, bookingQueries),
@@ -158,6 +157,7 @@ class BookingRepositoryImpl extends RemoteBaseRepository
           APIConstants.contentType, accessToken, bookingQueries),
     );
   }
+
   @override
   Future<BookingResponse> getBookingsPorter({
     required String accessToken,
