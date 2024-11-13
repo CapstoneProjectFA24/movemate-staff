@@ -1,14 +1,12 @@
-// lib/features/job/presentation/widgets/custom_tab_container.dart
-
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/assignment_response_entity.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
 
-/// Widget CustomTabContainer hiển thị các tab "Porter" và "Driver" kèm theo danh sách và các hành động tương ứng.
 class CustomTabContainer extends HookConsumerWidget {
-  final List<String> porterItems;
-  final List<String> driverItems;
+  final List<AssignmentsResponseEntity> porterItems;
+  final List<AssignmentsResponseEntity> driverItems;
 
   const CustomTabContainer({
     Key? key,
@@ -19,8 +17,21 @@ class CustomTabContainer extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedTab = useState<String>('Porter');
-    final selectedPorter = useState<String?>(null);
-    final selectedDriver = useState<String?>(null);
+    final selectedPorter = useState<AssignmentsResponseEntity?>(null);
+    final selectedDriver = useState<AssignmentsResponseEntity?>(null);
+
+    useEffect(() {
+      if (porterItems.isNotEmpty &&
+          porterItems.any((item) => item.isResponsible!)) {
+        selectedPorter.value =
+            porterItems.firstWhere((item) => item.isResponsible!);
+      }
+      if (driverItems.isNotEmpty &&
+          driverItems.any((item) => item.isResponsible!)) {
+        selectedDriver.value =
+            driverItems.firstWhere((item) => item.isResponsible!);
+      }
+    }, [porterItems, driverItems]);
 
     return Container(
       height: 400,
@@ -82,7 +93,6 @@ class CustomTabContainer extends HookConsumerWidget {
     );
   }
 
-  /// Xây dựng thanh tab với hai tab "Porter" và "Driver".
   Widget buildTabBar(ValueNotifier<String> selectedTab) {
     return Container(
       decoration: BoxDecoration(
@@ -110,7 +120,6 @@ class CustomTabContainer extends HookConsumerWidget {
     );
   }
 
-  /// Xây dựng một tab đơn lẻ với biểu tượng và tên tab.
   Widget buildTabItem({
     required ValueNotifier<String> selectedTab,
     required String tabName,
@@ -156,11 +165,10 @@ class CustomTabContainer extends HookConsumerWidget {
     );
   }
 
-  /// Xây dựng một mục danh sách có thể chọn được, hiển thị thông tin về Porter hoặc Driver.
   Widget buildListItem({
-    required String item,
-    required String? selectedValue,
-    required ValueNotifier<String?> selectionNotifier,
+    required AssignmentsResponseEntity item,
+    required AssignmentsResponseEntity? selectedValue,
+    required ValueNotifier<AssignmentsResponseEntity?> selectionNotifier,
     required IconData icon,
     required Color iconColor,
     required String subtitle,
@@ -201,7 +209,7 @@ class CustomTabContainer extends HookConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      item,
+                      item.staffType, // Display appropriate field from AssignmentsResponseEntity
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -218,7 +226,7 @@ class CustomTabContainer extends HookConsumerWidget {
                   ],
                 ),
               ),
-              Radio<String>(
+              Radio<AssignmentsResponseEntity>(
                 value: item,
                 groupValue: selectedValue,
                 onChanged: (value) {
@@ -233,10 +241,9 @@ class CustomTabContainer extends HookConsumerWidget {
     );
   }
 
-  /// Xây dựng danh sách các porter.
   Widget buildPorterList(
-    List<String> items,
-    ValueNotifier<String?> selectedPorter,
+    List<AssignmentsResponseEntity> items,
+    ValueNotifier<AssignmentsResponseEntity?> selectedPorter,
   ) {
     return ListView.builder(
       key: const ValueKey('PorterList'),
@@ -254,10 +261,9 @@ class CustomTabContainer extends HookConsumerWidget {
     );
   }
 
-  /// Xây dựng danh sách các driver.
   Widget buildDriverList(
-    List<String> items,
-    ValueNotifier<String?> selectedDriver,
+    List<AssignmentsResponseEntity> items,
+    ValueNotifier<AssignmentsResponseEntity?> selectedDriver,
   ) {
     return ListView.builder(
       key: const ValueKey('DriverList'),
@@ -275,13 +281,11 @@ class CustomTabContainer extends HookConsumerWidget {
     );
   }
 
-  /// Xây dựng các nút hành động ở dưới cùng của container.
   Widget buildActionButtons(
     String selectedTab,
-    String? selectedPorter,
-    String? selectedDriver,
+    AssignmentsResponseEntity? selectedPorter,
+    AssignmentsResponseEntity? selectedDriver,
   ) {
-    // Xác định nhãn và hành động dựa trên tab được chọn
     String primaryLabel;
     String secondaryLabel;
     VoidCallback? primaryAction;
@@ -293,13 +297,12 @@ class CustomTabContainer extends HookConsumerWidget {
         secondaryLabel = 'Chọn bốc vác khác';
         primaryAction = selectedPorter != null
             ? () {
-                // Thực hiện hành động Gán bốc vác
+                // Perform Gán bốc vác action
               }
             : null;
-        //luôn luôn hiển thị nút chọn bốc vác khác
         secondaryAction = selectedPorter != null || selectedPorter == null
             ? () {
-                // Thực hiện hành động Chọn bốc vác khác
+                // Perform Chọn bốc vác khác action
               }
             : null;
         break;
@@ -309,13 +312,12 @@ class CustomTabContainer extends HookConsumerWidget {
         secondaryLabel = 'Chọn tài xế khác';
         primaryAction = selectedDriver != null
             ? () {
-                // Thực hiện hành động Gán tài xế
+                // Perform Gán tài xế action
               }
             : null;
-        //luôn luôn hiển thị nút chọn tài xế khác
         secondaryAction = selectedDriver != null || selectedDriver == null
             ? () {
-                // Thực hiện hành động Chọn tài xế khác
+                // Perform Chọn tài xế khác action
               }
             : null;
         break;
@@ -324,10 +326,10 @@ class CustomTabContainer extends HookConsumerWidget {
         primaryLabel = 'Gán';
         secondaryLabel = 'Chọn khác';
         primaryAction = () {
-          // Thực hiện hành động Gán chung
+          // Perform Gán chung action
         };
         secondaryAction = () {
-          // Thực hiện hành động Chọn khác
+          // Perform Chọn khác action
         };
         break;
     }
@@ -355,14 +357,12 @@ class CustomTabContainer extends HookConsumerWidget {
     );
   }
 
-  /// Xây dựng một nút tùy chỉnh với các thuộc tính được định nghĩa.
   Widget buildButton({
     required VoidCallback? onPressed,
     required String label,
     required bool isPrimary,
     required bool isEnabled,
   }) {
-    // Xác định màu nền và màu chữ dựa trên trạng thái nút
     Color backgroundColor;
     Color textColor;
 

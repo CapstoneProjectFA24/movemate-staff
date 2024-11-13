@@ -75,23 +75,6 @@ class JobDetailsScreen extends HookConsumerWidget {
       ),
       context: context,
     );
-    // Dữ liệu cho Tab Container
-    final porterItems = [
-      'Porter 1',
-      'Porter 2',
-      'Porter 3',
-      'Porter 4',
-      'Porter 5',
-      'Porter 6'
-    ]; // Thay đổi theo dữ liệu thực tế
-    final driverItems = [
-      'Driver 1',
-      'Driver 2',
-      'Driver 3',
-      'Driver 4',
-      'Driver 5',
-      'Driver 6'
-    ]; // Thay đổi theo dữ liệu thực tế
 
     return LoadingOverlay(
       isLoading: state.isLoading,
@@ -131,11 +114,7 @@ class JobDetailsScreen extends HookConsumerWidget {
                   fetchResult: fetchResult,
                 ),
                 const SizedBox(height: 20),
-                // Thêm CustomTabContainer ở đây
-                CustomTabContainer(
-                  porterItems: porterItems,
-                  driverItems: driverItems,
-                ),
+
                 const SizedBox(height: 20),
                 CombinedInfoSection(
                   job: job,
