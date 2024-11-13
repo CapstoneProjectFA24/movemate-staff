@@ -69,6 +69,11 @@ abstract class BookingRepository {
     required PagingModel request,
     String? filterStatusType,
   });
+  Future<BookingResponse> getBookingsPorter({
+    required String accessToken,
+    required PagingModel request,
+    String? filterPorterSystemStatus,
+  });
 
   Future<BookingResponse> postValuationBooking({
     required BookingRequest request,

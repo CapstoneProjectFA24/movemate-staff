@@ -1,26 +1,26 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'driver_controller.dart';
+part of 'porter_controller.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$driverControllerHash() => r'642c253838b394255a675d3eecb0160786120106';
+String _$porterControllerHash() => r'177b2201c77d4a420014e15b6b924da68060f4bb';
 
-/// See also [DriverController].
-@ProviderFor(DriverController)
-final driverControllerProvider =
-    AutoDisposeAsyncNotifierProvider<DriverController, void>.internal(
-  DriverController.new,
-  name: r'driverControllerProvider',
+/// See also [PorterController].
+@ProviderFor(PorterController)
+final porterControllerProvider =
+    AutoDisposeAsyncNotifierProvider<PorterController, void>.internal(
+  PorterController.new,
+  name: r'porterControllerProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$driverControllerHash,
+      : _$porterControllerHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$DriverController = AutoDisposeAsyncNotifier<void>;
+typedef _$PorterController = AutoDisposeAsyncNotifier<void>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

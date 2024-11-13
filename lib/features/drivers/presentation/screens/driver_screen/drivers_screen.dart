@@ -64,7 +64,7 @@ class DriversScreen extends HookConsumerWidget {
   
     return Scaffold(
       appBar: CustomAppBar(
-          title: 'Lịch công việc bốc vác',
+          title: 'Lịch công việc lái xe',
           backgroundColor: AssetsConstants.primaryMain,
           backButtonColor: AssetsConstants.whiteColor,
           iconFirst: Icons.refresh_rounded,

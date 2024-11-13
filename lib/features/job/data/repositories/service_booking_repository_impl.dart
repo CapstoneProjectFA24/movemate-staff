@@ -158,6 +158,25 @@ class BookingRepositoryImpl extends RemoteBaseRepository
           APIConstants.contentType, accessToken, bookingQueries),
     );
   }
+  @override
+  Future<BookingResponse> getBookingsPorter({
+    required String accessToken,
+    required PagingModel request,
+    String? filterPorterSystemStatus,
+  }) async {
+    final user = await SharedPreferencesUtils.getInstance('user_token');
+    final bookingQueries = BookingQueries(
+      page: request.pageNumber,
+      perPage: request.pageSize,
+      userId: user!.id,
+      status: filterPorterSystemStatus,
+    );
+
+    return getDataOf(
+      request: () => _bookingSource.getBookings(
+          APIConstants.contentType, accessToken, bookingQueries),
+    );
+  }
 
   @override
   Future<BookingResponse> postValuationBooking({
