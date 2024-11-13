@@ -82,7 +82,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
     _positionStreamSubscription = Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
         accuracy: LocationAccuracy.high,
-        distanceFilter: 10, // chỉnh ở đây nếu muốn timing nhanh hơn nhé
+        distanceFilter: 0, // chỉnh ở đây nếu muốn timing nhanh hơn nhé
       ),
     ).listen((Position position) {
       if (mounted) {
@@ -110,7 +110,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
     if (!mounted) return;
     _navigationOption = _vietmapNavigationPlugin.getDefaultOptions();
     _navigationOption.simulateRoute =
-        false; // chỉnh lại true khi muốn test trên máy thật
+        true; // chỉnh lại true khi muốn test trên máy thật
     _navigationOption.apiKey = APIConstants.apiVietMapKey;
     _navigationOption.mapStyle =
         "https://maps.vietmap.vn/api/maps/light/styles.json?apikey=${APIConstants.apiVietMapKey}";

@@ -152,7 +152,7 @@ class BookingRepositoryImpl extends RemoteBaseRepository
       userId: user!.id,
       status: filterStatusType,
     );
-   
+
     return getDataOf(
       request: () => _bookingSource.getBookings(
           APIConstants.contentType, accessToken, bookingQueries),
