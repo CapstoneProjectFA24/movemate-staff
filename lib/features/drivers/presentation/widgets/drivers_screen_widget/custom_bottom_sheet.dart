@@ -12,6 +12,9 @@ final optionsSystemStatus = [
   BookingStatusType.inProgress,
   BookingStatusType.completed,
 ];
+final refreshOrderList = StateProvider.autoDispose<bool>(
+  (ref) => true,
+);
 
 final filterSystemStatus = StateProvider.autoDispose<BookingStatusType>(
   (ref) => BookingStatusType.coming,
@@ -99,6 +102,9 @@ showDriverCustomBottomSheet({
                     backGroundColor: AssetsConstants.whiteColor,
                     onCallBack: () {
                       onCallback();
+                      ref
+                          .read(refreshOrderList.notifier)
+                          .update((state) => !ref.read(refreshOrderList));
                       context.router.pop();
                     },
                   ),

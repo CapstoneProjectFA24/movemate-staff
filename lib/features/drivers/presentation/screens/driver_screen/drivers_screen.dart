@@ -58,6 +58,10 @@ class DriversScreen extends HookConsumerWidget {
       final bStartTime = DateFormat('MM/dd/yyyy HH:mm:ss').parse(b.bookingAt);
       return aStartTime.compareTo(bStartTime);
     });
+
+    // flag true hoặc false
+    ref.listen<bool>(refreshOrderList, (_, __) => fetchResult.refresh);
+  
     return Scaffold(
       appBar: CustomAppBar(
           title: 'Lịch công việc bốc vác',
