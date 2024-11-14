@@ -13,6 +13,7 @@ import 'package:movemate_staff/hooks/use_booking_status.dart';
 import 'package:movemate_staff/hooks/use_fetch_obj.dart';
 import 'package:movemate_staff/services/realtime_service/booking_status_realtime/booking_status_stream_provider.dart';
 import 'package:movemate_staff/utils/commons/widgets/loading_overlay.dart';
+import 'package:movemate_staff/utils/enums/booking_status_type.dart';
 
 class DeliveryDetailsBottomSheet extends HookConsumerWidget {
   final BookingResponseEntity job;
@@ -102,8 +103,8 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
             controller: scrollController,
             child: Column(
               children: [
-                _buildDeliveryStatusCard(),
-                _buildTrackingInfoCard(),
+                _buildDeliveryStatusCard(job: job),
+                _buildTrackingInfoCard(job: job, bookingStatus: bookingStatus),
                 _buildDetailsSheet(
                     context: context,
                     job: job,
@@ -117,7 +118,9 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
     );
   }
 
-  Widget _buildDeliveryStatusCard() {
+  Widget _buildDeliveryStatusCard({
+    required BookingResponseEntity job,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
@@ -137,8 +140,8 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Giao vào 11 Th10',
+            Text(
+              'Giao vào ${job.bookingAt}',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -169,7 +172,11 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
     );
   }
 
-  Widget _buildTrackingInfoCard() {
+  Widget _buildTrackingInfoCard({
+    required BookingResponseEntity job,
+    required BookingStatusResult bookingStatus,
+  }) {
+    print("check status ${bookingStatus.statusMessage}");
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
@@ -198,7 +205,7 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
               child: const Icon(Icons.local_shipping),
             ),
             const SizedBox(width: 12),
-            const Column(
+            Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -209,16 +216,19 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
                   ),
                 ),
                 Text(
-                  'SPXVN0419102963A',
+                  // " trạng thái bookingStatus.statusMessage",
+                  " trạng thái",
                   style: TextStyle(color: Colors.grey),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
                 ),
               ],
             ),
-            const Spacer(),
-            TextButton(
-              onPressed: () {},
-              child: const Text('Sao chép'),
-            ),
+            // const Spacer(),
+            // TextButton(
+            //   onPressed: () {},
+            //   child: const Text('Sao chép'),
+            // ),
           ],
         ),
       ),
