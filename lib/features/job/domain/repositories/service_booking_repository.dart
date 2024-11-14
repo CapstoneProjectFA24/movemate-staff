@@ -90,6 +90,10 @@ abstract class BookingRepository {
     required ReviewerTimeRequest request,
     required int id,
   });
+  Future<SuccessModel> updateAssignStaffIsResponsibility({
+    required String accessToken,
+    required int assignmentId,
+  });
 }
 
 @Riverpod(keepAlive: true)

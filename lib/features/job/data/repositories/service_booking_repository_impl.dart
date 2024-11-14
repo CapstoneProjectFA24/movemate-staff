@@ -219,4 +219,18 @@ class BookingRepositoryImpl extends RemoteBaseRepository
           APIConstants.contentType, accessToken, request, id),
     );
   }
+
+  @override
+  Future<SuccessModel> updateAssignStaffIsResponsibility({
+    required String accessToken,
+    required int assignmentId,
+  }) async {
+    // print("repo log ${request.toJson()}");
+    // print("repo log $assignmentId");
+
+    return getDataOf(
+      request: () => _bookingSource.updateAssignStaffIsResponsibility(
+          APIConstants.contentType, accessToken, assignmentId),
+    );
+  }
 }

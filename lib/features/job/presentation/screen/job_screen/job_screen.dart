@@ -4,6 +4,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/presentation/controllers/booking_controller/booking_controller.dart';
+import 'package:movemate_staff/features/job/presentation/controllers/reviewer_update_controller/reviewer_update_controller.dart';
+import 'package:movemate_staff/features/job/presentation/widgets/details/main_detail_ui/custom_tab_container.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/jobcard/job_card.dart';
 import 'package:movemate_staff/hooks/use_fetch.dart';
 import 'package:movemate_staff/models/request/paging_model.dart';
@@ -69,6 +71,9 @@ class JobScreen extends HookConsumerWidget {
             DateFormat.yMd().format(selectedDate.value);
       }).toList();
     }
+
+    ref.listen<bool>(refreshJobList, (_, __) => fetchResult.refresh());
+  
 
     Widget buildTabContent(String tabName) {
       List<BookingResponseEntity> filteredBookings = getJobsForSelectedDate();

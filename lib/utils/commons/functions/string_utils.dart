@@ -89,6 +89,12 @@ BookingStatusInfo getBookingStatusText(BookingStatusType status) {
         description: 'Quá trình đánh giá đang diễn ra',
         nextStep: 'Vui lòng chờ hoàn thành',
       );
+    case BookingStatusType.confirmed:
+      return BookingStatusInfo(
+        statusText: 'Đang thực hiện',
+        description: 'Quá trình đánh giá đang diễn ra',
+        nextStep: 'Vui lòng chờ hoàn thành',
+      );
     case BookingStatusType.completed:
       return BookingStatusInfo(
         statusText: 'Đã hoàn thành',
