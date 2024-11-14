@@ -60,8 +60,8 @@ class DriversScreen extends HookConsumerWidget {
     });
 
     // flag true hoặc false
-    ref.listen<bool>(refreshOrderList, (_, __) => fetchResult.refresh);
-  
+    // ref.listen<bool>(refreshOrderList, (_, __) => fetchResult.refresh);
+
     return Scaffold(
       appBar: CustomAppBar(
           title: 'Lịch công việc lái xe',
