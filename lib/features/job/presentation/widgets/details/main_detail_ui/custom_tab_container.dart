@@ -95,13 +95,13 @@ class CustomTabContainer extends HookConsumerWidget {
         children: [
           buildTabItem(
             selectedTab: selectedTab,
-            tabName: 'Porter',
+            tabName: 'Bốc vác',
             icon: Icons.person_outlined,
             iconColor: Colors.blue,
           ),
           buildTabItem(
             selectedTab: selectedTab,
-            tabName: 'Driver',
+            tabName: 'Tài xế',
             icon: Icons.drive_eta_outlined,
             iconColor: Colors.green,
           ),
@@ -289,7 +289,7 @@ class CustomTabContainer extends HookConsumerWidget {
 
     switch (selectedTab) {
       case 'Porter':
-        primaryLabel = 'Gán bốc vác';
+        primaryLabel = 'Gán bốc vác trưởng';
         secondaryLabel = 'Chọn bốc vác khác';
         primaryAction = selectedPorter != null
             ? () {
@@ -305,7 +305,7 @@ class CustomTabContainer extends HookConsumerWidget {
         break;
 
       case 'Driver':
-        primaryLabel = 'Gán tài xế';
+        primaryLabel = 'Gán tài xế trưởng';
         secondaryLabel = 'Chọn tài xế khác';
         primaryAction = selectedDriver != null
             ? () {

@@ -131,12 +131,12 @@ class JobDetailsScreen extends HookConsumerWidget {
                   fetchResult: fetchResult,
                 ),
                 const SizedBox(height: 20),
-                // Thêm CustomTabContainer ở đây
-                CustomTabContainer(
-                  porterItems: porterItems,
-                  driverItems: driverItems,
-                ),
-                const SizedBox(height: 20),
+                // // Thêm CustomTabContainer ở đây
+                // CustomTabContainer(
+                //   porterItems: porterItems,
+                //   driverItems: driverItems,
+                // ),
+                // const SizedBox(height: 20),
                 CombinedInfoSection(
                   job: job,
                   useFetchHouseResult: useFetchHouseResult,
