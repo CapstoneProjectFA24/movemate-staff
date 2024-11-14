@@ -9,6 +9,38 @@ class DeliveryDetailsBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Lấy các thông tin từ widget
+    // final status = widget.job.status;
+    // final assignment = widget.job.assignments.firstWhere(
+    //   (e) => e.userId == user?.id,
+    //   orElse: () => AssignmentsResponseEntity(
+    //       id: 0, userId: 0, bookingId: 0, status: '', staffType: ''),
+    // );
+
+    // final subStatus = assignment != null ? assignment.status : null;
+    // final bookingAt = widget.job.bookingAt;
+    // print("vinh test 3 ${subStatus}");
+    // // Xác định thời gian và điều kiện
+    // final now = DateTime.now();
+    // final format = DateFormat("MM/dd/yyyy HH:mm:ss");
+    // final bookingDateTime = format.parse(bookingAt);
+    // final isValidDate = now.difference(bookingDateTime).inMinutes >= 30;
+
+    // // Xác định các điều kiện hành động
+    // final isPendingNotAction =
+    //     status == "COMING" && subStatus == "WAITING" || subStatus == "ASSIGNED";
+
+    // final canStartMoving = (status == "COMING" && subStatus == "ASSIGNED") ||
+    //     (status == "IN_PROGRESS" && subStatus == "ARRIVED") ||
+    //     (status == "IN_PROGRESS" && subStatus == "IN_PROGRESS");
+
+    // final canFinishMoving =
+    //     status == "IN_PROGRESS" && subStatus == "IN_PROGRESS";
+
+    // print("vinh log 1 : ${isPendingNotAction}");
+    // print("vinh log 2 : ${canStartMoving}");
+    // print("vinh log 3 : ${canFinishMoving}");
+
     return DraggableScrollableSheet(
       initialChildSize: 0.4,
       minChildSize: 0.25,

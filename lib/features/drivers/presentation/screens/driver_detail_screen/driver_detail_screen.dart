@@ -1,10 +1,13 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:intl/intl.dart';
 import 'package:movemate_staff/features/drivers/presentation/widgets/draggable_sheet/location_draggable_sheet.dart';
+import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/assignment_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/models/user_model.dart';
 import 'package:movemate_staff/utils/commons/functions/functions_common_export.dart';
@@ -51,7 +54,64 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
     _initUserId();
     _initNavigation();
     _getCurrentLocation();
-    _startTrackingLocation();
+    _initUserIdAndStart();
+  }
+
+  Future<void> _initUserIdAndStart() async {
+    await _initUserId();
+    if (mounted) {
+      setState(() {
+        if (inPendingMoving == false) {
+          _startTrackingLocation();
+        }
+      });
+    }
+  }
+
+  bool get canStartMoving {
+    final assignment = _getAssignmentForUser();
+    final subStatus = assignment?.status;
+
+    if (subStatus == null) return false;
+
+    final bool isValidDate = _isBookingDateValid();
+
+    return (widget.job.status == "COMING" && subStatus == "ASSIGNED") ||
+        (widget.job.status == "IN_PROGRESS" &&
+            (subStatus == "ARRIVED" ||
+                (subStatus == "IN_PROGRESS" && isValidDate)));
+  }
+
+  bool get inPendingMoving {
+    final assignment = _getAssignmentForUser();
+    final subStatus = assignment?.status;
+
+    if (subStatus == null) return false;
+
+    final bool isValidDate = _isBookingDateValid();
+
+    return (widget.job.status == "COMING" && subStatus == "WAITING") ||
+        (subStatus == "ASSIGNED" && !isValidDate);
+  }
+
+  AssignmentsResponseEntity? _getAssignmentForUser() {
+    return widget.job.assignments.firstWhere(
+      (e) => e.userId == user?.id,
+      orElse: () => AssignmentsResponseEntity(
+        id: 0,
+        userId: 0,
+        bookingId: 0,
+        status: '',
+        staffType: '',
+      ),
+    );
+  }
+
+  bool _isBookingDateValid() {
+    final now = DateTime.now();
+    final format = DateFormat("MM/dd/yyyy HH:mm:ss");
+    final bookingDateTime = format.parse(widget.job.bookingAt);
+    return now.difference(bookingDateTime).inMinutes >= 30;
   }
 
   void _updateLocation(Position position, String role) {
@@ -78,7 +138,6 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
   void _startTrackingLocation() {
     _positionStreamSubscription?.cancel();
     _locationUpdateTimer?.cancel();
-
     _positionStreamSubscription = Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
         accuracy: LocationAccuracy.high,
@@ -109,8 +168,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
   Future<void> _initNavigation() async {
     if (!mounted) return;
     _navigationOption = _vietmapNavigationPlugin.getDefaultOptions();
-    _navigationOption.simulateRoute =
-        true; // chỉnh lại true khi muốn test trên máy thật
+    _navigationOption.simulateRoute = true;
     _navigationOption.apiKey = APIConstants.apiVietMapKey;
     _navigationOption.mapStyle =
         "https://maps.vietmap.vn/api/maps/light/styles.json?apikey=${APIConstants.apiVietMapKey}";
@@ -121,7 +179,6 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
     try {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        // Xử lý khi location service bị tắt
         return;
       }
 
@@ -140,7 +197,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
       if (mounted) {
         setState(() {
           _currentPosition = position;
-          _buildInitialRoute(); // Thêm hàm này để build route ngay khi có vị trí
+          _buildInitialRoute();
         });
       }
     } catch (e) {
@@ -149,24 +206,40 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
   }
 
   void _buildInitialRoute() {
-    if (_navigationController != null && _currentPosition != null) {
-      List<String> deliveryPointCoordinates =
-          widget.job.deliveryPoint.split(',');
-      LatLng deliveryPoint = LatLng(
-          double.parse(deliveryPointCoordinates[0].trim()),
-          double.parse(deliveryPointCoordinates[1].trim()));
+    final assignment = _getAssignmentForUser();
+    final subStatus = assignment?.status;
 
+    if (_navigationController != null && _currentPosition != null) {
+      LatLng waypoint;
+      if ((widget.job.status == "COMING" ||
+              widget.job.status == "IN_PROGRESS") &&
+          (subStatus == "WAITING" ||
+              subStatus == "ASSIGNED" ||
+              subStatus == "INCOMING")) {
+        List<String> pickupPointCoordinates = widget.job.pickupPoint.split(',');
+        waypoint = LatLng(double.parse(pickupPointCoordinates[0].trim()),
+            double.parse(pickupPointCoordinates[1].trim()));
+      } else if ((widget.job.status == "IN_PROGRESS") &&
+          (subStatus == "IN_PROGRESS" || subStatus == "ARRIVED")) {
+        List<String> deliveryPointCoordinates =
+            widget.job.deliveryPoint.split(',');
+        waypoint = LatLng(double.parse(deliveryPointCoordinates[0].trim()),
+            double.parse(deliveryPointCoordinates[1].trim()));
+      } else {
+        return;
+      }
+
+      print("waypoint $waypoint");
       _navigationController?.buildRoute(
         waypoints: [
           LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
-          deliveryPoint
+          waypoint
         ],
         profile: DrivingProfile.cycling,
       );
     }
   }
 
-  // Thêm hàm để xử lý bắt đầu điều hướng
   Future<void> _startNavigation() async {
     if (_isMapReady) {
       try {
@@ -176,7 +249,6 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
         await _navigationController?.startNavigation();
       } catch (e) {
         print("Lỗi khi bắt đầu điều hướng: $e");
-        // Nếu có lỗi, đặt lại trạng thái
         setState(() {
           _isNavigationStarted = false;
         });
@@ -184,23 +256,16 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
     }
   }
 
-  // Thêm hàm để xử lý kết thúc điều hướng
   void _stopNavigation() {
     setState(() {
       _isNavigationStarted = false;
     });
     _navigationController?.finishNavigation();
-    _buildInitialRoute(); // Xây dựng lại tuyến đường ban đầu
+    _buildInitialRoute();
   }
 
   @override
   Widget build(BuildContext context) {
-    List<String> deliveryPointCoordinates = widget.job.deliveryPoint.split(',');
-
-    LatLng deliveryPoint = LatLng(
-        double.parse(deliveryPointCoordinates[0].trim()),
-        double.parse(deliveryPointCoordinates[1].trim()));
-
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -218,7 +283,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                       setState(() {
                         _navigationController = controller;
                         _isMapReady = true;
-                        _buildInitialRoute(); // Build route khi map đã sẵn sàng
+                        _buildInitialRoute();
                       });
                     },
                     onRouteProgressChange:
@@ -254,7 +319,6 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                         ),
                         child: Row(
                           children: [
-                            // Back Button
                             GestureDetector(
                               onTap: () => context.router.pop(),
                               child: const Icon(
@@ -264,7 +328,6 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                               ),
                             ),
                             const SizedBox(width: 16),
-                            // Title
                             const Text(
                               'Đã giao hàng',
                               style: TextStyle(
@@ -274,7 +337,6 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                               ),
                             ),
                             const Spacer(),
-                            // Support Icon
                             IconButton(
                               icon: const Icon(
                                 Icons.headset_mic_outlined,
@@ -285,7 +347,6 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                                 // Add support action
                               },
                             ),
-                            // Help Icon
                             IconButton(
                               icon: const Icon(
                                 Icons.help_outline,
@@ -305,9 +366,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                       job: widget.job,
                     ),
                   Positioned(
-                    bottom: _isNavigationStarted
-                        ? 20
-                        : 280, // Điều chỉnh vị trí dựa trên trạng thái điều hướng
+                    bottom: _isNavigationStarted ? 20 : 280,
                     left: 0,
                     right: 0,
                     child: BottomActionView(
@@ -335,10 +394,11 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 if (!_isNavigationStarted)
-                  FloatingActionButton(
-                    onPressed: _isMapReady ? _startNavigation : null,
-                    child: const Icon(Icons.directions),
-                  ),
+                  if (canStartMoving)
+                    FloatingActionButton(
+                      onPressed: _isMapReady ? _startNavigation : null,
+                      child: const Icon(Icons.directions),
+                    ),
               ],
             )
           : null,
@@ -370,8 +430,6 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
   void dispose() {
     _positionStreamSubscription?.cancel();
     _locationUpdateTimer?.cancel();
-    _getCurrentLocation();
-    _startTrackingLocation();
     if (_navigationController != null) {
       _navigationController!.onDispose();
     }
