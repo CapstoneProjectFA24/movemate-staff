@@ -7,6 +7,8 @@ class ProfileEntity {
   final String phone;
   final String gender;
   final String email;
+  final String? avatarUrl;
+  final DateTime? dob;
 
   ProfileEntity({
     required this.id,
@@ -15,6 +17,8 @@ class ProfileEntity {
     required this.phone,
     required this.gender,
     required this.email,
+    this.avatarUrl,
+    this.dob,
   });
 
   Map<String, dynamic> toMap() {
@@ -25,6 +29,8 @@ class ProfileEntity {
       "phone": phone,
       "gender": gender,
       "email": email,
+      "avatarUrl": avatarUrl,
+      "dob": dob?.toIso8601String(),
     };
   }
 
@@ -36,6 +42,8 @@ class ProfileEntity {
       phone: map["phone"] ?? '',
       gender: map["gender"] ?? '',
       email: map["email"] ?? '',
+      avatarUrl: map["avatarUrl"],
+      dob: map["dob"] != null ? DateTime.parse(map["dob"]) : null,
     );
   }
 

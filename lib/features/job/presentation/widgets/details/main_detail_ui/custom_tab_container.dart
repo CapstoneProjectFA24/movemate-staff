@@ -4,6 +4,10 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/assignment_response_entity.dart';
 import 'package:movemate_staff/features/job/presentation/controllers/booking_controller/booking_controller.dart';
 import 'package:movemate_staff/features/job/presentation/controllers/reviewer_update_controller/reviewer_update_controller.dart';
+import 'package:movemate_staff/features/job/presentation/widgets/details/main_detail_ui/tab_container/list_widget_item.dart';
+import 'package:movemate_staff/features/profile/domain/entities/profile_entity.dart';
+import 'package:movemate_staff/features/profile/presentation/controllers/profile_controller/profile_controller.dart';
+import 'package:movemate_staff/hooks/use_fetch_obj.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
 
 class CustomTabContainer extends HookConsumerWidget {
@@ -80,6 +84,13 @@ class CustomTabContainer extends HookConsumerWidget {
 
     //  final bookingAsync = ref.watch(bookingStreamProvider(job.id.toString()));
 
+    // final userProfile = useFetchObject<ProfileEntity>(
+    //   function: (context) => ref
+    //       .read(profileControllerProvider.notifier)
+    //       .getUserInfo(item.userId, context),
+    //   context: context,
+    // );
+
     useEffect(() {
       if (porterItems.isNotEmpty &&
           porterItems.any((item) => item.isResponsible!)) {
@@ -137,7 +148,11 @@ class CustomTabContainer extends HookConsumerWidget {
                                 children: [
                                   Expanded(
                                     child: buildPorterList(
-                                        porterItems, selectedPorter),
+                                      porterItems,
+                                      selectedPorter,
+                                      ref,
+                                      context,
+                                    ),
                                   ),
                                   const SizedBox(height: 16),
                                   buildPorterActionButtons(
@@ -151,7 +166,11 @@ class CustomTabContainer extends HookConsumerWidget {
                                 children: [
                                   Expanded(
                                     child: buildDriverList(
-                                        driverItems, selectedDriver),
+                                      driverItems,
+                                      selectedDriver,
+                                      ref,
+                                      context,
+                                    ),
                                   ),
                                   const SizedBox(height: 16),
                                   buildDriverActionButtons(
@@ -245,97 +264,24 @@ class CustomTabContainer extends HookConsumerWidget {
     );
   }
 
-  Widget buildListItem({
-    required AssignmentsResponseEntity item,
-    required AssignmentsResponseEntity? selectedValue,
-    required ValueNotifier<AssignmentsResponseEntity?> selectionNotifier,
-    required IconData icon,
-    required Color iconColor,
-    required String subtitle,
-  }) {
-    final isSelected = selectedValue == item;
-
-    return Card(
-      elevation: 0,
-      margin: const EdgeInsets.symmetric(vertical: 4),
-      color: isSelected ? Colors.blue.shade50 : Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(
-          color: isSelected ? Colors.blue.shade100 : Colors.grey.shade200,
-          width: 1,
-        ),
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: () {
-          selectionNotifier.value = isSelected ? null : item;
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: iconColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(icon, color: iconColor, size: 20),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      item.staffType,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      subtitle,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Radio<AssignmentsResponseEntity>(
-                value: item,
-                groupValue: selectedValue,
-                onChanged: (value) {
-                  selectionNotifier.value = isSelected ? null : value;
-                },
-                activeColor: Colors.blue,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget buildPorterList(
     List<AssignmentsResponseEntity> items,
     ValueNotifier<AssignmentsResponseEntity?> selectedPorter,
+    WidgetRef ref,
+    BuildContext context,
   ) {
     return ListView.builder(
       key: const ValueKey('PorterList'),
       itemCount: items.length,
       itemBuilder: (context, index) {
-        return buildListItem(
-          item: items[index],
+        final item = items[index];
+        return ListItemWidget(
+          item: item,
           selectedValue: selectedPorter.value,
           selectionNotifier: selectedPorter,
           icon: Icons.person_outlined,
           iconColor: Colors.blue,
-          subtitle: 'Thông tin Porter',
+          subtitle: (item.isResponsible ?? true) ? 'Trưởng' : 'Nhân viên',
         );
       },
     );
@@ -344,18 +290,21 @@ class CustomTabContainer extends HookConsumerWidget {
   Widget buildDriverList(
     List<AssignmentsResponseEntity> items,
     ValueNotifier<AssignmentsResponseEntity?> selectedDriver,
+    WidgetRef ref,
+    BuildContext context,
   ) {
     return ListView.builder(
       key: const ValueKey('DriverList'),
       itemCount: items.length,
       itemBuilder: (context, index) {
-        return buildListItem(
-          item: items[index],
+        final item = items[index];
+        return ListItemWidget(
+          item: item,
           selectedValue: selectedDriver.value,
           selectionNotifier: selectedDriver,
           icon: Icons.drive_eta_outlined,
           iconColor: Colors.green,
-          subtitle: 'Thông tin Driver',
+          subtitle: (item.isResponsible ?? true) ? 'Trưởng' : 'Nhân viên',
         );
       },
     );
@@ -392,7 +341,7 @@ class CustomTabContainer extends HookConsumerWidget {
                     }
                   }
                 : null,
-            label: 'Gán bốc vác',
+            label: 'Gán bốc vác trưởng',
             isPrimary: true,
             isEnabled: selectedPorter != null,
           ),
@@ -442,7 +391,7 @@ class CustomTabContainer extends HookConsumerWidget {
                     }
                   }
                 : null,
-            label: 'Gán tài xế',
+            label: 'Gán tài xế trưởng',
             isPrimary: true,
             isEnabled: selectedDriver != null,
           ),

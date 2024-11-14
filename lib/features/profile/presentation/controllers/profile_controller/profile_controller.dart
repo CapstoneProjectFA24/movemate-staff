@@ -15,8 +15,10 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 // domain - data
 
 // utils
+// Trong file providers.dart hoặc nơi bạn quản lý các provider
 
 part 'profile_controller.g.dart';
+
 
 @riverpod
 class ProfileController extends _$ProfileController {
@@ -65,4 +67,6 @@ class ProfileController extends _$ProfileController {
       return null;
     }
   }
+
+
 }
