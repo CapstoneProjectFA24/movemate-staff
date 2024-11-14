@@ -3,9 +3,13 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/assignment_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
+import 'package:movemate_staff/features/job/presentation/controllers/house_type_controller/house_type_controller.dart';
 import 'package:movemate_staff/features/porter/presentation/screens/porter_confirm_upload/porter_confirm_upload.dart';
+import 'package:movemate_staff/features/test/domain/entities/house_entities.dart';
 import 'package:movemate_staff/hooks/use_booking_status.dart';
+import 'package:movemate_staff/hooks/use_fetch_obj.dart';
 import 'package:movemate_staff/services/realtime_service/booking_status_realtime/booking_status_stream_provider.dart';
+import 'package:movemate_staff/utils/commons/widgets/loading_overlay.dart';
 
 class DeliveryDetailsBottomSheet extends HookConsumerWidget {
   final BookingResponseEntity job;
@@ -18,9 +22,19 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
     final bookingAsync = ref.watch(bookingStreamProvider(job.id.toString()));
     final bookingStatus =
         useBookingStatus(bookingAsync.value, job.isReviewOnline);
-
+    final state = ref.watch(houseTypeControllerProvider);
     print("vinh status ${bookingStatus.driverStatusMessage}");
     print("vinh status ${bookingStatus.isDriverMoving}");
+    final bookingControllerHouse =
+        ref.read(houseTypeControllerProvider.notifier);
+
+    // Sử dụng useFetchObject để gọi getHouseDetails
+    final useFetchResult = useFetchObject<HouseEntities>(
+      function: (context) =>
+          bookingControllerHouse.getHouseDetails(job.houseTypeId, context),
+      context: context,
+    );
+    final houseTypeById = useFetchResult.data;
     // Lấy các thông tin từ widget
     // final status = job.status;
     // final assignment = job.assignments.firstWhere(
@@ -34,7 +48,7 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
     // 30p trước thời điểm bookingAt thì nó mới được di chuyển (Nhưng lúc đó chưa chuyển từ COMING -> IN_PROGRESS) && subStatus (ASSIGNED -> INCOMING -> ARRIVED )
 // + đầu tiên trạng thái của status là COMING thì sẽ có staffType là DRIVER và subStatus là waiting
 // + một action của REVIEWER chọn cập nhật staffType DRIVER và subStatus từ waiting lên assigned  và status vẫn là coming
-// + khi sắp tới giờ thì status COMING tự động chuyển thành status IN_PROGRESS 
+// + khi sắp tới giờ thì status COMING tự động chuyển thành status IN_PROGRESS
 // -> Từ bây h trở đi trạng thái sẽ luôn giữ là status là IN_PROGRESS
 // + Khi driver lái xe sắp tới thì (Chỗ này driver 1 action chính để bấm) -> subStatus từ incoming -> arrived (tới nơi để dọn hàng )
 // + Khi driver dọn hàng lên xe và di chuyển (Chỗ này driver 1 action chính để bấm) -> subStatus từ arrived -> inprogress (dag trong quá trình di chuyển)
@@ -66,22 +80,26 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
     // print("vinh log 2 : ${canStartMoving}");
     // print("vinh log 3 : ${canFinishMoving}");
 
-    return DraggableScrollableSheet(
-      initialChildSize: 0.4,
-      minChildSize: 0.25,
-      maxChildSize: 0.8,
-      builder: (context, scrollController) {
-        return SingleChildScrollView(
-          controller: scrollController,
-          child: Column(
-            children: [
-              _buildDeliveryStatusCard(),
-              _buildTrackingInfoCard(),
-              _buildDetailsSheet(context),
-            ],
-          ),
-        );
-      },
+    return LoadingOverlay(
+      isLoading: state.isLoading,
+      child: DraggableScrollableSheet(
+        initialChildSize: 0.4,
+        minChildSize: 0.25,
+        maxChildSize: 0.8,
+        builder: (context, scrollController) {
+          return SingleChildScrollView(
+            controller: scrollController,
+            child: Column(
+              children: [
+                _buildDeliveryStatusCard(),
+                _buildTrackingInfoCard(),
+                _buildDetailsSheet(
+                    context: context, job: job, houseTypeById: houseTypeById),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -193,7 +211,10 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
     );
   }
 
-  Widget _buildDetailsSheet(BuildContext context) {
+  Widget _buildDetailsSheet(
+      {required BuildContext context,
+      required BookingResponseEntity job,
+      required HouseEntities? houseTypeById}) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0),
       child: Container(
@@ -229,9 +250,9 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
                 children: [
                   _buildSectionTitle('Thông tin dịch vụ'),
                   const SizedBox(height: 16),
-                  _buildServiceInfo(),
+                  _buildServiceInfo(job: job, house: houseTypeById),
                   const SizedBox(height: 16),
-                  _buildLocationInfo(),
+                  _buildLocationInfo(job: job),
                   const Divider(height: 32),
                   _buildSectionTitle('Thông tin khách hàng'),
                   const SizedBox(height: 16),
@@ -259,8 +280,10 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
     );
   }
 
-  Widget _buildServiceInfo() {
-    return const Row(
+  Widget _buildServiceInfo(
+      {required BookingResponseEntity job, required HouseEntities? house}) {
+    print("check home ${house}");
+    return Row(
       children: [
         Expanded(
           flex: 2,
@@ -276,7 +299,7 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
               ),
               SizedBox(height: 4),
               Text(
-                'Nhà riêng',
+                house?.name ?? '',
                 style: TextStyle(fontSize: 14),
               ),
             ],
@@ -295,7 +318,7 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
               ),
               SizedBox(height: 4),
               Text(
-                '1',
+                job.floorsNumber,
                 style: TextStyle(fontSize: 14),
               ),
             ],
@@ -314,7 +337,7 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
               ),
               SizedBox(height: 4),
               Text(
-                '1',
+                job.roomNumber,
                 style: TextStyle(fontSize: 14),
               ),
             ],
@@ -324,12 +347,12 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
     );
   }
 
-  Widget _buildLocationInfo() {
+  Widget _buildLocationInfo({required BookingResponseEntity job}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildLocationRow('Địa điểm đón', '428/39-NHA-6 Đường Chiến Lược...'),
-        _buildLocationRow('Địa điểm đến', '428/39-NHA-3 Đường Chiến Lược...'),
+        _buildLocationRow('Địa điểm đón', '${job.pickupAddress}'),
+        _buildLocationRow('Địa điểm đến', '${job.deliveryAddress}'),
       ],
     );
   }
@@ -352,8 +375,11 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
               child: Text(
                 address,
                 style: const TextStyle(fontSize: 14),
+                maxLines: 4,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
+            const SizedBox(width: 12),
             TextButton(
               onPressed: () {},
               child: const Text(
