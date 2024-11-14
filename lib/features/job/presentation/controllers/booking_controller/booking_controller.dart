@@ -194,31 +194,28 @@ class BookingController extends _$BookingController {
     print('Booking Request: ${jsonEncode(bookingRequest.toMap())}');
 
     state = await AsyncValue.guard(() async {
-      final bookingResponse = await bookingRepository.postBookingservice(
+      print("go here 1");
+      await bookingRepository.postBookingservice(
         request: bookingRequest,
         accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
         id: id,
       );
-      print("object check )} ");
-
-      // final updateReviewerStatusRequest = ReviewerStatusRequest(
-      //   estimatedDeliveryTime:
-      //       double.parse(bookingRequest.estimatedDeliveryTime),
-      //   resourceList: bookingRequest.resourceList,
-      // );
-      // print("object check ${updateReviewerStatusRequest.toJson()} ");
-      // await ref.read(bookingRepositoryProvider).updateStateReviewer(
-      //       accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
-      //       request: updateReviewerStatusRequest,
-      //       id: id,
-      //     );
-      // print("done");
+      print("go here 2");
+      final updateReviewerStatusRequest = ReviewerStatusRequest(
+        estimatedDeliveryTime:
+            double.parse(bookingRequest.estimatedDeliveryTime),
+        resourceList: bookingRequest.resourceList,
+      );
+      print("go here 3 ${updateReviewerStatusRequest.toJson()} ");
+      await ref.read(bookingRepositoryProvider).updateStateReviewer(
+            accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
+            request: updateReviewerStatusRequest,
+            id: id,
+          );
+      print("go here 4");
       // print("bookingResponse $bookingResponse");
       // print(
       //     'Booking bookingResponse.payload.toMap : ${jsonEncode(bookingResponse.payload.toMap())}');
-
-      ref.read(bookingResponseProvider.notifier).state =
-          bookingResponse.payload;
     });
 
     if (state.hasError) {
@@ -237,6 +234,4 @@ class BookingController extends _$BookingController {
       return ref.read(bookingResponseProvider);
     }
   }
-
-
 }
