@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
@@ -457,10 +458,11 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
   Widget _buildConfirmationImageLink(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const PorterConfirmScreen()),
-        );
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(builder: (context) => const PorterConfirmScreen()),
+        // );
+        context.router.push(DriverConfirmUploadRoute());
       },
       child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,

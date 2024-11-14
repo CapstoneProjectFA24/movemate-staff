@@ -57,6 +57,12 @@ abstract class _$AppRouter extends RootStackRouter {
         child: const ContactScreen(),
       );
     },
+    DriverConfirmUploadRoute.name: (routeData) {
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: const DriverConfirmUpload(),
+      );
+    },
     DriverDetailScreenRoute.name: (routeData) {
       final args = routeData.argsAs<DriverDetailScreenRouteArgs>();
       return AutoRoutePage<dynamic>(
@@ -390,6 +396,20 @@ class ContactScreenRoute extends PageRouteInfo<void> {
         );
 
   static const String name = 'ContactScreenRoute';
+
+  static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [DriverConfirmUpload]
+class DriverConfirmUploadRoute extends PageRouteInfo<void> {
+  const DriverConfirmUploadRoute({List<PageRouteInfo>? children})
+      : super(
+          DriverConfirmUploadRoute.name,
+          initialChildren: children,
+        );
+
+  static const String name = 'DriverConfirmUploadRoute';
 
   static const PageInfo<void> page = PageInfo<void>(name);
 }
