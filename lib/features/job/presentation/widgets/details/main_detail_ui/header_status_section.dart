@@ -427,7 +427,8 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
         isCompleted: isStepCompleted(5, progressionStates),
         action: status.canUpdateServices ? 'Cập nhật' : null,
         onPressed: status.canUpdateServices
-            ? () => _navigateToServiceUpdate(context, ref)
+            ? () => _confirmUpdate(context, ref)
+            // ? () => _navigateToServiceUpdate(context, ref)
             : null,
       ),
       _TimelineStep(
@@ -486,6 +487,9 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
       context, ref, "Bắt đầu di chuyển", "Bắt đầu", job.id.toString());
   void _confirmArrival(BuildContext context, WidgetRef ref) => _confirmAction(
       context, ref, "Xác nhận đã tới", "Đã tới", job.id.toString());
+  void _confirmUpdate(BuildContext context, WidgetRef ref) =>
+      _confirmActionUpdate(
+          context, ref, "Xác nhận cập nhật", "Cập nhật mới", job.id.toString());
 
   void _confirmAction(BuildContext context, WidgetRef ref, String title,
       String action, String jobId) {
@@ -517,6 +521,48 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
                 size: 16,
                 fontWeight: FontWeight.bold,
                 color: AssetsConstants.primaryLight),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _confirmActionUpdate(BuildContext context, WidgetRef ref, String title,
+      String action, String jobId) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        backgroundColor: AssetsConstants.whiteColor,
+        actions: [
+          Flexible(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                  onPressed: () => {
+                    Navigator.pop(context),
+                    _completeProposal(context, ref),
+                  },
+                  child: const LabelText(
+                      content: "Đề xuất",
+                      size: 14,
+                      fontWeight: FontWeight.bold,
+                      color: AssetsConstants.blackColor),
+                ),
+                TextButton(
+                  onPressed: () async {
+                    Navigator.pop(context);
+                    context.router.push(GenerateNewJobScreenRoute(job: job));
+                  },
+                  child: LabelText(
+                      content: action,
+                      size: 14,
+                      fontWeight: FontWeight.bold,
+                      color: AssetsConstants.primaryLight),
+                ),
+              ],
+            ),
           ),
         ],
       ),

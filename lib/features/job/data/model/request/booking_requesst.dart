@@ -196,8 +196,8 @@ class BookingRequest {
     String estimatedDistance = '3'; // Có thể tính toán dựa trên tọa độ
 
     // Tính toán thời gian giao hàng ước tính (ví dụ)
-    String estimatedDeliveryTime =
-        '3'; // Có thể tính toán hoặc đặt giá trị phù hợp
+    String estimatedDeliveryTime = booking
+        .estimatedDeliveryTime; // Có thể tính toán hoặc đặt giá trị phù hợp
 
     // Chuyển đổi thời gian đặt chỗ sang định dạng ISO8601
     String bookingAt = booking.bookingDate?.toIso8601String() ??
@@ -259,6 +259,7 @@ class BookingUpdateRequest {
   final String deliveryAddress;
   final String deliveryPoint;
   final String estimatedDistance;
+  final String estimatedDeliveryTime;
   final bool isRoundTrip;
   final String typeBooking;
   final String roomNumber;
@@ -266,6 +267,7 @@ class BookingUpdateRequest {
   final String note;
   final String bookingAt;
   final List<ServiceDetail> bookingDetails;
+  final List<Resource> resourceList;
 
   BookingUpdateRequest({
     required this.truckCategoryId,
@@ -275,6 +277,7 @@ class BookingUpdateRequest {
     required this.deliveryAddress,
     required this.deliveryPoint,
     required this.estimatedDistance,
+    required this.estimatedDeliveryTime,
     required this.isRoundTrip,
     required this.typeBooking,
     required this.roomNumber,
@@ -282,6 +285,7 @@ class BookingUpdateRequest {
     required this.note,
     required this.bookingAt,
     required this.bookingDetails,
+    required this.resourceList,
   });
 
   Map<String, dynamic> toMap() {
@@ -293,6 +297,7 @@ class BookingUpdateRequest {
       'deliveryAddress': deliveryAddress,
       'deliveryPoint': deliveryPoint,
       'estimatedDistance': estimatedDistance,
+      'estimatedDeliveryTime': estimatedDeliveryTime,
       'isRoundTrip': isRoundTrip,
       'typeBooking': typeBooking,
       'roomNumber': roomNumber,
@@ -300,6 +305,7 @@ class BookingUpdateRequest {
       'note': note,
       'bookingAt': bookingAt,
       'bookingDetails': bookingDetails.map((x) => x.toMap()).toList(),
+      'resourceList': resourceList.map((x) => x.toMap()).toList(),
     };
   }
 
@@ -317,6 +323,7 @@ class BookingUpdateRequest {
       deliveryAddress: map['deliveryAddress'] ?? '',
       deliveryPoint: map['deliveryPoint'] ?? '',
       estimatedDistance: map['estimatedDistance'] ?? '0',
+      estimatedDeliveryTime: map['estimatedDeliveryTime'] ?? '0',
       isRoundTrip: map['isRoundTrip'] ?? false,
       typeBooking: map['typeBooking'] ?? '',
       roomNumber: map['roomNumber'] ?? 1,
@@ -326,6 +333,10 @@ class BookingUpdateRequest {
       bookingDetails: map['bookingDetails'] != null
           ? List<ServiceDetail>.from(
               map['bookingDetails']?.map((x) => ServiceDetail.fromMap(x)))
+          : [],
+      resourceList: map['resourceList'] != null
+          ? List<Resource>.from(
+              map['resourceList']?.map((x) => Resource.fromMap(x)))
           : [],
     );
   }
@@ -361,7 +372,7 @@ class BookingUpdateRequest {
         ),
       );
     }
-
+    String estimatedDeliveryTime = booking.estimatedDeliveryTime;
     // Thêm selectedVehicle mới vào bookingDetails
     // if (booking.selectedVehicle != null) {
     //   bookingDetails.add(
@@ -386,6 +397,19 @@ class BookingUpdateRequest {
     String bookingAt = booking.bookingDate?.toIso8601String() ??
         DateTime.now().add(const Duration(days: 2)).toIso8601String();
 
+    // Chuyển đổi hình ảnh thành Resource
+    List<Resource> resourceList = [];
+
+    void addImagesToResourceList(List<ImageData> images, String resourceCode) {
+      resourceList.addAll(images.map((imageData) => Resource(
+            type: 'IMG',
+            resourceUrl: imageData.url,
+            resourceCode: resourceCode,
+          )));
+    }
+
+    addImagesToResourceList(booking.livingRoomImages ?? [], 'living_room');
+
     return BookingUpdateRequest(
       truckCategoryId: booking.selectedVehicle?.truckCategory?.id ?? 0,
       houseTypeId: booking.houseType?.id ?? 1,
@@ -406,6 +430,8 @@ class BookingUpdateRequest {
       note: booking.notes ?? '',
       bookingAt: bookingAt,
       bookingDetails: bookingDetails,
+      resourceList: resourceList,
+      estimatedDeliveryTime: estimatedDeliveryTime,
     );
   }
 }

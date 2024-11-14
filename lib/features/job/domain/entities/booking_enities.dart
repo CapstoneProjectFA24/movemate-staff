@@ -23,7 +23,7 @@ class Booking {
   final double totalPrice;
   final ServiceEntity? selectedVehicle;
   final ServiceEntity? selectedVehicleOld;
-
+  final String estimatedDeliveryTime;
   final double packagePrice;
   final bool isRoundTrip;
   final bool isReviewOnline;
@@ -73,6 +73,7 @@ class Booking {
     this.notes = '',
     this.typeBooking = '',
     this.servicesFeeList = const [],
+    this.estimatedDeliveryTime = '',
     // Booking select packages
     this.selectedVehicle,
     this.selectedVehicleOld,
@@ -119,6 +120,7 @@ class Booking {
     List<bool>? checklistValues,
     String? notes,
     String? typeBooking,
+    String? estimatedDeliveryTime,
     List<ServicesFeeSystemEntity>? servicesFeeList,
     // Booking select package
     ServiceEntity? selectedVehicle,
@@ -161,6 +163,8 @@ class Booking {
       notes: notes ?? this.notes,
       typeBooking: typeBooking ?? this.typeBooking,
       servicesFeeList: servicesFeeList ?? this.servicesFeeList,
+      estimatedDeliveryTime:
+          estimatedDeliveryTime ?? this.estimatedDeliveryTime,
       // Booking select package
       selectedVehicle: selectedVehicle ?? this.selectedVehicle,
       selectedVehicleOld: selectedVehicleOld ?? this.selectedVehicleOld,

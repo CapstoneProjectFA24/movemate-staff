@@ -40,7 +40,8 @@ class BookingNotifier extends StateNotifier<Booking> {
   //   pendingBookingDetails[detail.serviceId] = detail.quantity;
   // }
 
-  void updateSubServiceQuantity(ServicesPackageEntity subService, int newQuantity) {
+  void updateSubServiceQuantity(
+      ServicesPackageEntity subService, int newQuantity) {
     int finalQuantity = newQuantity;
     if (subService.quantityMax != null &&
         newQuantity > subService.quantityMax!) {
@@ -201,6 +202,10 @@ class BookingNotifier extends StateNotifier<Booking> {
     state = state.copyWith(notes: notes);
   }
 
+  void updateEstimatedDeliveryTime(String estimatedDeliveryTime) {
+    state = state.copyWith(estimatedDeliveryTime: estimatedDeliveryTime);
+  }
+
 // Phương thức lấy danh sách hình ảnh cho một loại phòng
   List<ImageData> getImages(RoomType roomType) {
     switch (roomType) {
@@ -220,7 +225,7 @@ class BookingNotifier extends StateNotifier<Booking> {
   // Method to set the loading state for uploading living room images
   void setUploadingLivingRoomImage(bool isUploading) {
     state = state!.copyWith(isUploadingLivingRoomImage: isUploading);
-    }
+  }
 
   bool canAddImage(RoomType roomType) {
     final images = getImages(roomType);

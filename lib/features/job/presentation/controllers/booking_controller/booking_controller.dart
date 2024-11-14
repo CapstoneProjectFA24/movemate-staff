@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:movemate_staff/features/auth/presentation/screens/sign_in/sign_in_controller.dart';
 import 'package:movemate_staff/features/job/data/model/request/booking_requesst.dart';
+import 'package:movemate_staff/features/job/data/model/request/reviewer_status_request.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/service_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/services_package_entity.dart';
@@ -197,9 +198,23 @@ class BookingController extends _$BookingController {
         accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
         id: id,
       );
-      print("bookingResponse $bookingResponse");
-      print(
-          'Booking bookingResponse.payload.toMap : ${jsonEncode(bookingResponse.payload.toMap())}');
+      print("object check )} ");
+
+      final updateReviewerStatusRequest = ReviewerStatusRequest(
+        estimatedDeliveryTime:
+            double.parse(bookingRequest.estimatedDeliveryTime),
+        resourceList: bookingRequest.resourceList,
+      );
+      print("object check ${updateReviewerStatusRequest.toJson()} ");
+      // await ref.read(bookingRepositoryProvider).updateStateReviewer(
+      //       accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
+      //       request: updateReviewerStatusRequest,
+      //       id: id,
+      //     );
+      // print("done");
+      // print("bookingResponse $bookingResponse");
+      // print(
+      //     'Booking bookingResponse.payload.toMap : ${jsonEncode(bookingResponse.payload.toMap())}');
 
       ref.read(bookingResponseProvider.notifier).state =
           bookingResponse.payload;

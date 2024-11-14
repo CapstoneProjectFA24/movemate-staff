@@ -14,6 +14,7 @@ import 'package:movemate_staff/features/job/domain/entities/booking_response_ent
 import 'package:movemate_staff/features/job/domain/entities/services_package_entity.dart';
 import 'package:movemate_staff/features/job/presentation/controllers/booking_controller/booking_controller.dart';
 import 'package:movemate_staff/features/job/presentation/providers/booking_provider.dart';
+import 'package:movemate_staff/features/job/presentation/screen/complete_proposal_screen/complete_proposal_screen.dart';
 import 'package:movemate_staff/features/job/presentation/screen/job_details_screen/job_details_screen.dart';
 import 'package:movemate_staff/features/job/presentation/screen/select_services_screen/service_package_tile.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/button_next/summary_section.dart';
@@ -53,6 +54,17 @@ class BookingScreenService extends HookConsumerWidget {
       },
       initialPagingModel: PagingModel(
         sortColumn: '1',
+      ),
+      context: context,
+    );
+
+    final fetchResultBooing = useFetch<BookingResponseEntity>(
+      function: (model, context) => ref
+          .read(bookingControllerProvider.notifier)
+          .getBookings(model, context),
+      initialPagingModel: PagingModel(
+        pageSize: 50,
+        pageNumber: 1,
       ),
       context: context,
     );
@@ -189,97 +201,107 @@ class BookingScreenService extends HookConsumerWidget {
         // totalPrice: price ?? 0.0,
         isButtonEnabled: true,
         onPlacePress: () {
-          final bookingRequest =
-              BookingUpdateRequest.fromBookingUpdate(bookingState);
-          final bookingstate = ref.watch(bookingProvider);
-          print(
-              'tuan Booking bookingstate pickUpLocation service: ${jsonEncode(bookingstate.pickUpLocation)}');
-          print(
-              'tuan Booking bookingstate dropOffLocation service: ${jsonEncode(bookingstate.dropOffLocation)}');
-          print('tuan Booking Request: ${jsonEncode(bookingRequest.toMap())}');
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: const Text('Xác nhận'),
-              content: const Text('Bạn có chắc muốn cập nhật đơn hàng?'),
-              backgroundColor:
-                  Colors.white, // Set the background color to white
-              actions: [
-                Align(
-                  alignment: Alignment.center,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      TextButton(
-                        onPressed: () {
-                          // Cancel button
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text(
-                          'Hủy',
-                          style: TextStyle(color: AssetsConstants.primaryMain),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      TextButton(
-                        onPressed: () async {
-                          // Confirm button
-                          // Navigator.of(context).pop();
-                          final bookingResponse = await ref
-                              .read(bookingControllerProvider.notifier)
-                              .updateBooking(
-                                context: context,
-                                id: job.id,
-                              );
-                          print("bookingResponse screen $bookingResponse");
-                          print("booking id  ${job.id}");
-                          if (bookingResponse != null) {
-                            // Điều hướng tới JobDetailsScreen sau khi thành công
-                            if (context.mounted) {
-                              // Đảm bảo widget vẫn còn mounted
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      JobDetailsScreen(job: bookingResponse),
-                                ),
-                              );
-                              // context.router.pushAll([
-                              //   JobDetailsScreenRoute(job: bookingResponse),
-                              //   // Các tuyến đường khác nếu cần
-                              // ]);
+          // final bookingRequest =
+          //     BookingUpdateRequest.fromBookingUpdate(bookingState);
+          // final bookingstate = ref.watch(bookingProvider);
+          // print(
+          //     'tuan Booking bookingstate pickUpLocation service: ${jsonEncode(bookingstate.pickUpLocation)}');
+          // print(
+          //     'tuan Booking bookingstate dropOffLocation service: ${jsonEncode(bookingstate.dropOffLocation)}');
+          // print('tuan Booking Request: ${jsonEncode(bookingRequest.toMap())}');
 
-                              print("context.mounted ${context.mounted}");
-                              // context.router.push(
-                              //   JobDetailsScreenRoute(job: bookingResponse),
-                              //   // predicate: (route) => false,
-                              // );
-                            }
-                          }
-                          // else {
-                          //   final tabsRouter = context.router.root
-                          //       .innerRouterOf<TabsRouter>(
-                          //           TabViewScreenRoute.name);
-                          //   if (tabsRouter != null) {
-                          //     tabsRouter.setActiveIndex(0);
-                          //     context.router.popUntilRouteWithName(
-                          //         TabViewScreenRoute.name);
-                          //   }
-                          // }
-                        },
-                        child: const Text(
-                          'Xác nhận',
-                          style: TextStyle(color: AssetsConstants.primaryMain),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+          // showDialog(
+          //   context: context,
+          //   builder: (context) => AlertDialog(
+          //     title: const Text('Xác nhận'),
+          //     content: const Text('Bạn có chắc muốn cập nhật đơn hàng?'),
+          //     backgroundColor:
+          //         Colors.white, // Set the background color to white
+          //     actions: [
+          //       Align(
+          //         alignment: Alignment.center,
+          //         child: Row(
+          //           mainAxisAlignment: MainAxisAlignment.center,
+          //           children: [
+          //             TextButton(
+          //               onPressed: () {
+          //                 // Cancel button
+          //                 Navigator.of(context).pop();
+          //               },
+          //               child: const Text(
+          //                 'Hủy',
+          //                 style: TextStyle(color: AssetsConstants.primaryMain),
+          //               ),
+          //             ),
+          //             const SizedBox(width: 16),
+          //             TextButton(
+          //               onPressed: () async {
+          //                 // Confirm button
+          //                 // Navigator.of(context).pop();
+          //                 final bookingResponse = await ref
+          //                     .read(bookingControllerProvider.notifier)
+          //                     .updateBooking(
+          //                       context: context,
+          //                       id: job.id,
+          //                     );
+          //                 print("bookingResponse screen $bookingResponse");
+          //                 print("booking id  ${job.id}");
+          //                 if (bookingResponse != null) {
+          //                   // Điều hướng tới JobDetailsScreen sau khi thành công
+          //                   if (context.mounted) {
+          //                     // Đảm bảo widget vẫn còn mounted
+          //                     Navigator.push(
+          //                       context,
+          //                       MaterialPageRoute(
+          //                         builder: (context) =>
+          //                             JobDetailsScreen(job: bookingResponse),
+          //                       ),
+          //                     );
+          //                     // context.router.pushAll([
+          //                     //   JobDetailsScreenRoute(job: bookingResponse),
+          //                     //   // Các tuyến đường khác nếu cần
+          //                     // ]);
+
+          //                     print("context.mounted ${context.mounted}");
+          //                     // context.router.push(
+          //                     //   JobDetailsScreenRoute(job: bookingResponse),
+          //                     //   // predicate: (route) => false,
+          //                     // );
+          //                   }
+          //                 }
+          //                 // else {
+          //                 //   final tabsRouter = context.router.root
+          //                 //       .innerRouterOf<TabsRouter>(
+          //                 //           TabViewScreenRoute.name);
+          //                 //   if (tabsRouter != null) {
+          //                 //     tabsRouter.setActiveIndex(0);
+          //                 //     context.router.popUntilRouteWithName(
+          //                 //         TabViewScreenRoute.name);
+          //                 //   }
+          //                 // }
+          //               },
+          //               child: const Text(
+          //                 'Xác nhận',
+          //                 style: TextStyle(color: AssetsConstants.primaryMain),
+          //               ),
+          //             ),
+          //           ],
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          // );
+
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => CompleteProposalScreen(
+                      job: job,
+                      fetchResult: fetchResultBooing,
+                    )),
           );
         },
-        buttonText: 'Cập nhật',
+        buttonText: 'Bước tiếp theo',
         // priceLabel: 'Tổng giá',
       ),
     );

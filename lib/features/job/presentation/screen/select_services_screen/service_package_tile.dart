@@ -31,9 +31,9 @@ class ServicePackageTile extends HookConsumerWidget {
     // Check if the current service package is in the selectedServices list
     final isSelected = selectedServices.value.contains(servicePackage);
 
-    quantities.value.forEach((key, value) => print("key: $key, value: $value"));
+    // quantities.value.forEach((key, value) => print("key: $key, value: $value"));
 
-    print('check ${quantities}');
+    // print('check ${quantities}');
     // quantities  => {32: 1, 20: 1, 19: 1, 18: 1, 9: 1, 10: 4, 2: 1, 3: 2, 4: 1, 5: 3}
     //             string is id off isSelected , value int is the quantity to show
 
@@ -44,7 +44,7 @@ class ServicePackageTile extends HookConsumerWidget {
     // final int quantity = quantities.value[servicePackage.id.toString()] ??
     //     currentPackage.quantity ??
     //     0;
-    print('check ${currentPackage.quantity}');
+    // print('check ${currentPackage.quantity}');
     final int quantity = quantities.value[servicePackage.id.toString()] ??
         currentPackage.quantity ??
         0;
