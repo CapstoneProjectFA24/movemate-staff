@@ -62,7 +62,41 @@ class ListItemWidget extends HookConsumerWidget {
                   color: iconColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(icon, color: iconColor, size: 20),
+                child: userProfile.data?.avatarUrl != null &&
+                        userProfile.data!.avatarUrl!.isNotEmpty
+                    ? Image.network(
+                        userProfile.data!.avatarUrl!,
+                        width: 20,
+                        height: 20,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          // Hiển thị Icon nếu có lỗi khi tải hình ảnh
+                          return Icon(
+                            icon, // Biến `icon` nên được định nghĩa trước đây
+                            color: iconColor,
+                            size: 20,
+                          );
+                        },
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              value: loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded /
+                                      (loadingProgress.expectedTotalBytes ?? 1)
+                                  : null,
+                            ),
+                          );
+                        },
+                      )
+                    : Icon(
+                        icon, // Biến `icon` nên được định nghĩa trước đây
+                        color: iconColor,
+                        size: 20,
+                      ),
               ),
               const SizedBox(width: 12),
               Expanded(

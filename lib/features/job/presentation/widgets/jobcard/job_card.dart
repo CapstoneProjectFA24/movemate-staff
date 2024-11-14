@@ -278,7 +278,7 @@ class JobCard extends HookConsumerWidget {
         ]; // Orange for coming/on the way
       case 'IN_PROGRESS':
         return [
-          Colors.orange.shade700,
+          Colors.lightGreen.shade500,
           Colors.orange.shade400
         ]; // Orange for in progress
       case 'COMPLETED':

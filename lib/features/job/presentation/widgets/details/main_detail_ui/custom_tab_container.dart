@@ -78,7 +78,7 @@ class CustomTabContainer extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectedTab = useState<String>('Nhân viên bốc vác');
+    final selectedTab = useState<String>('Bốc vác');
     final selectedPorter = useState<AssignmentsResponseEntity?>(null);
     final selectedDriver = useState<AssignmentsResponseEntity?>(null);
 
@@ -143,7 +143,7 @@ class CustomTabContainer extends HookConsumerWidget {
                             ),
                           );
                         },
-                        child: selectedTab.value == 'Nhân viên bốc vác'
+                        child: selectedTab.value == 'Bốc vác'
                             ? Column(
                                 children: [
                                   Expanded(
@@ -204,15 +204,15 @@ class CustomTabContainer extends HookConsumerWidget {
         children: [
           buildTabItem(
             selectedTab: selectedTab,
-            tabName: 'Nhân viên bốc vác',
-            icon: Icons.person_outlined,
-            iconColor: Colors.blue,
+            tabName: 'Tài xế',
+            icon: Icons.drive_eta_outlined,
+            iconColor: Colors.green,
           ),
           buildTabItem(
             selectedTab: selectedTab,
-            tabName: 'Nhân viên lái xe',
-            icon: Icons.drive_eta_outlined,
-            iconColor: Colors.green,
+            tabName: 'Bốc vác',
+            icon: Icons.person_outlined,
+            iconColor: Colors.blue,
           ),
         ],
       ),
@@ -326,7 +326,7 @@ class CustomTabContainer extends HookConsumerWidget {
                     if (currentState is AsyncLoading) return;
                     final confirmed = await _showConfirmationDialog(
                       context,
-                      'nhân viên bốc vác',
+                      'Bốc vác',
                       selectedPorter.staffType,
                     );
 
@@ -377,7 +377,7 @@ class CustomTabContainer extends HookConsumerWidget {
                     if (currentState is AsyncLoading) return;
                     final confirmed = await _showConfirmationDialog(
                       context,
-                      'tài xế',
+                      'Tài xế',
                       selectedDriver.staffType,
                     );
 
