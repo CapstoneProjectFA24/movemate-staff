@@ -47,11 +47,12 @@ class JobScreen extends HookConsumerWidget {
       ),
       context: context,
     );
+
     useEffect(() {
       scrollController.onScrollEndsListener(fetchResult.loadMore);
-
       return scrollController.dispose;
     }, const []);
+
     List<String> tabs = [
       "Đang đợi đánh giá",
       "Đã đánh giá",
@@ -59,6 +60,7 @@ class JobScreen extends HookConsumerWidget {
 
     final selectedDate = useState(DateTime.now());
     final todayIndex = useState(7);
+
     List<BookingResponseEntity> getJobsForSelectedDate() {
       return fetchResult.items.where((booking) {
         DateTime bookingDate =
@@ -92,6 +94,7 @@ class JobScreen extends HookConsumerWidget {
               BookingStatusType.coming,
               BookingStatusType.inProgress,
               BookingStatusType.completed,
+              BookingStatusType.confirmed,
             ].contains(status);
           }).toList();
           break;
@@ -99,110 +102,124 @@ class JobScreen extends HookConsumerWidget {
           filteredBookings = [];
       }
 
-      return SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(
-              height: 90,
-              child: ListView.builder(
-                controller: useScrollController(
-                  initialScrollOffset: todayIndex.value * 80.0,
-                ),
-                scrollDirection: Axis.horizontal,
-                itemCount: 14,
-                itemBuilder: (context, index) {
-                  final day = DateTime.now().add(Duration(days: index - 7));
-                  bool isSelected = DateFormat.yMd().format(day) ==
-                      DateFormat.yMd().format(selectedDate.value);
-                  return GestureDetector(
-                    onTap: () {
-                      selectedDate.value = day;
-                      todayIndex.value = index;
-                      fetchResult.refresh();
-                    },
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 300),
-                      width: 80,
-                      margin: const EdgeInsets.symmetric(
-                          horizontal: 5, vertical: 10),
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? Colors.orange.shade800
-                            : Colors.grey.shade200,
-                        borderRadius: BorderRadius.circular(15),
-                        boxShadow: isSelected
-                            ? [
-                                BoxShadow(
-                                    color: Colors.orange.shade200,
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 4))
-                              ]
-                            : [],
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            DateFormat.E().format(day),
-                            style: TextStyle(
-                              color: isSelected ? Colors.white : Colors.black,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 5),
-                          Text(
-                            DateFormat.d().format(day),
-                            style: TextStyle(
-                              color: isSelected ? Colors.white : Colors.black87,
-                              fontSize: 18,
-                            ),
-                          ),
-                        ],
-                      ),
+      return CustomScrollView(
+        controller: scrollController,
+        slivers: [
+          SliverToBoxAdapter(
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 90,
+                  child: ListView.builder(
+                    controller: useScrollController(
+                      initialScrollOffset: todayIndex.value * 80.0,
                     ),
-                  );
-                },
+                    scrollDirection: Axis.horizontal,
+                    itemCount: 14,
+                    itemBuilder: (context, index) {
+                      final day = DateTime.now().add(Duration(days: index - 7));
+                      bool isSelected = DateFormat.yMd().format(day) ==
+                          DateFormat.yMd().format(selectedDate.value);
+                      return GestureDetector(
+                        onTap: () {
+                          selectedDate.value = day;
+                          todayIndex.value = index;
+                          fetchResult.refresh();
+                        },
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          width: 80,
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 5, vertical: 10),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? Colors.orange.shade800
+                                : Colors.grey.shade200,
+                            borderRadius: BorderRadius.circular(15),
+                            boxShadow: isSelected
+                                ? [
+                                    BoxShadow(
+                                        color: Colors.orange.shade200,
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 4))
+                                  ]
+                                : [],
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                DateFormat.E().format(day),
+                                style: TextStyle(
+                                  color:
+                                      isSelected ? Colors.white : Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                DateFormat.d().format(day),
+                                style: TextStyle(
+                                  color: isSelected
+                                      ? Colors.white
+                                      : Colors.black87,
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const Divider(),
+                SizedBox(height: size.height * 0.02),
+              ],
+            ),
+          ),
+          if (state.isLoading && filteredBookings.isEmpty)
+            const SliverToBoxAdapter(
+              child: Center(
+                child: HomeShimmer(amount: 4),
+              ),
+            )
+          else if (filteredBookings.isEmpty)
+            const SliverToBoxAdapter(
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: EmptyBox(title: 'Không có đơn để đánh giá '),
+              ),
+            )
+          else
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AssetsConstants.defaultPadding - 10.0,
+              ),
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    if (index == filteredBookings.length) {
+                      if (fetchResult.isFetchingData) {
+                        return const CustomCircular();
+                      }
+                      return fetchResult.isLastPage
+                          ? const NoMoreContent()
+                          : Container();
+                    }
+
+                    return JobCard(
+                      job: filteredBookings[index],
+                      onCallback: fetchResult.refresh,
+                      isReviewOnline: isReviewOnline,
+                      currentTab: currentTabStatus.value,
+                    );
+                  },
+                  childCount: filteredBookings.length + 1,
+                ),
               ),
             ),
-            const Divider(),
-            SizedBox(height: size.height * 0.02),
-            (state.isLoading && filteredBookings.isEmpty)
-                ? const Center(
-                    child: HomeShimmer(amount: 4),
-                  )
-                : filteredBookings.isEmpty
-                    ? const Align(
-                        alignment: Alignment.topCenter,
-                        child: EmptyBox(title: 'Không có đơn để đánh giá '),
-                      )
-                    : ListView.builder(
-                        itemCount: filteredBookings.length + 1,
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        controller: scrollController,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AssetsConstants.defaultPadding - 10.0,
-                        ),
-                        itemBuilder: (_, index) {
-                          if (index == filteredBookings.length) {
-                            if (fetchResult.isFetchingData) {
-                              return const CustomCircular();
-                            }
-                            return fetchResult.isLastPage
-                                ? const NoMoreContent()
-                                : Container();
-                          }
-
-                          return JobCard(
-                            job: filteredBookings[index],
-                            onCallback: fetchResult.refresh,
-                            isReviewOnline: isReviewOnline,
-                            currentTab: currentTabStatus.value,
-                          );
-                        },
-                      ),
-          ],
-        ),
+        ],
       );
     }
 

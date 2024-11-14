@@ -290,7 +290,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
       status.isReviewed,
       status.isWaitingPayment,
       status.isReviewed,
-      status.isBookingComing,
+      status.isBookingComing || status.isInProgress || status.isConfirmed,
       status.isCompleted,
     ];
 
@@ -340,14 +340,18 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
       _TimelineStep(
         title: 'Tiến trình',
         icon: Icons.cleaning_services,
-        isActive: status.isBookingComing && !status.isCompleted,
+        isActive: status.isBookingComing ||
+            status.isInProgress ||
+            status.isConfirmed && !status.isCompleted,
         isCompleted: isStepCompleted(6, progressionStates),
-        action: status.isBookingComing
-            ? (isExpanded.value ? 'Thu gọn' : 'Mở rộng')
-            : null,
-        onPressed: status.isBookingComing
-            ? () => isExpanded.value = !isExpanded.value
-            : null,
+        action:
+            status.isBookingComing || status.isInProgress || status.isConfirmed
+                ? (isExpanded.value ? 'Thu gọn' : 'Mở rộng')
+                : null,
+        onPressed:
+            status.isBookingComing || status.isInProgress || status.isConfirmed
+                ? () => isExpanded.value = !isExpanded.value
+                : null,
       ),
       _TimelineStep(
         title: 'Hoàn tất',

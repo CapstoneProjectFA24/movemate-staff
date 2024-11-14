@@ -128,7 +128,7 @@ class BookingRepositoryImpl extends RemoteBaseRepository
     final user = await SharedPreferencesUtils.getInstance('user_token');
     final bookingQueries = BookingQueries(
       page: request.pageNumber,
-      perPage: request.pageSize,
+      perPage: 50,
       userId: user!.id,
       IsReviewOnl: request.isReviewOnline,
     );
