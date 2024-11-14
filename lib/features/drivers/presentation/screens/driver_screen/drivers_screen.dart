@@ -61,7 +61,7 @@ class DriversScreen extends HookConsumerWidget {
 
     // flag true hoặc false
     ref.listen<bool>(refreshOrderList, (_, __) => fetchResult.refresh);
-  
+
     return Scaffold(
       appBar: CustomAppBar(
           title: 'Lịch công việc lái xe',
@@ -83,9 +83,9 @@ class DriversScreen extends HookConsumerWidget {
             height: 90,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: 7,
+              itemCount: 8,
               itemBuilder: (context, index) {
-                final day = DateTime.now().add(Duration(days: index));
+                final day = DateTime.now().add(Duration(days: index - 1));
                 final isSelected = DateFormat.yMd().format(day) ==
                     DateFormat.yMd().format(selectedDate.value);
                 return GestureDetector(
