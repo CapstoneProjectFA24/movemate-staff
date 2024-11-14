@@ -26,6 +26,7 @@ class BookingStatusResult {
   final bool isReviewed;
   final bool isBookingComing;
   final bool isInProgress;
+  final bool isConfirmed;
   final bool isCompleted;
 
   // Driver states
@@ -67,6 +68,7 @@ class BookingStatusResult {
     this.isSuggested = false,
     this.isReviewed = false,
     this.isInProgress = false,
+    this.isConfirmed = false,
     this.isBookingComing = false,
     this.isCompleted = false,
     this.canDriverConfirmIncoming = false,
@@ -247,7 +249,7 @@ BookingStatusResult useBookingStatus(
             canConfirmSuggestion = true;
           }
           break;
-          case BookingStatusType.coming:
+        case BookingStatusType.coming:
           if (isDriverAssigned && isPorterAssigned) {
             canExpandStatus = true;
           }
@@ -301,6 +303,7 @@ BookingStatusResult useBookingStatus(
       isReviewed: status == BookingStatusType.reviewed,
       isBookingComing: status == BookingStatusType.coming,
       isInProgress: status == BookingStatusType.inProgress,
+      isConfirmed: status == BookingStatusType.confirmed,
       isCompleted: status == BookingStatusType.completed,
       canDriverConfirmIncoming: canDriverConfirmIncoming,
       canDriverConfirmArrived: canDriverConfirmArrived,
@@ -357,8 +360,12 @@ String determineStatusMessage(
       case BookingStatusType.inProgress:
         return "Đang trong quá trình vận chuyển";
 
+      case BookingStatusType.confirmed:
+        return "Đang trong quá trình thảo luận với khách";
+
       case BookingStatusType.completed:
         return "Đã hoàn thành toàn bộ quy trình";
+
       case BookingStatusType.cancelled:
         return "Đã hủy";
       case BookingStatusType.refunded:
@@ -400,6 +407,9 @@ String determineStatusMessage(
 
       case BookingStatusType.inProgress:
         return "Đang trong quá trình vận chuyển";
+
+      case BookingStatusType.confirmed:
+        return "Đang trong quá trình thảo luận với khách";
 
       case BookingStatusType.completed:
         return "Đã hoàn thành toàn bộ quy trình";

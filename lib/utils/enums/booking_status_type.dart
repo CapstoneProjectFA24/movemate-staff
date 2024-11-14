@@ -8,6 +8,7 @@ enum BookingStatusType {
   coming('COMING'),
   waiting('WAITING'),
   inProgress('IN_PROGRESS'),
+  confirmed('CONFIRMED'),
   completed('COMPLETED'),
   cancelled('CANCEL'),
   refunded('REFUNDED');
@@ -56,6 +57,8 @@ extension ConvertOrderPartnerStatus on String {
         return BookingStatusType.waiting;
       case 'IN_PROGRESS':
         return BookingStatusType.inProgress;
+      case 'CONFIRMED':
+        return BookingStatusType.confirmed;
       case 'COMPLETED':
         return BookingStatusType.completed;
       case 'CANCEL':
