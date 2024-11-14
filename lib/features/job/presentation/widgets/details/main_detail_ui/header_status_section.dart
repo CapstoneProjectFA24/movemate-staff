@@ -312,7 +312,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
         isCompleted: isStepCompleted(2, progressionStates),
         action: status.canUpdateServices ? 'Cập nhật' : null,
         onPressed: status.canUpdateServices
-            ? () => _navigateToServiceUpdate(context, ref)
+            ? () => _confirmUpdate(context, ref)
             : null,
       ),
       _TimelineStep(

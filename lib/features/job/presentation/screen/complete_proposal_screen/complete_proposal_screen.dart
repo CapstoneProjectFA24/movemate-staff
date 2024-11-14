@@ -227,18 +227,38 @@ class CompleteProposalScreen extends HookConsumerWidget {
               'Xác nhận',
               'Bạn có chắc muốn cập nhật đơn hàng?',
               onConfirm: () async {
-                await ref
-                    .read(bookingControllerProvider.notifier)
-                    .updateBooking(
-                      context: context,
-                      id: job.id,
-                    );
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => JobDetailsScreen(job: job),
-                  ),
-                );
+                final tabsRouter = context.router.root
+                    .innerRouterOf<TabsRouter>(JobDetailsScreenRoute.name);
+                // await ref
+                //     .read(bookingControllerProvider.notifier)
+                //     .updateBooking(
+                //       context: context,
+                //       id: job.id,
+                //     );
+                // context.router.replaceNamed(
+                //     // JobDetailsScreenRoute(job: job),
+                //     // predicate: (route) => false,
+                //     JobDetailsScreenRoute.name);
+                // context.router.pushAndPopUntil(
+                //   JobDetailsScreenRoute(job: job),
+                //   predicate: (route) => false,
+                // );
+
+                // if (tabsRouter != null) {
+                //   tabsRouter.setActiveIndex(0);
+                //   context.router
+                //       .popUntilRouteWithName(JobDetailsScreenRoute.name);
+                // }
+
+                context.router.push(JobDetailsScreenRoute(job: job));
+                context.router
+                    .popUntilRouteWithName(JobDetailsScreenRoute.name);
+                // Navigator.pushReplacement(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (context) => JobDetailsScreen(job: job),
+                //   ),
+                // );
               },
             );
           },
