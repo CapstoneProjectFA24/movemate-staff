@@ -340,40 +340,134 @@ class CompleteProposalScreen extends HookConsumerWidget {
                         const SizedBox(width: 16),
                         TextButton(
                           onPressed: () async {
-                            // Confirm button
-                            // Navigator.of(context).pop();
-                            final bookingResponse = await ref
-                                .read(bookingControllerProvider.notifier)
-                                .updateBooking(
-                                  context: context,
-                                  id: job.id,
-                                );
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    JobDetailsScreen(job: bookingResponse),
-                              ),
-                            );
-                            print("bookingResponse screen $bookingResponse");
-                            print("booking id  ${job.id}");
-                            final updateReviewerStatusRequest =
-                                ReviewerStatusRequest(
-                              estimatedDeliveryTime: double.parse(
-                                  bookingRequest.estimatedDeliveryTime),
-                              resourceList: bookingRequest.resourceList,
-                            );
-                            // Thực hiện cập nhật booking
-                            await ref
-                                .read(reviewerUpdateControllerProvider.notifier)
-                                .updateReviewerStatus(
-                                  context: context,
-                                  id: job.id,
-                                );
+                            final bookingRequest =
+                                BookingUpdateRequest.fromBookingUpdate(
+                                    bookingState);
+                            final inputTime =
+                                double.tryParse(timeController.text);
+
+                            // Update estimated delivery time
+                            bookingNotifier.updateEstimatedDeliveryTime(
+                                inputTime.toString());
+
+                            if (inputTime == null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Row(
+                                    children: [
+                                      Icon(Icons.warning_rounded,
+                                          color: Colors.white),
+                                      SizedBox(width: 12),
+                                      Text('Vui lòng nhập thời gian hợp lệ'),
+                                    ],
+                                  ),
+                                  behavior: SnackBarBehavior.floating,
+                                  backgroundColor: Colors.redAccent,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                              );
+                              return;
+                            }
 
                             print(
-                                "object check ${updateReviewerStatusRequest.toJson()} ");
-                          
+                                'Booking Request: ${jsonEncode(bookingRequest.toMap())}');
+                            print(
+                                'Booking Request image: ${jsonEncode(bookingRequest.resourceList.toString())}');
+
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: Text('Xác nhận'),
+                                content:
+                                    Text('Bạn có chắc muốn cập nhật đơn hàng?'),
+                                backgroundColor: Colors.white,
+                                actions: [
+                                  Align(
+                                    alignment: Alignment.center,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: Text('Hủy',
+                                              style: TextStyle(
+                                                  color: AssetsConstants
+                                                      .primaryMain)),
+                                        ),
+                                        SizedBox(width: 16),
+                                        TextButton(
+                                          onPressed: () async {
+                                            Navigator.of(context)
+                                                .pop(); // Close the dialog
+
+                                            final bookingResponse = await ref
+                                                .read(bookingControllerProvider
+                                                    .notifier)
+                                                .updateBooking(
+                                                  context: context,
+                                                  id: job.id,
+                                                );
+
+                                            if (bookingResponse != null) {
+                                              Navigator.pushReplacement(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      JobDetailsScreen(
+                                                          job: bookingResponse),
+                                                ),
+                                              );
+                                            } else {
+                                              // Handle the case where bookingResponse is null
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                      'Cập nhật đơn hàng thất bại.'),
+                                                  backgroundColor:
+                                                      Colors.redAccent,
+                                                ),
+                                              );
+                                            }
+
+                                            final updateReviewerStatusRequest =
+                                                ReviewerStatusRequest(
+                                              estimatedDeliveryTime:
+                                                  double.parse(bookingRequest
+                                                      .estimatedDeliveryTime),
+                                              resourceList:
+                                                  bookingRequest.resourceList,
+                                              // Provide other required named parameters here
+                                            );
+
+                                            await ref
+                                                .read(
+                                                    reviewerUpdateControllerProvider
+                                                        .notifier)
+                                                .updateReviewerStatus(
+                                                  context: context,
+                                                  id: job.id,
+                                                );
+
+                                            print(
+                                                "Reviewer Status Request: ${updateReviewerStatusRequest.toJson()}");
+                                          },
+                                          child: Text('Xác nhận',
+                                              style: TextStyle(
+                                                  color: AssetsConstants
+                                                      .primaryMain)),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
                           },
                           child: const Text(
                             'Xác nhận',

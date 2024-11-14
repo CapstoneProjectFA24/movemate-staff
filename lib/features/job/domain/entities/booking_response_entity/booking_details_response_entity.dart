@@ -31,8 +31,15 @@ class BookingDetailsResponseEntity {
       quantity: json['quantity'] ?? 0,
       status: json['status']?.toString(),
       type: json['type']?.toString(),
-      price:
-          (json['price'] as num).toDouble(), // Sử dụng hàm hỗ trợ để chuyển đổi
+      // price:
+      //     (json['price'] as num).toDouble(), // Sử dụng hàm hỗ trợ để chuyển đổi
+      price: json['price'] != null
+          ? (json['price'] is double
+              ? json['price']
+              : (json['price'] is int
+                  ? (json['price'] as int).toDouble()
+                  : null))
+          : null,
       isQuantity: json['isQuantity']?.toString(),
       name: json['name']?.toString(),
       description: json['description'],

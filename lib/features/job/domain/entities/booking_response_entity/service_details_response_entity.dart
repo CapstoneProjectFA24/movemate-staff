@@ -23,7 +23,14 @@ class ServiceDetailsResponseEntity {
       serviceId: json['serviceId'] ?? 0,
       bookingId: json['bookingId'] ?? 0,
       quantity: json['quantity'] ?? 0,
-      price: (json['price'] as num).toDouble(),
+      // price: (json['price'] as num ).toDouble(),
+      price: json['price'] != null
+          ? (json['price'] is double
+              ? json['price']
+              : (json['price'] is int
+                  ? (json['price'] as int).toDouble()
+                  : null))
+          : null,
       isQuantity: json['isQuantity']?.toString(),
       description: json['description'],
     );

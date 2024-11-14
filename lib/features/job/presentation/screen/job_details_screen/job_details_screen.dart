@@ -70,7 +70,7 @@ class JobDetailsScreen extends HookConsumerWidget {
           .read(bookingControllerProvider.notifier)
           .getBookings(model, context),
       initialPagingModel: PagingModel(
-        pageSize: 50,
+        pageSize: 10,
         pageNumber: 1,
       ),
       context: context,
