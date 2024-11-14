@@ -33,7 +33,7 @@ class ServicePackageTile extends HookConsumerWidget {
 
     quantities.value.forEach((key, value) => print("key: $key, value: $value"));
 
-    print('check ${quantities}');
+    print('check $quantities');
     // quantities  => {32: 1, 20: 1, 19: 1, 18: 1, 9: 1, 10: 4, 2: 1, 3: 2, 4: 1, 5: 3}
     //             string is id off isSelected , value int is the quantity to show
 

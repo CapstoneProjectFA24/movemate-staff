@@ -11,10 +11,10 @@ class CustomTabContainer extends HookConsumerWidget {
   final List<String> driverItems;
 
   const CustomTabContainer({
-    Key? key,
+    super.key,
     required this.porterItems,
     required this.driverItems,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

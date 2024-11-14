@@ -193,7 +193,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
 
                     // Title and Action button in a row
                     Flexible(
-                      child: Container(
+                      child: SizedBox(
                         width: double.infinity,
                         child: Wrap(
                           alignment: WrapAlignment.center,
@@ -218,7 +218,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
 
                             // Action button
                             if (step.action != null)
-                              Container(
+                              SizedBox(
                                 height: 26,
                                 width: step.action!.length * 8.0,
                                 child: TextButton(
@@ -255,7 +255,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
 
               // Connector line
               if (index < steps.length - 1)
-                Container(
+                SizedBox(
                   width: 20, // Fixed width for connector line
                   child: Stack(
                     alignment: Alignment.center,

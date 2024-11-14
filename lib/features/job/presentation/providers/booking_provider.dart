@@ -219,7 +219,7 @@ class BookingNotifier extends StateNotifier<Booking> {
 
   // Method to set the loading state for uploading living room images
   void setUploadingLivingRoomImage(bool isUploading) {
-    state = state!.copyWith(isUploadingLivingRoomImage: isUploading);
+    state = state.copyWith(isUploadingLivingRoomImage: isUploading);
     }
 
   bool canAddImage(RoomType roomType) {
