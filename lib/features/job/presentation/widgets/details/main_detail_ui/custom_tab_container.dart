@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/assignment_response_entity.dart';
+import 'package:movemate_staff/features/job/presentation/controllers/booking_controller/booking_controller.dart';
+import 'package:movemate_staff/features/job/presentation/controllers/reviewer_update_controller/reviewer_update_controller.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
 
 class CustomTabContainer extends HookConsumerWidget {
@@ -14,11 +16,69 @@ class CustomTabContainer extends HookConsumerWidget {
     required this.driverItems,
   }) : super(key: key);
 
+  Future<bool?> _showConfirmationDialog(
+    BuildContext context,
+    String staffType,
+    String staffName,
+  ) {
+    return showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: AssetsConstants.whiteColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: const Text(
+            'Xác nhận gán trách nhiệm',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: AssetsConstants.primaryDarker,
+            ),
+          ),
+          content: Text(
+            'Bạn có chắc chắn muốn gán trách nhiệm cho $staffType này?\n\nNhân viên: $staffName',
+            style: const TextStyle(
+              fontSize: 16,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(
+                'Hủy',
+                style: TextStyle(
+                  color: Colors.grey.shade600,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text(
+                'Xác nhận',
+                style: TextStyle(
+                  color: AssetsConstants.primaryDarker,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectedTab = useState<String>('Porter');
+    final selectedTab = useState<String>('Nhân viên bốc vác');
     final selectedPorter = useState<AssignmentsResponseEntity?>(null);
     final selectedDriver = useState<AssignmentsResponseEntity?>(null);
+
+    //  final bookingAsync = ref.watch(bookingStreamProvider(job.id.toString()));
 
     useEffect(() {
       if (porterItems.isNotEmpty &&
@@ -72,16 +132,36 @@ class CustomTabContainer extends HookConsumerWidget {
                             ),
                           );
                         },
-                        child: selectedTab.value == 'Porter'
-                            ? buildPorterList(porterItems, selectedPorter)
-                            : buildDriverList(driverItems, selectedDriver),
+                        child: selectedTab.value == 'Nhân viên bốc vác'
+                            ? Column(
+                                children: [
+                                  Expanded(
+                                    child: buildPorterList(
+                                        porterItems, selectedPorter),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  buildPorterActionButtons(
+                                    selectedPorter.value,
+                                    ref,
+                                    context,
+                                  ),
+                                ],
+                              )
+                            : Column(
+                                children: [
+                                  Expanded(
+                                    child: buildDriverList(
+                                        driverItems, selectedDriver),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  buildDriverActionButtons(
+                                    selectedDriver.value,
+                                    ref,
+                                    context,
+                                  ),
+                                ],
+                              ),
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    buildActionButtons(
-                      selectedTab.value,
-                      selectedPorter.value,
-                      selectedDriver.value,
                     ),
                   ],
                 ),
@@ -105,13 +185,13 @@ class CustomTabContainer extends HookConsumerWidget {
         children: [
           buildTabItem(
             selectedTab: selectedTab,
-            tabName: 'Porter',
+            tabName: 'Nhân viên bốc vác',
             icon: Icons.person_outlined,
             iconColor: Colors.blue,
           ),
           buildTabItem(
             selectedTab: selectedTab,
-            tabName: 'Driver',
+            tabName: 'Nhân viên lái xe',
             icon: Icons.drive_eta_outlined,
             iconColor: Colors.green,
           ),
@@ -209,7 +289,7 @@ class CustomTabContainer extends HookConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      item.staffType, // Display appropriate field from AssignmentsResponseEntity
+                      item.staffType,
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -281,74 +361,99 @@ class CustomTabContainer extends HookConsumerWidget {
     );
   }
 
-  Widget buildActionButtons(
-    String selectedTab,
+  Widget buildPorterActionButtons(
     AssignmentsResponseEntity? selectedPorter,
-    AssignmentsResponseEntity? selectedDriver,
+    WidgetRef ref,
+    BuildContext context,
   ) {
-    String primaryLabel;
-    String secondaryLabel;
-    VoidCallback? primaryAction;
-    VoidCallback? secondaryAction;
-
-    switch (selectedTab) {
-      case 'Porter':
-        primaryLabel = 'Gán bốc vác';
-        secondaryLabel = 'Chọn bốc vác khác';
-        primaryAction = selectedPorter != null
-            ? () {
-                // Perform Gán bốc vác action
-              }
-            : null;
-        secondaryAction = selectedPorter != null || selectedPorter == null
-            ? () {
-                // Perform Chọn bốc vác khác action
-              }
-            : null;
-        break;
-
-      case 'Driver':
-        primaryLabel = 'Gán tài xế';
-        secondaryLabel = 'Chọn tài xế khác';
-        primaryAction = selectedDriver != null
-            ? () {
-                // Perform Gán tài xế action
-              }
-            : null;
-        secondaryAction = selectedDriver != null || selectedDriver == null
-            ? () {
-                // Perform Chọn tài xế khác action
-              }
-            : null;
-        break;
-
-      default:
-        primaryLabel = 'Gán';
-        secondaryLabel = 'Chọn khác';
-        primaryAction = () {
-          // Perform Gán chung action
-        };
-        secondaryAction = () {
-          // Perform Chọn khác action
-        };
-        break;
-    }
-
     return Row(
       children: [
         Expanded(
           child: buildButton(
-            onPressed: primaryAction,
-            label: primaryLabel,
+            onPressed: selectedPorter != null
+                ? () async {
+                    final currentState =
+                        ref.read(reviewerUpdateControllerProvider);
+                    if (currentState is AsyncLoading) return;
+                    final confirmed = await _showConfirmationDialog(
+                      context,
+                      'nhân viên bốc vác',
+                      selectedPorter.staffType,
+                    );
+
+                    if (confirmed == true) {
+                      await ref
+                          .read(reviewerUpdateControllerProvider.notifier)
+                          .updateAssignStaffIsResponsibility(
+                            assignmentId: selectedPorter.id,
+                            context: context,
+                            ref: ref,
+                          );
+                    }
+                  }
+                : null,
+            label: 'Gán bốc vác',
             isPrimary: true,
-            isEnabled: primaryAction != null,
+            isEnabled: selectedPorter != null,
           ),
         ),
         const SizedBox(width: 12),
         Expanded(
           child: buildButton(
-            onPressed: secondaryAction,
-            label: secondaryLabel,
+            onPressed: () {
+              // Perform Chọn bốc vác khác action
+            },
+            label: 'Chọn bốc vác khác',
+            isPrimary: false,
+            isEnabled: true,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildDriverActionButtons(
+    AssignmentsResponseEntity? selectedDriver,
+    WidgetRef ref,
+    BuildContext context,
+  ) {
+    return Row(
+      children: [
+        Expanded(
+          child: buildButton(
+            onPressed: selectedDriver != null
+                ? () async {
+                    final currentState =
+                        ref.read(reviewerUpdateControllerProvider);
+                    if (currentState is AsyncLoading) return;
+                    final confirmed = await _showConfirmationDialog(
+                      context,
+                      'tài xế',
+                      selectedDriver.staffType,
+                    );
+
+                    if (confirmed == true) {
+                      await ref
+                          .read(reviewerUpdateControllerProvider.notifier)
+                          .updateAssignStaffIsResponsibility(
+                              assignmentId: selectedDriver.id,
+                              context: context,
+                              ref: ref);
+                    }
+                  }
+                : null,
+            label: 'Gán tài xế',
+            isPrimary: true,
+            isEnabled: selectedDriver != null,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: buildButton(
+            onPressed: () {
+              // Perform Chọn tài xế khác action
+            },
+            label: 'Chọn tài xế khác',
             isPrimary: false,
             isEnabled: true,
           ),
@@ -367,7 +472,7 @@ class CustomTabContainer extends HookConsumerWidget {
     Color textColor;
 
     if (!isEnabled) {
-      backgroundColor = Colors.black.withOpacity(0.1);
+      backgroundColor = AssetsConstants.whiteColor;
       textColor = Colors.grey.shade500;
     } else if (isPrimary) {
       backgroundColor = AssetsConstants.primaryDarker;

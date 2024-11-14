@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:movemate_staff/features/auth/presentation/screens/sign_in/sign_in_controller.dart';
 import 'package:movemate_staff/features/job/data/model/request/reviewer_status_request.dart';
 import 'package:movemate_staff/features/job/data/model/request/reviewer_time_request.dart';
@@ -21,6 +22,10 @@ import 'package:movemate_staff/utils/commons/functions/api_utils.dart';
 import 'package:movemate_staff/utils/extensions/extensions_export.dart';
 
 part 'reviewer_update_controller.g.dart';
+
+final refreshJobList = StateProvider.autoDispose<bool>(
+  (ref) => true,
+);
 
 @riverpod
 class ReviewerUpdateController extends _$ReviewerUpdateController {
@@ -102,6 +107,55 @@ class ReviewerUpdateController extends _$ReviewerUpdateController {
 
     if (state.hasError) {
       final statusCode = (state.error as DioException).onStatusDio();
+      await handleAPIError(
+        statusCode: statusCode,
+        stateError: state.error!,
+        context: context,
+        onCallBackGenerateToken: () async => await reGenerateToken(
+          authRepository,
+          context,
+        ),
+      );
+
+      if (state.hasError) {
+        await ref.read(signInControllerProvider.notifier).signOut(context);
+      }
+    }
+  }
+
+  Future<void> updateAssignStaffIsResponsibility({
+    required int assignmentId,
+    required BuildContext context,
+    required WidgetRef ref,
+  }) async {
+    state = const AsyncLoading();
+    final authRepository = ref.read(authRepositoryProvider);
+    final user = await SharedPreferencesUtils.getInstance('user_token');
+
+    state = await AsyncValue.guard(() async {
+      await ref
+          .read(bookingRepositoryProvider)
+          .updateAssignStaffIsResponsibility(
+            accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
+            assignmentId: assignmentId,
+          );
+
+      ref
+          .read(refreshJobList.notifier)
+          .update((state) => !ref.read(refreshJobList));
+
+      showSnackBar(
+        context: context,
+        content: "Cập người chịu trách nhiệm thành công",
+        icon: AssetsConstants.iconSuccess,
+        backgroundColor: Colors.green,
+        textColor: AssetsConstants.whiteColor,
+      );
+    });
+
+    if (state.hasError) {
+      final statusCode = (state.error as DioException).onStatusDio();
+
       await handleAPIError(
         statusCode: statusCode,
         stateError: state.error!,
