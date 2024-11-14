@@ -53,12 +53,14 @@ class DashboardCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 5),
-            Text(
-              description,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.grey,
+            Flexible(
+              child: Text(
+                description,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey,
+                ),
               ),
             ),
           ],
