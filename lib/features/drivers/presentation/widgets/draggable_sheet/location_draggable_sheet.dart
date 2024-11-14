@@ -5,6 +5,8 @@ import 'package:movemate_staff/features/job/domain/entities/booking_response_ent
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/presentation/controllers/house_type_controller/house_type_controller.dart';
 import 'package:movemate_staff/features/porter/presentation/screens/porter_confirm_upload/porter_confirm_upload.dart';
+import 'package:movemate_staff/features/profile/domain/entities/profile_entity.dart';
+import 'package:movemate_staff/features/profile/presentation/controllers/profile_controller/profile_controller.dart';
 import 'package:movemate_staff/features/test/domain/entities/house_entities.dart';
 import 'package:movemate_staff/hooks/use_booking_status.dart';
 import 'package:movemate_staff/hooks/use_fetch_obj.dart';
@@ -35,6 +37,14 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
       context: context,
     );
     final houseTypeById = useFetchResult.data;
+
+    final useFetchUserResult = useFetchObject<ProfileEntity>(
+      function: (context) => ref
+          .read(profileControllerProvider.notifier)
+          .getUserInfo(job.userId, context),
+      context: context,
+    );
+    final userProfileById = useFetchUserResult.data;
     // Lấy các thông tin từ widget
     // final status = job.status;
     // final assignment = job.assignments.firstWhere(
@@ -94,7 +104,10 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
                 _buildDeliveryStatusCard(),
                 _buildTrackingInfoCard(),
                 _buildDetailsSheet(
-                    context: context, job: job, houseTypeById: houseTypeById),
+                    context: context,
+                    job: job,
+                    houseTypeById: houseTypeById,
+                    profile: userProfileById),
               ],
             ),
           );
@@ -214,7 +227,8 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
   Widget _buildDetailsSheet(
       {required BuildContext context,
       required BookingResponseEntity job,
-      required HouseEntities? houseTypeById}) {
+      required HouseEntities? houseTypeById,
+      required ProfileEntity? profile}) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0),
       child: Container(
@@ -256,7 +270,7 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
                   const Divider(height: 32),
                   _buildSectionTitle('Thông tin khách hàng'),
                   const SizedBox(height: 16),
-                  _buildCustomerInfo(),
+                  _buildCustomerInfo(profile: profile),
                   const SizedBox(height: 3),
                   _buildConfirmationImageLink(context),
                   const SizedBox(height: 20),
@@ -282,7 +296,7 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
 
   Widget _buildServiceInfo(
       {required BookingResponseEntity job, required HouseEntities? house}) {
-    print("check home ${house}");
+    // print("check home ${job.userId}");
     return Row(
       children: [
         Expanded(
@@ -396,8 +410,9 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
     );
   }
 
-  Widget _buildCustomerInfo() {
-    return const Row(
+  Widget _buildCustomerInfo({required ProfileEntity? profile}) {
+    print('check pro ${profile?.name}');
+    return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Column(
@@ -412,7 +427,7 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
             ),
             SizedBox(height: 4),
             Text(
-              'Vinh',
+              profile?.name ?? '',
               style: TextStyle(fontSize: 14),
             ),
           ],
@@ -430,7 +445,7 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
             ),
             SizedBox(height: 4),
             Text(
-              '0382703625',
+              profile?.phone ?? '',
               style: TextStyle(fontSize: 14),
             ),
           ],
