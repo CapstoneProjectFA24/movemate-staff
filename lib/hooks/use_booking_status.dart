@@ -162,7 +162,7 @@ BookingStatusResult useBookingStatus(
     bool canDriverStartMoving = false;
     bool canDriverCompleteDelivery = false;
 
-    if (status == BookingStatusType.inProgress && isDriverAssigned) {
+    if ( isDriverAssigned) {
       if (!isDriverIncoming) {
         canDriverConfirmIncoming = true;
       } else if (isDriverIncoming && !isDriverArrived) {
@@ -181,7 +181,7 @@ BookingStatusResult useBookingStatus(
     bool canPorterConfirmDelivered = false;
     bool canPorterCompleteUnloading = false;
 
-    if (status == BookingStatusType.inProgress && isPorterAssigned) {
+    if ( isPorterAssigned) {
       if (!isPorterIncoming) {
         canPorterConfirmIncoming = true;
       } else if (isPorterIncoming && !isPorterArrived) {

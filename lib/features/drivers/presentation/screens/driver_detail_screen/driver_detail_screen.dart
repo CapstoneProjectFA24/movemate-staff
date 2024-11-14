@@ -364,6 +364,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                   if (!_isNavigationStarted)
                     DeliveryDetailsBottomSheet(
                       job: widget.job,
+                      userId: user?.id,
                     ),
                   Positioned(
                     bottom: _isNavigationStarted ? 20 : 280,

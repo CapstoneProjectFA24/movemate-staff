@@ -1,26 +1,51 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
+import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/assignment_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/porter/presentation/screens/porter_confirm_upload/porter_confirm_upload.dart';
+import 'package:movemate_staff/hooks/use_booking_status.dart';
+import 'package:movemate_staff/services/realtime_service/booking_status_realtime/booking_status_stream_provider.dart';
 
-class DeliveryDetailsBottomSheet extends StatelessWidget {
+class DeliveryDetailsBottomSheet extends HookConsumerWidget {
   final BookingResponseEntity job;
-  const DeliveryDetailsBottomSheet({super.key, required this.job});
+  final int? userId;
+  const DeliveryDetailsBottomSheet(
+      {super.key, required this.job, required this.userId});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final bookingAsync = ref.watch(bookingStreamProvider(job.id.toString()));
+    final bookingStatus =
+        useBookingStatus(bookingAsync.value, job.isReviewOnline);
+
+    print("vinh status ${bookingStatus.driverStatusMessage}");
+    print("vinh status ${bookingStatus.isDriverMoving}");
     // Lấy các thông tin từ widget
-    // final status = widget.job.status;
-    // final assignment = widget.job.assignments.firstWhere(
-    //   (e) => e.userId == user?.id,
+    // final status = job.status;
+    // final assignment = job.assignments.firstWhere(
+    //   (e) => e.userId == userId,
     //   orElse: () => AssignmentsResponseEntity(
     //       id: 0, userId: 0, bookingId: 0, status: '', staffType: ''),
     // );
-
     // final subStatus = assignment != null ? assignment.status : null;
+
+    //   DRIVER
+    // 30p trước thời điểm bookingAt thì nó mới được di chuyển (Nhưng lúc đó chưa chuyển từ COMING -> IN_PROGRESS) && subStatus (ASSIGNED -> INCOMING -> ARRIVED )
+// + đầu tiên trạng thái của status là COMING thì sẽ có staffType là DRIVER và subStatus là waiting
+// + một action của REVIEWER chọn cập nhật staffType DRIVER và subStatus từ waiting lên assigned  và status vẫn là coming
+// + khi sắp tới giờ thì status COMING tự động chuyển thành status IN_PROGRESS 
+// -> Từ bây h trở đi trạng thái sẽ luôn giữ là status là IN_PROGRESS
+// + Khi driver lái xe sắp tới thì (Chỗ này driver 1 action chính để bấm) -> subStatus từ incoming -> arrived (tới nơi để dọn hàng )
+// + Khi driver dọn hàng lên xe và di chuyển (Chỗ này driver 1 action chính để bấm) -> subStatus từ arrived -> inprogress (dag trong quá trình di chuyển)
+// + khi driver đã tới nơi để trả hàng thì kết thúc tiến trình chuyển (Chỗ này driver 1 action chính để bấm) -> inprogress -> completed
+
+// disable -> flag bool chụp lần 1, chụp lần 2
+
     // final bookingAt = widget.job.bookingAt;
     // print("vinh test 3 ${subStatus}");
     // // Xác định thời gian và điều kiện
+
     // final now = DateTime.now();
     // final format = DateFormat("MM/dd/yyyy HH:mm:ss");
     // final bookingDateTime = format.parse(bookingAt);
@@ -32,7 +57,7 @@ class DeliveryDetailsBottomSheet extends StatelessWidget {
 
     // final canStartMoving = (status == "COMING" && subStatus == "ASSIGNED") ||
     //     (status == "IN_PROGRESS" && subStatus == "ARRIVED") ||
-    //     (status == "IN_PROGRESS" && subStatus == "IN_PROGRESS");
+    //     (status == "IN_PROGRESS" && subStatus == "IN_PROGRESS") && !isValidDate;
 
     // final canFinishMoving =
     //     status == "IN_PROGRESS" && subStatus == "IN_PROGRESS";
