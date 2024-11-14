@@ -347,4 +347,6 @@ class BookingResponseEntity {
 
   factory BookingResponseEntity.fromJson(String source) =>
       BookingResponseEntity.fromMap(json.decode(source));
+
+  static empty() {}
 }

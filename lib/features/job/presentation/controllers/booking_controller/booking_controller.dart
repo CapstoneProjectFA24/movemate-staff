@@ -11,6 +11,7 @@ import 'package:movemate_staff/features/job/domain/entities/service_entity.dart'
 import 'package:movemate_staff/features/job/domain/entities/services_package_entity.dart';
 import 'package:movemate_staff/features/job/domain/repositories/service_booking_repository.dart';
 import 'package:movemate_staff/features/job/presentation/providers/booking_provider.dart';
+import 'package:movemate_staff/features/job/presentation/screen/job_details_screen/job_details_screen.dart';
 
 import 'package:movemate_staff/models/request/paging_model.dart';
 import 'package:movemate_staff/utils/commons/functions/shared_preference_utils.dart';
@@ -180,9 +181,9 @@ class BookingController extends _$BookingController {
     required BuildContext context,
   }) async {
     // Kiểm tra nếu đã đang xử lý thì không làm gì cả
-    if (state is AsyncLoading) {
-      return null;
-    }
+    // if (state is AsyncLoading) {
+    //   return null;
+    // }
     state = const AsyncLoading();
     final bookingState = ref.read(bookingProvider);
     final bookingRequest = BookingUpdateRequest.fromBookingUpdate(bookingState);
@@ -200,12 +201,12 @@ class BookingController extends _$BookingController {
       );
       print("object check )} ");
 
-      final updateReviewerStatusRequest = ReviewerStatusRequest(
-        estimatedDeliveryTime:
-            double.parse(bookingRequest.estimatedDeliveryTime),
-        resourceList: bookingRequest.resourceList,
-      );
-      print("object check ${updateReviewerStatusRequest.toJson()} ");
+      // final updateReviewerStatusRequest = ReviewerStatusRequest(
+      //   estimatedDeliveryTime:
+      //       double.parse(bookingRequest.estimatedDeliveryTime),
+      //   resourceList: bookingRequest.resourceList,
+      // );
+      // print("object check ${updateReviewerStatusRequest.toJson()} ");
       // await ref.read(bookingRepositoryProvider).updateStateReviewer(
       //       accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
       //       request: updateReviewerStatusRequest,
@@ -236,4 +237,6 @@ class BookingController extends _$BookingController {
       return ref.read(bookingResponseProvider);
     }
   }
+
+
 }

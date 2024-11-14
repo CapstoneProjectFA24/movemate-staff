@@ -303,13 +303,6 @@ class CompleteProposalScreen extends HookConsumerWidget {
 
             // print("check time estimatedTime $estimatedTime");
             // print("check img resourseListReq $resourseListReq");
-            // Thực hiện cập nhật booking
-            final bookingResponse = await ref
-                .read(bookingControllerProvider.notifier)
-                .updateBooking(
-                  context: context,
-                  id: job.id,
-                );
 
             // print(
             //     'tuan Booking bookingstate pickUpLocation service: ${jsonEncode(bookingstate.pickUpLocation)}');
@@ -355,25 +348,32 @@ class CompleteProposalScreen extends HookConsumerWidget {
                                   context: context,
                                   id: job.id,
                                 );
-                                
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    JobDetailsScreen(job: bookingResponse),
+                              ),
+                            );
                             print("bookingResponse screen $bookingResponse");
                             print("booking id  ${job.id}");
-
-                            if (bookingResponse != null) {
-                              // Điều hướng tới JobDetailsScreen sau khi thành công
-                              if (context.mounted) {
-                                // Đảm bảo widget vẫn còn mounted
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        JobDetailsScreen(job: bookingResponse),
-                                  ),
+                            final updateReviewerStatusRequest =
+                                ReviewerStatusRequest(
+                              estimatedDeliveryTime: double.parse(
+                                  bookingRequest.estimatedDeliveryTime),
+                              resourceList: bookingRequest.resourceList,
+                            );
+                            // Thực hiện cập nhật booking
+                            await ref
+                                .read(reviewerUpdateControllerProvider.notifier)
+                                .updateReviewerStatus(
+                                  context: context,
+                                  id: job.id,
                                 );
 
-                                print("context.mounted ${context.mounted}");
-                              }
-                            }
+                            print(
+                                "object check ${updateReviewerStatusRequest.toJson()} ");
+                          
                           },
                           child: const Text(
                             'Xác nhận',
@@ -387,14 +387,6 @@ class CompleteProposalScreen extends HookConsumerWidget {
                 ],
               ),
             );
-
-            // // Điều hướng tới JobDetailsScreen sau khi thành công và không cho phép quay lại
-            // Navigator.pushReplacement(
-            //   context,
-            //   MaterialPageRoute(
-            //     builder: (context) => JobDetailsScreen(job: bookingResponse),
-            //   ),
-            // );
           },
           buttonText: 'Xác nhận cập chính sửa',
           // priceLabel: 'Tổng giá',

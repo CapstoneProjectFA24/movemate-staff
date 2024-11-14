@@ -45,6 +45,8 @@ class JobScreen extends HookConsumerWidget {
           .read(bookingControllerProvider.notifier)
           .getBookings(model, context),
       initialPagingModel: PagingModel(
+        pageSize: 50,
+        pageNumber: 1,
         isReviewOnline: isReviewOnline,
       ),
       context: context,
@@ -73,7 +75,6 @@ class JobScreen extends HookConsumerWidget {
     }
 
     ref.listen<bool>(refreshJobList, (_, __) => fetchResult.refresh());
-  
 
     Widget buildTabContent(String tabName) {
       List<BookingResponseEntity> filteredBookings = getJobsForSelectedDate();
