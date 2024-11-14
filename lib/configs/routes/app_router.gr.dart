@@ -41,6 +41,16 @@ abstract class _$AppRouter extends RootStackRouter {
         ),
       );
     },
+    CompleteProposalScreenRoute.name: (routeData) {
+      final args = routeData.argsAs<CompleteProposalScreenRouteArgs>();
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: CompleteProposalScreen(
+          key: args.key,
+          job: args.job,
+        ),
+      );
+    },
     ContactScreenRoute.name: (routeData) {
       return AutoRoutePage<dynamic>(
         routeData: routeData,
@@ -328,6 +338,45 @@ class BookingScreenServiceRouteArgs {
   @override
   String toString() {
     return 'BookingScreenServiceRouteArgs{key: $key, job: $job}';
+  }
+}
+
+/// generated route for
+/// [CompleteProposalScreen]
+class CompleteProposalScreenRoute
+    extends PageRouteInfo<CompleteProposalScreenRouteArgs> {
+  CompleteProposalScreenRoute({
+    Key? key,
+    required BookingResponseEntity job,
+    List<PageRouteInfo>? children,
+  }) : super(
+          CompleteProposalScreenRoute.name,
+          args: CompleteProposalScreenRouteArgs(
+            key: key,
+            job: job,
+          ),
+          initialChildren: children,
+        );
+
+  static const String name = 'CompleteProposalScreenRoute';
+
+  static const PageInfo<CompleteProposalScreenRouteArgs> page =
+      PageInfo<CompleteProposalScreenRouteArgs>(name);
+}
+
+class CompleteProposalScreenRouteArgs {
+  const CompleteProposalScreenRouteArgs({
+    this.key,
+    required this.job,
+  });
+
+  final Key? key;
+
+  final BookingResponseEntity job;
+
+  @override
+  String toString() {
+    return 'CompleteProposalScreenRouteArgs{key: $key, job: $job}';
   }
 }
 

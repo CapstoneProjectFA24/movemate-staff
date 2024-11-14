@@ -297,7 +297,6 @@ class BookingScreenService extends HookConsumerWidget {
             MaterialPageRoute(
                 builder: (context) => CompleteProposalScreen(
                       job: job,
-                      fetchResult: fetchResultBooing,
                     )),
           );
         },
