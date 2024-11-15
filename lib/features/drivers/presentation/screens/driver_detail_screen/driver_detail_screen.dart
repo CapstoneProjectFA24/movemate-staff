@@ -11,7 +11,9 @@ import 'package:movemate_staff/features/job/domain/entities/booking_response_ent
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/models/user_model.dart';
 import 'package:movemate_staff/utils/commons/functions/functions_common_export.dart';
+import 'package:movemate_staff/utils/commons/widgets/form_input/label_text.dart';
 import 'package:movemate_staff/utils/constants/api_constant.dart';
+import 'package:movemate_staff/utils/constants/asset_constant.dart';
 import 'package:vietmap_flutter_navigation/vietmap_flutter_navigation.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -369,6 +371,47 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                               routeProgressEvent.currentModifierType);
                         });
                       }
+                    },
+                    onArrival: () {
+                      showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                                title: const Text("Bạn đã tới nơi vận chuyển "),
+                                backgroundColor: AssetsConstants.whiteColor,
+                                actions: [
+                                  // TextButton(
+                                  //   onPressed: () => Navigator.pop(context),
+                                  //   child: const LabelText(
+                                  //       content: "Đóng",
+                                  //       size: 16,
+                                  //       fontWeight: FontWeight.bold,
+                                  //       color: AssetsConstants.blackColor),
+                                  // ),
+                                  TextButton(
+                                    onPressed: () {
+                                      print("log here go");
+                                      // await ref
+                                      //     .read(reviewerUpdateControllerProvider
+                                      //         .notifier)
+                                      //     .updateReviewerStatus(
+                                      //         id: job.id, context: context);
+                                      // fetchResult.refresh();
+                                      Navigator.pop(context);
+                                      setState(() {
+                                        instructionImage =
+                                            const SizedBox.shrink();
+                                        routeProgressEvent = null;
+                                        _stopNavigation();
+                                      });
+                                    },
+                                    child: const LabelText(
+                                        content: "Xác nhận đã tới",
+                                        size: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: AssetsConstants.primaryLight),
+                                  ),
+                                ],
+                              ));
                     },
                   ),
                   if (!_isNavigationStarted)
