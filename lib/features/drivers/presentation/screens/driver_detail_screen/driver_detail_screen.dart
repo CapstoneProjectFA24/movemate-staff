@@ -114,10 +114,32 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
     return now.difference(bookingDateTime).inMinutes >= 30;
   }
 
-  void _updateLocation(Position position, String role) {
+  // void _updateLocation(Position position, String role) {
+  //   final String bookingId = widget.job.id.toString();
+  //   if (user?.id != null) {
+  //     locationRef.child('$bookingId/$role/${user?.id}').set({
+  //       'lat': position.latitude,
+  //       'long': position.longitude,
+  //       'timestamp': DateTime.now().millisecondsSinceEpoch,
+  //     });
+  //   }
+  // }
+
+  void _updateLocationOnce(Position position, String role) {
     final String bookingId = widget.job.id.toString();
     if (user?.id != null) {
       locationRef.child('$bookingId/$role/${user?.id}').set({
+        'lat': position.latitude,
+        'long': position.longitude,
+        'timestamp': DateTime.now().millisecondsSinceEpoch,
+      });
+    }
+  }
+
+  void _updateLocationRealtime(Position position, String role) {
+    final String bookingId = widget.job.id.toString();
+    if (user?.id != null) {
+      locationRef.child('$bookingId/$role/${user?.id}').update({
         'lat': position.latitude,
         'long': position.longitude,
         'timestamp': DateTime.now().millisecondsSinceEpoch,
@@ -129,7 +151,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
     for (var assignment in widget.job.assignments) {
       if (assignment.userId == user?.id) {
         String role = assignment.staffType;
-        _updateLocation(position, role);
+        _updateLocationRealtime(position, role);
         break;
       }
     }
@@ -149,14 +171,17 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
           _currentPosition = position;
           _lastPosition = position;
         });
-
-        _locationUpdateTimer =
-            Timer.periodic(const Duration(seconds: 10), (timer) {
-          if (_lastPosition != null) {
-            updateLocationFormStaff(_lastPosition!);
-            // print('Location updated to Firebase at ${DateTime.now()}');
-          }
-        });
+        final assignment = _getAssignmentForUser();
+        final subStatus = assignment?.status;
+        if (subStatus == "INCOMING" || subStatus == "IN_PROGRESS") {
+          _locationUpdateTimer =
+              Timer.periodic(const Duration(seconds: 10), (timer) {
+            if (_lastPosition != null) {
+              _updateLocationRealtime(_lastPosition!, "DRIVER");
+              print('Location updated to Firebase at ${DateTime.now()}');
+            }
+          });
+        }
       }
     });
   }
@@ -173,6 +198,52 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
     _navigationOption.mapStyle =
         "https://maps.vietmap.vn/api/maps/light/styles.json?apikey=${APIConstants.apiVietMapKey}";
     _vietmapNavigationPlugin.setDefaultOptions(_navigationOption);
+  }
+
+  void _addMarkers() async {
+    if (_navigationController != null) {
+      final assignment = _getAssignmentForUser();
+      final subStatus = assignment?.status;
+
+      // Parse coordinates
+      List<String> pickupCoordinates = widget.job.pickupPoint.split(',');
+      List<String> deliveryCoordinates = widget.job.deliveryPoint.split(',');
+
+      LatLng pickupPoint = LatLng(double.parse(pickupCoordinates[0].trim()),
+          double.parse(pickupCoordinates[1].trim()));
+
+      LatLng deliveryPoint = LatLng(double.parse(deliveryCoordinates[0].trim()),
+          double.parse(deliveryCoordinates[1].trim()));
+
+      List<NavigationMarker> markers = [];
+
+      // Add markers based on status
+      if ((widget.job.status == "COMING" ||
+              widget.job.status == "IN_PROGRESS") &&
+          (subStatus == "WAITING" ||
+              subStatus == "ASSIGNED" ||
+              subStatus == "INCOMING")) {
+        // Add pickup point marker
+        markers.add(NavigationMarker(
+            height: 80,
+            width: 80,
+            imagePath: "assets/images/movemate_logo.png", // Đổi icon phù hợp
+            latLng: pickupPoint));
+      } else if ((widget.job.status == "IN_PROGRESS") &&
+          (subStatus == "IN_PROGRESS" || subStatus == "ARRIVED")) {
+        // Add delivery point marker
+        markers.add(NavigationMarker(
+            height: 80,
+            width: 80,
+            imagePath:
+                "assets/images/booking/vehicles/truck1.png", // Đổi icon phù hợp
+            latLng: deliveryPoint));
+      }
+
+      // Add all markers to the map
+      await _navigationController!.addImageMarkers(markers);
+      print("Markers added successfully: ${markers.length} markers");
+    }
   }
 
   Future<void> _getCurrentLocation() async {
@@ -197,6 +268,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
       if (mounted) {
         setState(() {
           _currentPosition = position;
+          _updateLocationOnce(_currentPosition!, "DRIVER");
           _buildInitialRoute();
         });
       }
@@ -284,6 +356,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                         _navigationController = controller;
                         _isMapReady = true;
                         _buildInitialRoute();
+                        _addMarkers();
                       });
                     },
                     onRouteProgressChange:
@@ -320,7 +393,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                         child: Row(
                           children: [
                             GestureDetector(
-                              onTap: () => context.router.pop(),
+                              onTap: () => _handleBackNavigation(),
                               child: const Icon(
                                 Icons.arrow_back,
                                 color: Colors.black54,
@@ -438,5 +511,14 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
       _stopNavigation();
     }
     super.dispose();
+  }
+
+  void _handleBackNavigation() {
+    _positionStreamSubscription?.cancel();
+    _locationUpdateTimer?.cancel();
+    if (_navigationController != null && _isNavigationStarted) {
+      _stopNavigation();
+    }
+    Navigator.of(context).pop();
   }
 }

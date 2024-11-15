@@ -34,6 +34,9 @@ class APIConstants {
   static const reviewer_at = '/bookings/reviewer/review-at';
   static const assignments = '/assignments';
 
+  // driver
+   static const drivers = '/bookingdetails/driver/update-status';
+
   // payments
   static const paymentsBooking = '/payments/create-payment-url';
   static const paymentsDeposit = '/wallets/recharge';
@@ -43,7 +46,7 @@ class APIConstants {
 
   // api vietmap-key
   static const apiVietMapKey =
-      "38db2f3d058b34e0f52f067fe66a902830fac1a044e8d444";
+      "be00f7e132bdd086ccd57e21460209836f5d37ce56beaa42";
 
   // error
   static const Map<String, String> errorTrans = {
