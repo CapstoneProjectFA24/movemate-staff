@@ -41,7 +41,7 @@ class DriverCard extends HookConsumerWidget {
 
     return GestureDetector(
       onTap: () {
-        context.router.push(DriverDetailScreenRoute(job: job));
+        context.router.push(DriverDetailScreenRoute(job: job, ref: ref));
       },
       child: Card(
         margin: const EdgeInsets.only(bottom: 16),

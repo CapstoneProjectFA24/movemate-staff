@@ -23,7 +23,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 @RoutePage()
 class DriverDetailScreen extends StatefulWidget {
   final BookingResponseEntity job;
-  const DriverDetailScreen({super.key, required this.job});
+  final WidgetRef ref;
+  const DriverDetailScreen({super.key, required this.job, required this.ref});
 
   static const String apiKey = APIConstants.apiVietMapKey;
 
@@ -597,10 +598,18 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                       onPressed: _isMapReady ? _startNavigation : null,
                       child: const Icon(Icons.directions),
                     ),
-                if (incomingToArrived & !canStartMoving)
+                if (incomingToArrived)
                   FloatingActionButton(
-                    onPressed: () {
+                    onPressed: () async {
                       // context.router.push( const DriverConfirmUploadRoute(job: widget.job));
+                      // await widget.ref
+                      //     .read(driverControllerProvider.notifier)
+                      //     .updateStatusDriverWithoutResourse(
+                      //       id: widget.job.id,
+                      //       context: context,
+                      //     );
+
+                      // print("done");
                     },
                     child: const Icon(Icons.system_update),
                   ),

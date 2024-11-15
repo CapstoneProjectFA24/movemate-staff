@@ -75,6 +75,7 @@ abstract class _$AppRouter extends RootStackRouter {
         child: DriverDetailScreen(
           key: args.key,
           job: args.job,
+          ref: args.ref,
         ),
       );
     },
@@ -456,12 +457,14 @@ class DriverDetailScreenRoute
   DriverDetailScreenRoute({
     Key? key,
     required BookingResponseEntity job,
+    required WidgetRef ref,
     List<PageRouteInfo>? children,
   }) : super(
           DriverDetailScreenRoute.name,
           args: DriverDetailScreenRouteArgs(
             key: key,
             job: job,
+            ref: ref,
           ),
           initialChildren: children,
         );
@@ -476,15 +479,18 @@ class DriverDetailScreenRouteArgs {
   const DriverDetailScreenRouteArgs({
     this.key,
     required this.job,
+    required this.ref,
   });
 
   final Key? key;
 
   final BookingResponseEntity job;
 
+  final WidgetRef ref;
+
   @override
   String toString() {
-    return 'DriverDetailScreenRouteArgs{key: $key, job: $job}';
+    return 'DriverDetailScreenRouteArgs{key: $key, job: $job, ref: $ref}';
   }
 }
 
