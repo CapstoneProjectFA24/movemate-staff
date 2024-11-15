@@ -1,11 +1,22 @@
+// File: driver_confirm_upload.dart
+
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
+import 'package:movemate_staff/hooks/use_booking_status.dart';
 import 'package:movemate_staff/utils/commons/widgets/cloudinary/cloudinary_camera_upload_widget.dart';
 
 @RoutePage()
 class DriverConfirmUpload extends HookWidget {
-  const DriverConfirmUpload({super.key});
+  final BookingResponseEntity job;
+  final BookingStatusResult status;
+
+  const DriverConfirmUpload({
+    super.key,
+    required this.job,
+    required this.status,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -13,6 +24,7 @@ class DriverConfirmUpload extends HookWidget {
     const primaryOrange = Color(0xFFFF6B00);
     const secondaryOrange = Color(0xFFFFE5D6);
     const darkGrey = Color(0xFF4A4A4A);
+    const disabledGrey = Color(0xFFE0E0E0);
 
     // Image states
     final images1 = useState<List<String>>([]);
@@ -29,11 +41,16 @@ class DriverConfirmUpload extends HookWidget {
       required Function(String, String) onImageUploaded,
       required Function(String) onImageRemoved,
       required Function(String) onImageTapped,
+      required VoidCallback onActionPressed,
+      required String actionButtonLabel,
+      required IconData actionIcon,
+      required bool isEnabled,
+      required bool showCameraButton,
     }) {
       return Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isEnabled ? Colors.white : disabledGrey.withOpacity(0.5),
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
@@ -52,19 +69,19 @@ class DriverConfirmUpload extends HookWidget {
                 Container(
                   width: 4,
                   height: 24,
-                  decoration: const BoxDecoration(
-                    color: primaryOrange,
-                    borderRadius: BorderRadius.all(Radius.circular(2)),
+                  decoration: BoxDecoration(
+                    color: isEnabled ? primaryOrange : disabledGrey,
+                    borderRadius: const BorderRadius.all(Radius.circular(2)),
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: darkGrey,
+                      color: isEnabled ? darkGrey : disabledGrey,
                     ),
                   ),
                 ),
@@ -72,13 +89,15 @@ class DriverConfirmUpload extends HookWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: secondaryOrange,
+                    color: isEnabled
+                        ? secondaryOrange
+                        : disabledGrey.withOpacity(0.3),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
                     '${imagePublicIds.length} ảnh',
-                    style: const TextStyle(
-                      color: primaryOrange,
+                    style: TextStyle(
+                      color: isEnabled ? primaryOrange : disabledGrey,
                       fontWeight: FontWeight.w600,
                       fontSize: 14,
                     ),
@@ -87,29 +106,51 @@ class DriverConfirmUpload extends HookWidget {
               ],
             ),
             const SizedBox(height: 16),
-            CloudinaryCameraUploadWidget(
-              imagePublicIds: imagePublicIds,
-              onImageUploaded: onImageUploaded,
-              onImageRemoved: onImageRemoved,
-              onImageTapped: onImageTapped,
-            ),
+            if (title != "Xác nhận vận chuyển")
+              CloudinaryCameraUploadWidget(
+                disabled: !isEnabled,
+                imagePublicIds: imagePublicIds,
+                onImageUploaded: isEnabled ? onImageUploaded : (_, __) {},
+                onImageRemoved: isEnabled ? onImageRemoved : (_) {},
+                onImageTapped: onImageTapped,
+                showCameraButton: showCameraButton,
+                optionalButton:
+                    imagePublicIds.isNotEmpty || title == "Xác nhận vận chuyển"
+                        ? ElevatedButton.icon(
+                            onPressed: isEnabled ? onActionPressed : null,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  isEnabled ? primaryOrange : disabledGrey,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            icon: Icon(actionIcon),
+                            label: FittedBox(child: Text(actionButtonLabel)),
+                          )
+                        : null,
+              ),
+            if (title == "Xác nhận vận chuyển")
+              ElevatedButton.icon(
+                onPressed: isEnabled ? onActionPressed : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: isEnabled ? primaryOrange : disabledGrey,
+                  foregroundColor: Colors.white,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                icon: Icon(actionIcon),
+                label: FittedBox(child: Text(actionButtonLabel)),
+              ),
           ],
         ),
       );
-    }
-
-    Future<void> saveImagesAndNavigate() async {
-      // Simulate saving the images to a database or storage
-      await Future.delayed(const Duration(seconds: 2));
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Đã lưu ảnh thành công!'),
-          backgroundColor: primaryOrange,
-          duration: Duration(seconds: 2),
-        ),
-      );
-
-      context.router.pop();
     }
 
     return Scaffold(
@@ -128,7 +169,6 @@ class DriverConfirmUpload extends HookWidget {
       ),
       body: Stack(
         children: [
-          // Orange curved background
           Container(
             height: 50,
             decoration: const BoxDecoration(
@@ -139,16 +179,14 @@ class DriverConfirmUpload extends HookWidget {
               ),
             ),
           ),
-
-          // Main content
           SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
               child: Column(
                 children: [
+                  //case 1:
                   buildConfirmationSection(
                     title: 'Xác nhận đã đến',
-                    // title: 'Nv xác nhận: Nguyễn Văn A',
                     imagePublicIds: imagePublicIds1.value,
                     onImageUploaded: (url, publicId) {
                       images1.value = [...images1.value, url];
@@ -156,13 +194,6 @@ class DriverConfirmUpload extends HookWidget {
                         ...imagePublicIds1.value,
                         publicId
                       ];
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Tải ảnh lên thành công'),
-                          backgroundColor: primaryOrange,
-                          duration: Duration(seconds: 2),
-                        ),
-                      );
                     },
                     onImageRemoved: (publicId) {
                       imagePublicIds1.value = imagePublicIds1.value
@@ -170,11 +201,19 @@ class DriverConfirmUpload extends HookWidget {
                           .toList();
                     },
                     onImageTapped: (url) => fullScreenImage.value = url,
+                    onActionPressed: () {
+                      // Xử lý khi tài xế xác nhận đã đến
+                      print("Handling arrival confirmation");
+                    },
+                    actionButtonLabel: 'Xác nhận đến',
+                    actionIcon: Icons.location_on,
+                    isEnabled: status.canDriverConfirmArrived,
+                    showCameraButton: true,
                   ),
                   const SizedBox(height: 16),
+                  //case 2:
                   buildConfirmationSection(
                     title: 'Xác nhận vận chuyển',
-                    // title: 'Tài xế xác nhận: Nguyễn Văn B',
                     imagePublicIds: imagePublicIds2.value,
                     onImageUploaded: (url, publicId) {
                       images2.value = [...images2.value, url];
@@ -182,13 +221,6 @@ class DriverConfirmUpload extends HookWidget {
                         ...imagePublicIds2.value,
                         publicId
                       ];
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Tải ảnh lên thành công'),
-                          backgroundColor: primaryOrange,
-                          duration: Duration(seconds: 2),
-                        ),
-                      );
                     },
                     onImageRemoved: (publicId) {
                       imagePublicIds2.value = imagePublicIds2.value
@@ -196,11 +228,20 @@ class DriverConfirmUpload extends HookWidget {
                           .toList();
                     },
                     onImageTapped: (url) => fullScreenImage.value = url,
+                    onActionPressed: () {
+                      // Xử lý khi bắt đầu vận chuyển
+                      print("Handling transport confirmation");
+                    },
+                    actionButtonLabel: 'Bắt đầu vận chuyển',
+                    actionIcon: Icons.local_shipping,
+                    isEnabled: status.canDriverStartMoving,
+                    // isEnabled: status.canDriverConfirmArrived,
+                    showCameraButton: false,
                   ),
                   const SizedBox(height: 16),
+                  //case 3:
                   buildConfirmationSection(
                     title: 'Xác nhận giao hàng',
-                    // title: 'Khách hàng xác nhận: Nguyễn Văn C',
                     imagePublicIds: imagePublicIds3.value,
                     onImageUploaded: (url, publicId) {
                       images3.value = [...images3.value, url];
@@ -208,13 +249,6 @@ class DriverConfirmUpload extends HookWidget {
                         ...imagePublicIds3.value,
                         publicId
                       ];
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Tải ảnh lên thành công'),
-                          backgroundColor: primaryOrange,
-                          duration: Duration(seconds: 2),
-                        ),
-                      );
                     },
                     onImageRemoved: (publicId) {
                       imagePublicIds3.value = imagePublicIds3.value
@@ -222,69 +256,52 @@ class DriverConfirmUpload extends HookWidget {
                           .toList();
                     },
                     onImageTapped: (url) => fullScreenImage.value = url,
+                    onActionPressed: () {
+                      // Xử lý khi giao hàng thành công
+                      print("Handling delivery confirmation");
+                    },
+                    actionButtonLabel: 'Xác nhận giao hàng',
+                    actionIcon: Icons.check_circle,
+                    isEnabled: status.canDriverCompleteDelivery,
+                    // isEnabled: status.canDriverConfirmArrived,
+                    showCameraButton: true,
                   ),
-                  const SizedBox(height: 16),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        saveImagesAndNavigate();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: primaryOrange,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 24, vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: const Text(
-                        'Xác nhận',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  )
                 ],
               ),
             ),
           ),
-
           // Full screen image viewer
-          if (fullScreenImage.value != null)
-            Positioned.fill(
-              child: GestureDetector(
-                onTap: () => fullScreenImage.value = null,
-                child: Container(
-                  color: Colors.black.withOpacity(0.9),
-                  child: Stack(
-                    children: [
-                      Center(
-                        child: Image.network(
-                          fullScreenImage.value!,
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                      Positioned(
-                        top: 40,
-                        right: 16,
-                        child: IconButton(
-                          icon: const Icon(
-                            Icons.close,
-                            color: Colors.white,
-                            size: 30,
-                          ),
-                          onPressed: () => fullScreenImage.value = null,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+          // if (fullScreenImage.value != null)
+          //   Positioned.fill(
+          //     child: GestureDetector(
+          //       onTap: () => fullScreenImage.value = null,
+          //       child: Container(
+          //         color: Colors.black.withOpacity(0.9),
+          //         child: Stack(
+          //           children: [
+          //             Center(
+          //               child: Image.network(
+          //                 fullScreenImage.value!,
+          //                 fit: BoxFit.contain,
+          //               ),
+          //             ),
+          //             Positioned(
+          //               top: 40,
+          //               right: 16,
+          //               child: IconButton(
+          //                 icon: const Icon(
+          //                   Icons.close,
+          //                   color: Colors.white,
+          //                   size: 30,
+          //                 ),
+          //                 onPressed: () => fullScreenImage.value = null,
+          //               ),
+          //             ),
+          //           ],
+          //         ),
+          //       ),
+          //     ),
+          //   ),
         ],
       ),
     );

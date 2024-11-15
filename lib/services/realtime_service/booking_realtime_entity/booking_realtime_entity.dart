@@ -3,11 +3,13 @@ import 'dart:convert';
 class BookingRealtimeEntity {
   final String id;
   final String status;
+  final String bookingAt;
   final List<AssignmentsRealtimeEntity> assignments;
 
   BookingRealtimeEntity({
     required this.id,
     required this.status,
+    required this.bookingAt,
     required this.assignments,
   });
 
@@ -15,6 +17,7 @@ class BookingRealtimeEntity {
     return BookingRealtimeEntity(
       id: id,
       status: data['Status'],
+      bookingAt: data['BookingAt'],
       assignments: (data['Assignments'] as List<dynamic>?)
               ?.map((e) => AssignmentsRealtimeEntity.fromMap(e))
               .toList() ??
@@ -26,6 +29,7 @@ class BookingRealtimeEntity {
     return {
       'id': id,
       'Status': status,
+      'BookingAt': bookingAt,
       'Assignments': assignments.map((e) => e.toMap()).toList(),
     };
   }

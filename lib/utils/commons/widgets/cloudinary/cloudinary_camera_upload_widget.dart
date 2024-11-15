@@ -1,3 +1,5 @@
+// File: cloudinary_camera_upload_widget.dart
+
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +13,8 @@ class CloudinaryCameraUploadWidget extends HookWidget {
   final Function(String publicId) onImageRemoved;
   final List<String> imagePublicIds;
   final Function(String) onImageTapped;
+  final Widget? optionalButton;
+  final bool showCameraButton;
 
   const CloudinaryCameraUploadWidget({
     super.key,
@@ -19,6 +23,8 @@ class CloudinaryCameraUploadWidget extends HookWidget {
     required this.onImageRemoved,
     required this.imagePublicIds,
     required this.onImageTapped,
+    this.optionalButton,
+    this.showCameraButton = true,
   });
 
   @override
@@ -77,7 +83,6 @@ class CloudinaryCameraUploadWidget extends HookWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Hiển thị hình ảnh đã upload
         if (imagePublicIds.isNotEmpty)
           SizedBox(
             height: 200,
@@ -139,7 +144,6 @@ class CloudinaryCameraUploadWidget extends HookWidget {
             ),
           )
         else
-          // Hiển thị thông báo khi chưa upload ảnh
           Container(
             height: 200,
             alignment: Alignment.center,
@@ -152,29 +156,42 @@ class CloudinaryCameraUploadWidget extends HookWidget {
               style: TextStyle(fontSize: 16, color: Colors.grey),
             ),
           ),
-
         const SizedBox(height: 16),
-        ElevatedButton.icon(
-          onPressed: disabled ? null : uploadImageFromCamera,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFFFF6B00), // Orange background
-            foregroundColor: Colors.white, // White text
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-          icon: isLoading.value
-              ? const SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+        Row(
+          children: [
+            if (showCameraButton) ...[
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: disabled ? null : uploadImageFromCamera,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFFF6B00),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
-                )
-              : const Icon(Icons.camera_alt),
-          label: Text(isLoading.value ? 'Uploading...' : 'Take a Photo'),
+                  icon: isLoading.value
+                      ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        )
+                      : const Icon(Icons.camera_alt),
+                  label: Text(isLoading.value ? 'Đang đợi...' : 'Chụp hình'),
+                ),
+              ),
+            ],
+            if (optionalButton != null) ...[
+              if (showCameraButton) const SizedBox(width: 8),
+              Expanded(child: optionalButton!),
+            ],
+          ],
         ),
       ],
     );

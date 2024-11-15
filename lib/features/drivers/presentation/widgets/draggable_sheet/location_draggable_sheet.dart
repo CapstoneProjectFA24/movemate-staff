@@ -110,7 +110,8 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
                     context: context,
                     job: job,
                     houseTypeById: houseTypeById,
-                    profile: userProfileById),
+                    profile: userProfileById,
+                    status: bookingStatus),
               ],
             ),
           );
@@ -300,11 +301,13 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
         : status.driverStatusMessage ?? '';
   }
 
-  Widget _buildDetailsSheet(
-      {required BuildContext context,
-      required BookingResponseEntity job,
-      required HouseEntities? houseTypeById,
-      required ProfileEntity? profile}) {
+  Widget _buildDetailsSheet({
+    required BuildContext context,
+    required BookingResponseEntity job,
+    required HouseEntities? houseTypeById,
+    required ProfileEntity? profile,
+    required BookingStatusResult status,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0),
       child: Container(
@@ -348,7 +351,8 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
                   const SizedBox(height: 16),
                   _buildCustomerInfo(profile: profile),
                   const SizedBox(height: 3),
-                  _buildConfirmationImageLink(context),
+                  _buildConfirmationImageLink(
+                      context: context, job: job, status: status),
                   const SizedBox(height: 20),
                 ],
               ),
@@ -530,14 +534,20 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
     );
   }
 
-  Widget _buildConfirmationImageLink(BuildContext context) {
+  Widget _buildConfirmationImageLink(
+      {required BookingResponseEntity job,
+      required BookingStatusResult status,
+      required BuildContext context}) {
     return GestureDetector(
       onTap: () {
         // Navigator.push(
         //   context,
         //   MaterialPageRoute(builder: (context) => const PorterConfirmScreen()),
         // );
-        context.router.push(DriverConfirmUploadRoute());
+        context.router.push(DriverConfirmUploadRoute(
+          job: job,
+          status: status,
+        ));
       },
       child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,

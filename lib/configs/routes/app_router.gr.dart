@@ -58,9 +58,14 @@ abstract class _$AppRouter extends RootStackRouter {
       );
     },
     DriverConfirmUploadRoute.name: (routeData) {
+      final args = routeData.argsAs<DriverConfirmUploadRouteArgs>();
       return AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const DriverConfirmUpload(),
+        child: DriverConfirmUpload(
+          key: args.key,
+          job: args.job,
+          status: args.status,
+        ),
       );
     },
     DriverDetailScreenRoute.name: (routeData) {
@@ -402,16 +407,46 @@ class ContactScreenRoute extends PageRouteInfo<void> {
 
 /// generated route for
 /// [DriverConfirmUpload]
-class DriverConfirmUploadRoute extends PageRouteInfo<void> {
-  const DriverConfirmUploadRoute({List<PageRouteInfo>? children})
-      : super(
+class DriverConfirmUploadRoute
+    extends PageRouteInfo<DriverConfirmUploadRouteArgs> {
+  DriverConfirmUploadRoute({
+    Key? key,
+    required BookingResponseEntity job,
+    required BookingStatusResult status,
+    List<PageRouteInfo>? children,
+  }) : super(
           DriverConfirmUploadRoute.name,
+          args: DriverConfirmUploadRouteArgs(
+            key: key,
+            job: job,
+            status: status,
+          ),
           initialChildren: children,
         );
 
   static const String name = 'DriverConfirmUploadRoute';
 
-  static const PageInfo<void> page = PageInfo<void>(name);
+  static const PageInfo<DriverConfirmUploadRouteArgs> page =
+      PageInfo<DriverConfirmUploadRouteArgs>(name);
+}
+
+class DriverConfirmUploadRouteArgs {
+  const DriverConfirmUploadRouteArgs({
+    this.key,
+    required this.job,
+    required this.status,
+  });
+
+  final Key? key;
+
+  final BookingResponseEntity job;
+
+  final BookingStatusResult status;
+
+  @override
+  String toString() {
+    return 'DriverConfirmUploadRouteArgs{key: $key, job: $job, status: $status}';
+  }
 }
 
 /// generated route for

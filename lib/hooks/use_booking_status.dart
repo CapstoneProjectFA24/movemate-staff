@@ -1,4 +1,6 @@
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:intl/intl.dart';
+import 'package:movemate_staff/features/job/domain/entities/booking_enities.dart';
 import 'package:movemate_staff/services/realtime_service/booking_realtime_entity/booking_realtime_entity.dart';
 import 'package:movemate_staff/utils/enums/booking_status_type.dart';
 
@@ -101,6 +103,13 @@ BookingStatusResult useBookingStatus(
     final status = booking.status.toBookingTypeEnum();
     final assignments = booking.assignments ?? [];
 
+// check valid Date and Time >= 30phuts (poster and driver )
+    final bookingAt = booking.bookingAt;
+    final now = DateTime.now();
+    final format = DateFormat("MM/dd/yyyy HH:mm:ss");
+    final bookingDateTime = format.parse(bookingAt);
+    final isValidDate = now.difference(bookingDateTime).inMinutes >= 30;
+
     // Helper functions
     bool hasAssignmentWithStatus(
         String staffType, AssignmentsStatusType status) {
@@ -110,7 +119,6 @@ BookingStatusResult useBookingStatus(
       });
     }
 
-    // Xác định reviewer assignment
     final hasReviewerAssignment =
         hasAssignmentWithStatus("REVIEWER", AssignmentsStatusType.assigned);
 
@@ -162,16 +170,83 @@ BookingStatusResult useBookingStatus(
     bool canDriverStartMoving = false;
     bool canDriverCompleteDelivery = false;
 
-    if ( isDriverAssigned) {
-      if (!isDriverIncoming) {
-        canDriverConfirmIncoming = true;
-      } else if (isDriverIncoming && !isDriverArrived) {
-        canDriverConfirmArrived = true;
-      } else if (isDriverArrived && !isDriverInProgress) {
-        canDriverStartMoving = true;
-      } else if (isDriverInProgress && !isDriverCompleted) {
-        canDriverCompleteDelivery = true;
-      }
+    // if ( isDriverAssigned) {
+    //   if (!isDriverIncoming) {
+    //     canDriverConfirmIncoming = true;
+    //   } else if (isDriverIncoming && !isDriverArrived) {
+    //     canDriverConfirmArrived = true;
+    //   } else if (isDriverArrived && !isDriverInProgress) {
+    //     canDriverStartMoving = true;
+    //   } else if (isDriverInProgress && !isDriverCompleted) {
+    //     canDriverCompleteDelivery = true;
+    //   }
+    // }
+
+    switch (status) {
+      case BookingStatusType.coming:
+        if (isDriverAssigned &&
+            isValidDate &&
+            !isDriverWaiting &&
+            !isDriverIncoming) {
+          canDriverConfirmIncoming = true;
+        } else if (!isDriverWaiting &&
+            !isDriverAssigned &&
+            !isDriverInProgress &&
+            !isDriverCompleted &&
+            !isDriverArrived &&
+            isDriverIncoming) {
+          canDriverConfirmArrived = true;
+        } else if (isDriverArrived &&
+            !isDriverWaiting &&
+            !isDriverInProgress &&
+            !isDriverIncoming &&
+            !isDriverAssigned &&
+            !isDriverCompleted) {
+          canDriverStartMoving = true;
+        } else if (isDriverInProgress &&
+            !isDriverWaiting &&
+            !isDriverIncoming &&
+            !isDriverAssigned &&
+            !isDriverCompleted &&
+            !isDriverArrived) {
+          canDriverCompleteDelivery = true;
+        }
+        break;
+
+      //todo
+      case BookingStatusType.inProgress:
+        if (isDriverAssigned &&
+            !isDriverWaiting &&
+            !isDriverIncoming &&
+            !isDriverArrived &&
+            !isDriverInProgress &&
+            !isDriverCompleted) {
+          canDriverConfirmIncoming = true;
+        } else if (!isDriverWaiting &&
+            !isDriverAssigned &&
+            !isDriverInProgress &&
+            !isDriverCompleted &&
+            !isDriverArrived &&
+            isDriverIncoming) {
+          canDriverConfirmArrived = true;
+        } else if (isDriverArrived &&
+            !isDriverWaiting &&
+            !isDriverInProgress &&
+            !isDriverIncoming &&
+            !isDriverAssigned &&
+            !isDriverCompleted) {
+          canDriverStartMoving = true;
+        } else if (isDriverInProgress &&
+            !isDriverWaiting &&
+            !isDriverIncoming &&
+            !isDriverAssigned &&
+            !isDriverCompleted &&
+            !isDriverArrived) {
+          canDriverCompleteDelivery = true;
+        }
+        break;
+      default:
+        break;
     }
     // Porter action flags
     bool canPorterConfirmIncoming = false;
@@ -181,7 +256,7 @@ BookingStatusResult useBookingStatus(
     bool canPorterConfirmDelivered = false;
     bool canPorterCompleteUnloading = false;
 
-    if ( isPorterAssigned) {
+    if (isPorterAssigned) {
       if (!isPorterIncoming) {
         canPorterConfirmIncoming = true;
       } else if (isPorterIncoming && !isPorterArrived) {
