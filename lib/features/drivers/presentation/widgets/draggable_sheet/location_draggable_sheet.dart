@@ -124,6 +124,14 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
     required BookingStatusResult status,
   }) {
     print("check staus $status");
+
+    print("check time ${job.bookingAt}");
+
+    // Chuyển đổi định dạng thời gian
+    // final bookingDateTime = DateTime.parse(job.bookingAt);
+    // final formattedBookingAt =
+    //     '${bookingDateTime.day}th${bookingDateTime.month}';
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
