@@ -4,10 +4,14 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloudinary_public/cloudinary_public.dart';
+import 'package:movemate_staff/features/job/data/model/request/resource.dart';
 
-class CloudinaryCameraUploadWidget extends HookWidget {
+final uploadedImagesProvider = StateProvider<List<Resource>>((ref) => []);
+
+class CloudinaryCameraUploadWidget extends HookConsumerWidget {
   final bool disabled;
   final Function(String url, String publicId) onImageUploaded;
   final Function(String publicId) onImageRemoved;
@@ -15,6 +19,7 @@ class CloudinaryCameraUploadWidget extends HookWidget {
   final Function(String) onImageTapped;
   final Widget? optionalButton;
   final bool showCameraButton;
+  final Function(Resource)? onUploadComplete;
 
   const CloudinaryCameraUploadWidget({
     super.key,
@@ -25,15 +30,15 @@ class CloudinaryCameraUploadWidget extends HookWidget {
     required this.onImageTapped,
     this.optionalButton,
     this.showCameraButton = true,
+    this.onUploadComplete,
   });
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final picker = useMemoized(() => ImagePicker());
     final isLoading = useState(false);
     final cloudinary = useMemoized(
         () => CloudinaryPublic('dkpnkjnxs', 'movemate', cache: false));
-
+    final uploadedImages = ref.watch(uploadedImagesProvider);
     Future<void> uploadImageFromCamera() async {
       if (disabled || isLoading.value) return;
 
@@ -59,11 +64,20 @@ class CloudinaryCameraUploadWidget extends HookWidget {
           ),
         );
 
-        print('Upload success: ${response.secureUrl}');
+        print('check 1 2 Upload success: ${response.secureUrl}');
+
         onImageUploaded(
           response.secureUrl,
           response.publicId,
         );
+        ref.read(uploadedImagesProvider.notifier).state = [
+          ...uploadedImages,
+          Resource(
+            type: 'image',
+            resourceUrl: response.secureUrl,
+            resourceCode: response.publicId,
+          ),
+        ];
       } catch (e) {
         if (e is DioException) {
           print('Failed to upload image: ${e.response?.data}');

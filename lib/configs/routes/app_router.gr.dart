@@ -64,7 +64,6 @@ abstract class _$AppRouter extends RootStackRouter {
         child: DriverConfirmUpload(
           key: args.key,
           job: args.job,
-          status: args.status,
         ),
       );
     },
@@ -412,14 +411,12 @@ class DriverConfirmUploadRoute
   DriverConfirmUploadRoute({
     Key? key,
     required BookingResponseEntity job,
-    required BookingStatusResult status,
     List<PageRouteInfo>? children,
   }) : super(
           DriverConfirmUploadRoute.name,
           args: DriverConfirmUploadRouteArgs(
             key: key,
             job: job,
-            status: status,
           ),
           initialChildren: children,
         );
@@ -434,18 +431,15 @@ class DriverConfirmUploadRouteArgs {
   const DriverConfirmUploadRouteArgs({
     this.key,
     required this.job,
-    required this.status,
   });
 
   final Key? key;
 
   final BookingResponseEntity job;
 
-  final BookingStatusResult status;
-
   @override
   String toString() {
-    return 'DriverConfirmUploadRouteArgs{key: $key, job: $job, status: $status}';
+    return 'DriverConfirmUploadRouteArgs{key: $key, job: $job}';
   }
 }
 

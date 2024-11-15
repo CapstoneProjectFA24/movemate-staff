@@ -3,23 +3,25 @@
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:movemate_staff/features/drivers/data/models/request/update_resourse_request.dart';
+import 'package:movemate_staff/features/drivers/presentation/controllers/driver_controller/driver_controller.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/hooks/use_booking_status.dart';
+import 'package:movemate_staff/services/realtime_service/booking_status_realtime/booking_status_stream_provider.dart';
 import 'package:movemate_staff/utils/commons/widgets/cloudinary/cloudinary_camera_upload_widget.dart';
 
 @RoutePage()
-class DriverConfirmUpload extends HookWidget {
+class DriverConfirmUpload extends HookConsumerWidget {
   final BookingResponseEntity job;
-  final BookingStatusResult status;
 
   const DriverConfirmUpload({
     super.key,
     required this.job,
-    required this.status,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     // Color constants
     const primaryOrange = Color(0xFFFF6B00);
     const secondaryOrange = Color(0xFFFFE5D6);
@@ -34,6 +36,10 @@ class DriverConfirmUpload extends HookWidget {
     final images3 = useState<List<String>>([]);
     final imagePublicIds3 = useState<List<String>>([]);
     final fullScreenImage = useState<String?>(null);
+    final request = useState(UpdateResourseRequest(resourceList: []));
+    final uploadedImages = ref.watch(uploadedImagesProvider);
+    final bookingAsync = ref.watch(bookingStreamProvider(job.id.toString()));
+    final status = useBookingStatus(bookingAsync.value, job.isReviewOnline);
 
     Widget buildConfirmationSection({
       required String title,
@@ -46,6 +52,7 @@ class DriverConfirmUpload extends HookWidget {
       required IconData actionIcon,
       required bool isEnabled,
       required bool showCameraButton,
+      required UpdateResourseRequest request,
     }) {
       return Container(
         padding: const EdgeInsets.all(16),
@@ -108,31 +115,43 @@ class DriverConfirmUpload extends HookWidget {
             const SizedBox(height: 16),
             if (title != "Xác nhận vận chuyển")
               CloudinaryCameraUploadWidget(
-                disabled: !isEnabled,
-                imagePublicIds: imagePublicIds,
-                onImageUploaded: isEnabled ? onImageUploaded : (_, __) {},
-                onImageRemoved: isEnabled ? onImageRemoved : (_) {},
-                onImageTapped: onImageTapped,
-                showCameraButton: showCameraButton,
-                optionalButton:
-                    imagePublicIds.isNotEmpty || title == "Xác nhận vận chuyển"
-                        ? ElevatedButton.icon(
-                            onPressed: isEnabled ? onActionPressed : null,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  isEnabled ? primaryOrange : disabledGrey,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 12),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
+                  disabled: !isEnabled,
+                  imagePublicIds: imagePublicIds,
+                  onImageUploaded: isEnabled ? onImageUploaded : (_, __) {},
+                  onImageRemoved: isEnabled ? onImageRemoved : (_) {},
+                  onImageTapped: onImageTapped,
+                  showCameraButton: showCameraButton,
+                  optionalButton: imagePublicIds.isNotEmpty ||
+                          title == "Xác nhận vận chuyển"
+                      ? ElevatedButton.icon(
+                          onPressed: isEnabled ? onActionPressed : null,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                isEnabled ? primaryOrange : disabledGrey,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
                             ),
-                            icon: Icon(actionIcon),
-                            label: FittedBox(child: Text(actionButtonLabel)),
-                          )
-                        : null,
-              ),
+                          ),
+                          icon: Icon(actionIcon),
+                          label: FittedBox(child: Text(actionButtonLabel)),
+                        )
+                      : null,
+                  onUploadComplete: (resource) {
+                    switch (title) {
+                      case 'Xác nhận đến':
+                        request.resourceList.add(resource);
+                        break;
+                      case 'Xác nhận vận chuyển':
+                        // Do nothing, no image upload here
+                        break;
+                      case 'Xác nhận giao hàng':
+                        request.resourceList.add(resource);
+                        break;
+                    }
+                  }),
             if (title == "Xác nhận vận chuyển")
               ElevatedButton.icon(
                 onPressed: isEnabled ? onActionPressed : null,
@@ -201,45 +220,30 @@ class DriverConfirmUpload extends HookWidget {
                           .toList();
                     },
                     onImageTapped: (url) => fullScreenImage.value = url,
-                    onActionPressed: () {
+                    onActionPressed: () async {
                       // Xử lý khi tài xế xác nhận đã đến
-                      print("Handling arrival confirmation");
+
+                      final request = UpdateResourseRequest(
+                        resourceList: uploadedImages,
+                      );
+
+                      await ref
+                          .read(driverControllerProvider.notifier)
+                          .updateStatusDriverResourse(
+                            id: job.id,
+                            request: request,
+                            context: context,
+                          );
+                      bookingAsync.isRefreshing;
                     },
                     actionButtonLabel: 'Xác nhận đến',
                     actionIcon: Icons.location_on,
                     isEnabled: status.canDriverConfirmArrived,
                     showCameraButton: true,
+                    request: request.value,
                   ),
                   const SizedBox(height: 16),
-                  //case 2:
-                  buildConfirmationSection(
-                    title: 'Xác nhận vận chuyển',
-                    imagePublicIds: imagePublicIds2.value,
-                    onImageUploaded: (url, publicId) {
-                      images2.value = [...images2.value, url];
-                      imagePublicIds2.value = [
-                        ...imagePublicIds2.value,
-                        publicId
-                      ];
-                    },
-                    onImageRemoved: (publicId) {
-                      imagePublicIds2.value = imagePublicIds2.value
-                          .where((id) => id != publicId)
-                          .toList();
-                    },
-                    onImageTapped: (url) => fullScreenImage.value = url,
-                    onActionPressed: () {
-                      // Xử lý khi bắt đầu vận chuyển
-                      print("Handling transport confirmation");
-                    },
-                    actionButtonLabel: 'Bắt đầu vận chuyển',
-                    actionIcon: Icons.local_shipping,
-                    isEnabled: status.canDriverStartMoving,
-                    // isEnabled: status.canDriverConfirmArrived,
-                    showCameraButton: false,
-                  ),
-                  const SizedBox(height: 16),
-                  //case 3:
+
                   buildConfirmationSection(
                     title: 'Xác nhận giao hàng',
                     imagePublicIds: imagePublicIds3.value,
@@ -256,15 +260,28 @@ class DriverConfirmUpload extends HookWidget {
                           .toList();
                     },
                     onImageTapped: (url) => fullScreenImage.value = url,
-                    onActionPressed: () {
+                    onActionPressed: () async {
+                      final request = UpdateResourseRequest(
+                        resourceList: uploadedImages,
+                      );
+
+                      await ref
+                          .read(driverControllerProvider.notifier)
+                          .updateStatusDriverResourse(
+                            id: job.id,
+                            request: request,
+                            context: context,
+                          );
                       // Xử lý khi giao hàng thành công
                       print("Handling delivery confirmation");
+                      bookingAsync.isRefreshing;
                     },
                     actionButtonLabel: 'Xác nhận giao hàng',
                     actionIcon: Icons.check_circle,
                     isEnabled: status.canDriverCompleteDelivery,
                     // isEnabled: status.canDriverConfirmArrived,
                     showCameraButton: true,
+                    request: request.value,
                   ),
                 ],
               ),

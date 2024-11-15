@@ -47,50 +47,6 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
       context: context,
     );
     final userProfileById = useFetchUserResult.data;
-    // Lấy các thông tin từ widget
-    // final status = job.status;
-    // final assignment = job.assignments.firstWhere(
-    //   (e) => e.userId == userId,
-    //   orElse: () => AssignmentsResponseEntity(
-    //       id: 0, userId: 0, bookingId: 0, status: '', staffType: ''),
-    // );
-    // final subStatus = assignment != null ? assignment.status : null;
-
-    //   DRIVER
-    // 30p trước thời điểm bookingAt thì nó mới được di chuyển (Nhưng lúc đó chưa chuyển từ COMING -> IN_PROGRESS) && subStatus (ASSIGNED -> INCOMING -> ARRIVED )
-// + đầu tiên trạng thái của status là COMING thì sẽ có staffType là DRIVER và subStatus là waiting
-// + một action của REVIEWER chọn cập nhật staffType DRIVER và subStatus từ waiting lên assigned  và status vẫn là coming
-// + khi sắp tới giờ thì status COMING tự động chuyển thành status IN_PROGRESS
-// -> Từ bây h trở đi trạng thái sẽ luôn giữ là status là IN_PROGRESS
-// + Khi driver lái xe sắp tới thì (Chỗ này driver 1 action chính để bấm) -> subStatus từ incoming -> arrived (tới nơi để dọn hàng )
-// + Khi driver dọn hàng lên xe và di chuyển (Chỗ này driver 1 action chính để bấm) -> subStatus từ arrived -> inprogress (dag trong quá trình di chuyển)
-// + khi driver đã tới nơi để trả hàng thì kết thúc tiến trình chuyển (Chỗ này driver 1 action chính để bấm) -> inprogress -> completed
-
-// disable -> flag bool chụp lần 1, chụp lần 2
-
-    // final bookingAt = widget.job.bookingAt;
-    // print("vinh test 3 ${subStatus}");
-    // // Xác định thời gian và điều kiện
-
-    // final now = DateTime.now();
-    // final format = DateFormat("MM/dd/yyyy HH:mm:ss");
-    // final bookingDateTime = format.parse(bookingAt);
-    // final isValidDate = now.difference(bookingDateTime).inMinutes >= 30;
-
-    // // Xác định các điều kiện hành động
-    // final isPendingNotAction =
-    //     status == "COMING" && subStatus == "WAITING" || subStatus == "ASSIGNED";
-
-    // final canStartMoving = (status == "COMING" && subStatus == "ASSIGNED") ||
-    //     (status == "IN_PROGRESS" && subStatus == "ARRIVED") ||
-    //     (status == "IN_PROGRESS" && subStatus == "IN_PROGRESS") && !isValidDate;
-
-    // final canFinishMoving =
-    //     status == "IN_PROGRESS" && subStatus == "IN_PROGRESS";
-
-    // print("vinh log 1 : ${isPendingNotAction}");
-    // print("vinh log 2 : ${canStartMoving}");
-    // print("vinh log 3 : ${canFinishMoving}");
 
     return LoadingOverlay(
       isLoading: state.isLoading,
@@ -546,7 +502,6 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
         // );
         context.router.push(DriverConfirmUploadRoute(
           job: job,
-          status: status,
         ));
       },
       child: const Column(

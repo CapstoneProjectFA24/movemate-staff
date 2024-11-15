@@ -22,6 +22,10 @@ import 'package:dio/dio.dart';
 
 part 'driver_controller.g.dart';
 
+final refreshDriverList = StateProvider.autoDispose<bool>(
+  (ref) => true,
+);
+
 @riverpod
 class DriverController extends _$DriverController {
   @override
@@ -125,13 +129,18 @@ class DriverController extends _$DriverController {
     state = const AsyncLoading();
     final authRepository = ref.read(authRepositoryProvider);
     final user = await SharedPreferencesUtils.getInstance('user_token');
-
+    print(
+        "check 1 contrller request ${request.resourceList.firstWhere((e) => e.type != null).resourceUrl}");
     state = await AsyncValue.guard(() async {
-      await ref.read(bookingRepositoryProvider).updateStatusDriverResourse(
-            accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
-            request: request,
-            id: id,
-          );
+      // await ref.read(bookingRepositoryProvider).updateStatusDriverResourse(
+      //       accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
+      //       request: request,
+      //       id: id,
+      //     );
+
+      ref
+          .read(refreshDriverList.notifier)
+          .update((state) => !ref.read(refreshDriverList));
 
       showSnackBar(
         context: context,
