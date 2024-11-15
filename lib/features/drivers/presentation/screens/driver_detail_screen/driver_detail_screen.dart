@@ -154,7 +154,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
             Timer.periodic(const Duration(seconds: 10), (timer) {
           if (_lastPosition != null) {
             updateLocationFormStaff(_lastPosition!);
-            print('Location updated to Firebase at ${DateTime.now()}');
+            // print('Location updated to Firebase at ${DateTime.now()}');
           }
         });
       }

@@ -103,8 +103,9 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
             controller: scrollController,
             child: Column(
               children: [
-                _buildDeliveryStatusCard(job: job),
-                _buildTrackingInfoCard(job: job, bookingStatus: bookingStatus),
+                _buildDeliveryStatusCard(job: job, status: bookingStatus),
+                _buildTrackingInfoCard(
+                    job: job, status: bookingStatus, context: context),
                 _buildDetailsSheet(
                     context: context,
                     job: job,
@@ -120,7 +121,9 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
 
   Widget _buildDeliveryStatusCard({
     required BookingResponseEntity job,
+    required BookingStatusResult status,
   }) {
+    print("check staus $status");
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
@@ -149,21 +152,39 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
             ),
             const SizedBox(height: 12),
             Row(
-              children: [
-                _buildProgressDot(true),
-                _buildProgressLine(true),
-                _buildProgressDot(true),
-                _buildProgressLine(true),
-                _buildProgressDot(true),
-              ],
-            ),
+                //coming
+                //inProgress
+                //completed
+                children: [
+                  if (status.isBookingComing == true) ...[
+                    _buildProgressDot(true),
+                    _buildProgressLine(false),
+                    _buildProgressDot(false),
+                    _buildProgressLine(false),
+                    _buildProgressDot(false),
+                  ],
+                  if (status.isInProgress == true) ...[
+                    _buildProgressDot(true),
+                    _buildProgressLine(true),
+                    _buildProgressDot(true),
+                    _buildProgressLine(false),
+                    _buildProgressDot(false),
+                  ],
+                  if (status.isCompleted == true) ...[
+                    _buildProgressDot(true),
+                    _buildProgressLine(true),
+                    _buildProgressDot(true),
+                    _buildProgressLine(true),
+                    _buildProgressDot(true),
+                  ],
+                ]),
             const SizedBox(height: 8),
             const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Đã vận chuyển'),
+                Text('Vận chuyển'),
                 Text('Đang giao hàng'),
-                Text('Đã giao hàng'),
+                Text('Hoàn tất'),
               ],
             ),
           ],
@@ -172,11 +193,36 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
     );
   }
 
-  Widget _buildTrackingInfoCard({
-    required BookingResponseEntity job,
-    required BookingStatusResult bookingStatus,
-  }) {
-    print("check status ${bookingStatus.statusMessage}");
+  Widget _buildTrackingInfoCard(
+      {required BookingResponseEntity job,
+      required BookingStatusResult status,
+      required BuildContext context}) {
+    // print("check status ${bookingStatus.statusMessage}");
+    //PORTER
+    //REVIEWER
+    String getDriverRole() {
+      try {
+        final isResponsible = job.assignments
+            .firstWhere((e) => e.staffType == 'DRIVER')
+            .isResponsible;
+
+        return isResponsible == true ? "Trưởng" : "Nhân viên";
+      } catch (e) {
+        return "Bốc vác"; // Giá trị mặc định nếu không tìm thấy Driver
+      }
+    }
+
+    // print("check status ${getDriverRole()}");
+    // print(
+    //     "check status: ${status.driverStatusMessage?.contains('-') == true ? status.driverStatusMessage?.split('-')[1].trim() : status.driverStatusMessage ?? ''}");
+
+    print(
+        "check status ConfirmIncoming  ${status.canDriverConfirmIncoming.toString()}");
+    print("check status StartMoving ${status.canDriverStartMoving.toString()}");
+    print(
+        "check status ConfirmArrived ${status.canDriverConfirmArrived.toString()}");
+    print(
+        "check statusCompleteDelivery${status.canDriverCompleteDelivery.toString()}");
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
@@ -205,24 +251,27 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
               child: const Icon(Icons.local_shipping),
             ),
             const SizedBox(width: 12),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'SPX Express',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Tài xế ${getDriverRole()}',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
-                ),
-                Text(
-                  // " trạng thái bookingStatus.statusMessage",
-                  " trạng thái",
-                  style: TextStyle(color: Colors.grey),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 2,
-                ),
-              ],
+                  const SizedBox(height: 4),
+                  Text(
+                    getDisplayStatus(status),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Colors.grey[600],
+                        ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
+                  ),
+                ],
+              ),
             ),
             // const Spacer(),
             // TextButton(
@@ -233,6 +282,12 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
         ),
       ),
     );
+  }
+
+  String getDisplayStatus(BookingStatusResult status) {
+    return status.driverStatusMessage?.contains('-') == true
+        ? status.driverStatusMessage!.split('-')[1].trim()
+        : status.driverStatusMessage ?? '';
   }
 
   Widget _buildDetailsSheet(
