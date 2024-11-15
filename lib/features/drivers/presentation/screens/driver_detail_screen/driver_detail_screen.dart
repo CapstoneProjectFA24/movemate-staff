@@ -40,7 +40,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
   Widget instructionImage = const SizedBox.shrink();
   bool _isNavigationStarted = false;
   RouteProgressEvent? routeProgressEvent;
-
+  LatLng? _simulatedPosition; // Thêm biến để lưu vị trí giả lập
   //Location tracking
   StreamSubscription<Position>? _positionStreamSubscription;
   Timer? _locationUpdateTimer;
@@ -138,7 +138,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
     }
   }
 
-  void _updateLocationRealtime(Position position, String role) {
+  void _updateLocationRealtime(LatLng position, String role) {
     final String bookingId = widget.job.id.toString();
     if (user?.id != null) {
       locationRef.child('$bookingId/$role/${user?.id}').update({
@@ -149,7 +149,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
     }
   }
 
-  void updateLocationFormStaff(Position position) {
+  void updateLocationFormStaff(LatLng position) {
     for (var assignment in widget.job.assignments) {
       if (assignment.userId == user?.id) {
         String role = assignment.staffType;
@@ -162,30 +162,34 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
   void _startTrackingLocation() {
     _positionStreamSubscription?.cancel();
     _locationUpdateTimer?.cancel();
-    _positionStreamSubscription = Geolocator.getPositionStream(
-      locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.high,
-        distanceFilter: 0, // chỉnh ở đây nếu muốn timing nhanh hơn nhé
-      ),
-    ).listen((Position position) {
-      if (mounted) {
-        setState(() {
-          _currentPosition = position;
-          _lastPosition = position;
-        });
-        final assignment = _getAssignmentForUser();
-        final subStatus = assignment?.status;
-        if (subStatus == "INCOMING" || subStatus == "IN_PROGRESS") {
-          _locationUpdateTimer =
-              Timer.periodic(const Duration(seconds: 10), (timer) {
-            if (_lastPosition != null) {
-              _updateLocationRealtime(_lastPosition!, "DRIVER");
-              print('Location updated to Firebase at ${DateTime.now()}');
-            }
-          });
+
+    if (_navigationOption.simulateRoute!) {
+      // Nếu đang trong chế độ giả lập, chỉ cần timer để kiểm tra _simulatedPosition
+      _locationUpdateTimer =
+          Timer.periodic(const Duration(seconds: 10), (timer) {
+        if (_simulatedPosition != null && _isNavigationStarted) {
+          _updateLocationRealtime(_simulatedPosition!, "DRIVER");
+          print('Simulated location updated to Firebase at ${DateTime.now()}');
         }
-      }
-    });
+      });
+    } else {
+      // Nếu không phải giả lập, sử dụng vị trí GPS thực
+      _positionStreamSubscription = Geolocator.getPositionStream(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+          distanceFilter: 0,
+        ),
+      ).listen((Position position) {
+        if (mounted) {
+          setState(() {
+            _currentPosition = position;
+            _lastPosition = position;
+          });
+          _updateLocationRealtime(
+              LatLng(position.latitude, position.longitude), "DRIVER");
+        }
+      });
+    }
   }
 
   Future<void> _initUserId() async {
@@ -369,6 +373,18 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                           _setInstructionImage(
                               routeProgressEvent.currentModifier,
                               routeProgressEvent.currentModifierType);
+
+                          if (_isNavigationStarted &&
+                              routeProgressEvent.currentLocation != null) {
+                            _simulatedPosition = LatLng(
+                                routeProgressEvent.currentLocation!.latitude!
+                                    .toDouble(),
+                                routeProgressEvent.currentLocation!.longitude!
+                                    .toDouble());
+
+                            _updateLocationRealtime(
+                                _simulatedPosition!, "DRIVER");
+                          }
                         });
                       }
                     },
