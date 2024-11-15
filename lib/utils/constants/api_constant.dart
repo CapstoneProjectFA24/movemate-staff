@@ -34,6 +34,9 @@ class APIConstants {
   static const reviewer_at = '/bookings/reviewer/review-at';
   static const assignments = '/assignments';
 
+  // driver
+   static const drivers = '/bookingdetails/driver/update-status';
+
   // payments
   static const paymentsBooking = '/payments/create-payment-url';
   static const paymentsDeposit = '/wallets/recharge';

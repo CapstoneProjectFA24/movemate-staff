@@ -1,5 +1,6 @@
 // service_booking_repository_impl.dart
 
+import 'package:movemate_staff/features/drivers/data/models/request/update_resourse_request.dart';
 import 'package:movemate_staff/features/job/data/model/queries/booking_queries.dart';
 import 'package:movemate_staff/features/job/data/model/request/booking_requesst.dart';
 import 'package:movemate_staff/features/job/data/model/request/reviewer_status_request.dart';
@@ -231,6 +232,29 @@ class BookingRepositoryImpl extends RemoteBaseRepository
     return getDataOf(
       request: () => _bookingSource.updateAssignStaffIsResponsibility(
           APIConstants.contentType, accessToken, assignmentId),
+    );
+  }
+
+  // driver
+  @override
+  Future<SuccessModel> updateStatusDriverWithoutResourse({
+    required String accessToken,
+    required int id,
+  }) async {
+    return getDataOf(
+      request: () => _bookingSource.updateStatusDriverWithoutResourse(
+          APIConstants.contentType, accessToken, id),
+    );
+  }
+  @override
+  Future<SuccessModel> updateStatusDriverResourse({
+    required String accessToken,
+    required UpdateResourseRequest request,
+    required int id,
+  }) async {
+    return getDataOf(
+      request: () => _bookingSource.updateStatusDriverResourse(
+          APIConstants.contentType, accessToken, request,id),
     );
   }
 }

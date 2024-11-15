@@ -1,6 +1,7 @@
 // service_booking_source.dart
 
 import 'package:dio/dio.dart';
+import 'package:movemate_staff/features/drivers/data/models/request/update_resourse_request.dart';
 import 'package:movemate_staff/features/job/data/model/queries/booking_queries.dart';
 import 'package:movemate_staff/features/job/data/model/request/reviewer_status_request.dart';
 import 'package:movemate_staff/features/job/data/model/request/reviewer_time_request.dart';
@@ -114,6 +115,23 @@ abstract class BookingSource {
     @Header(APIConstants.contentHeader) String contentType,
     @Header(APIConstants.authHeader) String accessToken,
     @Path('id') int assignmentId,
+  );
+
+
+  // drivers
+  @PUT('${APIConstants.drivers}/{id}')
+  Future<HttpResponse<SuccessModel>> updateStatusDriverWithoutResourse(
+    @Header(APIConstants.contentHeader) String contentType,
+    @Header(APIConstants.authHeader) String accessToken,
+    @Path('id') int id,
+  );
+
+  @PUT('${APIConstants.drivers}/{id}')
+  Future<HttpResponse<SuccessModel>> updateStatusDriverResourse(
+    @Header(APIConstants.contentHeader) String contentType,
+    @Header(APIConstants.authHeader) String accessToken,
+    @Body() UpdateResourseRequest request,
+    @Path('id') int id,
   );
 }
 
