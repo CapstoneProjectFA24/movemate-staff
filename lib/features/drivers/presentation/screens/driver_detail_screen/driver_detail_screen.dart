@@ -5,7 +5,10 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:movemate_staff/configs/routes/app_router.dart';
+import 'package:movemate_staff/features/drivers/presentation/controllers/driver_controller/driver_controller.dart';
 import 'package:movemate_staff/features/drivers/presentation/widgets/draggable_sheet/location_draggable_sheet.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/assignment_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
@@ -20,7 +23,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 @RoutePage()
 class DriverDetailScreen extends StatefulWidget {
   final BookingResponseEntity job;
-  const DriverDetailScreen({super.key, required this.job});
+  final WidgetRef ref;
+  const DriverDetailScreen({super.key, required this.job, required this.ref});
 
   static const String apiKey = APIConstants.apiVietMapKey;
 
@@ -32,8 +36,8 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
   MapNavigationViewController? _navigationController;
   late MapOptions _navigationOption;
   final _vietmapNavigationPlugin = VietMapNavigationPlugin();
-  Position? _currentPosition;
-  Position? _lastPosition;
+  LatLng? _currentPosition;
+  LatLng? _lastPosition;
   bool _isMapReady = false; // Thêm biến để track trạng thái map
   bool _showNavigationButton = true;
   Widget recenterButton = const SizedBox.shrink();
@@ -53,6 +57,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
   @override
   void initState() {
     super.initState();
+
     _initUserId();
     _initNavigation();
     _getCurrentLocation();
@@ -70,20 +75,6 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
     }
   }
 
-  bool get canStartMoving {
-    final assignment = _getAssignmentForUser();
-    final subStatus = assignment?.status;
-
-    if (subStatus == null) return false;
-
-    final bool isValidDate = _isBookingDateValid();
-
-    return (widget.job.status == "COMING" && subStatus == "ASSIGNED") ||
-        (widget.job.status == "IN_PROGRESS" &&
-            (subStatus == "ARRIVED" ||
-                (subStatus == "IN_PROGRESS" && isValidDate)));
-  }
-
   bool get inPendingMoving {
     final assignment = _getAssignmentForUser();
     final subStatus = assignment?.status;
@@ -94,6 +85,83 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
 
     return (widget.job.status == "COMING" && subStatus == "WAITING") ||
         (subStatus == "ASSIGNED" && !isValidDate);
+  }
+
+  bool get canStartMoving {
+    final assignment = _getAssignmentForUser();
+    final subStatus = assignment?.status;
+
+    if (subStatus == null) return false;
+
+    final bool isValidDate = _isBookingDateValid();
+
+    return (widget.job.status == "COMING" ||
+            widget.job.status == "IN_PROGRESS" && subStatus == "ASSIGNED") &&
+        isValidDate;
+  }
+
+  bool get incomingToArrived {
+    final assignment = _getAssignmentForUser();
+    final bool isValidDate = _isBookingDateValid();
+    final subStatus = assignment?.status;
+    if (subStatus == null) return false;
+    return ((widget.job.status == "COMING" ||
+            widget.job.status == "IN_PROGRESS") &&
+        subStatus == "INCOMING" &&
+        isValidDate);
+  }
+
+  bool get canStartToDelivery {
+    final assignment = _getAssignmentForUser();
+    final subStatus = assignment?.status;
+
+    if (subStatus == null) return false;
+    return ((widget.job.status == "IN_PROGRESS" && subStatus == "ARRIVED"));
+  }
+
+  bool get canComplete {
+    final assignment = _getAssignmentForUser();
+    final subStatus = assignment?.status;
+    if (subStatus == null) return false;
+
+    return ((widget.job.status == "IN_PROGRESS") &&
+        (subStatus == "IN_PROGRESS"));
+  }
+
+  bool _isStartPoint(String? assignmentStatus) {
+    return (widget.job.status == "COMING" ||
+            widget.job.status == "IN_PROGRESS") &&
+        (assignmentStatus == "WAITING" ||
+            assignmentStatus == "ASSIGNED" ||
+            assignmentStatus == "INCOMING");
+  }
+
+  bool _isAtDeliveryPoint(String? assignmentStatus) {
+    return (widget.job.status == "IN_PROGRESS") &&
+        (assignmentStatus == "ARRIVED" || assignmentStatus == "IN_PROGRESS") &&
+        (assignmentStatus != "COMPLETED");
+  }
+
+  bool _isEndDeliveryPoint(String? assignmentStatus) {
+    return (widget.job.status == "IN_PROGRESS" ||
+            widget.job.status == "COMPLETED") &&
+        (assignmentStatus == "COMPLETED");
+  }
+
+  LatLng _getPickupPointLatLng() {
+    final pickupPointCoordinates = widget.job.pickupPoint.split(',');
+    return LatLng(
+      double.parse(pickupPointCoordinates[0].trim()),
+      double.parse(pickupPointCoordinates[1].trim()),
+    );
+  }
+
+  LatLng _getDeliveryPointLatLng() {
+    final deliveryPointCoordinates = widget.job.deliveryPoint.split(',');
+    return LatLng(
+      double.parse(deliveryPointCoordinates[0].trim()),
+      double.parse(deliveryPointCoordinates[1].trim()),
+    );
   }
 
   AssignmentsResponseEntity? _getAssignmentForUser() {
@@ -126,8 +194,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
   //     });
   //   }
   // }
-
-  void _updateLocationOnce(Position position, String role) {
+  void _updateLocationOnce(LatLng position, String role) {
     final String bookingId = widget.job.id.toString();
     if (user?.id != null) {
       locationRef.child('$bookingId/$role/${user?.id}').set({
@@ -182,11 +249,9 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
       ).listen((Position position) {
         if (mounted) {
           setState(() {
-            _currentPosition = position;
-            _lastPosition = position;
+            _currentPosition = LatLng(position.latitude, position.longitude);
           });
-          _updateLocationRealtime(
-              LatLng(position.latitude, position.longitude), "DRIVER");
+          _updateLocationRealtime(_currentPosition!, "DRIVER");
         }
       });
     }
@@ -212,14 +277,10 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
       final subStatus = assignment?.status;
 
       // Parse coordinates
-      List<String> pickupCoordinates = widget.job.pickupPoint.split(',');
-      List<String> deliveryCoordinates = widget.job.deliveryPoint.split(',');
 
-      LatLng pickupPoint = LatLng(double.parse(pickupCoordinates[0].trim()),
-          double.parse(pickupCoordinates[1].trim()));
+      LatLng pickupPoint = _getPickupPointLatLng();
 
-      LatLng deliveryPoint = LatLng(double.parse(deliveryCoordinates[0].trim()),
-          double.parse(deliveryCoordinates[1].trim()));
+      LatLng deliveryPoint = _getDeliveryPointLatLng();
 
       List<NavigationMarker> markers = [];
 
@@ -273,9 +334,23 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
 
       if (mounted) {
         setState(() {
-          _currentPosition = position;
-          _updateLocationOnce(_currentPosition!, "DRIVER");
-          _buildInitialRoute();
+          final assignment = _getAssignmentForUser();
+          final subStatus = assignment?.status;
+
+          if (_isStartPoint(subStatus)) {
+            _currentPosition = LatLng(position.latitude, position.longitude);
+          } else if (_isAtDeliveryPoint(subStatus)) {
+            _currentPosition = _getPickupPointLatLng();
+          } else if (_isEndDeliveryPoint(subStatus)) {
+            _currentPosition = _getDeliveryPointLatLng();
+          }
+
+          if (_currentPosition != null) {
+            _updateLocationOnce(_currentPosition!, "DRIVER");
+            _buildInitialRoute();
+          } else {
+            print("Invalid position. Unable to update location.");
+          }
         });
       }
     } catch (e) {
@@ -289,25 +364,16 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
 
     if (_navigationController != null && _currentPosition != null) {
       LatLng waypoint;
-      if ((widget.job.status == "COMING" ||
-              widget.job.status == "IN_PROGRESS") &&
-          (subStatus == "WAITING" ||
-              subStatus == "ASSIGNED" ||
-              subStatus == "INCOMING")) {
-        List<String> pickupPointCoordinates = widget.job.pickupPoint.split(',');
-        waypoint = LatLng(double.parse(pickupPointCoordinates[0].trim()),
-            double.parse(pickupPointCoordinates[1].trim()));
-      } else if ((widget.job.status == "IN_PROGRESS") &&
-          (subStatus == "IN_PROGRESS" || subStatus == "ARRIVED")) {
-        List<String> deliveryPointCoordinates =
-            widget.job.deliveryPoint.split(',');
-        waypoint = LatLng(double.parse(deliveryPointCoordinates[0].trim()),
-            double.parse(deliveryPointCoordinates[1].trim()));
+      if (_isStartPoint(subStatus)) {
+        waypoint = _getPickupPointLatLng();
+      } else if (_isAtDeliveryPoint(subStatus)) {
+        waypoint = _getDeliveryPointLatLng();
+      } else if (_isEndDeliveryPoint(subStatus)) {
+        waypoint = _getDeliveryPointLatLng();
       } else {
         return;
       }
 
-      print("waypoint $waypoint");
       _navigationController?.buildRoute(
         waypoints: [
           LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
@@ -532,6 +598,33 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                       onPressed: _isMapReady ? _startNavigation : null,
                       child: const Icon(Icons.directions),
                     ),
+                if (incomingToArrived)
+                  FloatingActionButton(
+                    onPressed: () async {
+                      // context.router.push( const DriverConfirmUploadRoute(job: widget.job));
+                      // await widget.ref
+                      //     .read(driverControllerProvider.notifier)
+                      //     .updateStatusDriverWithoutResourse(
+                      //       id: widget.job.id,
+                      //       context: context,
+                      //     );
+
+                      // print("done");
+                    },
+                    child: const Icon(Icons.system_update),
+                  ),
+                if (canStartToDelivery)
+                  FloatingActionButton(
+                    onPressed: _isMapReady ? _startNavigation : null,
+                    child: const Icon(Icons.directions_car),
+                  ),
+                if (canComplete)
+                  FloatingActionButton(
+                    onPressed: () {
+                      // context.router.push( const DriverConfirmUploadRoute(job: widget.job));
+                    },
+                    child: const Icon(Icons.system_update),
+                  )
               ],
             )
           : null,

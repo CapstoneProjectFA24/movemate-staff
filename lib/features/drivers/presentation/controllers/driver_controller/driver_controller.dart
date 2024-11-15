@@ -85,6 +85,7 @@ class DriverController extends _$DriverController {
     final authRepository = ref.read(authRepositoryProvider);
     final user = await SharedPreferencesUtils.getInstance('user_token');
 
+    print("vinh go here ${id}");
     state = await AsyncValue.guard(() async {
       await ref
           .read(bookingRepositoryProvider)
