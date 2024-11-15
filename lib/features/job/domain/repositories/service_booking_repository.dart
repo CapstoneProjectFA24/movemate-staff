@@ -1,5 +1,6 @@
 // service_booking_repository.dart
 
+import 'package:movemate_staff/features/drivers/data/models/request/update_resourse_request.dart';
 import 'package:movemate_staff/features/job/data/model/request/booking_requesst.dart';
 import 'package:movemate_staff/features/job/data/model/request/reviewer_status_request.dart';
 import 'package:movemate_staff/features/job/data/model/request/reviewer_time_request.dart';
@@ -93,6 +94,17 @@ abstract class BookingRepository {
   Future<SuccessModel> updateAssignStaffIsResponsibility({
     required String accessToken,
     required int assignmentId,
+  });
+
+  Future<SuccessModel> updateStatusDriverWithoutResourse({
+    required String accessToken,
+    required int id,
+  });
+
+  Future<SuccessModel> updateStatusDriverResourse({
+    required String accessToken,
+    required UpdateResourseRequest request,
+    required int id,
   });
 }
 
