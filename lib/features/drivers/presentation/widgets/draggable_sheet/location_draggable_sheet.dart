@@ -126,11 +126,13 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
     print("check staus $status");
 
     print("check time ${job.bookingAt}");
+    // Tách ngày, tháng từ chuỗi
+    final bookingAtParts = job.bookingAt.split('/');
+    final day = bookingAtParts[1];
+    final month = bookingAtParts[0];
 
-    // Chuyển đổi định dạng thời gian
-    // final bookingDateTime = DateTime.parse(job.bookingAt);
-    // final formattedBookingAt =
-    //     '${bookingDateTime.day}th${bookingDateTime.month}';
+    // Tạo chuỗi định dạng
+    final formattedBookingAt = ' $day th$month';
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -152,7 +154,7 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Giao vào ${job.bookingAt}',
+              'Giao vào ${formattedBookingAt}',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
