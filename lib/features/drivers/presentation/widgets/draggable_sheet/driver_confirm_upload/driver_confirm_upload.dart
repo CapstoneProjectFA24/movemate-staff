@@ -1,5 +1,6 @@
 // File: driver_confirm_upload.dart
 
+import 'package:cloudinary_url_gen/transformation/source/source.dart';
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -31,8 +32,7 @@ class DriverConfirmUpload extends HookConsumerWidget {
     // Image states
     final images1 = useState<List<String>>([]);
     final imagePublicIds1 = useState<List<String>>([]);
-    final images2 = useState<List<String>>([]);
-    final imagePublicIds2 = useState<List<String>>([]);
+
     final images3 = useState<List<String>>([]);
     final imagePublicIds3 = useState<List<String>>([]);
     final fullScreenImage = useState<String?>(null);
@@ -40,6 +40,42 @@ class DriverConfirmUpload extends HookConsumerWidget {
     final uploadedImages = ref.watch(uploadedImagesProvider);
     final bookingAsync = ref.watch(bookingStreamProvider(job.id.toString()));
     final status = useBookingStatus(bookingAsync.value, job.isReviewOnline);
+
+    List<dynamic> getTrackerSources(
+        BookingResponseEntity job, String trackerType) {
+      try {
+        final trackers =
+            job.bookingTrackers.firstWhere((e) => e.type == trackerType);
+
+        return trackers.trackerSources;
+      } catch (e) {
+        return [];
+      }
+    }
+
+    final imagesSourceArrived = getTrackerSources(job, "DRIVER_ARRIVED");
+    final imagesSourceCompleted = getTrackerSources(job, "DRIVER_COMPLETED");
+
+    useEffect(() {
+      if (imagesSourceArrived.isNotEmpty) {
+        images1.value = imagesSourceArrived
+            .map((source) => source['resourceUrl'] as String)
+            .toList();
+
+        imagePublicIds1.value = imagesSourceArrived
+            .map((source) => source['resourceCode'] as String)
+            .toList();
+      }
+      if (imagesSourceCompleted.isNotEmpty) {
+        images3.value = imagesSourceCompleted
+            .map((source) => source['resourceUrl'] as String)
+            .toList();
+
+        imagePublicIds3.value = imagesSourceCompleted
+            .map((source) => source['resourceCode'] as String)
+            .toList();
+      }
+    }, [imagesSourceArrived, imagesSourceCompleted]);
 
     Widget buildConfirmationSection({
       required String title,
@@ -57,7 +93,7 @@ class DriverConfirmUpload extends HookConsumerWidget {
       return Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isEnabled ? Colors.white : disabledGrey.withOpacity(0.5),
+          color: Colors.white,
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
@@ -77,7 +113,7 @@ class DriverConfirmUpload extends HookConsumerWidget {
                   width: 4,
                   height: 24,
                   decoration: BoxDecoration(
-                    color: isEnabled ? primaryOrange : disabledGrey,
+                    color: primaryOrange,
                     borderRadius: const BorderRadius.all(Radius.circular(2)),
                   ),
                 ),
@@ -88,7 +124,7 @@ class DriverConfirmUpload extends HookConsumerWidget {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: isEnabled ? darkGrey : disabledGrey,
+                      color: darkGrey,
                     ),
                   ),
                 ),
@@ -96,15 +132,13 @@ class DriverConfirmUpload extends HookConsumerWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: isEnabled
-                        ? secondaryOrange
-                        : disabledGrey.withOpacity(0.3),
+                    color: secondaryOrange,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
                     '${imagePublicIds.length} ảnh',
                     style: TextStyle(
-                      color: isEnabled ? primaryOrange : disabledGrey,
+                      color: primaryOrange,
                       fontWeight: FontWeight.w600,
                       fontSize: 14,
                     ),
@@ -112,7 +146,7 @@ class DriverConfirmUpload extends HookConsumerWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            // const SizedBox(height: 16),
             if (title != "Xác nhận vận chuyển")
               CloudinaryCameraUploadWidget(
                   disabled: !isEnabled,
@@ -152,21 +186,6 @@ class DriverConfirmUpload extends HookConsumerWidget {
                         break;
                     }
                   }),
-            if (title == "Xác nhận vận chuyển")
-              ElevatedButton.icon(
-                onPressed: isEnabled ? onActionPressed : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: isEnabled ? primaryOrange : disabledGrey,
-                  foregroundColor: Colors.white,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                icon: Icon(actionIcon),
-                label: FittedBox(child: Text(actionButtonLabel)),
-              ),
           ],
         ),
       );
@@ -205,7 +224,9 @@ class DriverConfirmUpload extends HookConsumerWidget {
                 children: [
                   //case 1:
                   buildConfirmationSection(
-                    title: 'Xác nhận đã đến',
+                    title: imagesSourceArrived.isNotEmpty
+                        ? 'Đã xác nhận'
+                        : 'Xác nhận đã đến',
                     imagePublicIds: imagePublicIds1.value,
                     onImageUploaded: (url, publicId) {
                       images1.value = [...images1.value, url];
@@ -243,9 +264,11 @@ class DriverConfirmUpload extends HookConsumerWidget {
                     request: request.value,
                   ),
                   const SizedBox(height: 16),
-
+                  //case 3
                   buildConfirmationSection(
-                    title: 'Xác nhận giao hàng',
+                    title: imagesSourceCompleted.isNotEmpty
+                        ? 'Đã hoàn tất giao hàng'
+                        : 'Xác nhận giao hàng',
                     imagePublicIds: imagePublicIds3.value,
                     onImageUploaded: (url, publicId) {
                       images3.value = [...images3.value, url];
