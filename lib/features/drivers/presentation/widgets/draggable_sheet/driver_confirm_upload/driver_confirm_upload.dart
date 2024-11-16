@@ -1,5 +1,3 @@
-// File: driver_confirm_upload.dart
-
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -22,6 +20,26 @@ class DriverConfirmUpload extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Lấy thông tin từ bookingTrackers
+    final bookingTrackers = job.bookingTrackers ?? [];
+
+    // Lọc các trackerSources cho DRIVER_ARRIVED và DRIVER_COMPLETED
+    final driverArrivedImages = bookingTrackers
+        .where((tracker) => tracker.type == "DRIVER_ARRIVED")
+        .expand((tracker) => tracker.trackerSources)
+        .where((source) => source.containsKey(
+            'resourceUrl')) // Kiểm tra sự tồn tại của 'resourceUrl'
+        .map((source) =>
+            source['resourceUrl'].toString()) // Chuyển resourceUrl thành chuỗi
+        .toList();
+
+    final driverCompletedImages = bookingTrackers
+        .where((tracker) => tracker.type == "DRIVER_COMPLETED")
+        .expand((tracker) => tracker.trackerSources)
+        .map((source) => source['resourceUrl']
+            .toString()) // Truy cập đúng thuộc tính resourceUrl
+        .toList();
+
     // Color constants
     const primaryOrange = Color(0xFFFF6B00);
     const secondaryOrange = Color(0xFFFFE5D6);
@@ -40,6 +58,9 @@ class DriverConfirmUpload extends HookConsumerWidget {
     final uploadedImages = ref.watch(uploadedImagesProvider);
     final bookingAsync = ref.watch(bookingStreamProvider(job.id.toString()));
     final status = useBookingStatus(bookingAsync.value, job.isReviewOnline);
+    print("check 12  ${driverArrivedImages}"); // Kiểm tra dữ liệu có đúng không
+    print("check 13 $driverCompletedImages"); // Kiểm tra dữ liệu có đúng không
+    print("check 14 imagePublicIds1: ${imagePublicIds1.value}");
 
     Widget buildConfirmationSection({
       required String title,
@@ -117,7 +138,13 @@ class DriverConfirmUpload extends HookConsumerWidget {
               CloudinaryCameraUploadWidget(
                   disabled: !isEnabled,
                   imagePublicIds: imagePublicIds,
-                  onImageUploaded: isEnabled ? onImageUploaded : (_, __) {},
+                  onImageUploaded: (url, publicId) {
+                    images1.value = [...images1.value, url];
+                    imagePublicIds1.value = [
+                      ...imagePublicIds1.value,
+                      publicId
+                    ];
+                  },
                   onImageRemoved: isEnabled ? onImageRemoved : (_) {},
                   onImageTapped: onImageTapped,
                   showCameraButton: showCameraButton,
@@ -203,10 +230,10 @@ class DriverConfirmUpload extends HookConsumerWidget {
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
               child: Column(
                 children: [
-                  //case 1:
+                  //case 1: DRIVER_ARRIVED images
                   buildConfirmationSection(
                     title: 'Xác nhận đã đến',
-                    imagePublicIds: imagePublicIds1.value,
+                    imagePublicIds: driverArrivedImages,
                     onImageUploaded: (url, publicId) {
                       images1.value = [...images1.value, url];
                       imagePublicIds1.value = [
@@ -222,7 +249,6 @@ class DriverConfirmUpload extends HookConsumerWidget {
                     onImageTapped: (url) => fullScreenImage.value = url,
                     onActionPressed: () async {
                       // Xử lý khi tài xế xác nhận đã đến
-
                       final request = UpdateResourseRequest(
                         resourceList: uploadedImages,
                       );
@@ -244,9 +270,10 @@ class DriverConfirmUpload extends HookConsumerWidget {
                   ),
                   const SizedBox(height: 16),
 
+                  //case 3: DRIVER_COMPLETED images
                   buildConfirmationSection(
                     title: 'Xác nhận giao hàng',
-                    imagePublicIds: imagePublicIds3.value,
+                    imagePublicIds: driverCompletedImages,
                     onImageUploaded: (url, publicId) {
                       images3.value = [...images3.value, url];
                       imagePublicIds3.value = [
@@ -279,7 +306,6 @@ class DriverConfirmUpload extends HookConsumerWidget {
                     actionButtonLabel: 'Xác nhận giao hàng',
                     actionIcon: Icons.check_circle,
                     isEnabled: status.canDriverCompleteDelivery,
-                    // isEnabled: status.canDriverConfirmArrived,
                     showCameraButton: true,
                     request: request.value,
                   ),
@@ -287,38 +313,6 @@ class DriverConfirmUpload extends HookConsumerWidget {
               ),
             ),
           ),
-          // Full screen image viewer
-          // if (fullScreenImage.value != null)
-          //   Positioned.fill(
-          //     child: GestureDetector(
-          //       onTap: () => fullScreenImage.value = null,
-          //       child: Container(
-          //         color: Colors.black.withOpacity(0.9),
-          //         child: Stack(
-          //           children: [
-          //             Center(
-          //               child: Image.network(
-          //                 fullScreenImage.value!,
-          //                 fit: BoxFit.contain,
-          //               ),
-          //             ),
-          //             Positioned(
-          //               top: 40,
-          //               right: 16,
-          //               child: IconButton(
-          //                 icon: const Icon(
-          //                   Icons.close,
-          //                   color: Colors.white,
-          //                   size: 30,
-          //                 ),
-          //                 onPressed: () => fullScreenImage.value = null,
-          //               ),
-          //             ),
-          //           ],
-          //         ),
-          //       ),
-          //     ),
-          //   ),
         ],
       ),
     );
