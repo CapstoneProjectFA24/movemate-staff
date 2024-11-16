@@ -93,6 +93,9 @@ class DriverController extends _$DriverController {
             accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
             id: id,
           );
+      ref
+          .read(refreshDriverList.notifier)
+          .update((state) => !ref.read(refreshDriverList));
 
       showSnackBar(
         context: context,

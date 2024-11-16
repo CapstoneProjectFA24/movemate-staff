@@ -74,6 +74,7 @@ abstract class _$AppRouter extends RootStackRouter {
         child: DriverDetailScreen(
           key: args.key,
           job: args.job,
+          bookingStatus: args.bookingStatus,
           ref: args.ref,
         ),
       );
@@ -451,6 +452,7 @@ class DriverDetailScreenRoute
   DriverDetailScreenRoute({
     Key? key,
     required BookingResponseEntity job,
+    required BookingStatusResult bookingStatus,
     required WidgetRef ref,
     List<PageRouteInfo>? children,
   }) : super(
@@ -458,6 +460,7 @@ class DriverDetailScreenRoute
           args: DriverDetailScreenRouteArgs(
             key: key,
             job: job,
+            bookingStatus: bookingStatus,
             ref: ref,
           ),
           initialChildren: children,
@@ -473,6 +476,7 @@ class DriverDetailScreenRouteArgs {
   const DriverDetailScreenRouteArgs({
     this.key,
     required this.job,
+    required this.bookingStatus,
     required this.ref,
   });
 
@@ -480,11 +484,13 @@ class DriverDetailScreenRouteArgs {
 
   final BookingResponseEntity job;
 
+  final BookingStatusResult bookingStatus;
+
   final WidgetRef ref;
 
   @override
   String toString() {
-    return 'DriverDetailScreenRouteArgs{key: $key, job: $job, ref: $ref}';
+    return 'DriverDetailScreenRouteArgs{key: $key, job: $job, bookingStatus: $bookingStatus, ref: $ref}';
   }
 }
 
