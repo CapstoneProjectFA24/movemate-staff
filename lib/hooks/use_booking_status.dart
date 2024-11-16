@@ -40,6 +40,11 @@ class BookingStatusResult {
   final bool isDriverWaiting;
   final bool isDriverMoving;
 
+  // driver tracking
+  final bool isDriverStartPoint;
+  final bool isDriverAtDeliveryPoint;
+  final bool isDriverEndDeliveryPoint;
+
   // Porter states
   final bool canPorterConfirmIncoming;
   final bool canPorterConfirmArrived;
@@ -81,6 +86,9 @@ class BookingStatusResult {
     this.isDriverAssigned = false,
     this.isDriverWaiting = false,
     this.isDriverMoving = false,
+    this.isDriverStartPoint = false,
+    this.isDriverAtDeliveryPoint = false,
+    this.isDriverEndDeliveryPoint = false,
     this.canPorterConfirmIncoming = false,
     this.canPorterConfirmArrived = false,
     this.canPorterStartMoving = false,
@@ -169,18 +177,9 @@ BookingStatusResult useBookingStatus(
     bool canDriverConfirmArrived = false;
     bool canDriverStartMoving = false;
     bool canDriverCompleteDelivery = false;
-
-    // if ( isDriverAssigned) {
-    //   if (!isDriverIncoming) {
-    //     canDriverConfirmIncoming = true;
-    //   } else if (isDriverIncoming && !isDriverArrived) {
-    //     canDriverConfirmArrived = true;
-    //   } else if (isDriverArrived && !isDriverInProgress) {
-    //     canDriverStartMoving = true;
-    //   } else if (isDriverInProgress && !isDriverCompleted) {
-    //     canDriverCompleteDelivery = true;
-    //   }
-    // }
+    bool isDriverStartPoint = false;
+    bool isDriverAtDeliveryPoint = false;
+    bool isDriverEndDeliveryPoint = false;
 
     switch (status) {
       case BookingStatusType.coming:
@@ -211,9 +210,13 @@ BookingStatusResult useBookingStatus(
             !isDriverArrived) {
           canDriverCompleteDelivery = true;
         }
+        isDriverStartPoint = isDriverWaiting ||
+            isDriverAssigned ||
+            isDriverIncoming ||
+            (!isDriverInProgress && !isDriverCompleted);
+
         break;
 
-      //todo
       case BookingStatusType.inProgress:
         if (isDriverAssigned &&
             !isDriverWaiting &&
@@ -244,6 +247,13 @@ BookingStatusResult useBookingStatus(
             !isDriverArrived) {
           canDriverCompleteDelivery = true;
         }
+        isDriverAtDeliveryPoint =
+            (isDriverArrived || isDriverInProgress) && !isDriverCompleted;
+        isDriverEndDeliveryPoint = isDriverCompleted;
+        break;
+
+      case BookingStatusType.completed:
+        isDriverEndDeliveryPoint = isDriverCompleted;
         break;
       default:
         break;
@@ -387,6 +397,9 @@ BookingStatusResult useBookingStatus(
       isDriverAssigned: isDriverAssigned,
       isDriverWaiting: isDriverWaiting,
       isDriverMoving: isDriverInProgress,
+      isDriverStartPoint: isDriverStartPoint,
+      isDriverAtDeliveryPoint: isDriverAtDeliveryPoint,
+      isDriverEndDeliveryPoint: isDriverEndDeliveryPoint,
       canPorterConfirmIncoming: canPorterConfirmIncoming,
       canPorterConfirmArrived: canPorterConfirmArrived,
       canPorterStartMoving: canPorterStartMoving,

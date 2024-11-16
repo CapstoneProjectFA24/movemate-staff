@@ -12,6 +12,7 @@ import 'package:movemate_staff/features/drivers/presentation/controllers/driver_
 import 'package:movemate_staff/features/drivers/presentation/widgets/draggable_sheet/location_draggable_sheet.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/assignment_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
+import 'package:movemate_staff/hooks/use_booking_status.dart';
 import 'package:movemate_staff/models/user_model.dart';
 import 'package:movemate_staff/utils/commons/functions/functions_common_export.dart';
 import 'package:movemate_staff/utils/commons/widgets/form_input/label_text.dart';
@@ -23,8 +24,13 @@ import 'package:flutter_svg/flutter_svg.dart';
 @RoutePage()
 class DriverDetailScreen extends StatefulWidget {
   final BookingResponseEntity job;
+  final BookingStatusResult bookingStatus;
   final WidgetRef ref;
-  const DriverDetailScreen({super.key, required this.job, required this.ref});
+  const DriverDetailScreen(
+      {super.key,
+      required this.job,
+      required this.bookingStatus,
+      required this.ref});
 
   static const String apiKey = APIConstants.apiVietMapKey;
 
@@ -126,26 +132,6 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
 
     return ((widget.job.status == "IN_PROGRESS") &&
         (subStatus == "IN_PROGRESS"));
-  }
-
-  bool _isStartPoint(String? assignmentStatus) {
-    return (widget.job.status == "COMING" ||
-            widget.job.status == "IN_PROGRESS") &&
-        (assignmentStatus == "WAITING" ||
-            assignmentStatus == "ASSIGNED" ||
-            assignmentStatus == "INCOMING");
-  }
-
-  bool _isAtDeliveryPoint(String? assignmentStatus) {
-    return (widget.job.status == "IN_PROGRESS") &&
-        (assignmentStatus == "ARRIVED" || assignmentStatus == "IN_PROGRESS") &&
-        (assignmentStatus != "COMPLETED");
-  }
-
-  bool _isEndDeliveryPoint(String? assignmentStatus) {
-    return (widget.job.status == "IN_PROGRESS" ||
-            widget.job.status == "COMPLETED") &&
-        (assignmentStatus == "COMPLETED");
   }
 
   LatLng _getPickupPointLatLng() {
@@ -334,14 +320,11 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
 
       if (mounted) {
         setState(() {
-          final assignment = _getAssignmentForUser();
-          final subStatus = assignment?.status;
-
-          if (_isStartPoint(subStatus)) {
+          if (widget.bookingStatus.isDriverStartPoint) {
             _currentPosition = LatLng(position.latitude, position.longitude);
-          } else if (_isAtDeliveryPoint(subStatus)) {
+          } else if (widget.bookingStatus.isDriverAtDeliveryPoint) {
             _currentPosition = _getPickupPointLatLng();
-          } else if (_isEndDeliveryPoint(subStatus)) {
+          } else if (widget.bookingStatus.isDriverEndDeliveryPoint) {
             _currentPosition = _getDeliveryPointLatLng();
           }
 
@@ -359,16 +342,17 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
   }
 
   void _buildInitialRoute() {
-    final assignment = _getAssignmentForUser();
-    final subStatus = assignment?.status;
-
+    // flag ở đây check xóa sau
+    print("vinh log status ${widget.bookingStatus.isDriverStartPoint}");
+    print("vinh log status1 ${widget.bookingStatus.isDriverAtDeliveryPoint}");
+    print("vinh log status2 ${widget.bookingStatus.isDriverEndDeliveryPoint}");
     if (_navigationController != null && _currentPosition != null) {
       LatLng waypoint;
-      if (_isStartPoint(subStatus)) {
+      if (widget.bookingStatus.isDriverStartPoint) {
         waypoint = _getPickupPointLatLng();
-      } else if (_isAtDeliveryPoint(subStatus)) {
+      } else if (widget.bookingStatus.isDriverAtDeliveryPoint) {
         waypoint = _getDeliveryPointLatLng();
-      } else if (_isEndDeliveryPoint(subStatus)) {
+      } else if (widget.bookingStatus.isDriverEndDeliveryPoint) {
         waypoint = _getDeliveryPointLatLng();
       } else {
         return;
@@ -400,7 +384,71 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
     }
   }
 
+  Future<void> _startAssinedToComing() async {
+    if (_isMapReady) {
+      try {
+        setState(() {
+          _isNavigationStarted = true;
+        });
+
+        await _navigationController?.startNavigation();
+        try {
+          await widget.ref
+              .read(driverControllerProvider.notifier)
+              .updateStatusDriverWithoutResourse(
+                id: widget.job.id,
+                context: context,
+              );
+        } catch (driverError) {
+          print(
+              "Lỗi khi bắt đầu điều hướng từ assined lên incoming: $driverError");
+        }
+      } catch (e) {
+        print("Lỗi khi bắt đầu di chuyển $e");
+        setState(() {
+          _isNavigationStarted = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _startArrivedToInprogress() async {
+    if (_isMapReady) {
+      try {
+        setState(() {
+          _isNavigationStarted = true;
+        });
+
+        await _navigationController?.startNavigation();
+        try {
+          await widget.ref
+              .read(driverControllerProvider.notifier)
+              .updateStatusDriverWithoutResourse(
+                id: widget.job.id,
+                context: context,
+              );
+        } catch (driverError) {
+          print(
+              "Lỗi khi bắt đầu điều hướng từ arrived lên inprogress: $driverError");
+        }
+      } catch (e) {
+        print("Lỗi khi bắt đầu di chuyển $e");
+        setState(() {
+          _isNavigationStarted = false;
+        });
+      }
+    }
+  }
+
   void _stopNavigation() {
+    setState(() {
+      _isNavigationStarted = false;
+    });
+    _navigationController?.finishNavigation();
+    _buildInitialRoute();
+  }
+
+  void _finishNavigation() {
     setState(() {
       _isNavigationStarted = false;
     });
@@ -456,44 +504,98 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                     },
                     onArrival: () {
                       showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                                title: const Text("Bạn đã tới nơi vận chuyển "),
-                                backgroundColor: AssetsConstants.whiteColor,
-                                actions: [
-                                  // TextButton(
-                                  //   onPressed: () => Navigator.pop(context),
-                                  //   child: const LabelText(
-                                  //       content: "Đóng",
-                                  //       size: 16,
-                                  //       fontWeight: FontWeight.bold,
-                                  //       color: AssetsConstants.blackColor),
-                                  // ),
-                                  TextButton(
+                        context: context,
+                        barrierDismissible:
+                            false, // Ngăn việc tắt dialog bằng cách chạm bên ngoài
+                        builder: (context) => AlertDialog(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          title: Row(
+                            children: [
+                              const Icon(
+                                Icons.location_on,
+                                color: AssetsConstants.primaryLight,
+                                size: 28,
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Text(
+                                      "Đã đến điểm đích",
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: AssetsConstants.blackColor,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      "Vui lòng xác nhận để tiếp tục",
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: AssetsConstants.blackColor
+                                            .withOpacity(0.7),
+                                        fontWeight: FontWeight.normal,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          backgroundColor: AssetsConstants.whiteColor,
+                          contentPadding:
+                              const EdgeInsets.fromLTRB(24, 20, 24, 0),
+                          actionsPadding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 12),
+                          actions: [
+                            Row(
+                              children: [
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: ElevatedButton(
                                     onPressed: () {
-                                      print("log here go");
-                                      // await ref
-                                      //     .read(reviewerUpdateControllerProvider
-                                      //         .notifier)
-                                      //     .updateReviewerStatus(
-                                      //         id: job.id, context: context);
-                                      // fetchResult.refresh();
-                                      Navigator.pop(context);
                                       setState(() {
                                         instructionImage =
                                             const SizedBox.shrink();
                                         routeProgressEvent = null;
                                         _stopNavigation();
                                       });
+                                      context.router.pop();
+                                      context.router
+                                          .push(DriverConfirmUploadRoute(
+                                        job: widget.job,
+                                      ));
                                     },
-                                    child: const LabelText(
-                                        content: "Xác nhận đã tới",
-                                        size: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: AssetsConstants.primaryLight),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor:
+                                          AssetsConstants.primaryLight,
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 12),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      elevation: 0,
+                                    ),
+                                    child: const Text(
+                                      "Xác nhận đã tới",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                        color: AssetsConstants.whiteColor,
+                                      ),
+                                    ),
                                   ),
-                                ],
-                              ));
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
                     },
                   ),
                   if (!_isNavigationStarted)
@@ -595,27 +697,20 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                 if (!_isNavigationStarted)
                   if (canStartMoving)
                     FloatingActionButton(
-                      onPressed: _isMapReady ? _startNavigation : null,
+                      onPressed: _isMapReady ? _startAssinedToComing : null,
                       child: const Icon(Icons.directions),
                     ),
                 if (incomingToArrived)
                   FloatingActionButton(
-                    onPressed: () async {
-                      // context.router.push( const DriverConfirmUploadRoute(job: widget.job));
-                      // await widget.ref
-                      //     .read(driverControllerProvider.notifier)
-                      //     .updateStatusDriverWithoutResourse(
-                      //       id: widget.job.id,
-                      //       context: context,
-                      //     );
-
-                      // print("done");
+                    onPressed: () {
+                      context.router
+                          .push(DriverConfirmUploadRoute(job: widget.job));
                     },
                     child: const Icon(Icons.system_update),
                   ),
                 if (canStartToDelivery)
                   FloatingActionButton(
-                    onPressed: _isMapReady ? _startNavigation : null,
+                    onPressed: _isMapReady ? _startArrivedToInprogress : null,
                     child: const Icon(Icons.directions_car),
                   ),
                 if (canComplete)
@@ -671,6 +766,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
     if (_navigationController != null && _isNavigationStarted) {
       _stopNavigation();
     }
-    Navigator.of(context).pop();
+
+    context.router.replaceAll([DriversScreenRoute()]);
   }
 }
