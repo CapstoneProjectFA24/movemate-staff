@@ -69,6 +69,16 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
     _initUserIdAndStart();
   }
 
+  Future<void> _initNavigation() async {
+    if (!mounted) return;
+    _navigationOption = _vietmapNavigationPlugin.getDefaultOptions();
+    _navigationOption.simulateRoute = true;
+    _navigationOption.apiKey = APIConstants.apiVietMapKey;
+    _navigationOption.mapStyle =
+        "https://maps.vietmap.vn/api/maps/light/styles.json?apikey=${APIConstants.apiVietMapKey}";
+    _vietmapNavigationPlugin.setDefaultOptions(_navigationOption);
+  }
+
   Future<void> _initUserIdAndStart() async {
     await _initUserId();
     if (mounted) {
@@ -172,16 +182,6 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
 
   Future<void> _initUserId() async {
     user = await SharedPreferencesUtils.getInstance("user_token");
-  }
-
-  Future<void> _initNavigation() async {
-    if (!mounted) return;
-    _navigationOption = _vietmapNavigationPlugin.getDefaultOptions();
-    _navigationOption.simulateRoute = true;
-    _navigationOption.apiKey = APIConstants.apiVietMapKey;
-    _navigationOption.mapStyle =
-        "https://maps.vietmap.vn/api/maps/light/styles.json?apikey=${APIConstants.apiVietMapKey}";
-    _vietmapNavigationPlugin.setDefaultOptions(_navigationOption);
   }
 
   void _addMarkers() async {
@@ -294,7 +294,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
           // LatLng(10.751169, 106.607249),
           // LatLng(10.775458, 106.601052)
         ],
-        profile: DrivingProfile.cycling,
+        profile: DrivingProfile.drivingTraffic,
       );
     }
   }
@@ -307,7 +307,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
           LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
           _nextDestination!
         ],
-        profile: DrivingProfile.cycling,
+        profile: DrivingProfile.drivingTraffic,
       );
 
       // Đợi người dùng xác nhận để bắt đầu điều hướng
