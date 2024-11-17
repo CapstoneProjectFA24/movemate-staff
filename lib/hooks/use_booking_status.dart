@@ -195,13 +195,6 @@ BookingStatusResult useBookingStatus(
             !isDriverArrived &&
             isDriverIncoming) {
           canDriverConfirmArrived = true;
-        } else if (isDriverArrived &&
-            !isDriverWaiting &&
-            !isDriverInProgress &&
-            !isDriverIncoming &&
-            !isDriverAssigned &&
-            !isDriverCompleted) {
-          canDriverStartMoving = true;
         } else if (isDriverInProgress &&
             !isDriverWaiting &&
             !isDriverIncoming &&
