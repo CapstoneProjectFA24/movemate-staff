@@ -48,7 +48,10 @@ class DriversScreen extends HookConsumerWidget {
 
       return scrollController.dispose;
     }, const []);
-
+    // flag true hoặc false
+    ref.listen<bool>(refreshDriverList, (_, __) => fetchResult.refresh);
+    
+    // can thiệp dc
     final jobs = _getJobsFromBookingResponseEntity(
       fetchResult.items,
       selectedDate.value,
@@ -58,9 +61,6 @@ class DriversScreen extends HookConsumerWidget {
       final bStartTime = DateFormat('MM/dd/yyyy HH:mm:ss').parse(b.bookingAt);
       return aStartTime.compareTo(bStartTime);
     });
-
-    // flag true hoặc false
-    ref.listen<bool>(refreshDriverList, (_, __) => fetchResult.refresh);
 
     return Scaffold(
       appBar: CustomAppBar(
@@ -83,9 +83,9 @@ class DriversScreen extends HookConsumerWidget {
             height: 90,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: 14,
+              itemCount: 9,
               itemBuilder: (context, index) {
-                final day = DateTime.now().add(Duration(days: index - 7));
+                final day = DateTime.now().add(Duration(days: index - 2));
                 final isSelected = DateFormat.yMd().format(day) ==
                     DateFormat.yMd().format(selectedDate.value);
                 return GestureDetector(

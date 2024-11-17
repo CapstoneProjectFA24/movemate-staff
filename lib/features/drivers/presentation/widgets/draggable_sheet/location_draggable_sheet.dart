@@ -80,16 +80,16 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
     required BookingResponseEntity job,
     required BookingStatusResult status,
   }) {
-    print("check staus $status");
-
-    print("check time ${job.bookingAt}");
-    // Tách ngày, tháng từ chuỗi
-    final bookingAtParts = job.bookingAt.split('/');
-    final day = bookingAtParts[1];
-    final month = bookingAtParts[0];
+    final dateParts = job.bookingAt.split(' ')[0].split('/');
+    final timeParts = job.bookingAt.split(' ')[1].split(':');
+    final month = dateParts[0];
+    final day = dateParts[1];
+    final year = dateParts[2];
+    final hour = timeParts[0];
+    final minute = timeParts[1];
 
     // Tạo chuỗi định dạng
-    final formattedBookingAt = ' $day th$month';
+    final formattedBookingAt = '$day tháng $month/$year Vào lúc $hour:$minute';
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -149,8 +149,8 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
             const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Vận chuyển'),
-                Text('Đang giao hàng'),
+                Text('Sẵn sàng'),
+                Text('Đang trong tiến trình'),
                 Text('Hoàn tất'),
               ],
             ),

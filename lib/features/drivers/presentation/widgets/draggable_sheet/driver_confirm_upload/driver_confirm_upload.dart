@@ -13,6 +13,7 @@ import 'package:movemate_staff/hooks/use_booking_status.dart';
 import 'package:movemate_staff/services/realtime_service/booking_status_realtime/booking_status_stream_provider.dart';
 import 'package:movemate_staff/utils/commons/widgets/cloudinary/cloudinary_camera_upload_widget.dart';
 import 'package:movemate_staff/utils/commons/widgets/widgets_common_export.dart';
+import 'package:movemate_staff/utils/constants/asset_constant.dart';
 
 @RoutePage()
 class DriverConfirmUpload extends HookConsumerWidget {
@@ -114,16 +115,16 @@ class DriverConfirmUpload extends HookConsumerWidget {
                 Container(
                   width: 4,
                   height: 24,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: primaryOrange,
-                    borderRadius: const BorderRadius.all(Radius.circular(2)),
+                    borderRadius: BorderRadius.all(Radius.circular(2)),
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     title,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: darkGrey,
@@ -197,10 +198,12 @@ class DriverConfirmUpload extends HookConsumerWidget {
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: CustomAppBar(
         backgroundColor: primaryOrange,
+        backButtonColor: AssetsConstants.whiteColor,
         onBackButtonPressed: () {
-          context.router.push(DriverDetailScreenRoute(job: job,bookingStatus: status , ref: ref));
+          context.router.push(DriverDetailScreenRoute(
+              job: job, bookingStatus: status, ref: ref));
         },
-        title: "Xác nhận giao hàng'",
+        title: "Xác nhận hình ảnh",
         showBackButton: true,
       ),
       body: Stack(
@@ -255,8 +258,8 @@ class DriverConfirmUpload extends HookConsumerWidget {
                           );
                       bookingAsync.isRefreshing;
 
-                      context.router
-                          .push(DriverDetailScreenRoute(job: job,bookingStatus:status, ref: ref));
+                      // context.router.push(DriverDetailScreenRoute(
+                      //     job: job, bookingStatus: status, ref: ref));
                     },
                     actionButtonLabel: 'Xác nhận đến',
                     actionIcon: Icons.location_on,
@@ -296,8 +299,8 @@ class DriverConfirmUpload extends HookConsumerWidget {
                             request: request,
                             context: context,
                           );
-                      context.router
-                          .push(DriverDetailScreenRoute(job: job,bookingStatus:status, ref: ref));
+                      // context.router.push(DriverDetailScreenRoute(
+                      //     job: job, bookingStatus: status, ref: ref));
                       bookingAsync.isRefreshing;
                     },
                     actionButtonLabel: 'Xác nhận giao hàng',

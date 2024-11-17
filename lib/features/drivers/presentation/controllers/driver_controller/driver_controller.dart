@@ -87,12 +87,14 @@ class DriverController extends _$DriverController {
 
     print("vinh go here ${id}");
     state = await AsyncValue.guard(() async {
+      print("vinh go here 1 ${id}");
       await ref
           .read(bookingRepositoryProvider)
           .updateStatusDriverWithoutResourse(
             accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
             id: id,
           );
+      print("vinh go here 1 ${id}");
       ref
           .read(refreshDriverList.notifier)
           .update((state) => !ref.read(refreshDriverList));
