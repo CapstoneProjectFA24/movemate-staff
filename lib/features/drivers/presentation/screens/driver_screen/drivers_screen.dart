@@ -49,8 +49,8 @@ class DriversScreen extends HookConsumerWidget {
       return scrollController.dispose;
     }, const []);
     // flag true hoặc false
-    ref.listen<bool>(refreshDriverList, (_, __) => fetchResult.refresh);
-    
+    ref.listen<bool>(refreshDriverList, (_, __) => fetchResult.refresh());
+
     // can thiệp dc
     final jobs = _getJobsFromBookingResponseEntity(
       fetchResult.items,

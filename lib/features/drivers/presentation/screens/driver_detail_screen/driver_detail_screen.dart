@@ -8,6 +8,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/features/drivers/presentation/controllers/driver_controller/driver_controller.dart';
+import 'package:movemate_staff/features/drivers/presentation/controllers/stream_controller/job_stream_manager.dart';
 import 'package:movemate_staff/features/drivers/presentation/widgets/draggable_sheet/location_draggable_sheet.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/assignment_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
@@ -59,14 +60,32 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
   final DatabaseReference locationRef =
       FirebaseDatabase.instance.ref().child('tracking_locations');
 
+  late StreamSubscription<BookingResponseEntity> _jobSubscription;
+  late BookingResponseEntity _currentJob;
+
   @override
   void initState() {
     super.initState();
 
+    _currentJob = widget.job;
+    _initStreams();
     _initUserId();
     _initNavigation();
     _getCurrentLocation();
     _initUserIdAndStart();
+  }
+
+  void _initStreams() {
+    _jobSubscription = JobStreamManager().jobStream.listen((updateJob) {
+
+      if (updateJob.id == widget.job.id) {
+      print('Received updated order in ReviewerTrackingMap: ${updateJob.id}');
+        setState(() {
+          _currentJob = updateJob;
+          // _buildInitialRoute();
+        });
+      }
+    });
   }
 
   Future<void> _initNavigation() async {
@@ -428,7 +447,8 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
     print("vinh log status3 ${widget.bookingStatus.canDriverConfirmIncoming}");
     print("vinh log status4 ${widget.bookingStatus.canDriverStartMoving}");
     print("vinh log status5 ${widget.bookingStatus.canDriverCompleteDelivery}");
-    print("vinh log status6 ${widget.job.assignments.map((e) => e.toJson())}");
+    print(
+        "vinh log status realtime ${_currentJob.assignments.map((e) => e.toJson())}");
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -543,7 +563,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                                                 });
                                                 context.router.push(
                                                     DriverConfirmUploadRoute(
-                                                  job: widget.job,
+                                                  job: _currentJob,
                                                 ));
 
                                                 _startNextRoute();
@@ -556,7 +576,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                                                 });
                                                 context.router.push(
                                                     DriverConfirmUploadRoute(
-                                                  job: widget.job,
+                                                  job: _currentJob,
                                                 ));
                                               }
                                             },
@@ -595,120 +615,6 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                         });
                       }
                     },
-                    // onArrival: () async {
-                    //   showDialog(
-                    //     context: context,
-                    //     barrierDismissible:
-                    //         false,
-                    //     builder: (context) => AlertDialog(
-                    //       shape: RoundedRectangleBorder(
-                    //         borderRadius: BorderRadius.circular(15),
-                    //       ),
-                    //       title: Row(
-                    //         children: [
-                    //           const Icon(
-                    //             Icons.location_on,
-                    //             color: AssetsConstants.primaryLight,
-                    //             size: 28,
-                    //           ),
-                    //           const SizedBox(width: 10),
-                    //           Expanded(
-                    //             child: Column(
-                    //               crossAxisAlignment: CrossAxisAlignment.start,
-                    //               mainAxisSize: MainAxisSize.min,
-                    //               children: [
-                    //                 Text(
-                    //                   _isFirstNavigation
-                    //                       ? "Đã đến điểm nhận hàng"
-                    //                       : "Đã đến điểm giao hàng",
-                    //                   style: const TextStyle(
-                    //                     fontSize: 20,
-                    //                     fontWeight: FontWeight.bold,
-                    //                     color: AssetsConstants.blackColor,
-                    //                   ),
-                    //                 ),
-                    //                 const SizedBox(height: 4),
-                    //                 Text(
-                    //                   "Vui lòng xác nhận để tiếp tục",
-                    //                   style: TextStyle(
-                    //                     fontSize: 14,
-                    //                     color: AssetsConstants.blackColor
-                    //                         .withOpacity(0.7),
-                    //                     fontWeight: FontWeight.normal,
-                    //                   ),
-                    //                 ),
-                    //               ],
-                    //             ),
-                    //           ),
-                    //         ],
-                    //       ),
-                    //       backgroundColor: AssetsConstants.whiteColor,
-                    //       contentPadding:
-                    //           const EdgeInsets.fromLTRB(24, 20, 24, 0),
-                    //       actionsPadding: const EdgeInsets.symmetric(
-                    //           horizontal: 16, vertical: 12),
-                    //       actions: [
-                    //         Row(
-                    //           children: [
-                    //             const SizedBox(width: 12),
-                    //             Expanded(
-                    //               child: ElevatedButton(
-                    //                 onPressed: () async {
-                    //                   context.router.pop();
-                    //                   if (_isFirstNavigation) {
-                    //                     setState(() {
-                    //                       instructionImage =
-                    //                           const SizedBox.shrink();
-                    //                       routeProgressEvent = null;
-                    //                     });
-                    //                     context.router
-                    //                         .push(DriverConfirmUploadRoute(
-                    //                       job: widget.job,
-                    //                     ));
-
-                    //                     _startNextRoute();
-                    //                   } else {
-                    //                     setState(() {
-                    //                       instructionImage =
-                    //                           const SizedBox.shrink();
-                    //                       routeProgressEvent = null;
-                    //                       _stopNavigation();
-                    //                     });
-                    //                     context.router
-                    //                         .push(DriverConfirmUploadRoute(
-                    //                       job: widget.job,
-                    //                     ));
-                    //                   }
-                    //                 },
-                    //                 style: ElevatedButton.styleFrom(
-                    //                   backgroundColor:
-                    //                       AssetsConstants.primaryLight,
-                    //                   padding: const EdgeInsets.symmetric(
-                    //                       vertical: 12),
-                    //                   shape: RoundedRectangleBorder(
-                    //                     borderRadius: BorderRadius.circular(8),
-                    //                   ),
-                    //                   elevation: 0,
-                    //                 ),
-                    //                 child: Text(
-                    //                   _isFirstNavigation
-                    //                       ? "Xác nhận đã nhận hàng"
-                    //                       : "Xác nhận đã giao hàng",
-                    //                   style: const TextStyle(
-                    //                     fontSize: 16,
-                    //                     fontWeight: FontWeight.w600,
-                    //                     color: AssetsConstants.whiteColor,
-                    //                   ),
-                    //                 ),
-                    //               ),
-                    //             ),
-                    //           ],
-                    //         ),
-                    //       ],
-                    //     ),
-                    //   );
-
-                    // },
                   ),
                   if (!_isNavigationStarted)
                     Padding(
@@ -775,7 +681,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                     ),
                   if (!_isNavigationStarted)
                     DeliveryDetailsBottomSheet(
-                      job: widget.job,
+                      job: _currentJob,
                       userId: user?.id,
                     ),
                   Positioned(
@@ -838,26 +744,6 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
       });
     }
   }
-  // void _setInstructionImage(String? modifier, String? type) {
-  //   if (modifier != null && type != null) {
-  //     List<String> data = [
-  //       type.replaceAll(' ', '_'),
-  //       modifier.replaceAll(' ', '_')
-  //     ];
-  //     String path = 'assets/navigation_symbol/${data.join('_')}.svg';
-  //     if (mounted) {
-  //       setState(() {
-  //         instructionImage = SvgPicture.asset(path, color: Colors.white);
-  //       });
-  //     }
-  //   } else {
-  //     if (mounted) {
-  //       setState(() {
-  //         instructionImage = const SizedBox.shrink();
-  //       });
-  //     }
-  //   }
-  // }
 
   @override
   void dispose() {
@@ -875,10 +761,15 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
   void _handleBackNavigation() {
     _positionStreamSubscription?.cancel();
     _locationUpdateTimer?.cancel();
+    _jobSubscription.cancel();
     if (_navigationController != null && _isNavigationStarted) {
       _stopNavigation();
     }
 
-    context.router.replaceAll([const DriversScreenRoute()]);
+    context.router.replaceAll([
+      // const DriversScreenRoute(),
+      // const HomeScreenRoute(),
+      const TabViewScreenRoute()
+    ]);
   }
 }
