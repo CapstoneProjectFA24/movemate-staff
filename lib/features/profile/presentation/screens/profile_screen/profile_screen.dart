@@ -8,6 +8,7 @@ import 'package:movemate_staff/features/profile/presentation/widgets/profile/pro
 import 'package:movemate_staff/features/profile/presentation/widgets/profile/promo_section.dart';
 import 'package:movemate_staff/utils/commons/widgets/app_bar.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
+import 'package:movemate_staff/utils/providers/common_provider.dart';
 
 @RoutePage()
 class ProfileScreen extends HookConsumerWidget {
@@ -66,7 +67,7 @@ class ProfileScreen extends HookConsumerWidget {
         color: Colors.red,
       ),
     ];
-
+ final user = ref.read(authProvider);
     return Scaffold(
       appBar: CustomAppBar(
         backgroundColor: AssetsConstants.primaryMain,
@@ -87,7 +88,7 @@ class ProfileScreen extends HookConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ProfileHeader(profile: profile),
+            ProfileHeader(profile: user),
             const SizedBox(height: 24.0),
             const PromoSection(),
             const SizedBox(height: 24.0),

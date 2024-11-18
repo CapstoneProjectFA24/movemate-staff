@@ -52,6 +52,11 @@ class SignInController extends _$SignInController {
           id: user.payload.id,
           roleName: user.payload.roleName,
           email: user.payload.email,
+          roleId: user.payload.roleId,
+          name: user.payload.name,
+          avatarUrl: user.payload.avatarUrl,
+          gender: user.payload.gender,
+          phone: user.payload.phone,
           tokens: user.payload.tokens,
         );
 

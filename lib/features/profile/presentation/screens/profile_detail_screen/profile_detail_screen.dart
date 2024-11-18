@@ -7,6 +7,7 @@ import 'package:movemate_staff/features/profile/presentation/widgets/details/pro
 import 'package:movemate_staff/utils/commons/widgets/app_bar.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:movemate_staff/utils/providers/common_provider.dart';
 
 @RoutePage()
 class ProfileDetailScreen extends HookConsumerWidget {
@@ -14,6 +15,7 @@ class ProfileDetailScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.read(authProvider);
     return Scaffold(
       appBar: CustomAppBar(
         backgroundColor: AssetsConstants.primaryMain,
@@ -57,11 +59,12 @@ class ProfileDetailScreen extends HookConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 // Profile Picture
-                const Column(
+                Column(
                   children: [
                     CircleAvatar(
                       radius: 50,
-                      backgroundImage: NetworkImage(
+                      backgroundImage: NetworkImage(user!.avatarUrl
+                              .toString() ??
                           'https://storage.googleapis.com/a1aa/image/tYEQXye9fdnxoUhSmM0BNG3N43SB0eCaJKQ3wWsBBo12mmJnA.jpg'),
                     ),
                     SizedBox(height: 10),
@@ -69,7 +72,7 @@ class ProfileDetailScreen extends HookConsumerWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'Lê An',
+                          user.name ?? "",
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -116,10 +119,10 @@ class ProfileDetailScreen extends HookConsumerWidget {
                     context.router.push(
                         const InfoScreenRoute()); // Điều hướng đến trang Info
                   },
-                  children: const [
-                    InfoRow(label: 'Tên thân mật', value: 'Lê An'),
-                    InfoRow(label: 'Tên thật', value: 'Lê An'),
-                    InfoRow(label: 'Giới tính', value: 'Nữ'),
+                  children: [
+                    InfoRow(label: 'Tên thân mật', value: "Vinh"),
+                    InfoRow(label: 'Tên thật', value: 'Nguyễn Vinh'),
+                    InfoRow(label: 'Giới tính', value: 'Nam'),
                     InfoRow(label: 'CMND/CCCD', value: '077123456789'),
                     InfoRow(label: 'Sống tại', value: 'TP. Hồ Chí Minh'),
                   ],
@@ -131,9 +134,9 @@ class ProfileDetailScreen extends HookConsumerWidget {
                   onEditPressed: () {
                     context.router.push(const ContactScreenRoute());
                   },
-                  children: const [
-                    InfoRow(label: 'Số điện thoại', value: '08999123456'),
-                    InfoRow(label: 'Gmail', value: '19521234@gm.uit.edu.vn'),
+                  children: [
+                    InfoRow(label: 'Số điện thoại', value: '${user.phone}'),
+                    InfoRow(label: 'Gmail', value: user.email),
                     InfoRow(
                         label: 'Địa chỉ',
                         value: 'Quận 9, Thành phố Hồ Chí Minh'),
