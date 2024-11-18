@@ -194,25 +194,25 @@ class BookingController extends _$BookingController {
     print('Booking Request: ${jsonEncode(bookingRequest.toMap())}');
 
     state = await AsyncValue.guard(() async {
-      print("go here 1");
+      // print("go here 1");
       await bookingRepository.postBookingservice(
         request: bookingRequest,
         accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
         id: id,
       );
-      print("go here 2");
+      // print("go here 2");
       final updateReviewerStatusRequest = ReviewerStatusRequest(
         estimatedDeliveryTime:
             double.parse(bookingRequest.estimatedDeliveryTime),
         resourceList: bookingRequest.resourceList,
       );
-      print("go here 3 ${updateReviewerStatusRequest.toJson()} ");
+      // print("go here 3 ${updateReviewerStatusRequest.toJson()} ");
       await ref.read(bookingRepositoryProvider).updateStateReviewer(
             accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
             request: updateReviewerStatusRequest,
             id: id,
           );
-      print("go here 4");
+      // print("go here 4");
       // print("bookingResponse $bookingResponse");
       // print(
       //     'Booking bookingResponse.payload.toMap : ${jsonEncode(bookingResponse.payload.toMap())}');

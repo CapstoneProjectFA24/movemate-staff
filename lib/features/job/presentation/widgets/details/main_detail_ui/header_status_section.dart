@@ -380,7 +380,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
       status.canConfirmSuggestion,
       status.isReviewed,
       status.isBookingComing,
-      status.isInProgress,
+      status.isBookingComing || status.isInProgress || status.isConfirmed,
       status.isCompleted,
     ];
 
@@ -441,13 +441,30 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
             ? () => _completeProposal(context, ref)
             : null,
       ),
+      // _TimelineStep(
+      //   title: 'Tiến trình',
+      //   icon: Icons.cleaning_services,
+      //   isActive: status.isInProgress,
+      //   isCompleted: isStepCompleted(7, progressionStates),
+      //   action: status.isBookingComing ? 'Đang đợi' : null,
+      //   onPressed: status.canConfirmSuggestion ? () => {} : null,
+      // ),
+
       _TimelineStep(
         title: 'Tiến trình',
         icon: Icons.cleaning_services,
-        isActive: status.isInProgress,
+        isActive: status.isBookingComing ||
+            status.isInProgress ||
+            status.isConfirmed && !status.isCompleted,
         isCompleted: isStepCompleted(7, progressionStates),
-        action: status.isBookingComing ? 'Đang đợi' : null,
-        onPressed: status.canConfirmSuggestion ? () => {} : null,
+        action:
+            status.isBookingComing || status.isInProgress || status.isConfirmed
+                ? (isExpanded.value ? 'Thu gọn' : 'Mở rộng')
+                : null,
+        onPressed:
+            status.isBookingComing || status.isInProgress || status.isConfirmed
+                ? () => isExpanded.value = !isExpanded.value
+                : null,
       ),
       _TimelineStep(
         title: 'Hoàn tất',
@@ -509,12 +526,13 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
           ),
           TextButton(
             onPressed: () async {
+              Navigator.pop(context);
               print("log here go");
               await ref
                   .read(reviewerUpdateControllerProvider.notifier)
                   .updateReviewerStatus(id: job.id, context: context);
               fetchResult.refresh();
-              Navigator.pop(context);
+              // Navigator.pop(context);
             },
             child: LabelText(
                 content: action,

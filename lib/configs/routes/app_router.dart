@@ -127,6 +127,12 @@ class AppRouter extends _$AppRouter {
           page: JobScreenRoute.page,
         ),
         AutoRoute(
+          page: JobDetailsScreenRoute.page,
+        ),
+        AutoRoute(
+          page: CompleteProposalScreenRoute.page,
+        ),
+        AutoRoute(
           page: WalletScreenRoute.page,
         ),
         AutoRoute(

@@ -233,12 +233,11 @@ class CompleteProposalScreen extends HookConsumerWidget {
                       context: context,
                       id: job.id,
                     );
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => JobDetailsScreen(job: job),
-                  ),
-                );
+             
+
+                context.router.popUntil(
+                    (route) => route.settings.name == 'JobScreenRoute');
+                context.router.push(JobDetailsScreenRoute(job: job));
               },
             );
           },

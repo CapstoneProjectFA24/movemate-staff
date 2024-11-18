@@ -40,14 +40,14 @@ class ReviewerUpdateController extends _$ReviewerUpdateController {
     state = const AsyncLoading();
     final authRepository = ref.read(authRepositoryProvider);
     final user = await SharedPreferencesUtils.getInstance('user_token');
-    print("update request :  $request");
+    // print("tuan log update request 1:  $request");
     state = await AsyncValue.guard(() async {
       await ref.read(bookingRepositoryProvider).updateCreateScheduleReview(
             accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
             request: request,
             id: id,
           );
-
+      // print("tuan log update request 2:  $request");
       showSnackBar(
         context: context,
         content: "Cập nhật lịch hẹn thành công",
