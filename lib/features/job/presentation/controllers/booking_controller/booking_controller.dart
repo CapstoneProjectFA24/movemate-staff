@@ -240,7 +240,7 @@ class BookingController extends _$BookingController {
     int id,
     BuildContext context,
   ) async {
-    // final BookingResponseObject? job;
+    final BookingResponseEntity job;
     state = const AsyncLoading();
     final bookingRepository = ref.read(bookingRepositoryProvider);
     final user = await SharedPreferencesUtils.getInstance('user_token');
@@ -252,8 +252,9 @@ class BookingController extends _$BookingController {
         accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
       );
 
-      print("tuan 2checking job state ");
-      return res.payload;
+      print("tuan 2 checking job state ${res.payload.id}");
+      final job = res.payload;
+      return job;
     });
 
     state = result;
@@ -274,8 +275,6 @@ class BookingController extends _$BookingController {
 
     if (result is AsyncData<BookingResponseEntity>) {
       return result.value;
-    } else {
-      return null;
     }
   }
 }

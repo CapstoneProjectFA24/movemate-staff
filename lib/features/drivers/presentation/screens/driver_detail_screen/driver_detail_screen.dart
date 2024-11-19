@@ -492,7 +492,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                             );
 
                             if (routeProgressEvent.distanceRemaining != null &&
-                                routeProgressEvent.distanceRemaining! <= 10) {
+                                routeProgressEvent.distanceRemaining! <= 50) {
                               showDialog(
                                 context: context,
                                 barrierDismissible: false,

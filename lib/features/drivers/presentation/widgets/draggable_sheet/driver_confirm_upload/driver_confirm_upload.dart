@@ -3,10 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/features/drivers/data/models/request/update_resourse_request.dart';
 import 'package:movemate_staff/features/drivers/presentation/controllers/driver_controller/driver_controller.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
+import 'package:movemate_staff/features/job/presentation/controllers/booking_controller/booking_controller.dart';
 import 'package:movemate_staff/hooks/use_booking_status.dart';
+import 'package:movemate_staff/hooks/use_fetch_obj.dart';
 import 'package:movemate_staff/services/realtime_service/booking_status_realtime/booking_status_stream_provider.dart';
 import 'package:movemate_staff/utils/commons/widgets/cloudinary/cloudinary_camera_upload_widget.dart';
 import 'package:movemate_staff/utils/commons/widgets/widgets_common_export.dart';
@@ -193,34 +196,29 @@ class DriverConfirmUpload extends HookConsumerWidget {
       );
     }
 
+    final bookingController = ref.read(bookingControllerProvider.notifier);
+    final jobBooking = useFetchObject<BookingResponseEntity>(
+        function: (context) async {
+          return await bookingController.getBookingById(job.id, context);
+        },
+        context: context);
+    print("tuan object ${jobBooking.isFetchingData}");
     return Scaffold(
       backgroundColor: Color(0xFFF5F5F5),
       appBar: CustomAppBar(
         backgroundColor: primaryOrange,
         backButtonColor: AssetsConstants.whiteColor,
         onBackButtonPressed: () {
-          // final bookingController =
-          //     ref.read(bookingControllerProvider.notifier);
-
-          // final useFetchUserResult = useFetchObject<BookingResponseEntity>(
-          //   function: (context) =>
-          //       bookingController.getBookingById(job.id, context),
-          //   context: context,
-          // );
-
-          // context.router.push(DriverDetailScreenRoute(
-          //     job: useFetchUserResult.data ?? job,
-          //     bookingStatus: status,
-          //     ref: ref));
-          context.router.pop();
-
-          // final orderEntity = useFetchObject<BookingResponseEntity>(
-          //     function: (context) async {
-          //       return await bookingController.getBookingById(job.id, context);
-          //     },
-          //     context: context);
+    
+          jobBooking.refresh();
+          jobBooking.isFetchingData;
+          if (jobBooking.refresh != null)
+            context.router.push(DriverDetailScreenRoute(
+                job: jobBooking.data ?? job, bookingStatus: status, ref: ref));
+      
 
           print("tuan check ${job.id} ");
+          print("tuan check2 ${jobBooking.data?.id} ");
         },
         title: "Xác nhận hình ảnh",
         showBackButton: true,
