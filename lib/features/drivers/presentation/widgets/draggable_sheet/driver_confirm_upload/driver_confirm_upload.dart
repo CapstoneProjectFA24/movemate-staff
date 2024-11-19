@@ -197,28 +197,26 @@ class DriverConfirmUpload extends HookConsumerWidget {
     }
 
     final bookingController = ref.read(bookingControllerProvider.notifier);
-    final jobBooking = useFetchObject<BookingResponseEntity>(
-        function: (context) async {
-          return await bookingController.getBookingById(job.id, context);
-        },
-        context: context);
-    print("tuan object ${jobBooking.isFetchingData}");
+
     return Scaffold(
       backgroundColor: Color(0xFFF5F5F5),
       appBar: CustomAppBar(
         backgroundColor: primaryOrange,
         backButtonColor: AssetsConstants.whiteColor,
-        onBackButtonPressed: () {
-    
-          jobBooking.refresh();
-          jobBooking.isFetchingData;
-          if (jobBooking.refresh != null)
-            context.router.push(DriverDetailScreenRoute(
-                job: jobBooking.data ?? job, bookingStatus: status, ref: ref));
-      
-
+        onBackButtonPressed: () async {
           print("tuan check ${job.id} ");
-          print("tuan check2 ${jobBooking.data?.id} ");
+          final data = await bookingController.getBookingById(job.id, context);
+
+          if (data != null) {
+            print("tuan check2 ${data.id} ");
+            context.router.push(DriverDetailScreenRoute(
+                job: data, bookingStatus: status, ref: ref));
+
+            print(
+                "tuan object ${data.assignments.firstWhere((e) => e.userId == 61).status}");
+          } else {
+            print("Data is null after fetch");
+          }
         },
         title: "Xác nhận hình ảnh",
         showBackButton: true,

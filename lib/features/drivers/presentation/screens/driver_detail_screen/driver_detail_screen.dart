@@ -448,6 +448,11 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
     print("vinh log status5 ${widget.bookingStatus.canDriverCompleteDelivery}");
     print(
         "vinh log status realtime ${_currentJob.assignments.map((e) => e.toJson())}");
+
+    print(
+        "tuan log status realtime ${widget.job.assignments.map((e) => e.toJson())}");
+    print(
+        "tuan log status realtime ${widget.job.assignments.firstWhere((e) => e.userId == 61).status}");
     return Scaffold(
       body: SafeArea(
         child: Column(
