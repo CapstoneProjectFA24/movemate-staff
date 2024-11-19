@@ -81,9 +81,9 @@ class PorterScreen extends HookConsumerWidget {
             height: 90,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: 7,
+              itemCount: 9,
               itemBuilder: (context, index) {
-                final day = DateTime.now().add(Duration(days: index));
+                final day = DateTime.now().add(Duration(days: index - 2));
                 final isSelected = DateFormat.yMd().format(day) ==
                     DateFormat.yMd().format(selectedDate.value);
                 return GestureDetector(

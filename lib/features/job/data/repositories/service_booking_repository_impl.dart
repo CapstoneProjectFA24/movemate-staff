@@ -14,6 +14,7 @@ import 'package:movemate_staff/features/job/data/model/response/services_respons
 import 'package:movemate_staff/features/job/data/model/response/update_booking_response.dart';
 import 'package:movemate_staff/features/job/data/remotes/booking_source.dart';
 import 'package:movemate_staff/features/job/domain/repositories/service_booking_repository.dart';
+import 'package:movemate_staff/features/porter/data/models/request/porter_update_resourse_request.dart';
 import 'package:movemate_staff/models/request/paging_model.dart';
 import 'package:movemate_staff/models/response/success_model.dart';
 import 'package:movemate_staff/utils/commons/functions/shared_preference_utils.dart';
@@ -254,6 +255,27 @@ class BookingRepositoryImpl extends RemoteBaseRepository
   }) async {
     return getDataOf(
       request: () => _bookingSource.updateStatusDriverResourse(
+          APIConstants.contentType, accessToken, request,id),
+    );
+  }
+  @override
+  Future<SuccessModel> updateStatusPorterWithoutResourse({
+    required String accessToken,
+    required int id,
+  }) async {
+    return getDataOf(
+      request: () => _bookingSource.updateStatusPorterWithoutResourse(
+          APIConstants.contentType, accessToken, id),
+    );
+  }
+  @override
+  Future<SuccessModel> updateStatusPorterResourse({
+    required String accessToken,
+    required PorterUpdateResourseRequest request,
+    required int id,
+  }) async {
+    return getDataOf(
+      request: () => _bookingSource.updateStatusPorterResourse(
           APIConstants.contentType, accessToken, request,id),
     );
   }

@@ -7,6 +7,7 @@ import 'package:movemate_staff/features/job/data/model/request/reviewer_status_r
 import 'package:movemate_staff/features/job/data/model/request/reviewer_time_request.dart';
 import 'package:movemate_staff/features/job/data/model/response/house_type_obj_response.dart';
 import 'package:movemate_staff/features/job/data/model/response/update_booking_response.dart';
+import 'package:movemate_staff/features/porter/data/models/request/porter_update_resourse_request.dart';
 import 'package:movemate_staff/models/response/success_model.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -131,6 +132,23 @@ abstract class BookingSource {
     @Header(APIConstants.contentHeader) String contentType,
     @Header(APIConstants.authHeader) String accessToken,
     @Body() UpdateResourseRequest request,
+    @Path('id') int id,
+  );
+
+
+  // porter
+    @PUT('${APIConstants.porters}/{id}')
+  Future<HttpResponse<SuccessModel>> updateStatusPorterWithoutResourse(
+    @Header(APIConstants.contentHeader) String contentType,
+    @Header(APIConstants.authHeader) String accessToken,
+    @Path('id') int id,
+  );
+
+  @PUT('${APIConstants.porters}/{id}')
+  Future<HttpResponse<SuccessModel>> updateStatusPorterResourse(
+    @Header(APIConstants.contentHeader) String contentType,
+    @Header(APIConstants.authHeader) String accessToken,
+    @Body() PorterUpdateResourseRequest request,
     @Path('id') int id,
   );
 }
