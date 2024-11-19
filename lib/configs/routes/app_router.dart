@@ -34,6 +34,7 @@ import 'package:movemate_staff/features/porter/presentation/screens/porter_detai
 import 'package:movemate_staff/features/test_cloudinary/test_cloudinary_screen.dart';
 import 'package:movemate_staff/features/job/presentation/screen/job_details_screen/job_details_screen.dart';
 import 'package:movemate_staff/features/job/presentation/screen/job_screen/job_screen.dart';
+import 'package:movemate_staff/features/job/presentation/screen/reviewer_chat_with_customer/reviewer_chat_with_customer.dart';
 import 'package:movemate_staff/features/job/presentation/screen/add_job_screen/add_job_screen.dart';
 import 'package:movemate_staff/features/porter/presentation/screens/porter_screen/porter_screen.dart';
 import 'package:movemate_staff/features/history/presentation/screen/history_screen.dart';
@@ -143,6 +144,9 @@ class AppRouter extends _$AppRouter {
         ),
         AutoRoute(
           page: DriverScreenRoute.page,
+        ),
+        AutoRoute(
+          page: ChatWithCustomerScreenRoute.page,
         ),
         AutoRoute(
           page: DriversScreenRoute.page,
