@@ -85,16 +85,16 @@ class DriverController extends _$DriverController {
     final authRepository = ref.read(authRepositoryProvider);
     final user = await SharedPreferencesUtils.getInstance('user_token');
 
-    print("vinh go here ${id}");
+    print("vinh go here $id");
     state = await AsyncValue.guard(() async {
-      print("vinh go here 1 ${id}");
-      await ref
-          .read(bookingRepositoryProvider)
-          .updateStatusDriverWithoutResourse(
-            accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
-            id: id,
-          );
-      print("vinh go here 1 ${id}");
+      print("vinh go here 1 $id");
+      // await ref
+      //     .read(bookingRepositoryProvider)
+      //     .updateStatusDriverWithoutResourse(
+      //       accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
+      //       id: id,
+      //     );
+      print("vinh go here 1.2 $id");
       ref
           .read(refreshDriverList.notifier)
           .update((state) => !ref.read(refreshDriverList));
@@ -138,16 +138,16 @@ class DriverController extends _$DriverController {
     print(
         "check 1 contrller request ${request.resourceList.firstWhere((e) => e.type != null).resourceUrl}");
     state = await AsyncValue.guard(() async {
-      await ref.read(bookingRepositoryProvider).updateStatusDriverResourse(
-            accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
-            request: request,
-            id: id,
-          );
+      // await ref.read(bookingRepositoryProvider).updateStatusDriverResourse(
+      //       accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
+      //       request: request,
+      //       id: id,
+      //     );
 
       ref
           .read(refreshDriverList.notifier)
           .update((state) => !ref.read(refreshDriverList));
-
+      print("object 2 contrller request ");
       showSnackBar(
         context: context,
         content: "Cập nhật trạng thái thành công",

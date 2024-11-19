@@ -184,7 +184,7 @@ BookingStatusResult useBookingStatus(
     switch (status) {
       case BookingStatusType.coming:
         if (isDriverAssigned &&
-            isValidDate &&
+            // isValidDate &&
             !isDriverWaiting &&
             !isDriverIncoming) {
           canDriverConfirmIncoming = true;
@@ -523,8 +523,9 @@ String? determinePorterStatusMessage(
   }
 
   if (isWaiting) return "Đang chờ phân công";
-  if (isAssigned && !isIncoming)
+  if (isAssigned && !isIncoming) {
     return "Đã được phân công - Chờ xác nhận di chuyển";
+  }
   if (isIncoming && !isArrived) return "Đang trên đường đến";
   if (isArrived && !isInProgress) return "Đã đến - Chờ xác nhận bắt đầu dọn";
   if (isInProgress && !isOngoing) return "Đang dọn hàng lên xe";
@@ -550,11 +551,13 @@ String? determineDriverStatusMessage(
   }
 
   if (isWaiting) return "Đang chờ phân công";
-  if (isAssigned && !isIncoming)
+  if (isAssigned && !isIncoming) {
     return "Đã được phân công - Chờ xác nhận di chuyển tới nhà khách hàng";
+  }
   if (isIncoming && !isArrived) return "Đang trên đường đến nhà khách hàng";
-  if (isArrived && !isInProgress)
+  if (isArrived && !isInProgress) {
     return "Đã đến - Chờ xác nhận di chuyển tới điểm giao hàng cho khách";
+  }
   if (isInProgress && !isCompleted) return "Đang vận chuyển hàng";
   if (isCompleted) return "Đã hoàn thành vận chuyển";
 

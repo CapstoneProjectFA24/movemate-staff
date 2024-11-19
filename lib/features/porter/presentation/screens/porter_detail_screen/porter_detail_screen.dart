@@ -31,7 +31,7 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
   final _vietmapNavigationPlugin = VietMapNavigationPlugin();
   Position? _currentPosition; // Thay đổi thành nullable
   bool _isMapReady = false; // Thêm biến để track trạng thái map
-  bool _showNavigationButton = true;
+  final bool _showNavigationButton = true;
   Widget recenterButton = const SizedBox.shrink();
   Widget instructionImage = const SizedBox.shrink();
   bool _isNavigationStarted = false;

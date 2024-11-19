@@ -152,16 +152,18 @@ class DriverConfirmUpload extends HookConsumerWidget {
             // const SizedBox(height: 16),
             if (title != "Xác nhận vận chuyển")
               CloudinaryCameraUploadWidget(
-                  disabled: !isEnabled,
+                  // disabled: !isEnabled,
                   imagePublicIds: imagePublicIds,
-                  onImageUploaded: isEnabled ? onImageUploaded : (_, __) {},
+                  onImageUploaded: onImageUploaded,
+                  // onImageUploaded: isEnabled ? onImageUploaded : (_, __) {},
                   onImageRemoved: isEnabled ? onImageRemoved : (_) {},
                   onImageTapped: onImageTapped,
                   showCameraButton: showCameraButton,
                   optionalButton: imagePublicIds.isNotEmpty ||
                           title == "Xác nhận vận chuyển"
                       ? ElevatedButton.icon(
-                          onPressed: isEnabled ? onActionPressed : null,
+                          // onPressed: isEnabled ? onActionPressed : null,
+                          onPressed: onActionPressed,
                           style: ElevatedButton.styleFrom(
                             backgroundColor:
                                 isEnabled ? primaryOrange : disabledGrey,
@@ -200,11 +202,12 @@ class DriverConfirmUpload extends HookConsumerWidget {
         backgroundColor: primaryOrange,
         backButtonColor: AssetsConstants.whiteColor,
         onBackButtonPressed: () {
-          context.router.push(DriverDetailScreenRoute(
-              job: job, bookingStatus: status, ref: ref));
+          // context.router.push(DriverDetailScreenRoute(
+          //     job: job, bookingStatus: status, ref: ref));
+          context.router.pop();
         },
         title: "Xác nhận hình ảnh",
-        showBackButton: true,
+        // showBackButton: true,
       ),
       body: Stack(
         children: [
@@ -260,6 +263,11 @@ class DriverConfirmUpload extends HookConsumerWidget {
 
                       // context.router.push(DriverDetailScreenRoute(
                       //     job: job, bookingStatus: status, ref: ref));
+
+                      context.router.popUntil((route) =>
+                          route.settings.name == 'DriversScreenRoute');
+                      context.router.push(DriverDetailScreenRoute(
+                          job: job, bookingStatus: status, ref: ref));
                     },
                     actionButtonLabel: 'Xác nhận đến',
                     actionIcon: Icons.location_on,
@@ -301,7 +309,11 @@ class DriverConfirmUpload extends HookConsumerWidget {
                           );
                       // context.router.push(DriverDetailScreenRoute(
                       //     job: job, bookingStatus: status, ref: ref));
-                      bookingAsync.isRefreshing;
+                      context.router.popUntil((route) =>
+                          route.settings.name == 'DriversScreenRoute');
+                      context.router.push(DriverDetailScreenRoute(
+                          job: job, bookingStatus: status, ref: ref));
+                      // bookingAsync.isRefreshing;
                     },
                     actionButtonLabel: 'Xác nhận giao hàng',
                     actionIcon: Icons.check_circle,

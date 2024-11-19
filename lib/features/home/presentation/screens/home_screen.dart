@@ -61,7 +61,7 @@ class HomeScreen extends HookConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'CHÀO MỪNG',
                       style: TextStyle(
                         color: Colors.white,
@@ -69,22 +69,22 @@ class HomeScreen extends HookConsumerWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     Text(
                       'Người đánh giá ${user?.name}',
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18,
                       ),
                     ),
                     Text(
                       'Mã người đánh giá: ${user?.roleId}',
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18,
                       ),
                     ),
-                    Text(
+                    const Text(
                       'Tổng số đánh giá: 20',
                       style: TextStyle(
                         color: Colors.white,

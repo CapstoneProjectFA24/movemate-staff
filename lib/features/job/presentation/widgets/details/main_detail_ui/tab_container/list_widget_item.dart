@@ -15,14 +15,14 @@ class ListItemWidget extends HookConsumerWidget {
   final String subtitle;
 
   const ListItemWidget({
-    Key? key,
+    super.key,
     required this.item,
     required this.selectedValue,
     required this.selectionNotifier,
     required this.icon,
     required this.iconColor,
     required this.subtitle,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -133,7 +133,7 @@ class ListItemWidget extends HookConsumerWidget {
                             color: Colors.grey.shade600,
                           ),
                         ),
-                        SizedBox(width: 4),
+                        const SizedBox(width: 4),
                         Text(
                           '-',
                           style: TextStyle(
@@ -141,7 +141,7 @@ class ListItemWidget extends HookConsumerWidget {
                             color: Colors.grey.shade600,
                           ),
                         ),
-                        SizedBox(width: 4),
+                        const SizedBox(width: 4),
                         Text(
                           userProfile.data?.phone ?? '',
                           style: TextStyle(

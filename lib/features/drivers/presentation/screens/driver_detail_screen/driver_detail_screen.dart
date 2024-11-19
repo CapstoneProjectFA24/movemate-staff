@@ -44,7 +44,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
   LatLng? _currentPosition;
   LatLng? _lastPosition;
   bool _isMapReady = false; // Thêm biến để track trạng thái map
-  bool _showNavigationButton = true;
+  final bool _showNavigationButton = true;
   Widget recenterButton = const SizedBox.shrink();
   Widget instructionImage = const SizedBox.shrink();
   bool _isNavigationStarted = false;
@@ -77,9 +77,8 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
 
   void _initStreams() {
     _jobSubscription = JobStreamManager().jobStream.listen((updateJob) {
-
       if (updateJob.id == widget.job.id) {
-      print('Received updated order in ReviewerTrackingMap: ${updateJob.id}');
+        print('Received updated order in ReviewerTrackingMap: ${updateJob.id}');
         setState(() {
           _currentJob = updateJob;
           // _buildInitialRoute();
@@ -561,10 +560,11 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                                                       const SizedBox.shrink();
                                                   // routeProgressEvent = null;
                                                 });
-                                                context.router.push(
-                                                    DriverConfirmUploadRoute(
-                                                  job: _currentJob,
-                                                ));
+                                                context.router.replaceAll([
+                                                  DriverConfirmUploadRoute(
+                                                    job: _currentJob,
+                                                  )
+                                                ]);
 
                                                 _startNextRoute();
                                               } else {
@@ -574,10 +574,11 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                                                   // routeProgressEvent = null;
                                                   _stopNavigation();
                                                 });
-                                                context.router.push(
-                                                    DriverConfirmUploadRoute(
-                                                  job: _currentJob,
-                                                ));
+                                                context.router.replaceAll([
+                                                  DriverConfirmUploadRoute(
+                                                    job: _currentJob,
+                                                  )
+                                                ]);
                                               }
                                             },
                                             style: ElevatedButton.styleFrom(
@@ -766,10 +767,14 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
       _stopNavigation();
     }
 
-    context.router.replaceAll([
-      // const DriversScreenRoute(),
-      // const HomeScreenRoute(),
-      const TabViewScreenRoute()
-    ]);
+    context.router
+        .popUntil((route) => route.settings.name == 'TabViewScreenRoute');
+    context.router.push(DriversScreenRoute());
+
+    // context.router.replaceAll([
+    //   // const DriversScreenRoute(),
+    //   // const HomeScreenRoute(),
+    //   const TabViewScreenRoute()
+    // ]);
   }
 }

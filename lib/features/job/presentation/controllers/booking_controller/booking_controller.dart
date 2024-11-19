@@ -208,7 +208,7 @@ class BookingController extends _$BookingController {
       );
       // print("go here 3 ${updateReviewerStatusRequest.toJson()} ");
       await ref.read(bookingRepositoryProvider).updateStateReviewer(
-            accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
+            accessToken: APIConstants.prefixToken + user.tokens.accessToken,
             request: updateReviewerStatusRequest,
             id: id,
           );

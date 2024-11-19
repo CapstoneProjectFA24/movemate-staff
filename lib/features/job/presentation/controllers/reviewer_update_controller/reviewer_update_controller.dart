@@ -133,6 +133,7 @@ class ReviewerUpdateController extends _$ReviewerUpdateController {
     final user = await SharedPreferencesUtils.getInstance('user_token');
 
     state = await AsyncValue.guard(() async {
+      print("checking id 1 assignment $assignmentId ");
       await ref
           .read(bookingRepositoryProvider)
           .updateAssignStaffIsResponsibility(
@@ -143,7 +144,7 @@ class ReviewerUpdateController extends _$ReviewerUpdateController {
       ref
           .read(refreshJobList.notifier)
           .update((state) => !ref.read(refreshJobList));
-
+      print("checking id 2 assignment $assignmentId ");
       showSnackBar(
         context: context,
         content: "Cập người chịu trách nhiệm thành công",
