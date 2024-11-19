@@ -41,7 +41,8 @@ class PorterCard extends HookConsumerWidget {
 
     return GestureDetector(
       onTap: () {
-        context.router.push(PorterDetailScreenRoute(job: job));
+        context.router.push(PorterDetailScreenRoute(
+            job: job, bookingStatus: bookingStatus, ref: ref));
       },
       child: Card(
         margin: const EdgeInsets.only(bottom: 16),

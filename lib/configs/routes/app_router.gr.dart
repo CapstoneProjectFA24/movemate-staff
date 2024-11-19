@@ -175,6 +175,8 @@ abstract class _$AppRouter extends RootStackRouter {
         child: PorterDetailScreen(
           key: args.key,
           job: args.job,
+          bookingStatus: args.bookingStatus,
+          ref: args.ref,
         ),
       );
     },
@@ -772,12 +774,16 @@ class PorterDetailScreenRoute
   PorterDetailScreenRoute({
     Key? key,
     required BookingResponseEntity job,
+    required BookingStatusResult bookingStatus,
+    required WidgetRef ref,
     List<PageRouteInfo>? children,
   }) : super(
           PorterDetailScreenRoute.name,
           args: PorterDetailScreenRouteArgs(
             key: key,
             job: job,
+            bookingStatus: bookingStatus,
+            ref: ref,
           ),
           initialChildren: children,
         );
@@ -792,15 +798,21 @@ class PorterDetailScreenRouteArgs {
   const PorterDetailScreenRouteArgs({
     this.key,
     required this.job,
+    required this.bookingStatus,
+    required this.ref,
   });
 
   final Key? key;
 
   final BookingResponseEntity job;
 
+  final BookingStatusResult bookingStatus;
+
+  final WidgetRef ref;
+
   @override
   String toString() {
-    return 'PorterDetailScreenRouteArgs{key: $key, job: $job}';
+    return 'PorterDetailScreenRouteArgs{key: $key, job: $job, bookingStatus: $bookingStatus, ref: $ref}';
   }
 }
 
