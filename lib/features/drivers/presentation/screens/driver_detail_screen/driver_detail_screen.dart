@@ -77,9 +77,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
 
   void _initStreams() {
     _jobSubscription = JobStreamManager().jobStream.listen((updateJob) {
-
       if (updateJob.id == widget.job.id) {
-      print('Received updated order in ReviewerTrackingMap: ${updateJob.id}');
         setState(() {
           _currentJob = updateJob;
           // _buildInitialRoute();
@@ -313,7 +311,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
           // LatLng(10.751169, 106.607249),
           // LatLng(10.775458, 106.601052)
         ],
-        profile: DrivingProfile.drivingTraffic,
+        profile: DrivingProfile.cycling,
       );
     }
   }
@@ -326,7 +324,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
           LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
           _nextDestination!
         ],
-        profile: DrivingProfile.drivingTraffic,
+        profile: DrivingProfile.cycling,
       );
 
       // Đợi người dùng xác nhận để bắt đầu điều hướng
@@ -646,14 +644,6 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                               ),
                             ),
                             const SizedBox(width: 16),
-                            const Text(
-                              'Đã giao hàng',
-                              style: TextStyle(
-                                color: Colors.black54,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
                             const Spacer(),
                             IconButton(
                               icon: const Icon(

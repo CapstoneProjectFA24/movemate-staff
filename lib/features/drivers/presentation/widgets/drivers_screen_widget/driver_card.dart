@@ -31,7 +31,7 @@ class DriverCard extends HookConsumerWidget {
     useEffect(() {
       JobStreamManager().updateJob(job);
       return null;
-    }, [bookingAsync.value]);
+    }, [bookingAsync.value, job]);
 
     Color cardColor;
     String statusText;
