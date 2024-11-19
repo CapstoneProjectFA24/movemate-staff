@@ -489,7 +489,7 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
                             );
 
                             if (routeProgressEvent.distanceRemaining != null &&
-                                routeProgressEvent.distanceRemaining! <= 50) {
+                                routeProgressEvent.distanceRemaining! <= 70) {
                               showDialog(
                                 context: context,
                                 barrierDismissible: false,
@@ -770,10 +770,14 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
       _stopNavigation();
     }
 
-    context.router.replaceAll([
-      // const DriversScreenRoute(),
-      // const HomeScreenRoute(),
-      const TabViewScreenRoute()
-    ]);
+    context.router
+        .popUntil((route) => route.settings.name == 'TabViewScreenRoute');
+    context.router.push(PorterScreenRoute());
+
+    // context.router.replaceAll([
+    //   // const DriversScreenRoute(),
+    //   // const HomeScreenRoute(),
+    //   const TabViewScreenRoute()
+    // ]);
   }
 }

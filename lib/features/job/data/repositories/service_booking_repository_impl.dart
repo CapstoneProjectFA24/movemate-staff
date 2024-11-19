@@ -6,6 +6,7 @@ import 'package:movemate_staff/features/job/data/model/request/booking_requesst.
 import 'package:movemate_staff/features/job/data/model/request/reviewer_status_request.dart';
 import 'package:movemate_staff/features/job/data/model/request/reviewer_time_request.dart';
 import 'package:movemate_staff/features/job/data/model/response/booking_response.dart';
+import 'package:movemate_staff/features/job/data/model/response/booking_response_object.dart';
 import 'package:movemate_staff/features/job/data/model/response/house_type_obj_response.dart';
 import 'package:movemate_staff/features/job/data/model/response/house_type_response.dart';
 import 'package:movemate_staff/features/job/data/model/response/services_fee_system_response.dart';
@@ -13,6 +14,7 @@ import 'package:movemate_staff/features/job/data/model/response/services_package
 import 'package:movemate_staff/features/job/data/model/response/services_response.dart';
 import 'package:movemate_staff/features/job/data/model/response/update_booking_response.dart';
 import 'package:movemate_staff/features/job/data/remotes/booking_source.dart';
+import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/repositories/service_booking_repository.dart';
 import 'package:movemate_staff/features/porter/data/models/request/porter_update_resourse_request.dart';
 import 'package:movemate_staff/models/request/paging_model.dart';
@@ -112,7 +114,7 @@ class BookingRepositoryImpl extends RemoteBaseRepository
   }
 
   @override
-  Future<BookingResponse> getBookingDetails({
+  Future<BookingResponseObject> getBookingDetails({
     required String accessToken,
     required int id,
   }) async {

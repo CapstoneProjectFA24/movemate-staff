@@ -6,7 +6,7 @@ part of 'booking_controller.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$bookingControllerHash() => r'069736f0fa9f63f3052bffbd7acf25696430e69d';
+String _$bookingControllerHash() => r'c3fca4e5c784e9b8097ce179b195c3c077c4cbfb';
 
 /// See also [BookingController].
 @ProviderFor(BookingController)
@@ -23,4 +23,4 @@ final bookingControllerProvider =
 
 typedef _$BookingController = AutoDisposeAsyncNotifier<void>;
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

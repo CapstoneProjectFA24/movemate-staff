@@ -1,11 +1,8 @@
 // File: driver_confirm_upload.dart
-
-import 'package:cloudinary_url_gen/transformation/source/source.dart';
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/features/drivers/data/models/request/update_resourse_request.dart';
 import 'package:movemate_staff/features/drivers/presentation/controllers/driver_controller/driver_controller.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
@@ -197,17 +194,36 @@ class DriverConfirmUpload extends HookConsumerWidget {
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: Color(0xFFF5F5F5),
       appBar: CustomAppBar(
         backgroundColor: primaryOrange,
         backButtonColor: AssetsConstants.whiteColor,
         onBackButtonPressed: () {
+          // final bookingController =
+          //     ref.read(bookingControllerProvider.notifier);
+
+          // final useFetchUserResult = useFetchObject<BookingResponseEntity>(
+          //   function: (context) =>
+          //       bookingController.getBookingById(job.id, context),
+          //   context: context,
+          // );
+
           // context.router.push(DriverDetailScreenRoute(
-          //     job: job, bookingStatus: status, ref: ref));
+          //     job: useFetchUserResult.data ?? job,
+          //     bookingStatus: status,
+          //     ref: ref));
           context.router.pop();
+
+          // final orderEntity = useFetchObject<BookingResponseEntity>(
+          //     function: (context) async {
+          //       return await bookingController.getBookingById(job.id, context);
+          //     },
+          //     context: context);
+
+          print("tuan check ${job.id} ");
         },
         title: "Xác nhận hình ảnh",
-        // showBackButton: true,
+        showBackButton: true,
       ),
       body: Stack(
         children: [

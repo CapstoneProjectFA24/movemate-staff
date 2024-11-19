@@ -329,7 +329,7 @@ class _BookingSource implements BookingSource {
   }
 
   @override
-  Future<HttpResponse<BookingResponse>> getBookingDetails(
+  Future<HttpResponse<BookingResponseObject>> getBookingDetails(
     String contentType,
     String accessToken,
     int id,
@@ -342,27 +342,28 @@ class _BookingSource implements BookingSource {
     };
     _headers.removeWhere((k, v) => v == null);
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<HttpResponse<BookingResponse>>(Options(
+    final _options =
+        _setStreamType<HttpResponse<BookingResponseObject>>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
       contentType: contentType,
     )
-        .compose(
-          _dio.options,
-          '/bookings/${id}',
-          queryParameters: queryParameters,
-          data: _data,
-        )
-        .copyWith(
-            baseUrl: _combineBaseUrls(
-          _dio.options.baseUrl,
-          baseUrl,
-        )));
+            .compose(
+              _dio.options,
+              '/bookings/${id}',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(
+                baseUrl: _combineBaseUrls(
+              _dio.options.baseUrl,
+              baseUrl,
+            )));
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late BookingResponse _value;
+    late BookingResponseObject _value;
     try {
-      _value = BookingResponse.fromMap(_result.data!);
+      _value = BookingResponseObject.fromMap(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
@@ -774,6 +775,8 @@ final bookingSourceProvider = AutoDisposeProvider<BookingSource>.internal(
   allTransitiveDependencies: null,
 );
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 typedef BookingSourceRef = AutoDisposeProviderRef<BookingSource>;
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

@@ -714,8 +714,8 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                 if (!_isNavigationStarted)
                   if (widget.bookingStatus.canDriverConfirmIncoming)
                     FloatingActionButton(
-                      // onPressed: _isMapReady ? _startAssinedToComing : null,
-                      onPressed: _isMapReady ? _startNavigation : null,
+                      onPressed: _isMapReady ? _startAssinedToComing : null,
+                      // onPressed: _isMapReady ? _startNavigation : null,
                       child: const Icon(Icons.directions),
                     ),
                 if (!_isNavigationStarted)

@@ -5,8 +5,10 @@ import 'package:movemate_staff/features/drivers/data/models/request/update_resou
 import 'package:movemate_staff/features/job/data/model/queries/booking_queries.dart';
 import 'package:movemate_staff/features/job/data/model/request/reviewer_status_request.dart';
 import 'package:movemate_staff/features/job/data/model/request/reviewer_time_request.dart';
+import 'package:movemate_staff/features/job/data/model/response/booking_response_object.dart';
 import 'package:movemate_staff/features/job/data/model/response/house_type_obj_response.dart';
 import 'package:movemate_staff/features/job/data/model/response/update_booking_response.dart';
+import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/porter/data/models/request/porter_update_resourse_request.dart';
 import 'package:movemate_staff/models/response/success_model.dart';
 import 'package:retrofit/retrofit.dart';
@@ -80,7 +82,7 @@ abstract class BookingSource {
     @Path('id') int id,
   );
   @GET('${APIConstants.bookings}/{id}')
-  Future<HttpResponse<BookingResponse>> getBookingDetails(
+  Future<HttpResponse<BookingResponseObject>> getBookingDetails(
     @Header(APIConstants.contentHeader) String contentType,
     @Header(APIConstants.authHeader) String accessToken,
     @Path('id') int id,

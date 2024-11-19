@@ -7,7 +7,7 @@ part of 'reviewer_update_controller.dart';
 // **************************************************************************
 
 String _$reviewerUpdateControllerHash() =>
-    r'4b910062a6eca19e57b84f75cd9d2c5aba5721ef';
+    r'381c46cfd69016ad44ff2f7f5ef4000916374ce7';
 
 /// See also [ReviewerUpdateController].
 @ProviderFor(ReviewerUpdateController)
@@ -24,4 +24,4 @@ final reviewerUpdateControllerProvider =
 
 typedef _$ReviewerUpdateController = AutoDisposeAsyncNotifier<void>;
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

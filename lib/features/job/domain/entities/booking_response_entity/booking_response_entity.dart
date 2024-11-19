@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:intl/intl.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/assignment_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_details_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_trackers_response_entity.dart';
