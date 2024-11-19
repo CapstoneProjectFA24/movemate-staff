@@ -37,9 +37,8 @@ class ChatWithCustomerScreen extends HookConsumerWidget {
         backButtonColor: AssetsConstants.whiteColor,
         title: "Chat với $customerName",
       ),
-      body: FutureBuilder<String>(
-        future:
-            chatManager.getOrCreateConversation(customerId, StaffRole.reviewer),
+      body: StreamBuilder<String>(
+        stream: _getConversationStream(chatManager),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -58,6 +57,13 @@ class ChatWithCustomerScreen extends HookConsumerWidget {
           );
         },
       ),
+    );
+  }
+
+  // Stream for conversation creation or existing conversation
+  Stream<String> _getConversationStream(ChatManager chatManager) {
+    return Stream.fromFuture(
+      chatManager.getOrCreateConversation(customerId, StaffRole.reviewer),
     );
   }
 }
@@ -79,43 +85,51 @@ class ChatContent extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final messageController = useTextEditingController();
-    final messages = useStream(chatManager.getMessages(conversationId));
-    final user = ref.read(authProvider);
+    return StreamBuilder<List<Message>>(
+      stream: chatManager.getMessages(conversationId),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-    return Column(
-      children: [
-        Expanded(
-          child: messages.hasData
-              ? ListView.builder(
-                  reverse: true,
-                  padding: const EdgeInsets.all(10),
-                  itemCount: messages.data!.length,
-                  itemBuilder: (context, index) {
-                    final message = messages.data![index];
-                    final isSent =
-                        message.senderId == chatManager.currentUserId;
+        if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
 
-                    return ChatMessage(
-                      text: message.content,
-                      time: _formatTimestamp(message.timestamp),
-                      isSent: isSent,
-                      senderName: !isSent ? customerName : 'Bạn',
-                      avatarUrl: !isSent ? customerAvatar : null,
-                    );
-                  },
-                )
-              : const Center(child: CircularProgressIndicator()),
-        ),
-        ChatInputBox(
-          onSendMessage: (content) async {
-            if (content.trim().isNotEmpty) {
-              await chatManager.sendMessage(conversationId, content);
-              messageController.clear();
-            }
-          },
-          controller: messageController,
-        ),
-      ],
+        final messages = snapshot.data ?? [];
+
+        return Column(
+          children: [
+            Expanded(
+                child: ListView.builder(
+              reverse: true,
+              padding: const EdgeInsets.all(10),
+              itemCount: messages.length,
+              itemBuilder: (context, index) {
+                final message = messages[index];
+                final isSent = message.senderId == chatManager.currentUserId;
+
+                return ChatMessage(
+                  text: message.content,
+                  time: _formatTimestamp(message.timestamp),
+                  isSent: isSent,
+                  senderName: !isSent ? customerName : 'Bạn',
+                  avatarUrl: !isSent ? customerAvatar : null,
+                );
+              },
+            )),
+            ChatInputBox(
+              onSendMessage: (content) async {
+                if (content.trim().isNotEmpty) {
+                  await chatManager.sendMessage(conversationId, content);
+                  messageController.clear();
+                }
+              },
+              controller: messageController,
+            ),
+          ],
+        );
+      },
     );
   }
 
