@@ -492,7 +492,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                             );
 
                             if (routeProgressEvent.distanceRemaining != null &&
-                                routeProgressEvent.distanceRemaining! <= 50) {
+                                routeProgressEvent.distanceRemaining! <= 10) {
                               showDialog(
                                 context: context,
                                 barrierDismissible: false,
@@ -560,11 +560,10 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                                                       const SizedBox.shrink();
                                                   // routeProgressEvent = null;
                                                 });
-                                                context.router.replaceAll([
-                                                  DriverConfirmUploadRoute(
-                                                    job: _currentJob,
-                                                  )
-                                                ]);
+                                                context.router.push(
+                                                    DriverConfirmUploadRoute(
+                                                  job: _currentJob,
+                                                ));
 
                                                 _startNextRoute();
                                               } else {
@@ -574,11 +573,10 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                                                   // routeProgressEvent = null;
                                                   _stopNavigation();
                                                 });
-                                                context.router.replaceAll([
-                                                  DriverConfirmUploadRoute(
-                                                    job: _currentJob,
-                                                  )
-                                                ]);
+                                                context.router.push(
+                                                    DriverConfirmUploadRoute(
+                                                  job: _currentJob,
+                                                ));
                                               }
                                             },
                                             style: ElevatedButton.styleFrom(
@@ -716,8 +714,8 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                 if (!_isNavigationStarted)
                   if (widget.bookingStatus.canDriverConfirmIncoming)
                     FloatingActionButton(
-                      onPressed: _isMapReady ? _startAssinedToComing : null,
-                      // onPressed: _isMapReady ? _startNavigation : null,
+                      // onPressed: _isMapReady ? _startAssinedToComing : null,
+                      onPressed: _isMapReady ? _startNavigation : null,
                       child: const Icon(Icons.directions),
                     ),
                 if (!_isNavigationStarted)
