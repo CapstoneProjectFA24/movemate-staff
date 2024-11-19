@@ -121,8 +121,8 @@ class ChatContent extends HookConsumerWidget {
             ChatInputBox(
               onSendMessage: (content) async {
                 if (content.trim().isNotEmpty) {
-                  await chatManager.sendMessage(conversationId, content);
                   messageController.clear();
+                  await chatManager.sendMessage(conversationId, content);
                 }
               },
               controller: messageController,
