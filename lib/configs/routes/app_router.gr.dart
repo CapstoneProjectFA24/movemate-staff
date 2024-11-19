@@ -41,6 +41,17 @@ abstract class _$AppRouter extends RootStackRouter {
         ),
       );
     },
+    ChatWithCustomerScreenRoute.name: (routeData) {
+      final args = routeData.argsAs<ChatWithCustomerScreenRouteArgs>();
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: ChatWithCustomerScreen(
+          key: args.key,
+          customerId: args.customerId,
+          bookingId: args.bookingId,
+        ),
+      );
+    },
     CompleteProposalScreenRoute.name: (routeData) {
       final args = routeData.argsAs<CompleteProposalScreenRouteArgs>();
       return AutoRoutePage<dynamic>(
@@ -352,6 +363,50 @@ class BookingScreenServiceRouteArgs {
   @override
   String toString() {
     return 'BookingScreenServiceRouteArgs{key: $key, job: $job}';
+  }
+}
+
+/// generated route for
+/// [ChatWithCustomerScreen]
+class ChatWithCustomerScreenRoute
+    extends PageRouteInfo<ChatWithCustomerScreenRouteArgs> {
+  ChatWithCustomerScreenRoute({
+    Key? key,
+    required String customerId,
+    required String bookingId,
+    List<PageRouteInfo>? children,
+  }) : super(
+          ChatWithCustomerScreenRoute.name,
+          args: ChatWithCustomerScreenRouteArgs(
+            key: key,
+            customerId: customerId,
+            bookingId: bookingId,
+          ),
+          initialChildren: children,
+        );
+
+  static const String name = 'ChatWithCustomerScreenRoute';
+
+  static const PageInfo<ChatWithCustomerScreenRouteArgs> page =
+      PageInfo<ChatWithCustomerScreenRouteArgs>(name);
+}
+
+class ChatWithCustomerScreenRouteArgs {
+  const ChatWithCustomerScreenRouteArgs({
+    this.key,
+    required this.customerId,
+    required this.bookingId,
+  });
+
+  final Key? key;
+
+  final String customerId;
+
+  final String bookingId;
+
+  @override
+  String toString() {
+    return 'ChatWithCustomerScreenRouteArgs{key: $key, customerId: $customerId, bookingId: $bookingId}';
   }
 }
 
