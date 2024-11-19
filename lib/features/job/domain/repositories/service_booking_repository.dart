@@ -13,6 +13,7 @@ import 'package:movemate_staff/features/job/data/model/response/services_respons
 import 'package:movemate_staff/features/job/data/model/response/update_booking_response.dart';
 import 'package:movemate_staff/features/job/data/remotes/booking_source.dart';
 import 'package:movemate_staff/features/job/data/repositories/service_booking_repository_impl.dart';
+import 'package:movemate_staff/features/porter/data/models/request/porter_update_resourse_request.dart';
 import 'package:movemate_staff/models/request/paging_model.dart';
 import 'package:movemate_staff/models/response/success_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -104,6 +105,16 @@ abstract class BookingRepository {
   Future<SuccessModel> updateStatusDriverResourse({
     required String accessToken,
     required UpdateResourseRequest request,
+    required int id,
+  });
+  Future<SuccessModel> updateStatusPorterWithoutResourse({
+    required String accessToken,
+    required int id,
+  });
+
+  Future<SuccessModel> updateStatusPorterResourse({
+    required String accessToken,
+    required PorterUpdateResourseRequest request,
     required int id,
   });
 }

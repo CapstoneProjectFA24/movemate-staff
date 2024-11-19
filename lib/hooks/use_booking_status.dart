@@ -48,13 +48,19 @@ class BookingStatusResult {
   // Porter states
   final bool canPorterConfirmIncoming;
   final bool canPorterConfirmArrived;
-  final bool canPorterStartMoving;
+  final bool canPorterConfirmInprogress;
   final bool canPorterConfirmOngoing;
   final bool canPorterConfirmDelivered;
   final bool canPorterCompleteUnloading;
+  final bool canPorterComplete;
   final bool isPorterAssigned;
   final bool isPorterWaiting;
   final bool isPorterMoving;
+
+  // porter tracking
+  bool isPorterStartPoint = false;
+  bool isPorterAtDeliveryPoint = false;
+  bool isPorterEndDeliveryPoint = false;
 
   BookingStatusResult({
     required this.statusMessage,
@@ -91,13 +97,17 @@ class BookingStatusResult {
     this.isDriverEndDeliveryPoint = false,
     this.canPorterConfirmIncoming = false,
     this.canPorterConfirmArrived = false,
-    this.canPorterStartMoving = false,
+    this.canPorterConfirmInprogress = false,
     this.canPorterConfirmOngoing = false,
     this.canPorterConfirmDelivered = false,
     this.canPorterCompleteUnloading = false,
+    this.canPorterComplete = false,
     this.isPorterAssigned = false,
     this.isPorterWaiting = false,
     this.isPorterMoving = false,
+    this.isPorterStartPoint = false,
+    this.isPorterAtDeliveryPoint = false,
+    this.isPorterEndDeliveryPoint = false,
   });
 }
 
@@ -169,6 +179,8 @@ BookingStatusResult useBookingStatus(
         hasAssignmentWithStatus("PORTER", AssignmentsStatusType.ongoing);
     final isPorterDelivered =
         hasAssignmentWithStatus("PORTER", AssignmentsStatusType.delivered);
+    final isPorterUnloaded =
+        hasAssignmentWithStatus("PORTER", AssignmentsStatusType.unloaded);
     final isPorterCompleted =
         hasAssignmentWithStatus("PORTER", AssignmentsStatusType.completed);
 
@@ -254,25 +266,131 @@ BookingStatusResult useBookingStatus(
     // Porter action flags
     bool canPorterConfirmIncoming = false;
     bool canPorterConfirmArrived = false;
-    bool canPorterStartMoving = false;
+    bool canPorterConfirmInprogress = false;
     bool canPorterConfirmOngoing = false;
     bool canPorterConfirmDelivered = false;
     bool canPorterCompleteUnloading = false;
+    bool canPorterComplete = false;
+    bool isPorterStartPoint = false;
+    bool isPorterAtDeliveryPoint = false;
+    bool isPorterEndDeliveryPoint = false;
 
-    if (isPorterAssigned) {
-      if (!isPorterIncoming) {
-        canPorterConfirmIncoming = true;
-      } else if (isPorterIncoming && !isPorterArrived) {
-        canPorterConfirmArrived = true;
-      } else if (isPorterArrived && !isPorterInProgress) {
-        canPorterStartMoving = true;
-      } else if (isPorterInProgress && !isPorterOngoing) {
-        canPorterConfirmOngoing = true;
-      } else if (isPorterOngoing && !isPorterDelivered) {
-        canPorterConfirmDelivered = true;
-      } else if (isPorterDelivered && !isPorterCompleted) {
-        canPorterCompleteUnloading = true;
-      }
+    switch (status) {
+      case BookingStatusType.coming:
+        if (!isPorterIncoming &&
+            !isPorterArrived &&
+            !isPorterInProgress &&
+            !isPorterCompleted &&
+            isPorterAssigned &&
+            !isPorterWaiting &&
+            !isPorterOngoing &&
+            !isPorterDelivered &&
+            !isPorterUnloaded) {
+          canPorterConfirmIncoming = true;
+        } else if (isPorterIncoming &&
+            !isPorterArrived &&
+            !isPorterInProgress &&
+            !isPorterCompleted &&
+            !isPorterAssigned &&
+            !isPorterWaiting &&
+            !isPorterOngoing &&
+            !isPorterDelivered &&
+            !isPorterUnloaded) {
+          canPorterConfirmArrived = true;
+        }
+
+        isPorterStartPoint = isPorterWaiting ||
+            isPorterAssigned ||
+            isPorterIncoming ||
+            (!isPorterInProgress && !isPorterCompleted);
+        break;
+
+      case BookingStatusType.inProgress:
+        if (!isPorterIncoming &&
+            !isPorterArrived &&
+            !isPorterInProgress &&
+            !isPorterCompleted &&
+            isPorterAssigned &&
+            !isPorterWaiting &&
+            !isPorterOngoing &&
+            !isPorterDelivered &&
+            !isPorterUnloaded) {
+          canPorterConfirmIncoming = true;
+        } else if (isPorterIncoming &&
+            !isPorterArrived &&
+            !isPorterInProgress &&
+            !isPorterCompleted &&
+            !isPorterAssigned &&
+            !isPorterWaiting &&
+            !isPorterOngoing &&
+            !isPorterDelivered &&
+            !isPorterUnloaded) {
+          canPorterConfirmArrived = true;
+        } else if (!isPorterIncoming &&
+            isPorterArrived &&
+            !isPorterInProgress &&
+            !isPorterCompleted &&
+            !isPorterAssigned &&
+            !isPorterWaiting &&
+            !isPorterOngoing &&
+            !isPorterDelivered &&
+            !isPorterUnloaded) {
+          canPorterConfirmInprogress = true;
+        } else if (!isPorterIncoming &&
+            !isPorterArrived &&
+            isPorterInProgress &&
+            !isPorterCompleted &&
+            !isPorterAssigned &&
+            !isPorterWaiting &&
+            !isPorterOngoing &&
+            !isPorterDelivered &&
+            !isPorterUnloaded) {
+          canPorterConfirmOngoing = true;
+        } else if (!isPorterIncoming &&
+            !isPorterArrived &&
+            !isPorterInProgress &&
+            !isPorterCompleted &&
+            !isPorterAssigned &&
+            !isPorterWaiting &&
+            isPorterOngoing &&
+            !isPorterDelivered &&
+            !isPorterUnloaded) {
+          canPorterConfirmDelivered = true;
+        } else if (!isPorterIncoming &&
+            !isPorterArrived &&
+            !isPorterInProgress &&
+            !isPorterCompleted &&
+            !isPorterAssigned &&
+            !isPorterWaiting &&
+            !isPorterOngoing &&
+            isPorterDelivered &&
+            !isPorterUnloaded) {
+          canPorterCompleteUnloading = true;
+        } else if (!isPorterIncoming &&
+            !isPorterArrived &&
+            !isPorterInProgress &&
+            !isPorterCompleted &&
+            !isPorterAssigned &&
+            !isPorterWaiting &&
+            !isPorterOngoing &&
+            !isPorterDelivered &&
+            isPorterUnloaded) {
+          canPorterComplete = true;
+        }
+        isPorterAtDeliveryPoint =
+            (isPorterArrived || isPorterInProgress || isPorterOngoing) &&
+                (!isPorterCompleted || !isPorterUnloaded && !isPorterDelivered);
+
+        isPorterEndDeliveryPoint =
+            isPorterCompleted || isPorterDelivered || isPorterUnloaded;
+
+        break;
+      case BookingStatusType.completed:
+        isPorterEndDeliveryPoint =
+            isPorterCompleted || isPorterDelivered || isPorterUnloaded;
+        break;
+      default:
+        break;
     }
 
     // Logic cho Reviewer Offline
@@ -395,13 +513,17 @@ BookingStatusResult useBookingStatus(
       isDriverEndDeliveryPoint: isDriverEndDeliveryPoint,
       canPorterConfirmIncoming: canPorterConfirmIncoming,
       canPorterConfirmArrived: canPorterConfirmArrived,
-      canPorterStartMoving: canPorterStartMoving,
+      canPorterConfirmInprogress: canPorterConfirmInprogress,
       canPorterConfirmOngoing: canPorterConfirmOngoing,
       canPorterConfirmDelivered: canPorterConfirmDelivered,
       canPorterCompleteUnloading: canPorterCompleteUnloading,
+      canPorterComplete: canPorterComplete,
       isPorterAssigned: isPorterAssigned,
       isPorterWaiting: isPorterWaiting,
       isPorterMoving: isPorterInProgress,
+      isPorterStartPoint: isPorterStartPoint,
+      isPorterAtDeliveryPoint: isPorterAtDeliveryPoint,
+      isPorterEndDeliveryPoint: isPorterEndDeliveryPoint,
     );
   }, [booking, isReviewOnline]);
 }
