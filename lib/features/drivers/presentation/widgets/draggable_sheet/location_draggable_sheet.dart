@@ -118,6 +118,7 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
               ),
             ),
             const SizedBox(height: 12),
+            
             Row(
                 //coming
                 //inProgress
@@ -145,6 +146,7 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
                     _buildProgressDot(true),
                   ],
                 ]),
+            
             const SizedBox(height: 8),
             const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -518,6 +520,7 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
       ),
     );
   }
+
 }
 
 Widget _buildProgressDot(bool isCompleted) {

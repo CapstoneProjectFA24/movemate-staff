@@ -770,8 +770,8 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
       _stopNavigation();
     }
 
-    context.router
-        .popUntil((route) => route.settings.name == 'TabViewScreenRoute');
+    // context.router
+    //     .popUntil((route) => route.settings.name == 'TabViewScreenRoute');
     context.router.push(DriversScreenRoute());
 
     // context.router.replaceAll([

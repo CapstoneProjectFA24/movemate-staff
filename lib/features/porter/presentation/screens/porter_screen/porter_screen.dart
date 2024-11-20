@@ -3,6 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:auto_route/auto_route.dart';
+import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/porter/presentation/controllers/porter_controller.dart';
 import 'package:movemate_staff/features/porter/presentation/widgets/porter_screen_widget/porter_bottom_sheet.dart';
@@ -63,6 +64,22 @@ class PorterScreen extends HookConsumerWidget {
         iconFirst: Icons.refresh_rounded,
         iconSecond: Icons.filter_list_alt,
         onCallBackFirst: fetchResult.refresh,
+        showBackButton: true,
+        onBackButtonPressed: () {
+          final tabsRouter = context.router.root
+              .innerRouterOf<TabsRouter>(TabViewScreenRoute.name);
+          if (tabsRouter != null) {
+            tabsRouter.setActiveIndex(0);
+            context.router.popUntilRouteWithName(TabViewScreenRoute.name);
+          } else {
+            context.router.pushAndPopUntil(
+              const TabViewScreenRoute(children: [
+                HomeScreenRoute(),
+              ]),
+              predicate: (route) => false,
+            );
+          }
+        },
         onCallBackSecond: () {
           showPorterCustomBottomSheet(
             onCallback: fetchResult.refresh,

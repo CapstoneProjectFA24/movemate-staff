@@ -485,7 +485,7 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
 
                             _updateLocationRealtime(
                               _simulatedPosition!,
-                              "DRIVER",
+                              "PORTER",
                             );
 
                             if (routeProgressEvent.distanceRemaining != null &&
@@ -590,8 +590,8 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
                                             ),
                                             child: Text(
                                               _isFirstNavigation
-                                                  ? "Xác nhận đã nhận hàng"
-                                                  : "Xác nhận đã giao hàng",
+                                                  ? "Xác nhận đến"
+                                                  : "Xác nhận giao hàng",
                                               style: const TextStyle(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600,
@@ -678,7 +678,7 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
                   if (!_isNavigationStarted)
                     DeliveryDetailsBottomSheet(
                       job: _currentJob,
-                      // userId: user?.id,
+                      userId: user?.id,
                     ),
                   Positioned(
                     bottom: _isNavigationStarted ? 20 : 280,
@@ -770,8 +770,8 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
       _stopNavigation();
     }
 
-    context.router
-        .popUntil((route) => route.settings.name == 'TabViewScreenRoute');
+    // context.router
+    //     .popUntil((route) => route.settings.name == 'TabViewScreenRoute');
     context.router.push(PorterScreenRoute());
 
     // context.router.replaceAll([

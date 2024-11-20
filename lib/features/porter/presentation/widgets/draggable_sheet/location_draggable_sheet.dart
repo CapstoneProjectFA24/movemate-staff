@@ -1,14 +1,49 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
+import 'package:movemate_staff/features/job/presentation/controllers/house_type_controller/house_type_controller.dart';
 import 'package:movemate_staff/features/porter/presentation/screens/porter_confirm_upload/porter_confirm_upload.dart';
+import 'package:movemate_staff/features/profile/domain/entities/profile_entity.dart';
+import 'package:movemate_staff/features/profile/presentation/controllers/profile_controller/profile_controller.dart';
+import 'package:movemate_staff/features/test/domain/entities/house_entities.dart';
+import 'package:movemate_staff/hooks/use_booking_status.dart';
+import 'package:movemate_staff/hooks/use_fetch_obj.dart';
+import 'package:movemate_staff/services/realtime_service/booking_status_realtime/booking_status_stream_provider.dart';
 
-class DeliveryDetailsBottomSheet extends StatelessWidget {
+class DeliveryDetailsBottomSheet extends HookConsumerWidget {
   final BookingResponseEntity job;
-  const DeliveryDetailsBottomSheet({super.key, required this.job});
+  final int? userId;
+  const DeliveryDetailsBottomSheet(
+      {super.key, required this.job, required this.userId});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final bookingAsync = ref.watch(bookingStreamProvider(job.id.toString()));
+    final bookingStatus =
+        useBookingStatus(bookingAsync.value, job.isReviewOnline);
+    final state = ref.watch(houseTypeControllerProvider);
+    print("vinh status ${bookingStatus.driverStatusMessage}");
+    print("vinh status ${bookingStatus.isDriverMoving}");
+    final bookingControllerHouse =
+        ref.read(houseTypeControllerProvider.notifier);
+
+    // Sử dụng useFetchObject để gọi getHouseDetails
+    final useFetchResult = useFetchObject<HouseEntities>(
+      function: (context) =>
+          bookingControllerHouse.getHouseDetails(job.houseTypeId, context),
+      context: context,
+    );
+    final houseTypeById = useFetchResult.data;
+
+    final useFetchUserResult = useFetchObject<ProfileEntity>(
+      function: (context) => ref
+          .read(profileControllerProvider.notifier)
+          .getUserInfo(job.userId, context),
+      context: context,
+    );
+    final userProfileById = useFetchUserResult.data;
+
     return DraggableScrollableSheet(
       initialChildSize: 0.4,
       minChildSize: 0.25,
@@ -18,9 +53,15 @@ class DeliveryDetailsBottomSheet extends StatelessWidget {
           controller: scrollController,
           child: Column(
             children: [
-              _buildDeliveryStatusCard(),
-              _buildTrackingInfoCard(),
-              _buildDetailsSheet(context),
+              _buildDeliveryStatusCard(job: job, status: bookingStatus),
+              _buildTrackingInfoCard(
+                  job: job, status: bookingStatus, context: context),
+              _buildDetailsSheet(
+                  context: context,
+                  job: job,
+                  houseTypeById: houseTypeById,
+                  profile: userProfileById,
+                  status: bookingStatus),
             ],
           ),
         );
@@ -28,7 +69,20 @@ class DeliveryDetailsBottomSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildDeliveryStatusCard() {
+  Widget _buildDeliveryStatusCard({
+    required BookingResponseEntity job,
+    required BookingStatusResult status,
+  }) {
+    final dateParts = job.bookingAt.split(' ')[0].split('/');
+    final timeParts = job.bookingAt.split(' ')[1].split(':');
+    final month = dateParts[0];
+    final day = dateParts[1];
+    final year = dateParts[2];
+    final hour = timeParts[0];
+    final minute = timeParts[1];
+
+    final formattedBookingAt = '$day tháng $month/$year Vào lúc $hour:$minute';
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
@@ -48,8 +102,8 @@ class DeliveryDetailsBottomSheet extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Giao vào 11 Th10',
+            Text(
+              'Giao vào $formattedBookingAt',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -57,14 +111,32 @@ class DeliveryDetailsBottomSheet extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Row(
-              children: [
-                _buildProgressDot(true),
-                _buildProgressLine(true),
-                _buildProgressDot(true),
-                _buildProgressLine(true),
-                _buildProgressDot(true),
-              ],
-            ),
+                //coming
+                //inProgress
+                //completed
+                children: [
+                  if (status.isBookingComing == true) ...[
+                    _buildProgressDot(true),
+                    _buildProgressLine(false),
+                    _buildProgressDot(false),
+                    _buildProgressLine(false),
+                    _buildProgressDot(false),
+                  ],
+                  if (status.isInProgress == true) ...[
+                    _buildProgressDot(true),
+                    _buildProgressLine(true),
+                    _buildProgressDot(true),
+                    _buildProgressLine(false),
+                    _buildProgressDot(false),
+                  ],
+                  if (status.isCompleted == true) ...[
+                    _buildProgressDot(true),
+                    _buildProgressLine(true),
+                    _buildProgressDot(true),
+                    _buildProgressLine(true),
+                    _buildProgressDot(true),
+                  ],
+                ]),
             const SizedBox(height: 8),
             const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -80,7 +152,10 @@ class DeliveryDetailsBottomSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildTrackingInfoCard() {
+  Widget _buildTrackingInfoCard(
+      {required BookingResponseEntity job,
+      required BookingStatusResult status,
+      required BuildContext context}) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
@@ -136,7 +211,13 @@ class DeliveryDetailsBottomSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailsSheet(BuildContext context) {
+  Widget _buildDetailsSheet({
+    required BuildContext context,
+    required BookingResponseEntity job,
+    required HouseEntities? houseTypeById,
+    required ProfileEntity? profile,
+    required BookingStatusResult status,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0),
       child: Container(
@@ -172,15 +253,16 @@ class DeliveryDetailsBottomSheet extends StatelessWidget {
                 children: [
                   _buildSectionTitle('Thông tin dịch vụ'),
                   const SizedBox(height: 16),
-                  _buildServiceInfo(),
+                  _buildServiceInfo(job: job, house: houseTypeById),
                   const SizedBox(height: 16),
-                  _buildLocationInfo(),
+                  _buildLocationInfo(job: job),
                   const Divider(height: 32),
                   _buildSectionTitle('Thông tin khách hàng'),
                   const SizedBox(height: 16),
-                  _buildCustomerInfo(),
+                  _buildCustomerInfo(profile: profile),
                   const SizedBox(height: 3),
-                  _buildConfirmationImageLink(context),
+                  _buildConfirmationImageLink(
+                      context: context, job: job, status: status),
                   const SizedBox(height: 20),
                 ],
               ),
@@ -202,25 +284,27 @@ class DeliveryDetailsBottomSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildServiceInfo() {
-    return const Row(
+  Widget _buildServiceInfo(
+      {required BookingResponseEntity job, required HouseEntities? house}) {
+    // print("check home ${job.userId}");
+    return Row(
       children: [
         Expanded(
           flex: 2,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 'Loại nhà',
                 style: TextStyle(
                   color: Colors.grey,
                   fontSize: 14,
                 ),
               ),
-              SizedBox(height: 4),
+              const SizedBox(height: 4),
               Text(
-                'Nhà riêng',
-                style: TextStyle(fontSize: 14),
+                house?.name ?? '',
+                style: const TextStyle(fontSize: 14),
               ),
             ],
           ),
@@ -229,17 +313,17 @@ class DeliveryDetailsBottomSheet extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 'Số tầng',
                 style: TextStyle(
                   color: Colors.grey,
                   fontSize: 14,
                 ),
               ),
-              SizedBox(height: 4),
+              const SizedBox(height: 4),
               Text(
-                '1',
-                style: TextStyle(fontSize: 14),
+                job.floorsNumber,
+                style: const TextStyle(fontSize: 14),
               ),
             ],
           ),
@@ -248,17 +332,17 @@ class DeliveryDetailsBottomSheet extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 'Số phòng',
                 style: TextStyle(
                   color: Colors.grey,
                   fontSize: 14,
                 ),
               ),
-              SizedBox(height: 4),
+              const SizedBox(height: 4),
               Text(
-                '1',
-                style: TextStyle(fontSize: 14),
+                job.roomNumber,
+                style: const TextStyle(fontSize: 14),
               ),
             ],
           ),
@@ -267,12 +351,12 @@ class DeliveryDetailsBottomSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildLocationInfo() {
+  Widget _buildLocationInfo({required BookingResponseEntity job}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildLocationRow('Địa điểm đón', '428/39-NHA-6 Đường Chiến Lược...'),
-        _buildLocationRow('Địa điểm đến', '428/39-NHA-3 Đường Chiến Lược...'),
+        _buildLocationRow('Địa điểm đón', job.pickupAddress),
+        _buildLocationRow('Địa điểm đến', job.deliveryAddress),
       ],
     );
   }
@@ -295,8 +379,11 @@ class DeliveryDetailsBottomSheet extends StatelessWidget {
               child: Text(
                 address,
                 style: const TextStyle(fontSize: 14),
+                maxLines: 4,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
+            const SizedBox(width: 12),
             TextButton(
               onPressed: () {},
               child: const Text(
@@ -313,42 +400,43 @@ class DeliveryDetailsBottomSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildCustomerInfo() {
-    return const Row(
+  Widget _buildCustomerInfo({required ProfileEntity? profile}) {
+    print('check pro ${profile?.name}');
+    return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Tên khách hàng',
               style: TextStyle(
                 color: Colors.grey,
                 fontSize: 14,
               ),
             ),
-            SizedBox(height: 4),
+            const SizedBox(height: 4),
             Text(
-              'Vinh',
-              style: TextStyle(fontSize: 14),
+              profile?.name ?? '',
+              style: const TextStyle(fontSize: 14),
             ),
           ],
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Số điện thoại',
               style: TextStyle(
                 color: Colors.grey,
                 fontSize: 14,
               ),
             ),
-            SizedBox(height: 4),
+            const SizedBox(height: 4),
             Text(
-              '0382703625',
-              style: TextStyle(fontSize: 14),
+              profile?.phone ?? '',
+              style: const TextStyle(fontSize: 14),
             ),
           ],
         ),
@@ -356,7 +444,10 @@ class DeliveryDetailsBottomSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildConfirmationImageLink(BuildContext context) {
+  Widget _buildConfirmationImageLink(
+      {required BookingResponseEntity job,
+      required BookingStatusResult status,
+      required BuildContext context}) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
