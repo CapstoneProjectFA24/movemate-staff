@@ -60,6 +60,9 @@ dependencies:
   cloudinary_url_gen: ^1.0.0
   cloudinary_public: ^0.21.0
 
+  # Call 
+  zego_uikit_prebuilt_call: ^4.14.3
+
   #Icon
   icons_plus:
     ^4.0.0
