@@ -8,7 +8,7 @@ import 'package:movemate_staff/configs/routes/app_router.dart';
 
 // Models & Entities
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
-import 'package:movemate_staff/features/job/presentation/screen/reviewer_chat_with_customer/reviewer_chat_with_customer.dart';
+import 'package:movemate_staff/features/job/presentation/screen/chat_screens/reviewer_chat_with_customer/reviewer_chat_with_customer.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/main_detail_ui/detail_info_basic.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/main_detail_ui/header_status_section.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/main_detail_ui/image_info_section.dart';

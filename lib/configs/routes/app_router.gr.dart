@@ -52,6 +52,30 @@ abstract class _$AppRouter extends RootStackRouter {
         ),
       );
     },
+    ChatWithDriverScreenRoute.name: (routeData) {
+      final args = routeData.argsAs<ChatWithDriverScreenRouteArgs>();
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: ChatWithDriverScreen(
+          key: args.key,
+          driverId: args.driverId,
+          driverName: args.driverName,
+          driverAvatar: args.driverAvatar,
+        ),
+      );
+    },
+    ChatWithPorterScreenRoute.name: (routeData) {
+      final args = routeData.argsAs<ChatWithPorterScreenRouteArgs>();
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: ChatWithPorterScreen(
+          key: args.key,
+          porterId: args.porterId,
+          porterName: args.porterName,
+          porterAvatar: args.porterAvatar,
+        ),
+      );
+    },
     CompleteProposalScreenRoute.name: (routeData) {
       final args = routeData.argsAs<CompleteProposalScreenRouteArgs>();
       return AutoRoutePage<dynamic>(
@@ -66,6 +90,17 @@ abstract class _$AppRouter extends RootStackRouter {
       return AutoRoutePage<dynamic>(
         routeData: routeData,
         child: const ContactScreen(),
+      );
+    },
+    DriverChatWithCustomerScreenRoute.name: (routeData) {
+      final args = routeData.argsAs<DriverChatWithCustomerScreenRouteArgs>();
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: DriverChatWithCustomerScreen(
+          key: args.key,
+          customerId: args.customerId,
+          bookingId: args.bookingId,
+        ),
       );
     },
     DriverConfirmUploadRoute.name: (routeData) {
@@ -411,6 +446,104 @@ class ChatWithCustomerScreenRouteArgs {
 }
 
 /// generated route for
+/// [ChatWithDriverScreen]
+class ChatWithDriverScreenRoute
+    extends PageRouteInfo<ChatWithDriverScreenRouteArgs> {
+  ChatWithDriverScreenRoute({
+    Key? key,
+    required String driverId,
+    required String driverName,
+    String? driverAvatar,
+    List<PageRouteInfo>? children,
+  }) : super(
+          ChatWithDriverScreenRoute.name,
+          args: ChatWithDriverScreenRouteArgs(
+            key: key,
+            driverId: driverId,
+            driverName: driverName,
+            driverAvatar: driverAvatar,
+          ),
+          initialChildren: children,
+        );
+
+  static const String name = 'ChatWithDriverScreenRoute';
+
+  static const PageInfo<ChatWithDriverScreenRouteArgs> page =
+      PageInfo<ChatWithDriverScreenRouteArgs>(name);
+}
+
+class ChatWithDriverScreenRouteArgs {
+  const ChatWithDriverScreenRouteArgs({
+    this.key,
+    required this.driverId,
+    required this.driverName,
+    this.driverAvatar,
+  });
+
+  final Key? key;
+
+  final String driverId;
+
+  final String driverName;
+
+  final String? driverAvatar;
+
+  @override
+  String toString() {
+    return 'ChatWithDriverScreenRouteArgs{key: $key, driverId: $driverId, driverName: $driverName, driverAvatar: $driverAvatar}';
+  }
+}
+
+/// generated route for
+/// [ChatWithPorterScreen]
+class ChatWithPorterScreenRoute
+    extends PageRouteInfo<ChatWithPorterScreenRouteArgs> {
+  ChatWithPorterScreenRoute({
+    Key? key,
+    required String porterId,
+    required String porterName,
+    String? porterAvatar,
+    List<PageRouteInfo>? children,
+  }) : super(
+          ChatWithPorterScreenRoute.name,
+          args: ChatWithPorterScreenRouteArgs(
+            key: key,
+            porterId: porterId,
+            porterName: porterName,
+            porterAvatar: porterAvatar,
+          ),
+          initialChildren: children,
+        );
+
+  static const String name = 'ChatWithPorterScreenRoute';
+
+  static const PageInfo<ChatWithPorterScreenRouteArgs> page =
+      PageInfo<ChatWithPorterScreenRouteArgs>(name);
+}
+
+class ChatWithPorterScreenRouteArgs {
+  const ChatWithPorterScreenRouteArgs({
+    this.key,
+    required this.porterId,
+    required this.porterName,
+    this.porterAvatar,
+  });
+
+  final Key? key;
+
+  final String porterId;
+
+  final String porterName;
+
+  final String? porterAvatar;
+
+  @override
+  String toString() {
+    return 'ChatWithPorterScreenRouteArgs{key: $key, porterId: $porterId, porterName: $porterName, porterAvatar: $porterAvatar}';
+  }
+}
+
+/// generated route for
 /// [CompleteProposalScreen]
 class CompleteProposalScreenRoute
     extends PageRouteInfo<CompleteProposalScreenRouteArgs> {
@@ -461,6 +594,50 @@ class ContactScreenRoute extends PageRouteInfo<void> {
   static const String name = 'ContactScreenRoute';
 
   static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [DriverChatWithCustomerScreen]
+class DriverChatWithCustomerScreenRoute
+    extends PageRouteInfo<DriverChatWithCustomerScreenRouteArgs> {
+  DriverChatWithCustomerScreenRoute({
+    Key? key,
+    required String customerId,
+    required String bookingId,
+    List<PageRouteInfo>? children,
+  }) : super(
+          DriverChatWithCustomerScreenRoute.name,
+          args: DriverChatWithCustomerScreenRouteArgs(
+            key: key,
+            customerId: customerId,
+            bookingId: bookingId,
+          ),
+          initialChildren: children,
+        );
+
+  static const String name = 'DriverChatWithCustomerScreenRoute';
+
+  static const PageInfo<DriverChatWithCustomerScreenRouteArgs> page =
+      PageInfo<DriverChatWithCustomerScreenRouteArgs>(name);
+}
+
+class DriverChatWithCustomerScreenRouteArgs {
+  const DriverChatWithCustomerScreenRouteArgs({
+    this.key,
+    required this.customerId,
+    required this.bookingId,
+  });
+
+  final Key? key;
+
+  final String customerId;
+
+  final String bookingId;
+
+  @override
+  String toString() {
+    return 'DriverChatWithCustomerScreenRouteArgs{key: $key, customerId: $customerId, bookingId: $bookingId}';
+  }
 }
 
 /// generated route for
