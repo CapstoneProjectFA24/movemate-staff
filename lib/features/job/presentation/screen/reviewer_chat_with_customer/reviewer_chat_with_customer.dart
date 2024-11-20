@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:movemate_staff/features/call_page/call_page.dart';
 
 import 'package:movemate_staff/services/chat_services/data/chat_services.dart';
 import 'package:movemate_staff/services/chat_services/models/chat_model.dart';
@@ -36,6 +37,15 @@ class ChatWithCustomerScreen extends HookConsumerWidget {
         backgroundColor: AssetsConstants.mainColor,
         backButtonColor: AssetsConstants.whiteColor,
         title: "Chat với $customerName",
+        iconFirst: Icons.call,
+        onCallBackFirst: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const CallPage(callID: '123456'),
+            ),
+          );
+        },
       ),
       body: StreamBuilder<String>(
         stream: _getConversationStream(chatManager),
