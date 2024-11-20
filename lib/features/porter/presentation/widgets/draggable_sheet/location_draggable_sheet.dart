@@ -1,15 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
+import 'package:movemate_staff/features/job/presentation/controllers/house_type_controller/house_type_controller.dart';
 import 'package:movemate_staff/features/porter/presentation/screens/porter_confirm_upload/porter_confirm_upload.dart';
+import 'package:movemate_staff/features/profile/domain/entities/profile_entity.dart';
+import 'package:movemate_staff/features/profile/presentation/controllers/profile_controller/profile_controller.dart';
+import 'package:movemate_staff/features/test/domain/entities/house_entities.dart';
+import 'package:movemate_staff/hooks/use_booking_status.dart';
+import 'package:movemate_staff/hooks/use_fetch_obj.dart';
+import 'package:movemate_staff/services/realtime_service/booking_status_realtime/booking_status_stream_provider.dart';
 
-class DeliveryDetailsBottomSheet extends StatelessWidget {
+class DeliveryDetailsBottomSheet extends HookConsumerWidget {
   final BookingResponseEntity job;
-  const DeliveryDetailsBottomSheet({Key? key, required this.job})
+  final int? userId;
+  const DeliveryDetailsBottomSheet(
+      {Key? key, required this.job, required this.userId})
       : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final bookingAsync = ref.watch(bookingStreamProvider(job.id.toString()));
+    final bookingStatus =
+        useBookingStatus(bookingAsync.value, job.isReviewOnline);
+    final bookingControllerHouse =
+        ref.read(houseTypeControllerProvider.notifier);
+
+    // Sử dụng useFetchObject để gọi getHouseDetails
+    final useFetchResult = useFetchObject<HouseEntities>(
+      function: (context) =>
+          bookingControllerHouse.getHouseDetails(job.houseTypeId, context),
+      context: context,
+    );
+
+    final useFetchUserResult = useFetchObject<ProfileEntity>(
+      function: (context) => ref
+          .read(profileControllerProvider.notifier)
+          .getUserInfo(job.userId, context),
+      context: context,
+    );
+    final userProfileById = useFetchUserResult.data;
+
+    final houseTypeById = useFetchResult.data;
+
     return DraggableScrollableSheet(
       initialChildSize: 0.4,
       minChildSize: 0.25,
@@ -19,9 +52,15 @@ class DeliveryDetailsBottomSheet extends StatelessWidget {
           controller: scrollController,
           child: Column(
             children: [
-              _buildDeliveryStatusCard(),
-              _buildTrackingInfoCard(),
-              _buildDetailsSheet(context),
+              _buildDeliveryStatusCard(job: job, status: bookingStatus),
+              _buildTrackingInfoCard(
+                  job: job, status: bookingStatus, context: context),
+              _buildDetailsSheet(
+                  context: context,
+                  job: job,
+                  houseTypeById: houseTypeById,
+                  profile: userProfileById,
+                  status: bookingStatus),
             ],
           ),
         );
@@ -29,7 +68,21 @@ class DeliveryDetailsBottomSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildDeliveryStatusCard() {
+  Widget _buildDeliveryStatusCard({
+    required BookingResponseEntity job,
+    required BookingStatusResult status,
+  }) {
+    final dateParts = job.bookingAt.split(' ')[0].split('/');
+    final timeParts = job.bookingAt.split(' ')[1].split(':');
+    final month = dateParts[0];
+    final day = dateParts[1];
+    final year = dateParts[2];
+    final hour = timeParts[0];
+    final minute = timeParts[1];
+
+    // Tạo chuỗi định dạng
+    final formattedBookingAt = '$day tháng $month/$year Vào lúc $hour:$minute';
+    print("tuan check $formattedBookingAt");
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
@@ -49,8 +102,8 @@ class DeliveryDetailsBottomSheet extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Giao vào 11 Th10',
+            Text(
+              'Giao vào ${formattedBookingAt}',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -58,21 +111,39 @@ class DeliveryDetailsBottomSheet extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Row(
-              children: [
-                _buildProgressDot(true),
-                _buildProgressLine(true),
-                _buildProgressDot(true),
-                _buildProgressLine(true),
-                _buildProgressDot(true),
-              ],
-            ),
+                //coming
+                //inProgress
+                //completed
+                children: [
+                  if (status.isBookingComing == true) ...[
+                    _buildProgressDot(true),
+                    _buildProgressLine(false),
+                    _buildProgressDot(false),
+                    _buildProgressLine(false),
+                    _buildProgressDot(false),
+                  ],
+                  if (status.isInProgress == true) ...[
+                    _buildProgressDot(true),
+                    _buildProgressLine(true),
+                    _buildProgressDot(true),
+                    _buildProgressLine(false),
+                    _buildProgressDot(false),
+                  ],
+                  if (status.isCompleted == true) ...[
+                    _buildProgressDot(true),
+                    _buildProgressLine(true),
+                    _buildProgressDot(true),
+                    _buildProgressLine(true),
+                    _buildProgressDot(true),
+                  ],
+                ]),
             const SizedBox(height: 8),
             const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Đã vận chuyển'),
-                Text('Đang giao hàng'),
-                Text('Đã giao hàng'),
+                Text('Sẵn sàng'),
+                Text('Đang trong tiến trình'),
+                Text('Hoàn tất'),
               ],
             ),
           ],
@@ -81,7 +152,36 @@ class DeliveryDetailsBottomSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildTrackingInfoCard() {
+  Widget _buildTrackingInfoCard(
+      {required BookingResponseEntity job,
+      required BookingStatusResult status,
+      required BuildContext context}) {
+    // print("check status ${bookingStatus.statusMessage}");
+    //PORTER
+    //REVIEWER
+    String getDriverRole() {
+      try {
+        final isResponsible = job.assignments
+            .firstWhere((e) => e.staffType == 'PORTER')
+            .isResponsible;
+
+        return isResponsible == true ? "Trưởng" : "Nhân viên";
+      } catch (e) {
+        return "Bốc vác"; // Giá trị mặc định nếu không tìm thấy Driver
+      }
+    }
+
+    // print("check status ${getDriverRole()}");
+    // print(
+    //     "check status: ${status.driverStatusMessage?.contains('-') == true ? status.driverStatusMessage?.split('-')[1].trim() : status.driverStatusMessage ?? ''}");
+
+    // print(
+    //     "check status ConfirmIncoming  ${status.canDriverConfirmIncoming.toString()}");
+    // print("check status StartMoving ${status.canDriverStartMoving.toString()}");
+    // print(
+    //     "check status ConfirmArrived ${status.canDriverConfirmArrived.toString()}");
+    // print(
+    //     "check statusCompleteDelivery${status.canDriverCompleteDelivery.toString()}");
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
@@ -110,34 +210,52 @@ class DeliveryDetailsBottomSheet extends StatelessWidget {
               child: const Icon(Icons.local_shipping),
             ),
             const SizedBox(width: 12),
-            const Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'SPX Express',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Bốc vác ${getDriverRole()}',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
-                ),
-                Text(
-                  'SPXVN0419102963A',
-                  style: TextStyle(color: Colors.grey),
-                ),
-              ],
+                  const SizedBox(height: 4),
+                  Text(
+                    getDisplayStatus(status),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Colors.grey[600],
+                        ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
+                  ),
+                ],
+              ),
             ),
-            const Spacer(),
-            TextButton(
-              onPressed: () {},
-              child: const Text('Sao chép'),
-            ),
+            // const Spacer(),
+            // TextButton(
+            //   onPressed: () {},
+            //   child: const Text('Sao chép'),
+            // ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildDetailsSheet(BuildContext context) {
+  String getDisplayStatus(BookingStatusResult status) {
+    return status.driverStatusMessage?.contains('-') == true
+        ? status.driverStatusMessage!.split('-')[1].trim()
+        : status.driverStatusMessage ?? '';
+  }
+
+  Widget _buildDetailsSheet({
+    required BuildContext context,
+    required BookingResponseEntity job,
+    required HouseEntities? houseTypeById,
+    required ProfileEntity? profile,
+    required BookingStatusResult status,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0),
       child: Container(
@@ -173,15 +291,16 @@ class DeliveryDetailsBottomSheet extends StatelessWidget {
                 children: [
                   _buildSectionTitle('Thông tin dịch vụ'),
                   const SizedBox(height: 16),
-                  _buildServiceInfo(),
+                  _buildServiceInfo(job: job, house: houseTypeById),
                   const SizedBox(height: 16),
-                  _buildLocationInfo(),
+                  _buildLocationInfo(job: job),
                   const Divider(height: 32),
                   _buildSectionTitle('Thông tin khách hàng'),
                   const SizedBox(height: 16),
-                  _buildCustomerInfo(),
+                  _buildCustomerInfo(profile: profile),
                   const SizedBox(height: 3),
-                  _buildConfirmationImageLink(context),
+                  _buildConfirmationImageLink(
+                      context: context, job: job, status: status),
                   const SizedBox(height: 20),
                 ],
               ),
@@ -203,8 +322,10 @@ class DeliveryDetailsBottomSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildServiceInfo() {
-    return const Row(
+  Widget _buildServiceInfo(
+      {required BookingResponseEntity job, required HouseEntities? house}) {
+    // print("check home ${job.userId}");
+    return Row(
       children: [
         Expanded(
           flex: 2,
@@ -220,7 +341,7 @@ class DeliveryDetailsBottomSheet extends StatelessWidget {
               ),
               SizedBox(height: 4),
               Text(
-                'Nhà riêng',
+                house?.name ?? '',
                 style: TextStyle(fontSize: 14),
               ),
             ],
@@ -239,7 +360,7 @@ class DeliveryDetailsBottomSheet extends StatelessWidget {
               ),
               SizedBox(height: 4),
               Text(
-                '1',
+                job.floorsNumber,
                 style: TextStyle(fontSize: 14),
               ),
             ],
@@ -258,7 +379,7 @@ class DeliveryDetailsBottomSheet extends StatelessWidget {
               ),
               SizedBox(height: 4),
               Text(
-                '1',
+                job.roomNumber,
                 style: TextStyle(fontSize: 14),
               ),
             ],
@@ -268,12 +389,12 @@ class DeliveryDetailsBottomSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildLocationInfo() {
+  Widget _buildLocationInfo({required BookingResponseEntity job}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildLocationRow('Địa điểm đón', '428/39-NHA-6 Đường Chiến Lược...'),
-        _buildLocationRow('Địa điểm đến', '428/39-NHA-3 Đường Chiến Lược...'),
+        _buildLocationRow('Địa điểm đón', '${job.pickupAddress}'),
+        _buildLocationRow('Địa điểm đến', '${job.deliveryAddress}'),
       ],
     );
   }
@@ -314,8 +435,9 @@ class DeliveryDetailsBottomSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildCustomerInfo() {
-    return const Row(
+  Widget _buildCustomerInfo({required ProfileEntity? profile}) {
+    print('check pro ${profile?.name}');
+    return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Column(
@@ -330,7 +452,7 @@ class DeliveryDetailsBottomSheet extends StatelessWidget {
             ),
             SizedBox(height: 4),
             Text(
-              'Vinh',
+              profile?.name ?? '',
               style: TextStyle(fontSize: 14),
             ),
           ],
@@ -348,7 +470,7 @@ class DeliveryDetailsBottomSheet extends StatelessWidget {
             ),
             SizedBox(height: 4),
             Text(
-              '0382703625',
+              profile?.phone ?? '',
               style: TextStyle(fontSize: 14),
             ),
           ],
@@ -357,12 +479,16 @@ class DeliveryDetailsBottomSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildConfirmationImageLink(BuildContext context) {
+  Widget _buildConfirmationImageLink(
+      {required BookingResponseEntity job,
+      required BookingStatusResult status,
+      required BuildContext context}) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const PorterConfirmScreen()),
+          MaterialPageRoute(
+              builder: (context) => PorterConfirmScreen(job: job)),
         );
       },
       child: const Column(

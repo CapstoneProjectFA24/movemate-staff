@@ -6,6 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:movemate_staff/features/auth/presentation/screens/sign_in/sign_in_controller.dart';
 import 'package:movemate_staff/features/job/data/model/request/booking_requesst.dart';
 import 'package:movemate_staff/features/job/data/model/request/reviewer_status_request.dart';
+import 'package:movemate_staff/features/job/data/model/response/booking_response_object.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/service_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/services_package_entity.dart';
@@ -233,5 +234,53 @@ class BookingController extends _$BookingController {
       print('Booking success state ${state.toString()}');
       return ref.read(bookingResponseProvider);
     }
+  }
+
+  Future<BookingResponseEntity?> getBookingById(
+    int id,
+    BuildContext context,
+  ) async {
+    BookingResponseEntity bookingById;
+
+    state = const AsyncLoading();
+    final serviceBookingRepository = ref.read(bookingRepositoryProvider);
+    final authRepository = ref.read(authRepositoryProvider);
+    final user = await SharedPreferencesUtils.getInstance('user_token');
+    // print("tuan object check controller 1  ");
+    state = await AsyncValue.guard(() async {
+      // print("tuan object check controller 2  ");
+      final response = await serviceBookingRepository.getBookingDetails(
+        accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
+        id: id,
+      );
+      // print("tuan object check controller 3  ");
+      bookingById = response.payload;
+
+      // print("tuan object check controller 4 ${bookingById} ");
+    });
+
+    if (state.hasError) {
+      state = await AsyncValue.guard(() async {
+        final statusCode = (state.error as DioException).onStatusDio();
+        await handleAPIError(
+          statusCode: statusCode,
+          stateError: state.error!,
+          context: context,
+          onCallBackGenerateToken: () async => await reGenerateToken(
+            authRepository,
+            context,
+          ),
+        );
+
+        if (state.hasError) {
+          await ref.read(signInControllerProvider.notifier).signOut(context);
+        }
+
+        if (statusCode != StatusCodeType.unauthentication.type) {}
+        await getBookingById(id, context);
+      });
+    }
+    // print("tuan object check controller 5 ${bookingById}");
+    // return bookingById;
   }
 }

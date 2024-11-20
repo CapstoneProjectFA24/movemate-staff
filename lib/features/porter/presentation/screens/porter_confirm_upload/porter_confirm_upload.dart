@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/utils/commons/widgets/cloudinary/cloudinary_camera_upload_widget.dart';
 
 @RoutePage()
-class PorterConfirmScreen extends HookWidget {
-  const PorterConfirmScreen({super.key});
+class PorterConfirmScreen extends HookConsumerWidget {
+  final BookingResponseEntity job;
+  const PorterConfirmScreen({
+    super.key,
+    required this.job,
+  });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     // Color constants
     const primaryOrange = Color(0xFFFF6B00);
     const secondaryOrange = Color(0xFFFFE5D6);
@@ -22,6 +28,42 @@ class PorterConfirmScreen extends HookWidget {
     final images3 = useState<List<String>>([]);
     final imagePublicIds3 = useState<List<String>>([]);
     final fullScreenImage = useState<String?>(null);
+
+    List<dynamic> getTrackerSources(
+        BookingResponseEntity job, String trackerType) {
+      try {
+        final trackers =
+            job.bookingTrackers.firstWhere((e) => e.type == trackerType);
+
+        return trackers.trackerSources;
+      } catch (e) {
+        return [];
+      }
+    }
+
+    final imagesSourceArrived = getTrackerSources(job, "PORTER_ARRIVED");
+    final imagesSourceCompleted = getTrackerSources(job, "PORTER_COMPLETED");
+
+    useEffect(() {
+      if (imagesSourceArrived.isNotEmpty) {
+        images1.value = imagesSourceArrived
+            .map((source) => source['resourceUrl'] as String)
+            .toList();
+
+        imagePublicIds1.value = imagesSourceArrived
+            .map((source) => source['resourceCode'] as String)
+            .toList();
+      }
+      if (imagesSourceCompleted.isNotEmpty) {
+        images3.value = imagesSourceCompleted
+            .map((source) => source['resourceUrl'] as String)
+            .toList();
+
+        imagePublicIds3.value = imagesSourceCompleted
+            .map((source) => source['resourceCode'] as String)
+            .toList();
+      }
+    }, [imagesSourceArrived, imagesSourceCompleted]);
 
     Widget buildConfirmationSection({
       required String title,

@@ -9,7 +9,9 @@ import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/features/drivers/data/models/request/update_resourse_request.dart';
 import 'package:movemate_staff/features/drivers/presentation/controllers/driver_controller/driver_controller.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
+import 'package:movemate_staff/features/job/presentation/controllers/booking_controller/booking_controller.dart';
 import 'package:movemate_staff/hooks/use_booking_status.dart';
+import 'package:movemate_staff/hooks/use_fetch_obj.dart';
 import 'package:movemate_staff/services/realtime_service/booking_status_realtime/booking_status_stream_provider.dart';
 import 'package:movemate_staff/utils/commons/widgets/cloudinary/cloudinary_camera_upload_widget.dart';
 import 'package:movemate_staff/utils/commons/widgets/widgets_common_export.dart';
@@ -43,6 +45,20 @@ class DriverConfirmUpload extends HookConsumerWidget {
     final uploadedImages = ref.watch(uploadedImagesProvider);
     final bookingAsync = ref.watch(bookingStreamProvider(job.id.toString()));
     final status = useBookingStatus(bookingAsync.value, job.isReviewOnline);
+    final bookingController = ref.read(bookingControllerProvider.notifier);
+
+    final useFetchResult = useFetchObject<BookingResponseEntity>(
+      function: (context) => bookingController.getBookingById(job.id, context),
+      context: context,
+    );
+    useFetchResult.refresh;
+    final bookingTypeData = useFetchResult.data;
+    // final  job = useFetchResult.data;
+    // print("tuan object check 1${bookingTypeData} ");
+    // print("tuan object check 2 ${useFetchResult.data} ");
+    // print("tuan object check 3 ${useFetchResult.isFetchingData} ");
+
+    // print("tuan check ${job.id} ");
 
     List<dynamic> getTrackerSources(
         BookingResponseEntity job, String trackerType) {
@@ -200,6 +216,13 @@ class DriverConfirmUpload extends HookConsumerWidget {
         backgroundColor: primaryOrange,
         backButtonColor: AssetsConstants.whiteColor,
         onBackButtonPressed: () {
+          // final data = await bookingController.getBookingById(job.id, context);
+
+          // if (data != null) {
+          //   // print("tuan check2 ${data.id} ");
+          //   context.router.push(DriverDetailScreenRoute(
+          //       job: data, bookingStatus: status, ref: ref));
+          // }
           context.router.push(DriverDetailScreenRoute(
               job: job, bookingStatus: status, ref: ref));
         },

@@ -9,6 +9,7 @@ import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/features/drivers/presentation/controllers/stream_controller/job_stream_manager.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/assignment_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
+import 'package:movemate_staff/features/porter/presentation/controllers/porter_controller.dart';
 import 'package:movemate_staff/features/porter/presentation/widgets/draggable_sheet/location_draggable_sheet.dart';
 import 'package:movemate_staff/hooks/use_booking_status.dart';
 import 'package:movemate_staff/models/user_model.dart';
@@ -365,12 +366,12 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
 
         await _navigationController?.startNavigation();
         try {
-          // await widget.ref
-          //     .read(driverControllerProvider.notifier)
-          //     .updateStatusDriverWithoutResourse(
-          //       id: widget.job.id,
-          //       context: context,
-          //     );
+          await widget.ref
+              .read(porterControllerProvider.notifier)
+              .updateStatusPorterWithoutResourse(
+                id: widget.job.id,
+                context: context,
+              );
         } catch (driverError) {
           print(
               "Lỗi khi bắt đầu điều hướng từ assined lên incoming: $driverError");
@@ -393,12 +394,12 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
 
         await _navigationController?.startNavigation();
         try {
-          // await widget.ref
-          //     .read(driverControllerProvider.notifier)
-          //     .updateStatusDriverWithoutResourse(
-          //       id: widget.job.id,
-          //       context: context,
-          //     );
+          await widget.ref
+              .read(porterControllerProvider.notifier)
+              .updateStatusPorterWithoutResourse(
+                id: widget.job.id,
+                context: context,
+              );
         } catch (driverError) {
           print(
               "Lỗi khi bắt đầu điều hướng  inprogres lên ongoing: ${driverError.toString()}");
@@ -558,7 +559,7 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
                                                   // routeProgressEvent = null;
                                                 });
                                                 context.router.push(
-                                                    DriverConfirmUploadRoute(
+                                                    PorterConfirmScreenRoute(
                                                   job: _currentJob,
                                                 ));
 
@@ -571,7 +572,7 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
                                                   _stopNavigation();
                                                 });
                                                 context.router.push(
-                                                    DriverConfirmUploadRoute(
+                                                    PorterConfirmScreenRoute(
                                                   job: _currentJob,
                                                 ));
                                               }
@@ -678,7 +679,7 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
                   if (!_isNavigationStarted)
                     DeliveryDetailsBottomSheet(
                       job: _currentJob,
-                      // userId: user?.id,
+                      userId: user?.id,
                     ),
                   Positioned(
                     bottom: _isNavigationStarted ? 20 : 280,
@@ -770,10 +771,11 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
       _stopNavigation();
     }
 
-    context.router.replaceAll([
-      // const DriversScreenRoute(),
-      // const HomeScreenRoute(),
-      const TabViewScreenRoute()
-    ]);
+    context.router.push(PorterScreenRoute());
+    // context.router.replaceAll([
+    //   // const DriversScreenRoute(),
+    //   // const HomeScreenRoute(),
+    //   const TabViewScreenRoute()
+    // ]);
   }
 }

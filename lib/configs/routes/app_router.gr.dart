@@ -68,6 +68,17 @@ abstract class _$AppRouter extends RootStackRouter {
         child: const ContactScreen(),
       );
     },
+    DriverChatWithCustomerScreenRoute.name: (routeData) {
+      final args = routeData.argsAs<DriverChatWithCustomerScreenRouteArgs>();
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: DriverChatWithCustomerScreen(
+          key: args.key,
+          customerId: args.customerId,
+          bookingId: args.bookingId,
+        ),
+      );
+    },
     DriverConfirmUploadRoute.name: (routeData) {
       final args = routeData.argsAs<DriverConfirmUploadRouteArgs>();
       return AutoRoutePage<dynamic>(
@@ -174,9 +185,13 @@ abstract class _$AppRouter extends RootStackRouter {
       );
     },
     PorterConfirmScreenRoute.name: (routeData) {
+      final args = routeData.argsAs<PorterConfirmScreenRouteArgs>();
       return AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const PorterConfirmScreen(),
+        child: PorterConfirmScreen(
+          key: args.key,
+          job: args.job,
+        ),
       );
     },
     PorterDetailScreenRoute.name: (routeData) {
@@ -461,6 +476,50 @@ class ContactScreenRoute extends PageRouteInfo<void> {
   static const String name = 'ContactScreenRoute';
 
   static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [DriverChatWithCustomerScreen]
+class DriverChatWithCustomerScreenRoute
+    extends PageRouteInfo<DriverChatWithCustomerScreenRouteArgs> {
+  DriverChatWithCustomerScreenRoute({
+    Key? key,
+    required String customerId,
+    required String bookingId,
+    List<PageRouteInfo>? children,
+  }) : super(
+          DriverChatWithCustomerScreenRoute.name,
+          args: DriverChatWithCustomerScreenRouteArgs(
+            key: key,
+            customerId: customerId,
+            bookingId: bookingId,
+          ),
+          initialChildren: children,
+        );
+
+  static const String name = 'DriverChatWithCustomerScreenRoute';
+
+  static const PageInfo<DriverChatWithCustomerScreenRouteArgs> page =
+      PageInfo<DriverChatWithCustomerScreenRouteArgs>(name);
+}
+
+class DriverChatWithCustomerScreenRouteArgs {
+  const DriverChatWithCustomerScreenRouteArgs({
+    this.key,
+    required this.customerId,
+    required this.bookingId,
+  });
+
+  final Key? key;
+
+  final String customerId;
+
+  final String bookingId;
+
+  @override
+  String toString() {
+    return 'DriverChatWithCustomerScreenRouteArgs{key: $key, customerId: $customerId, bookingId: $bookingId}';
+  }
 }
 
 /// generated route for
@@ -810,16 +869,41 @@ class OrderScreenRoute extends PageRouteInfo<void> {
 
 /// generated route for
 /// [PorterConfirmScreen]
-class PorterConfirmScreenRoute extends PageRouteInfo<void> {
-  const PorterConfirmScreenRoute({List<PageRouteInfo>? children})
-      : super(
+class PorterConfirmScreenRoute
+    extends PageRouteInfo<PorterConfirmScreenRouteArgs> {
+  PorterConfirmScreenRoute({
+    Key? key,
+    required BookingResponseEntity job,
+    List<PageRouteInfo>? children,
+  }) : super(
           PorterConfirmScreenRoute.name,
+          args: PorterConfirmScreenRouteArgs(
+            key: key,
+            job: job,
+          ),
           initialChildren: children,
         );
 
   static const String name = 'PorterConfirmScreenRoute';
 
-  static const PageInfo<void> page = PageInfo<void>(name);
+  static const PageInfo<PorterConfirmScreenRouteArgs> page =
+      PageInfo<PorterConfirmScreenRouteArgs>(name);
+}
+
+class PorterConfirmScreenRouteArgs {
+  const PorterConfirmScreenRouteArgs({
+    this.key,
+    required this.job,
+  });
+
+  final Key? key;
+
+  final BookingResponseEntity job;
+
+  @override
+  String toString() {
+    return 'PorterConfirmScreenRouteArgs{key: $key, job: $job}';
+  }
 }
 
 /// generated route for

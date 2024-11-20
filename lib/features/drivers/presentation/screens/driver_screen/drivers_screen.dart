@@ -70,6 +70,22 @@ class DriversScreen extends HookConsumerWidget {
           iconFirst: Icons.refresh_rounded,
           iconSecond: Icons.filter_list_alt,
           onCallBackFirst: fetchResult.refresh,
+          showBackButton: true,
+          onBackButtonPressed: () {
+            final tabsRouter = context.router.root
+                .innerRouterOf<TabsRouter>(TabViewScreenRoute.name);
+            if (tabsRouter != null) {
+              tabsRouter.setActiveIndex(0);
+              context.router.popUntilRouteWithName(TabViewScreenRoute.name);
+            } else {
+              context.router.pushAndPopUntil(
+                const TabViewScreenRoute(children: [
+                  HomeScreenRoute(),
+                ]),
+                predicate: (route) => false,
+              );
+            }
+          },
           onCallBackSecond: () {
             showDriverCustomBottomSheet(
               onCallback: fetchResult.refresh,
