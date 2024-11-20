@@ -282,6 +282,7 @@ class CustomTabContainer extends HookConsumerWidget {
           icon: Icons.person_outlined,
           iconColor: Colors.blue,
           subtitle: (item.isResponsible ?? true) ? 'Trưởng' : 'Nhân viên',
+          role: "porter",
         );
       },
     );
@@ -305,6 +306,7 @@ class CustomTabContainer extends HookConsumerWidget {
           icon: Icons.drive_eta_outlined,
           iconColor: Colors.green,
           subtitle: (item.isResponsible ?? true) ? 'Trưởng' : 'Nhân viên',
+          role: "driver",
         );
       },
     );

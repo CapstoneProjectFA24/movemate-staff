@@ -135,3 +135,125 @@ class ChatManager {
     });
   }
 }
+
+class StaffChatManager {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final String currentUserId;
+  final String currentUserRole;
+
+  StaffChatManager({
+    required this.currentUserId,
+    required this.currentUserRole,
+  });
+
+  Future<String?> findExistingStaffConversation(String otherStaffId) async {
+    try {
+      // Query cho cả 2 participants
+      final QuerySnapshot conversations = await _firestore
+          .collection('staff_conversations')
+          .where('participantIds', arrayContains: currentUserId)
+          .get();
+
+      // Kiểm tra thủ công để tìm conversation có cả 2 người dùng
+      for (var doc in conversations.docs) {
+        final data = doc.data() as Map<String, dynamic>;
+        final participantIds = List<String>.from(data['participantIds'] ?? []);
+        if (participantIds.contains(otherStaffId)) {
+          return doc.id;
+        }
+      }
+
+      return null;
+    } catch (e) {
+      print('Error finding conversation: $e');
+      throw Exception('Failed to find staff conversation: $e');
+    }
+  }
+
+  Future<String> getOrCreateStaffConversation(
+      String otherStaffId, String otherStaffRole) async {
+    try {
+      print('Searching for conversation with otherStaffId: $otherStaffId');
+
+      final existingConversationId =
+          await findExistingStaffConversation(otherStaffId);
+
+      if (existingConversationId != null) {
+        print('Found existing conversation: $existingConversationId');
+        return existingConversationId;
+      }
+
+      print(
+          'Creating new conversation between $currentUserId and $otherStaffId');
+
+      // Tạo conversation mới với cấu trúc được cải thiện
+      final conversationRef =
+          await _firestore.collection('staff_conversations').add({
+        'createdAt': FieldValue.serverTimestamp(),
+        'participantIds': [currentUserId, otherStaffId], // Array của user IDs
+        'participants': {
+          currentUserId: {'role': currentUserRole, 'userId': currentUserId},
+          otherStaffId: {'role': otherStaffRole, 'userId': otherStaffId}
+        },
+        'lastMessage': null,
+        'status': 'active',
+      });
+
+      print('Created new conversation with ID: ${conversationRef.id}');
+      return conversationRef.id;
+    } catch (e) {
+      print('Error in getOrCreateStaffConversation: $e');
+      throw Exception('Failed to get or create staff conversation: $e');
+    }
+  }
+
+  Stream<List<Message>> getStaffMessages(String conversationId) {
+    print('Getting messages for conversation: $conversationId');
+    return _firestore
+        .collection('staff_conversations')
+        .doc(conversationId)
+        .collection('messages')
+        .orderBy('timestamp', descending: true)
+        .snapshots()
+        .map((snapshot) {
+      final messages =
+          snapshot.docs.map((doc) => Message.fromFirestore(doc)).toList();
+      print('Retrieved ${messages.length} messages');
+      return messages;
+    });
+  }
+
+  Future<void> sendStaffMessage(String conversationId, String content,
+      {List<String>? attachments}) async {
+    try {
+      final messageRef = _firestore
+          .collection('staff_conversations')
+          .doc(conversationId)
+          .collection('messages');
+
+      final message = {
+        'content': content,
+        'attachments': attachments ?? [],
+        'senderId': currentUserId,
+        'senderRole': currentUserRole,
+        'timestamp': FieldValue.serverTimestamp(),
+        'status': 'sent',
+      };
+
+      final docRef = await messageRef.add(message);
+      print('Sent message with ID: ${docRef.id}');
+
+      // Cập nhật last message
+      await _firestore
+          .collection('staff_conversations')
+          .doc(conversationId)
+          .update({
+        'lastMessage': message,
+        'lastMessageAt': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      print('Error sending message: $e');
+      throw Exception('Failed to send staff message: $e');
+    }
+  }
+}

@@ -1,11 +1,40 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/assignment_response_entity.dart';
 import 'package:movemate_staff/features/profile/domain/entities/profile_entity.dart';
 import 'package:movemate_staff/features/profile/presentation/controllers/profile_controller/profile_controller.dart';
 import 'package:movemate_staff/hooks/use_fetch_obj.dart';
 
+// Navigation function cho cả Driver và Porter
+void navigateToChatScreen({
+  required BuildContext context,
+  required String userId,
+  required String name,
+  required String? avatarUrl,
+  required String role, // 'driver' hoặc 'porter'
+}) {
+  if (role == 'driver') {
+    context.router.push(
+      ChatWithDriverScreenRoute(
+        driverId: userId,
+        driverName: name,
+        driverAvatar: avatarUrl,
+      ),
+    );
+  } else if (role == 'porter') {
+    context.router.push(
+      ChatWithPorterScreenRoute(
+        porterId: userId,
+        porterName: name,
+        porterAvatar: avatarUrl,
+      ),
+    );
+  }
+}
+
+// Widget được sửa đổi để thêm chức năng chat
 class ListItemWidget extends HookConsumerWidget {
   final AssignmentsResponseEntity item;
   final AssignmentsResponseEntity? selectedValue;
@@ -13,6 +42,7 @@ class ListItemWidget extends HookConsumerWidget {
   final IconData icon;
   final Color iconColor;
   final String subtitle;
+  final String role; // Thêm role để xác định loại người dùng
 
   const ListItemWidget({
     Key? key,
@@ -22,6 +52,7 @@ class ListItemWidget extends HookConsumerWidget {
     required this.icon,
     required this.iconColor,
     required this.subtitle,
+    required this.role,
   }) : super(key: key);
 
   @override
@@ -105,17 +136,8 @@ class ListItemWidget extends HookConsumerWidget {
                   children: [
                     Row(
                       children: [
-                        // Text(
-                        //   item.staffType,
-                        //   style: const TextStyle(
-                        //     fontSize: 16,
-                        //     fontWeight: FontWeight.w600,
-                        //   ),
-                        // ),
-                        // Display user profile information if available
-
                         Text(
-                          ' ${userProfile.data?.name ?? ''}', // Adjust according to your ProfileEntity
+                          ' ${userProfile.data?.name ?? ''}',
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -133,7 +155,7 @@ class ListItemWidget extends HookConsumerWidget {
                             color: Colors.grey.shade600,
                           ),
                         ),
-                        SizedBox(width: 4),
+                        const SizedBox(width: 4),
                         Text(
                           '-',
                           style: TextStyle(
@@ -141,7 +163,7 @@ class ListItemWidget extends HookConsumerWidget {
                             color: Colors.grey.shade600,
                           ),
                         ),
-                        SizedBox(width: 4),
+                        const SizedBox(width: 4),
                         Text(
                           userProfile.data?.phone ?? '',
                           style: TextStyle(
@@ -153,6 +175,21 @@ class ListItemWidget extends HookConsumerWidget {
                     ),
                   ],
                 ),
+              ),
+              // Thêm nút chat
+              IconButton(
+                icon: const Icon(Icons.chat_bubble_outline),
+                onPressed: () {
+                  if (userProfile.data != null) {
+                    navigateToChatScreen(
+                      context: context,
+                      userId: item.userId.toString(),
+                      name: userProfile.data!.name ?? '',
+                      avatarUrl: userProfile.data!.avatarUrl,
+                      role: role,
+                    );
+                  }
+                },
               ),
               Radio<AssignmentsResponseEntity>(
                 value: item,
