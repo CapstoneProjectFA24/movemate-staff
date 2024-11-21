@@ -45,14 +45,14 @@ class DriverConfirmUpload extends HookConsumerWidget {
     final uploadedImages = ref.watch(uploadedImagesProvider);
     final bookingAsync = ref.watch(bookingStreamProvider(job.id.toString()));
     final status = useBookingStatus(bookingAsync.value, job.isReviewOnline);
-    final bookingController = ref.read(bookingControllerProvider.notifier);
+    // final bookingController = ref.read(bookingControllerProvider.notifier);
 
-    final useFetchResult = useFetchObject<BookingResponseEntity>(
-      function: (context) => bookingController.getBookingById(job.id, context),
-      context: context,
-    );
-    useFetchResult.refresh;
-    final bookingTypeData = useFetchResult.data;
+    // final useFetchResult = useFetchObject<BookingResponseEntity>(
+    //   function: (context) => bookingController.getBookingById(job.id, context),
+    //   context: context,
+    // );
+    // useFetchResult.refresh;
+    // final bookingTypeData = useFetchResult.data;
     // final  job = useFetchResult.data;
     // print("tuan object check 1${bookingTypeData} ");
     // print("tuan object check 2 ${useFetchResult.data} ");
@@ -205,6 +205,7 @@ class DriverConfirmUpload extends HookConsumerWidget {
                         break;
                     }
                   }),
+         
           ],
         ),
       );
@@ -216,13 +217,7 @@ class DriverConfirmUpload extends HookConsumerWidget {
         backgroundColor: primaryOrange,
         backButtonColor: AssetsConstants.whiteColor,
         onBackButtonPressed: () {
-          // final data = await bookingController.getBookingById(job.id, context);
-
-          // if (data != null) {
-          //   // print("tuan check2 ${data.id} ");
-          //   context.router.push(DriverDetailScreenRoute(
-          //       job: data, bookingStatus: status, ref: ref));
-          // }
+   
           context.router.push(DriverDetailScreenRoute(
               job: job, bookingStatus: status, ref: ref));
         },
@@ -281,8 +276,6 @@ class DriverConfirmUpload extends HookConsumerWidget {
                           );
                       bookingAsync.isRefreshing;
 
-                      // context.router.push(DriverDetailScreenRoute(
-                      //     job: job, bookingStatus: status, ref: ref));
                     },
                     actionButtonLabel: 'Xác nhận đến',
                     actionIcon: Icons.location_on,
@@ -322,17 +315,17 @@ class DriverConfirmUpload extends HookConsumerWidget {
                             request: request,
                             context: context,
                           );
-                      // context.router.push(DriverDetailScreenRoute(
-                      //     job: job, bookingStatus: status, ref: ref));
+      
                       bookingAsync.isRefreshing;
                     },
                     actionButtonLabel: 'Xác nhận giao hàng',
                     actionIcon: Icons.check_circle,
                     isEnabled: status.canDriverCompleteDelivery,
-                    // isEnabled: status.canDriverConfirmArrived,
+                
                     showCameraButton: true,
                     request: request.value,
                   ),
+                
                 ],
               ),
             ),

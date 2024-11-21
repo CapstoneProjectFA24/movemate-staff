@@ -137,11 +137,11 @@ class PorterController extends _$PorterController {
     print(
         "check 1 contrller request ${request.resourceList.firstWhere((e) => e.type != null).resourceUrl}");
     state = await AsyncValue.guard(() async {
-      await ref.read(bookingRepositoryProvider).updateStatusPorterResourse(
-            accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
-            request: request,
-            id: id,
-          );
+      // await ref.read(bookingRepositoryProvider).updateStatusPorterResourse(
+      //       accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
+      //       request: request,
+      //       id: id,
+      //     );
 
       ref
           .read(refreshPorterList.notifier)
