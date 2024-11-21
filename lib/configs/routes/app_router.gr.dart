@@ -68,6 +68,17 @@ abstract class _$AppRouter extends RootStackRouter {
         child: const ContactScreen(),
       );
     },
+    DriverChatWithCustomerScreenRoute.name: (routeData) {
+      final args = routeData.argsAs<DriverChatWithCustomerScreenRouteArgs>();
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: DriverChatWithCustomerScreen(
+          key: args.key,
+          customerId: args.customerId,
+          bookingId: args.bookingId,
+        ),
+      );
+    },
     DriverConfirmUploadRoute.name: (routeData) {
       final args = routeData.argsAs<DriverConfirmUploadRouteArgs>();
       return AutoRoutePage<dynamic>(
@@ -165,6 +176,14 @@ abstract class _$AppRouter extends RootStackRouter {
           phoneNumber: args.phoneNumber,
           verifyType: args.verifyType,
         ),
+      );
+    },
+    OnboardingScreenRoute.name: (routeData) {
+      final args = routeData.argsAs<OnboardingScreenRouteArgs>(
+          orElse: () => const OnboardingScreenRouteArgs());
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: OnboardingScreen(key: args.key),
       );
     },
     OrderScreenRoute.name: (routeData) {
@@ -461,6 +480,50 @@ class ContactScreenRoute extends PageRouteInfo<void> {
   static const String name = 'ContactScreenRoute';
 
   static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [DriverChatWithCustomerScreen]
+class DriverChatWithCustomerScreenRoute
+    extends PageRouteInfo<DriverChatWithCustomerScreenRouteArgs> {
+  DriverChatWithCustomerScreenRoute({
+    Key? key,
+    required String customerId,
+    required String bookingId,
+    List<PageRouteInfo>? children,
+  }) : super(
+          DriverChatWithCustomerScreenRoute.name,
+          args: DriverChatWithCustomerScreenRouteArgs(
+            key: key,
+            customerId: customerId,
+            bookingId: bookingId,
+          ),
+          initialChildren: children,
+        );
+
+  static const String name = 'DriverChatWithCustomerScreenRoute';
+
+  static const PageInfo<DriverChatWithCustomerScreenRouteArgs> page =
+      PageInfo<DriverChatWithCustomerScreenRouteArgs>(name);
+}
+
+class DriverChatWithCustomerScreenRouteArgs {
+  const DriverChatWithCustomerScreenRouteArgs({
+    this.key,
+    required this.customerId,
+    required this.bookingId,
+  });
+
+  final Key? key;
+
+  final String customerId;
+
+  final String bookingId;
+
+  @override
+  String toString() {
+    return 'DriverChatWithCustomerScreenRouteArgs{key: $key, customerId: $customerId, bookingId: $bookingId}';
+  }
 }
 
 /// generated route for
@@ -791,6 +854,35 @@ class OTPVerificationScreenRouteArgs {
   @override
   String toString() {
     return 'OTPVerificationScreenRouteArgs{key: $key, phoneNumber: $phoneNumber, verifyType: $verifyType}';
+  }
+}
+
+/// generated route for
+/// [OnboardingScreen]
+class OnboardingScreenRoute extends PageRouteInfo<OnboardingScreenRouteArgs> {
+  OnboardingScreenRoute({
+    Key? key,
+    List<PageRouteInfo>? children,
+  }) : super(
+          OnboardingScreenRoute.name,
+          args: OnboardingScreenRouteArgs(key: key),
+          initialChildren: children,
+        );
+
+  static const String name = 'OnboardingScreenRoute';
+
+  static const PageInfo<OnboardingScreenRouteArgs> page =
+      PageInfo<OnboardingScreenRouteArgs>(name);
+}
+
+class OnboardingScreenRouteArgs {
+  const OnboardingScreenRouteArgs({this.key});
+
+  final Key? key;
+
+  @override
+  String toString() {
+    return 'OnboardingScreenRouteArgs{key: $key}';
   }
 }
 

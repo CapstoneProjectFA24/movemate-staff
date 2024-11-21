@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:movemate_staff/configs/routes/guard/role_guard.dart';
 import 'package:movemate_staff/features/driver/presentation/screen/driver_screen.dart';
+import 'package:movemate_staff/features/drivers/presentation/screens/driver_chat_with_customer.dart/reviewer_chat_with_customer.dart';
 import 'package:movemate_staff/features/drivers/presentation/widgets/draggable_sheet/driver_confirm_upload/driver_confirm_upload.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/presentation/screen/complete_proposal_screen/complete_proposal_screen.dart';
@@ -40,6 +41,7 @@ import 'package:movemate_staff/features/porter/presentation/screens/porter_scree
 import 'package:movemate_staff/features/history/presentation/screen/history_screen.dart';
 import 'package:movemate_staff/features/test-map/map_test_screen.dart';
 import 'package:movemate_staff/hooks/use_booking_status.dart';
+import 'package:movemate_staff/onboarding_screen.dart';
 import 'package:movemate_staff/splash_screen.dart';
 import 'package:movemate_staff/tab_screen.dart';
 // import 'package:movemate_staff/onboarding_screen.dart';
@@ -169,6 +171,7 @@ class AppRouter extends _$AppRouter {
         AutoRoute(
           page: DriverConfirmUploadRoute.page,
         ),
+        AutoRoute(page: OnboardingScreenRoute.page),
         AutoRoute(
           page: ProfileScreenRoute.page,
           guards: [

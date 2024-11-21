@@ -581,19 +581,17 @@ String determineStatusMessage(
   } else {
     switch (status) {
       case BookingStatusType.assigned:
-        return canCreateSchedule
-            ? "Chờ bạn xếp lịch với khách hàng"
-            : "Đã được phân công";
+        return canCreateSchedule ? "Chờ xếp lịch" : "Đã phân công";
       case BookingStatusType.waiting:
-        return "Đang chờ khách hàng chấp nhận lịch";
+        return "Chờ khách hàng chấp nhận";
       case BookingStatusType.depositing:
-        return "Chờ khách hàng thanh toán";
+        return "Chờ thanh toán";
       case BookingStatusType.reviewing:
         if (isStaffEnroute) return "Xác nhận để di chuyển";
         if (isStaffArrived) {
-          return "Bạn đã đến vui lòng đánh giá tình trạng của nhà";
+          return "Đã đến vui lòng đánh giá tình trạng";
         }
-        return "Đang đợi bạn đánh giá";
+        return "Đang đợi đánh giá";
       case BookingStatusType.reviewed:
         return "Đã đánh giá xong";
       case BookingStatusType.coming:
@@ -601,21 +599,21 @@ String determineStatusMessage(
           return "Chờ phân công nhân viên vận chuyển";
         }
         if (isDriverAssigned && !isPorterAssigned) {
-          return "Đã phân công tài xế - Chờ phân công porter";
+          return "Đã phân công tài xế - Chờ phân công bốc vác";
         }
         if (!isDriverAssigned && isPorterAssigned) {
-          return "Đã phân công porter - Chờ phân công tài xế";
+          return "Đã phân công bốc vác - Chờ phân công tài xế";
         }
-        return "Đã phân công đầy đủ nhân viên vận chuyển";
+        return "Đã phân công đủ nhân viên vận chuyển";
 
       case BookingStatusType.inProgress:
-        return "Đang trong quá trình vận chuyển";
+        return "Đang vận chuyển";
 
       case BookingStatusType.confirmed:
-        return "Đang trong quá trình thảo luận với khách";
+        return "Đang thảo luận với khách";
 
       case BookingStatusType.completed:
-        return "Đã hoàn thành toàn bộ quy trình";
+        return "Đã hoàn thành";
       case BookingStatusType.cancelled:
         return "Đã hủy";
       case BookingStatusType.refunded:
