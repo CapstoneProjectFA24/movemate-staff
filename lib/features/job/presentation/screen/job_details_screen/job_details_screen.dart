@@ -9,6 +9,7 @@ import 'package:movemate_staff/configs/routes/app_router.dart';
 // Models & Entities
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/presentation/screen/chat_screens/reviewer_chat_with_customer/reviewer_chat_with_customer.dart';
+import 'package:movemate_staff/features/job/presentation/screen/check_available/check_available.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/main_detail_ui/detail_info_basic.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/main_detail_ui/header_status_section.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/main_detail_ui/image_info_section.dart';
@@ -113,17 +114,17 @@ class JobDetailsScreen extends HookConsumerWidget {
         ),
         body: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.only(left: 2.0, top: 20),
+            padding: const EdgeInsets.only(left: 1),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                CheckAvailable(job: job),
+                // buildBadge(),
                 BookingHeaderStatusSection(
                   isReviewOnline: job.isReviewOnline,
                   job: job,
                   fetchResult: fetchResult,
                 ),
-                const SizedBox(height: 20),
-
                 const SizedBox(height: 20),
                 CombinedInfoSection(
                   job: job,
@@ -134,12 +135,24 @@ class JobDetailsScreen extends HookConsumerWidget {
                   groupedImages: groupedImages,
                 ),
                 const SizedBox(height: 10),
-                // UpdateStatusButton(job: job),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Positioned buildBadge() {
+    return Positioned(
+      top: 0,
+      left: 0,
+      right: 30,
+      child: Container(
+          width: 20,
+          height: 30,
+          alignment: Alignment.bottomRight,
+          child: CheckAvailable(job: job)),
     );
   }
 }

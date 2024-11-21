@@ -60,7 +60,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
     return Column(
       children: [
         Container(
-          padding: const EdgeInsets.all(12.0),
+          padding: const EdgeInsets.only(right: 16.0, left: 16, bottom: 16),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
@@ -76,7 +76,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildStatusMessage(bookingStatus.statusMessage),
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
               _buildTimeline(context, bookingStatus, ref, isExpanded),
             ],
           ),
@@ -102,7 +102,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
 
   Widget _buildStatusMessage(String statusMessage) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
         color: Colors.orange.withOpacity(0.1),
         borderRadius: BorderRadius.circular(8),
