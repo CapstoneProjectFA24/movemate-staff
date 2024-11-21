@@ -202,6 +202,14 @@ abstract class _$AppRouter extends RootStackRouter {
         ),
       );
     },
+    OnboardingScreenRoute.name: (routeData) {
+      final args = routeData.argsAs<OnboardingScreenRouteArgs>(
+          orElse: () => const OnboardingScreenRouteArgs());
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: OnboardingScreen(key: args.key),
+      );
+    },
     OrderScreenRoute.name: (routeData) {
       return AutoRoutePage<dynamic>(
         routeData: routeData,
@@ -992,6 +1000,35 @@ class OTPVerificationScreenRouteArgs {
   @override
   String toString() {
     return 'OTPVerificationScreenRouteArgs{key: $key, phoneNumber: $phoneNumber, verifyType: $verifyType}';
+  }
+}
+
+/// generated route for
+/// [OnboardingScreen]
+class OnboardingScreenRoute extends PageRouteInfo<OnboardingScreenRouteArgs> {
+  OnboardingScreenRoute({
+    Key? key,
+    List<PageRouteInfo>? children,
+  }) : super(
+          OnboardingScreenRoute.name,
+          args: OnboardingScreenRouteArgs(key: key),
+          initialChildren: children,
+        );
+
+  static const String name = 'OnboardingScreenRoute';
+
+  static const PageInfo<OnboardingScreenRouteArgs> page =
+      PageInfo<OnboardingScreenRouteArgs>(name);
+}
+
+class OnboardingScreenRouteArgs {
+  const OnboardingScreenRouteArgs({this.key});
+
+  final Key? key;
+
+  @override
+  String toString() {
+    return 'OnboardingScreenRouteArgs{key: $key}';
   }
 }
 

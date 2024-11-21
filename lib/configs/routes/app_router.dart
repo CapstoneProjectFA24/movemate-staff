@@ -46,6 +46,7 @@ import 'package:movemate_staff/features/porter/presentation/screens/porter_scree
 import 'package:movemate_staff/features/history/presentation/screen/history_screen.dart';
 import 'package:movemate_staff/features/test-map/map_test_screen.dart';
 import 'package:movemate_staff/hooks/use_booking_status.dart';
+import 'package:movemate_staff/onboarding_screen.dart';
 import 'package:movemate_staff/splash_screen.dart';
 import 'package:movemate_staff/tab_screen.dart';
 // import 'package:movemate_staff/onboarding_screen.dart';
@@ -187,6 +188,7 @@ class AppRouter extends _$AppRouter {
         AutoRoute(
           page: DriverConfirmUploadRoute.page,
         ),
+        AutoRoute(page: OnboardingScreenRoute.page),
         AutoRoute(
           page: ProfileScreenRoute.page,
           guards: [
