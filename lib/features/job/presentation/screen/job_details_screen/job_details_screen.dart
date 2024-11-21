@@ -17,12 +17,14 @@ import 'package:movemate_staff/features/job/presentation/widgets/details/main_de
 import 'package:movemate_staff/features/profile/domain/entities/profile_entity.dart';
 import 'package:movemate_staff/features/profile/presentation/controllers/profile_controller/profile_controller.dart';
 import 'package:movemate_staff/features/test/domain/entities/house_entities.dart';
+import 'package:movemate_staff/hooks/use_booking_status.dart';
 import 'package:movemate_staff/models/request/paging_model.dart';
 
 // Controllers & Providers
 import 'package:movemate_staff/features/job/presentation/controllers/booking_controller/booking_controller.dart';
 import 'package:movemate_staff/features/job/presentation/controllers/house_type_controller/house_type_controller.dart';
 import 'package:movemate_staff/features/job/presentation/providers/booking_provider.dart';
+import 'package:movemate_staff/services/realtime_service/booking_status_realtime/booking_status_stream_provider.dart';
 
 // Widgets
 import 'package:movemate_staff/utils/commons/widgets/app_bar.dart';
@@ -32,6 +34,7 @@ import 'package:movemate_staff/utils/commons/widgets/loading_overlay.dart';
 import 'package:movemate_staff/hooks/use_fetch_obj.dart';
 import 'package:movemate_staff/hooks/use_fetch.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
+import 'package:movemate_staff/utils/enums/booking_status_type.dart';
 
 @RoutePage()
 class JobDetailsScreen extends HookConsumerWidget {
@@ -78,6 +81,9 @@ class JobDetailsScreen extends HookConsumerWidget {
       ),
       context: context,
     );
+    final bookingAsync = ref.watch(bookingStreamProvider(job.id.toString()));
+    final bookingStatus =
+        useBookingStatus(bookingAsync.value, job.isReviewOnline);
 
     return LoadingOverlay(
       isLoading: state.isLoading,
@@ -108,9 +114,6 @@ class JobDetailsScreen extends HookConsumerWidget {
               context.router.popUntilRouteWithName(TabViewScreenRoute.name);
             }
           },
-          // onCallBackFirst: () => {
-          //   fetchResult.refresh(),
-          // },
         ),
         body: SingleChildScrollView(
           child: Padding(
@@ -118,8 +121,9 @@ class JobDetailsScreen extends HookConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CheckAvailable(job: job),
-                // buildBadge(),
+                // check điều kiện
+                // CheckAvailable(job: job),
+
                 BookingHeaderStatusSection(
                   isReviewOnline: job.isReviewOnline,
                   job: job,
@@ -140,19 +144,6 @@ class JobDetailsScreen extends HookConsumerWidget {
           ),
         ),
       ),
-    );
-  }
-
-  Positioned buildBadge() {
-    return Positioned(
-      top: 0,
-      left: 0,
-      right: 30,
-      child: Container(
-          width: 20,
-          height: 30,
-          alignment: Alignment.bottomRight,
-          child: CheckAvailable(job: job)),
     );
   }
 }

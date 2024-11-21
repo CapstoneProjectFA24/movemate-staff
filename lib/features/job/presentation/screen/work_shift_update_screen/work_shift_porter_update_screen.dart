@@ -34,7 +34,6 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
     );
 
     final datas = useFetchResult.data;
-  
 
     return LoadingOverlay(
       isLoading: state.isLoading,
@@ -81,9 +80,9 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
                             SizedBox(height: 16),
                             _buildWorkShiftInfo(context: context),
                             SizedBox(height: 16),
-                            _buildRoleSelection(selectedRole),
+                            _buildRoleSelection(datas: datas),
                             SizedBox(height: 16),
-                            _buildEmployeeList(),
+                            _buildEmployeeList(datas: datas),
                             SizedBox(height: 16),
                             _buildWorkTiming(startTime, endTime),
                             SizedBox(height: 16),
@@ -147,17 +146,7 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
     );
   }
 
-  Widget _buildRoleSelection(ValueNotifier<String> selectedRole) {
-    // Danh sách mẫu bao gồm cả tài xế và bốc vác
-    final List<Map<String, String>> workers = [
-      {'role': 'Tài xế', 'name': 'Tài xế 1: Trần Văn A'},
-      {'role': 'Tài xế', 'name': 'Tài xế 2: Trần Văn B'},
-      {'role': 'Bốc vác', 'name': 'Bốc vác 1: Nguyễn Văn A'},
-      {'role': 'Bốc vác', 'name': 'Bốc vác 2: Nguyễn Văn B'},
-      {'role': 'Bốc vác', 'name': 'Bốc vác 3: Nguyễn Văn C'},
-      {'role': 'Bốc vác', 'name': 'Bốc vác 4: Nguyễn Văn D'},
-    ];
-
+  Widget _buildRoleSelection({required AvailableStaffEntities? datas}) {
     return Container(
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -184,7 +173,7 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
             ),
             child: ListView.separated(
               padding: EdgeInsets.symmetric(vertical: 8),
-              itemCount: workers.length,
+              itemCount: datas?.countStaffInslots ?? 0,
               separatorBuilder: (context, index) => Divider(height: 1),
               itemBuilder: (context, index) {
                 return Material(
@@ -194,14 +183,14 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
                     child: Row(
                       children: [
                         CircleAvatar(
-                          backgroundColor: workers[index]['role'] == 'Tài xế'
+                          backgroundColor: datas!.isSussed
                               ? Colors.blue[100]
                               : Colors.orange[100],
                           child: Icon(
-                            workers[index]['role'] == 'Tài xế'
+                            datas!.isSussed
                                 ? Icons.drive_eta
                                 : Icons.engineering,
-                            color: workers[index]['role'] == 'Tài xế'
+                            color: datas!.isSussed
                                 ? Colors.blue[700]
                                 : Colors.orange[700],
                             size: 20,
@@ -212,16 +201,22 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              workers[index]['name']!,
+                              datas?.staffInSlot
+                                      .firstWhere((e) => e.id != null)
+                                      .name ??
+                                  '',
                               style:
                                   TextStyle(fontSize: 14, color: Colors.black),
                             ),
                             SizedBox(height: 4),
                             Text(
-                              workers[index]['role']!,
+                              datas?.staffInSlot
+                                      .firstWhere((e) => e.id != null)
+                                      .roleName ??
+                                  '',
                               style: TextStyle(
                                 fontSize: 12,
-                                color: workers[index]['role'] == 'Tài xế'
+                                color: datas!.isSussed
                                     ? Colors.blue[700]
                                     : Colors.orange[700],
                               ),
@@ -240,7 +235,7 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
     );
   }
 
-  Widget _buildEmployeeList() {
+  Widget _buildEmployeeList({required AvailableStaffEntities? datas}) {
     return Container(
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -255,34 +250,40 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
             style: TextStyle(color: Colors.black),
           ),
           SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _buildEmployeeAvatar('Jeny',
-                  'https://storage.googleapis.com/a1aa/image/n1Kkd4z2IfRSES6CXIr1VfQuzolejFtC5wF2fCTi4IbEPtMPB.jpg'),
-              _buildEmployeeAvatar('mehrin',
-                  'https://storage.googleapis.com/a1aa/image/x6DiNPS4OfVgDi35jfZ9R5n138n0gUr2CKM7m6KlG7ernWmnA.jpg'),
-              _buildEmployeeAvatar('Avishek',
-                  'https://storage.googleapis.com/a1aa/image/yoAgi84YheSCMqqOxWem2QBsKVCnysgWXfE5qJfEsTXKPtMPB.jpg'),
-              _buildEmployeeAvatar('Jafor',
-                  'https://storage.googleapis.com/a1aa/image/vpi32E6D7yLuANYESWIy7nWIeLOKx5A0oPNFzdfAVv6zTLzTA.jpg'),
-            ],
+          Container(
+            height: 100, // Adjust the height as needed
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal, // Scroll horizontally
+              itemCount: datas?.countOtherStaff ?? 0,
+              itemBuilder: (context, index) {
+                // Access each staff from datas.otherStaffs
+                final staff = datas!.otherStaffs[index];
+                return _buildEmployeeAvatar(
+                  staff.name ?? '',
+                  staff.avatarUrl ?? '',
+                );
+              },
+            ),
           ),
         ],
       ),
     );
   }
 
+// Existing _buildEmployeeAvatar method
   Widget _buildEmployeeAvatar(String name, String imageUrl) {
-    return Column(
-      children: [
-        CircleAvatar(
-          radius: 25,
-          backgroundImage: NetworkImage(imageUrl),
-        ),
-        SizedBox(height: 4),
-        Text(name, style: TextStyle(fontSize: 12)),
-      ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: Column(
+        children: [
+          CircleAvatar(
+            radius: 25,
+            backgroundImage: NetworkImage(imageUrl),
+          ),
+          SizedBox(height: 4),
+          Text(name, style: TextStyle(fontSize: 12)),
+        ],
+      ),
     );
   }
 
