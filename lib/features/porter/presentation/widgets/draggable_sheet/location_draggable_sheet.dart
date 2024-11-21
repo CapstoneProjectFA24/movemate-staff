@@ -82,7 +82,7 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
 
     // Tạo chuỗi định dạng
     final formattedBookingAt = '$day tháng $month/$year Vào lúc $hour:$minute';
-    print("tuan check $formattedBookingAt");
+    // print("tuan check $formattedBookingAt");
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(

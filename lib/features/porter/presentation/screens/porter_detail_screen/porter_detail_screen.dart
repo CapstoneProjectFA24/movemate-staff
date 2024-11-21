@@ -79,7 +79,8 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
   void _initStreams() {
     _jobSubscription = JobStreamManager().jobStream.listen((updateJob) {
       if (updateJob.id == widget.job.id) {
-        print('Received updated order in ReviewerTrackingMap: ${updateJob.id}');
+        print(
+            'tuan Received updated order in ReviewerTrackingMap: ${updateJob.id}');
         setState(() {
           _currentJob = updateJob;
           // _buildInitialRoute();
@@ -422,6 +423,9 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
               id: widget.job.id,
               context: context,
             );
+        context.router.push(PorterConfirmScreenRoute(
+          job: _currentJob,
+        ));
       } catch (driverError) {
         print(
             "Lỗi khi bắt đầu điều hướng  inprogres lên ongoing: ${driverError.toString()}");
@@ -454,18 +458,18 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print("vinh log status ${widget.bookingStatus.isPorterStartPoint}");
-    print("vinh log status1 ${widget.bookingStatus.isPorterAtDeliveryPoint}");
-    print("vinh log status2 ${widget.bookingStatus.isPorterEndDeliveryPoint}");
-    print("vinh log status3 ${widget.bookingStatus.canPorterConfirmIncoming}");
-    print("vinh log status4 ${widget.bookingStatus.canPorterConfirmArrived}");
-    print(
-        "vinh log status5 ${widget.bookingStatus.canPorterConfirmInprogress}");
-    print("vinh log status6 ${widget.bookingStatus.canPorterConfirmOngoing}");
-    print("vinh log status7 ${widget.bookingStatus.canPorterConfirmDelivered}");
-    print(
-        "vinh log status8 ${widget.bookingStatus.canPorterCompleteUnloading}");
-    print("vinh log status9 ${widget.bookingStatus.canPorterComplete}");
+    // print("vinh log status ${widget.bookingStatus.isPorterStartPoint}");
+    // print("vinh log status1 ${widget.bookingStatus.isPorterAtDeliveryPoint}");
+    // print("vinh log status2 ${widget.bookingStatus.isPorterEndDeliveryPoint}");
+    // print("vinh log status3 ${widget.bookingStatus.canPorterConfirmIncoming}");
+    // print("vinh log status4 ${widget.bookingStatus.canPorterConfirmArrived}");
+    // print(
+    //     "vinh log status5 ${widget.bookingStatus.canPorterConfirmInprogress}");
+    // print("vinh log status6 ${widget.bookingStatus.canPorterConfirmOngoing}");
+    // print("vinh log status7 ${widget.bookingStatus.canPorterConfirmDelivered}");
+    // print(
+    //     "vinh log status8 ${widget.bookingStatus.canPorterCompleteUnloading}");
+    // print("vinh log status9 ${widget.bookingStatus.canPorterComplete}");
     // print(
     //     "vinh log status realtime ${_currentJob.assignments.map((e) => e.toJson())}");
     return Scaffold(
@@ -742,7 +746,6 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
                   if (widget.bookingStatus.canPorterConfirmInprogress)
                     FloatingActionButton(
                       onPressed: _isMapReady ? _startArrivedtoProgress : null,
-                      // onPressed: _isMapReady ? _startNavigation : null,
                       child: const Icon(Icons.garage_outlined),
                     ),
                 if (!_isNavigationStarted)

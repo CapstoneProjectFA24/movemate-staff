@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
+import 'package:movemate_staff/features/drivers/presentation/controllers/stream_controller/job_stream_manager.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:intl/intl.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:movemate_staff/hooks/use_booking_status.dart';
 import 'package:movemate_staff/services/realtime_service/booking_status_realtime/booking_status_stream_provider.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
 class PorterCard extends HookConsumerWidget {
   final BookingResponseEntity job;
@@ -24,6 +26,11 @@ class PorterCard extends HookConsumerWidget {
     final bookingAsync = ref.watch(bookingStreamProvider(job.id.toString()));
     final bookingStatus =
         useBookingStatus(bookingAsync.value, job.isReviewOnline);
+
+    useEffect(() {
+      JobStreamManager().updateJob(job);
+      return null;
+    }, [bookingAsync.value]);
 
     Color cardColor;
     String statusText;

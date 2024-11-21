@@ -533,6 +533,7 @@ BookingStatusResult useBookingStatus(
       canPorterConfirmIncoming: canPorterConfirmIncoming,
       canPorterConfirmArrived: canPorterConfirmArrived,
       canPorterConfirmInprogress: canPorterConfirmInprogress,
+      canPorterConfirmPacking: canPorterConfirmPacking,
       canPorterConfirmOngoing: canPorterConfirmOngoing,
       canPorterConfirmDelivered: canPorterConfirmDelivered,
       canPorterCompleteUnloading: canPorterCompleteUnloading,

@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:movemate_staff/configs/routes/app_router.dart';
+import 'package:movemate_staff/features/drivers/presentation/controllers/stream_controller/job_stream_manager.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/porter/data/models/request/porter_update_resourse_request.dart';
 import 'package:movemate_staff/features/porter/presentation/controllers/porter_controller.dart';
 import 'package:movemate_staff/hooks/use_booking_status.dart';
 import 'package:movemate_staff/services/realtime_service/booking_status_realtime/booking_status_stream_provider.dart';
+import 'package:movemate_staff/utils/commons/widgets/app_bar.dart';
 import 'package:movemate_staff/utils/commons/widgets/cloudinary/cloudinary_camera_upload_widget.dart';
+import 'package:movemate_staff/utils/constants/asset_constant.dart';
 
 @RoutePage()
 class PorterConfirmScreen extends HookConsumerWidget {
@@ -42,10 +46,24 @@ class PorterConfirmScreen extends HookConsumerWidget {
     final uploadedImages = ref.watch(uploadedImagesProvider);
     final bookingAsync = ref.watch(bookingStreamProvider(job.id.toString()));
     final status = useBookingStatus(bookingAsync.value, job.isReviewOnline);
-    print("tuan check status ${status.canPorterConfirmOngoing}");
-    print(
-        "tuan check status canPorterConfirmArrived ${status.canPorterConfirmArrived}");
-    print("tuan check status ${bookingAsync.value?.status.toString()}");
+    final _currentJob = useState<BookingResponseEntity>(job);
+
+    useEffect(() {
+      JobStreamManager().updateJob(job);
+      return null;
+    }, [bookingAsync.value]);
+
+    useEffect(() {
+      final subscription = JobStreamManager().jobStream.listen((updateJob) {
+        if (updateJob.id == job.id) {
+          print(
+              'tuan Received updated order in PorterConfirmScreen: ${updateJob.id}');
+          _currentJob.value = updateJob;
+        }
+      });
+      return subscription.cancel;
+    }, [job]);
+
     List<dynamic> getTrackerSources(
         BookingResponseEntity job, String trackerType) {
       try {
@@ -57,6 +75,66 @@ class PorterConfirmScreen extends HookConsumerWidget {
         return [];
       }
     }
+
+    final imagesSourceArrived = getTrackerSources(job, "PORTER_ARRIVED");
+    final imagesSourcePacking = getTrackerSources(job, "PORTER_PACKING");
+    final imagesSourceDelivered = getTrackerSources(job, "PORTER_DELIVERED");
+    final imagesSourceUnloaded = getTrackerSources(job, "PORTER_UNLOADED");
+    final imagesSourceCompleted = getTrackerSources(job, "PORTER_COMPLETED");
+
+    useEffect(() {
+      if (imagesSourceArrived.isNotEmpty) {
+        images1.value = imagesSourceArrived
+            .map((source) => source['resourceUrl'] as String)
+            .toList();
+
+        imagePublicIds1.value = imagesSourceArrived
+            .map((source) => source['resourceCode'] as String)
+            .toList();
+      }
+      if (imagesSourcePacking.isNotEmpty) {
+        images2.value = imagesSourcePacking
+            .map((source) => source['resourceUrl'] as String)
+            .toList();
+
+        imagePublicIds2.value = imagesSourcePacking
+            .map((source) => source['resourceCode'] as String)
+            .toList();
+      }
+      if (imagesSourceDelivered.isNotEmpty) {
+        images3.value = imagesSourceDelivered
+            .map((source) => source['resourceUrl'] as String)
+            .toList();
+
+        imagePublicIds3.value = imagesSourceDelivered
+            .map((source) => source['resourceCode'] as String)
+            .toList();
+      }
+      if (imagesSourceUnloaded.isNotEmpty) {
+        images4.value = imagesSourceUnloaded
+            .map((source) => source['resourceUrl'] as String)
+            .toList();
+
+        imagePublicIds4.value = imagesSourceUnloaded
+            .map((source) => source['resourceCode'] as String)
+            .toList();
+      }
+      if (imagesSourceCompleted.isNotEmpty) {
+        images5.value = imagesSourceCompleted
+            .map((source) => source['resourceUrl'] as String)
+            .toList();
+
+        imagePublicIds5.value = imagesSourceCompleted
+            .map((source) => source['resourceCode'] as String)
+            .toList();
+      }
+    }, [
+      imagesSourceCompleted,
+      imagesSourceUnloaded,
+      imagesSourceDelivered,
+      imagesSourcePacking,
+      imagesSourceArrived
+    ]);
 
     Widget buildConfirmationSection({
       required String title,
@@ -177,33 +255,17 @@ class PorterConfirmScreen extends HookConsumerWidget {
       );
     }
 
-    // Future<void> saveImagesAndNavigate() async {
-    //   // Simulate saving the images to a database or storage
-    //   await Future.delayed(const Duration(seconds: 2));
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     const SnackBar(
-    //       content: Text('Đã lưu ảnh thành công!'),
-    //       backgroundColor: primaryOrange,
-    //       duration: Duration(seconds: 2),
-    //     ),
-    //   );
-
-    //   context.router.pop();
-    // }
-
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
-      appBar: AppBar(
+      appBar: CustomAppBar(
         backgroundColor: primaryOrange,
-        elevation: 0,
-        title: const Text(
-          'Xác nhận giao hàng',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
+        backButtonColor: AssetsConstants.whiteColor,
+        onBackButtonPressed: () {
+          context.router.push(PorterDetailScreenRoute(
+              job: _currentJob.value, bookingStatus: status, ref: ref));
+        },
+        title: "Xác nhận hình ảnh",
+        showBackButton: true,
       ),
       body: Stack(
         children: [
@@ -329,7 +391,7 @@ class PorterConfirmScreen extends HookConsumerWidget {
                       images3.value = [...images3.value, url];
                       imagePublicIds3.value = [
                         ...imagePublicIds3.value,
-                        publicId  
+                        publicId
                       ];
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(

@@ -13,7 +13,7 @@ class JobStreamManager {
 
   void updateJob(BookingResponseEntity newJob) {
     print(
-        'Updating order in StreamManager: ${newJob.assignments.map((e) => e.toJson())}');
+        'tuan Updating order in StreamManager: ${newJob.assignments.map((e) => e.toJson())}');
 
     _jobController.add(newJob);
   }

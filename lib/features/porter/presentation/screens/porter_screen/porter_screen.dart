@@ -43,15 +43,18 @@ class PorterScreen extends HookConsumerWidget {
       initialPagingModel: PagingModel(filterContent: systemStatus.type),
       context: context,
     );
+
     useEffect(() {
       scrollController.onScrollEndsListener(fetchResult.loadMore);
-
+      print("tuan check log card real time: ");
       return scrollController.dispose;
     }, const []);
+
     final jobs = _getJobsFromBookingResponseEntity(
       fetchResult.items,
       selectedDate.value,
     );
+
     jobs.sort((a, b) {
       final aStartTime = DateFormat('MM/dd/yyyy HH:mm:ss').parse(a.bookingAt);
       final bStartTime = DateFormat('MM/dd/yyyy HH:mm:ss').parse(b.bookingAt);
