@@ -7,6 +7,7 @@ import 'package:movemate_staff/features/job/data/model/request/reviewer_status_r
 import 'package:movemate_staff/features/job/data/model/request/reviewer_time_request.dart';
 import 'package:movemate_staff/features/job/data/model/response/booking_response_object.dart';
 import 'package:movemate_staff/features/job/data/model/response/house_type_obj_response.dart';
+import 'package:movemate_staff/features/job/data/model/response/staff_response.dart';
 import 'package:movemate_staff/features/job/data/model/response/update_booking_response.dart';
 import 'package:movemate_staff/features/porter/data/models/request/porter_update_resourse_request.dart';
 import 'package:movemate_staff/models/response/success_model.dart';
@@ -62,7 +63,7 @@ abstract class BookingSource {
   Future<HttpResponse<ServicesPackageResponse>> getServicesPackage(
     @Header(APIConstants.contentHeader) String contentType,
     @Header(APIConstants.authHeader) String accessToken,
-     @Queries() Map<String, dynamic> queries,
+    @Queries() Map<String, dynamic> queries,
   );
 //Post , put
   // Post booking service
@@ -119,7 +120,6 @@ abstract class BookingSource {
     @Path('id') int assignmentId,
   );
 
-
   // drivers
   @PUT('${APIConstants.drivers}/{id}')
   Future<HttpResponse<SuccessModel>> updateStatusDriverWithoutResourse(
@@ -136,9 +136,23 @@ abstract class BookingSource {
     @Path('id') int id,
   );
 
+  //get available
+  @GET('${APIConstants.available_drivers}/{id}')
+  Future<HttpResponse<StaffResponse>> getDriverAvailableByBookingId(
+    @Header(APIConstants.contentHeader) String contentType,
+    @Header(APIConstants.authHeader) String accessToken,
+    @Path('id') int id,
+  );
+  //get available
+  @GET('${APIConstants.available_porters}/{id}')
+  Future<HttpResponse<StaffResponse>> getPorterAvailableByBookingId(
+    @Header(APIConstants.contentHeader) String contentType,
+    @Header(APIConstants.authHeader) String accessToken,
+    @Path('id') int id,
+  );
 
   // porter
-    @PUT('${APIConstants.porters}/{id}')
+  @PUT('${APIConstants.porters}/{id}')
   Future<HttpResponse<SuccessModel>> updateStatusPorterWithoutResourse(
     @Header(APIConstants.contentHeader) String contentType,
     @Header(APIConstants.authHeader) String accessToken,

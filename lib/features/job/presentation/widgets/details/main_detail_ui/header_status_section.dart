@@ -86,6 +86,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
           secondChild: Padding(
             padding: const EdgeInsets.only(top: 16),
             child: CustomTabContainer(
+              bookingId: job.id,
               porterItems: porters,
               driverItems: drivers,
             ),

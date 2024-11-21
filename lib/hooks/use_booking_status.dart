@@ -49,6 +49,7 @@ class BookingStatusResult {
   final bool canPorterConfirmIncoming;
   final bool canPorterConfirmArrived;
   final bool canPorterConfirmInprogress;
+  final bool canPorterConfirmPacking;
   final bool canPorterConfirmOngoing;
   final bool canPorterConfirmDelivered;
   final bool canPorterCompleteUnloading;
@@ -56,6 +57,7 @@ class BookingStatusResult {
   final bool isPorterAssigned;
   final bool isPorterWaiting;
   final bool isPorterMoving;
+  final bool isPorterConfirm;
 
   // porter tracking
   bool isPorterStartPoint = false;
@@ -98,6 +100,7 @@ class BookingStatusResult {
     this.canPorterConfirmIncoming = false,
     this.canPorterConfirmArrived = false,
     this.canPorterConfirmInprogress = false,
+    this.canPorterConfirmPacking = false,
     this.canPorterConfirmOngoing = false,
     this.canPorterConfirmDelivered = false,
     this.canPorterCompleteUnloading = false,
@@ -105,6 +108,7 @@ class BookingStatusResult {
     this.isPorterAssigned = false,
     this.isPorterWaiting = false,
     this.isPorterMoving = false,
+    this.isPorterConfirm = false,
     this.isPorterStartPoint = false,
     this.isPorterAtDeliveryPoint = false,
     this.isPorterEndDeliveryPoint = false,
@@ -175,6 +179,8 @@ BookingStatusResult useBookingStatus(
         hasAssignmentWithStatus("PORTER", AssignmentsStatusType.arrived);
     final isPorterInProgress =
         hasAssignmentWithStatus("PORTER", AssignmentsStatusType.inProgress);
+    final isPorterPacking =
+        hasAssignmentWithStatus("PORTER", AssignmentsStatusType.inPacking);
     final isPorterOngoing =
         hasAssignmentWithStatus("PORTER", AssignmentsStatusType.ongoing);
     final isPorterDelivered =
@@ -267,6 +273,7 @@ BookingStatusResult useBookingStatus(
     bool canPorterConfirmIncoming = false;
     bool canPorterConfirmArrived = false;
     bool canPorterConfirmInprogress = false;
+    bool canPorterConfirmPacking = false;
     bool canPorterConfirmOngoing = false;
     bool canPorterConfirmDelivered = false;
     bool canPorterCompleteUnloading = false;
@@ -344,6 +351,17 @@ BookingStatusResult useBookingStatus(
             !isPorterWaiting &&
             !isPorterOngoing &&
             !isPorterDelivered &&
+            !isPorterUnloaded) {
+          canPorterConfirmPacking = true;
+        } else if (!isPorterIncoming &&
+            !isPorterArrived &&
+            !isPorterInProgress &&
+            !isPorterCompleted &&
+            !isPorterAssigned &&
+            !isPorterWaiting &&
+            !isPorterOngoing &&
+            !isPorterDelivered &&
+            isPorterPacking &&
             !isPorterUnloaded) {
           canPorterConfirmOngoing = true;
         } else if (!isPorterIncoming &&
@@ -479,6 +497,7 @@ BookingStatusResult useBookingStatus(
         isPorterIncoming,
         isPorterArrived,
         isPorterInProgress,
+        isPorterPacking,
         isPorterOngoing,
         isPorterDelivered,
         isPorterCompleted,
@@ -521,6 +540,7 @@ BookingStatusResult useBookingStatus(
       isPorterAssigned: isPorterAssigned,
       isPorterWaiting: isPorterWaiting,
       isPorterMoving: isPorterInProgress,
+      isPorterConfirm: isPorterPacking,
       isPorterStartPoint: isPorterStartPoint,
       isPorterAtDeliveryPoint: isPorterAtDeliveryPoint,
       isPorterEndDeliveryPoint: isPorterEndDeliveryPoint,
@@ -635,6 +655,7 @@ String? determinePorterStatusMessage(
   bool isIncoming,
   bool isArrived,
   bool isInProgress,
+  bool isPorterPacking,
   bool isOngoing,
   bool isDelivered,
   bool isCompleted,
@@ -649,7 +670,8 @@ String? determinePorterStatusMessage(
     return "Đã được phân công - Chờ xác nhận di chuyển";
   if (isIncoming && !isArrived) return "Đang trên đường đến";
   if (isArrived && !isInProgress) return "Đã đến - Chờ xác nhận bắt đầu dọn";
-  if (isInProgress && !isOngoing) return "Đang dọn hàng lên xe";
+  if (isInProgress && !isPorterPacking) return "Đang dọn hàng lên xe";
+  if (isPorterPacking && !isOngoing) return "Xác nhận trên xe";
   if (isOngoing && !isDelivered) return "Đang di chuyển đến điểm trả hàng";
   if (isDelivered && !isCompleted) return "Đã đến điểm trả - Chờ dỡ hàng";
   if (isCompleted) return "Đã hoàn thành dỡ hàng";

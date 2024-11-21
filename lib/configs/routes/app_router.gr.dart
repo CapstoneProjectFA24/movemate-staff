@@ -310,6 +310,26 @@ abstract class _$AppRouter extends RootStackRouter {
         child: const WalletScreen(),
       );
     },
+    WorkShiftDriverUpdateScreenRoute.name: (routeData) {
+      final args = routeData.argsAs<WorkShiftDriverUpdateScreenRouteArgs>();
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: WorkShiftDriverUpdateScreen(
+          key: args.key,
+          bookingId: args.bookingId,
+        ),
+      );
+    },
+    WorkShiftPorterUpdateScreenRoute.name: (routeData) {
+      final args = routeData.argsAs<WorkShiftPorterUpdateScreenRouteArgs>();
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: WorkShiftPorterUpdateScreen(
+          key: args.key,
+          bookingId: args.bookingId,
+        ),
+      );
+    },
   };
 }
 
@@ -1304,4 +1324,82 @@ class WalletScreenRoute extends PageRouteInfo<void> {
   static const String name = 'WalletScreenRoute';
 
   static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [WorkShiftDriverUpdateScreen]
+class WorkShiftDriverUpdateScreenRoute
+    extends PageRouteInfo<WorkShiftDriverUpdateScreenRouteArgs> {
+  WorkShiftDriverUpdateScreenRoute({
+    Key? key,
+    required int bookingId,
+    List<PageRouteInfo>? children,
+  }) : super(
+          WorkShiftDriverUpdateScreenRoute.name,
+          args: WorkShiftDriverUpdateScreenRouteArgs(
+            key: key,
+            bookingId: bookingId,
+          ),
+          initialChildren: children,
+        );
+
+  static const String name = 'WorkShiftDriverUpdateScreenRoute';
+
+  static const PageInfo<WorkShiftDriverUpdateScreenRouteArgs> page =
+      PageInfo<WorkShiftDriverUpdateScreenRouteArgs>(name);
+}
+
+class WorkShiftDriverUpdateScreenRouteArgs {
+  const WorkShiftDriverUpdateScreenRouteArgs({
+    this.key,
+    required this.bookingId,
+  });
+
+  final Key? key;
+
+  final int bookingId;
+
+  @override
+  String toString() {
+    return 'WorkShiftDriverUpdateScreenRouteArgs{key: $key, bookingId: $bookingId}';
+  }
+}
+
+/// generated route for
+/// [WorkShiftPorterUpdateScreen]
+class WorkShiftPorterUpdateScreenRoute
+    extends PageRouteInfo<WorkShiftPorterUpdateScreenRouteArgs> {
+  WorkShiftPorterUpdateScreenRoute({
+    Key? key,
+    required int bookingId,
+    List<PageRouteInfo>? children,
+  }) : super(
+          WorkShiftPorterUpdateScreenRoute.name,
+          args: WorkShiftPorterUpdateScreenRouteArgs(
+            key: key,
+            bookingId: bookingId,
+          ),
+          initialChildren: children,
+        );
+
+  static const String name = 'WorkShiftPorterUpdateScreenRoute';
+
+  static const PageInfo<WorkShiftPorterUpdateScreenRouteArgs> page =
+      PageInfo<WorkShiftPorterUpdateScreenRouteArgs>(name);
+}
+
+class WorkShiftPorterUpdateScreenRouteArgs {
+  const WorkShiftPorterUpdateScreenRouteArgs({
+    this.key,
+    required this.bookingId,
+  });
+
+  final Key? key;
+
+  final int bookingId;
+
+  @override
+  String toString() {
+    return 'WorkShiftPorterUpdateScreenRouteArgs{key: $key, bookingId: $bookingId}';
+  }
 }

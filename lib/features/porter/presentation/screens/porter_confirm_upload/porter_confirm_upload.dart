@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:movemate_staff/features/drivers/data/models/request/update_resourse_request.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/porter/data/models/request/porter_update_resourse_request.dart';
 import 'package:movemate_staff/features/porter/presentation/controllers/porter_controller.dart';
@@ -43,7 +42,10 @@ class PorterConfirmScreen extends HookConsumerWidget {
     final uploadedImages = ref.watch(uploadedImagesProvider);
     final bookingAsync = ref.watch(bookingStreamProvider(job.id.toString()));
     final status = useBookingStatus(bookingAsync.value, job.isReviewOnline);
-
+    print("tuan check status ${status.canPorterConfirmOngoing}");
+    print(
+        "tuan check status canPorterConfirmArrived ${status.canPorterConfirmArrived}");
+    print("tuan check status ${bookingAsync.value?.status.toString()}");
     List<dynamic> getTrackerSources(
         BookingResponseEntity job, String trackerType) {
       try {
@@ -175,19 +177,19 @@ class PorterConfirmScreen extends HookConsumerWidget {
       );
     }
 
-    Future<void> saveImagesAndNavigate() async {
-      // Simulate saving the images to a database or storage
-      await Future.delayed(const Duration(seconds: 2));
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Đã lưu ảnh thành công!'),
-          backgroundColor: primaryOrange,
-          duration: Duration(seconds: 2),
-        ),
-      );
+    // Future<void> saveImagesAndNavigate() async {
+    //   // Simulate saving the images to a database or storage
+    //   await Future.delayed(const Duration(seconds: 2));
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     const SnackBar(
+    //       content: Text('Đã lưu ảnh thành công!'),
+    //       backgroundColor: primaryOrange,
+    //       duration: Duration(seconds: 2),
+    //     ),
+    //   );
 
-      context.router.pop();
-    }
+    //   context.router.pop();
+    // }
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
@@ -313,7 +315,7 @@ class PorterConfirmScreen extends HookConsumerWidget {
                     },
                     actionButtonLabel: 'Xác nhận đóng gói',
                     actionIcon: Icons.location_on,
-                    isEnabled: status.canPorterConfirmOngoing,
+                    isEnabled: status.canPorterConfirmPacking,
                     // isEnabled: status.canPorterConfirmIncoming,
                     showCameraButton: true,
                     request: request.value,
@@ -327,7 +329,7 @@ class PorterConfirmScreen extends HookConsumerWidget {
                       images3.value = [...images3.value, url];
                       imagePublicIds3.value = [
                         ...imagePublicIds3.value,
-                        publicId
+                        publicId  
                       ];
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
@@ -458,7 +460,6 @@ class PorterConfirmScreen extends HookConsumerWidget {
                     actionButtonLabel: 'Xác nhận hoàn thành',
                     actionIcon: Icons.location_on,
                     isEnabled: status.canPorterComplete,
-                    // isEnabled: status.canPorterConfirmIncoming,
                     showCameraButton: true,
                     request: request.value,
                   ),

@@ -36,9 +36,11 @@ class APIConstants {
 
   // driver
   static const drivers = '/bookingdetails/driver/update-status';
+  static const available_drivers = '/assignments/available-driver';
 
   //porter
-  static const  porters = '/bookingdetails/porter/update-status';
+  static const porters = '/bookingdetails/porter/update-status';
+  static const available_porters = '/assignments/available-porter';
   // payments
   static const paymentsBooking = '/payments/create-payment-url';
   static const paymentsDeposit = '/wallets/recharge';

@@ -59,6 +59,7 @@ class JobDetailsScreen extends HookConsumerWidget {
           .getHouseDetails(job.houseTypeId, context),
       context: context,
     );
+
     final useFetchUserResult = useFetchObject<ProfileEntity>(
       function: (context) => ref
           .read(profileControllerProvider.notifier)

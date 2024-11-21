@@ -10,6 +10,8 @@ import 'package:movemate_staff/features/job/presentation/screen/complete_proposa
 import 'package:movemate_staff/features/job/presentation/screen/generate_new_job_screen/generate_new_job_screen.dart';
 import 'package:movemate_staff/features/job/presentation/screen/select_services_screen/booking_screen_service.dart';
 import 'package:movemate_staff/features/job/presentation/screen/vehicles_screen/vehicles_available_screen.dart';
+import 'package:movemate_staff/features/job/presentation/screen/work_shift_update_screen/work_shift_driver_update_screen.dart';
+import 'package:movemate_staff/features/job/presentation/screen/work_shift_update_screen/work_shift_porter_update_screen.dart';
 import 'package:movemate_staff/features/order/presentation/screen/order_screen.dart';
 
 // guard
@@ -133,6 +135,12 @@ class AppRouter extends _$AppRouter {
         ),
         AutoRoute(
           page: JobDetailsScreenRoute.page,
+        ),
+        AutoRoute(
+          page: WorkShiftDriverUpdateScreenRoute.page,
+        ),
+        AutoRoute(
+          page: WorkShiftPorterUpdateScreenRoute.page,
         ),
         AutoRoute(
           page: CompleteProposalScreenRoute.page,

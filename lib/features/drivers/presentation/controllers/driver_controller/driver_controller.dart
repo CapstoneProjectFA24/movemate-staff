@@ -8,7 +8,10 @@ import 'package:movemate_staff/features/auth/domain/repositories/auth_repository
 import 'package:movemate_staff/features/auth/presentation/screens/sign_in/sign_in_controller.dart';
 import 'package:movemate_staff/features/drivers/data/models/request/update_resourse_request.dart';
 import 'package:movemate_staff/features/drivers/presentation/widgets/drivers_screen_widget/custom_bottom_sheet.dart';
+import 'package:movemate_staff/features/job/data/model/response/staff_response.dart';
+import 'package:movemate_staff/features/job/domain/entities/available_staff_entities.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
+import 'package:movemate_staff/features/job/domain/entities/staff_entity.dart';
 import 'package:movemate_staff/features/job/domain/repositories/service_booking_repository.dart';
 import 'package:movemate_staff/models/request/paging_model.dart';
 import 'package:movemate_staff/utils/commons/functions/functions_common_export.dart';
@@ -173,6 +176,60 @@ class DriverController extends _$DriverController {
       if (state.hasError) {
         await ref.read(signInControllerProvider.notifier).signOut(context);
       }
+    }
+  }
+
+//get driver available
+  Future<AvailableStaffEntities?> getDriverAvailableByBookingId(
+    BuildContext context,
+    int id,
+  ) async {
+    AvailableStaffEntities? bookings;
+    state = const AsyncLoading();
+    final bookingRepository = ref.read(bookingRepositoryProvider);
+    final authRepository = ref.read(authRepositoryProvider);
+    final user = await SharedPreferencesUtils.getInstance('user_token');
+    // print(" check list controller 1");
+    final result = await AsyncValue.guard(() async {
+      final response = await bookingRepository.getDriverAvailableByBookingId(
+          accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
+          id: id);
+
+      // print(" check list controller 2");
+      // print(
+      //     " check list controller 2.2 bookingNeedStaffs ${response.payload.bookingNeedStaffs}");
+
+      // print('Repository response: ${response.payload}');
+      bookings = response.payload;
+      return response.payload;
+    });
+    state = result;
+
+    if (state.hasError) {
+      state = await AsyncValue.guard(() async {
+        final statusCode = (state.error as DioException).onStatusDio();
+        await handleAPIError(
+          statusCode: statusCode,
+          stateError: state.error!,
+          context: context,
+          onCallBackGenerateToken: () async => await reGenerateToken(
+            authRepository,
+            context,
+          ),
+        );
+
+        if (state.hasError) {
+          await ref.read(signInControllerProvider.notifier).signOut(context);
+        }
+
+        if (statusCode != StatusCodeType.unauthentication.type) {}
+      });
+    }
+
+    if (result is AsyncData<AvailableStaffEntities>) {
+      return result.value;
+    } else {
+      return null;
     }
   }
 }

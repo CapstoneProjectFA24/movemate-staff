@@ -12,6 +12,7 @@ import 'package:movemate_staff/features/job/data/model/response/house_type_respo
 import 'package:movemate_staff/features/job/data/model/response/services_fee_system_response.dart';
 import 'package:movemate_staff/features/job/data/model/response/services_package_response.dart';
 import 'package:movemate_staff/features/job/data/model/response/services_response.dart';
+import 'package:movemate_staff/features/job/data/model/response/staff_response.dart';
 import 'package:movemate_staff/features/job/data/model/response/update_booking_response.dart';
 import 'package:movemate_staff/features/job/data/remotes/booking_source.dart';
 import 'package:movemate_staff/features/job/domain/repositories/service_booking_repository.dart';
@@ -248,6 +249,7 @@ class BookingRepositoryImpl extends RemoteBaseRepository
           APIConstants.contentType, accessToken, id),
     );
   }
+
   @override
   Future<SuccessModel> updateStatusDriverResourse({
     required String accessToken,
@@ -256,9 +258,35 @@ class BookingRepositoryImpl extends RemoteBaseRepository
   }) async {
     return getDataOf(
       request: () => _bookingSource.updateStatusDriverResourse(
-          APIConstants.contentType, accessToken, request,id),
+          APIConstants.contentType, accessToken, request, id),
     );
   }
+
+  // get available driver
+  @override
+  Future<StaffResponse> getDriverAvailableByBookingId({
+    required String accessToken,
+    required int id,
+  }) async {
+    // print("  check list repo log $id");
+    return getDataOf(
+      request: () => _bookingSource.getDriverAvailableByBookingId(
+          APIConstants.contentType, accessToken, id),
+    );
+  }
+  // get available porter
+  @override
+  Future<StaffResponse> getPorterAvailableByBookingId({
+    required String accessToken,
+    required int id,
+  }) async {
+    // print("  check list repo log $id");
+    return getDataOf(
+      request: () => _bookingSource.getPorterAvailableByBookingId(
+          APIConstants.contentType, accessToken, id),
+    );
+  }
+
   @override
   Future<SuccessModel> updateStatusPorterWithoutResourse({
     required String accessToken,
@@ -269,6 +297,7 @@ class BookingRepositoryImpl extends RemoteBaseRepository
           APIConstants.contentType, accessToken, id),
     );
   }
+
   @override
   Future<SuccessModel> updateStatusPorterResourse({
     required String accessToken,
@@ -277,7 +306,7 @@ class BookingRepositoryImpl extends RemoteBaseRepository
   }) async {
     return getDataOf(
       request: () => _bookingSource.updateStatusPorterResourse(
-          APIConstants.contentType, accessToken, request,id),
+          APIConstants.contentType, accessToken, request, id),
     );
   }
 }

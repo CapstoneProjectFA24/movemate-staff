@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:movemate_staff/features/auth/domain/repositories/auth_repository.dart';
 import 'package:movemate_staff/features/auth/presentation/screens/sign_in/sign_in_controller.dart';
-import 'package:movemate_staff/features/drivers/presentation/widgets/drivers_screen_widget/custom_bottom_sheet.dart';
+import 'package:movemate_staff/features/job/domain/entities/available_staff_entities.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/repositories/service_booking_repository.dart';
 import 'package:movemate_staff/features/porter/data/models/request/porter_update_resourse_request.dart';
@@ -137,11 +137,11 @@ class PorterController extends _$PorterController {
     print(
         "check 1 contrller request ${request.resourceList.firstWhere((e) => e.type != null).resourceUrl}");
     state = await AsyncValue.guard(() async {
-      // await ref.read(bookingRepositoryProvider).updateStatusPorterResourse(
-      //       accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
-      //       request: request,
-      //       id: id,
-      //     );
+      await ref.read(bookingRepositoryProvider).updateStatusPorterResourse(
+            accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
+            request: request,
+            id: id,
+          );
 
       ref
           .read(refreshPorterList.notifier)
@@ -172,6 +172,55 @@ class PorterController extends _$PorterController {
       if (state.hasError) {
         await ref.read(signInControllerProvider.notifier).signOut(context);
       }
+    }
+  }
+
+//get porter available
+  Future<AvailableStaffEntities?> getPorterAvailableByBookingId(
+    BuildContext context,
+    int id,
+  ) async {
+    AvailableStaffEntities? bookings;
+    state = const AsyncLoading();
+    final bookingRepository = ref.read(bookingRepositoryProvider);
+    final authRepository = ref.read(authRepositoryProvider);
+    final user = await SharedPreferencesUtils.getInstance('user_token');
+    // print(" check list controller 1");
+    final result = await AsyncValue.guard(() async {
+      final response = await bookingRepository.getPorterAvailableByBookingId(
+          accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
+          id: id);
+
+      bookings = response.payload;
+      return response.payload;
+    });
+    state = result;
+
+    if (state.hasError) {
+      state = await AsyncValue.guard(() async {
+        final statusCode = (state.error as DioException).onStatusDio();
+        await handleAPIError(
+          statusCode: statusCode,
+          stateError: state.error!,
+          context: context,
+          onCallBackGenerateToken: () async => await reGenerateToken(
+            authRepository,
+            context,
+          ),
+        );
+
+        if (state.hasError) {
+          await ref.read(signInControllerProvider.notifier).signOut(context);
+        }
+
+        if (statusCode != StatusCodeType.unauthentication.type) {}
+      });
+    }
+
+    if (result is AsyncData<AvailableStaffEntities>) {
+      return result.value;
+    } else {
+      return null;
     }
   }
 }

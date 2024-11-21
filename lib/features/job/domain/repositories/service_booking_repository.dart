@@ -11,6 +11,7 @@ import 'package:movemate_staff/features/job/data/model/response/house_type_respo
 import 'package:movemate_staff/features/job/data/model/response/services_fee_system_response.dart';
 import 'package:movemate_staff/features/job/data/model/response/services_package_response.dart';
 import 'package:movemate_staff/features/job/data/model/response/services_response.dart';
+import 'package:movemate_staff/features/job/data/model/response/staff_response.dart';
 import 'package:movemate_staff/features/job/data/model/response/update_booking_response.dart';
 import 'package:movemate_staff/features/job/data/remotes/booking_source.dart';
 import 'package:movemate_staff/features/job/data/repositories/service_booking_repository_impl.dart';
@@ -108,6 +109,17 @@ abstract class BookingRepository {
     required UpdateResourseRequest request,
     required int id,
   });
+  // get driver available
+  Future<StaffResponse> getDriverAvailableByBookingId({
+    required String accessToken,
+    required int id,
+  });
+  // get porter available
+  Future<StaffResponse> getPorterAvailableByBookingId({
+    required String accessToken,
+    required int id,
+  });
+
   Future<SuccessModel> updateStatusPorterWithoutResourse({
     required String accessToken,
     required int id,
