@@ -413,6 +413,22 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
     }
   }
 
+  Future<void> _startArrivedtoProgress() async {
+    if (_isMapReady) {
+      try {
+        await widget.ref
+            .read(porterControllerProvider.notifier)
+            .updateStatusPorterWithoutResourse(
+              id: widget.job.id,
+              context: context,
+            );
+      } catch (driverError) {
+        print(
+            "Lỗi khi bắt đầu điều hướng  inprogres lên ongoing: ${driverError.toString()}");
+      }
+    }
+  }
+
   void _stopNavigation() {
     setState(() {
       _isNavigationStarted = false;
@@ -718,15 +734,22 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
                 if (!_isNavigationStarted)
                   if (widget.bookingStatus.canPorterConfirmIncoming)
                     FloatingActionButton(
-                      // onPressed: _isMapReady ? _startAssinedToComing : null,
-                      onPressed: _isMapReady ? _startNavigation : null,
+                      onPressed: _isMapReady ? _startAssinedToComing : null,
+                      // onPressed: _isMapReady ? _startNavigation : null,
                       child: const Icon(Icons.directions),
+                    ),
+                if (!_isNavigationStarted)
+                  if (widget.bookingStatus.canPorterConfirmInprogress)
+                    FloatingActionButton(
+                      onPressed: _isMapReady ? _startArrivedtoProgress : null,
+                      // onPressed: _isMapReady ? _startNavigation : null,
+                      child: const Icon(Icons.garage_outlined),
                     ),
                 if (!_isNavigationStarted)
                   if (widget.bookingStatus.canPorterConfirmOngoing)
                     FloatingActionButton(
-                      // onPressed: _isMapReady ? _startProgressToOngoing : null,
-                      onPressed: _isMapReady ? _startNavigation : null,
+                      onPressed: _isMapReady ? _startProgressToOngoing : null,
+                      // onPressed: _isMapReady ? _startNavigation : null,
                       child: const Icon(Icons.directions_car),
                     ),
               ],
