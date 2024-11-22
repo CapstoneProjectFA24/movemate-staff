@@ -71,26 +71,26 @@ class HomeScreen extends HookConsumerWidget {
                     ),
                     SizedBox(height: 10),
                     Text(
-                      'Người đánh giá ${user?.name}',
+                      '${user?.name}',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 18,
                       ),
                     ),
                     Text(
-                      'Mã người đánh giá: ${user?.roleId}',
+                      'Mã nhân viên: ${user?.roleId}',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 18,
                       ),
                     ),
-                    Text(
-                      'Tổng số đánh giá: 20',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                      ),
-                    ),
+                    // Text(
+                    //   'Tổng số đánh giá: 20',
+                    //   style: TextStyle(
+                    //     color: Colors.white,
+                    //     fontSize: 18,
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
