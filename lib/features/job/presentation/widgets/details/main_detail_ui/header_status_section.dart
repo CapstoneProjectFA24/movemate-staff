@@ -5,6 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 // Routing
 import 'package:movemate_staff/configs/routes/app_router.dart';
+import 'package:movemate_staff/features/drivers/presentation/controllers/driver_controller/driver_controller.dart';
 import 'package:movemate_staff/features/job/data/model/request/resource.dart';
 
 // Data models and entities
@@ -21,6 +22,7 @@ import 'package:movemate_staff/features/job/presentation/widgets/details/main_de
 // Widgets
 import 'package:movemate_staff/features/job/presentation/widgets/dialog_schedule/schedule_dialog.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/image_button/room_media_section.dart';
+import 'package:movemate_staff/features/porter/presentation/controllers/porter_controller.dart';
 import 'package:movemate_staff/utils/commons/widgets/form_input/label_text.dart';
 
 // Hooks
@@ -56,6 +58,10 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
         job.assignments.where((e) => e.staffType == "PORTER").toList();
     final drivers =
         job.assignments.where((e) => e.staffType == "DRIVER").toList();
+
+    ref.listen<bool>(refreshDriverList, (_, __) => fetchResult.refresh());
+    ref.listen<bool>(refreshPorterList, (_, __) => fetchResult.refresh());
+    ref.listen<bool>(refreshJobList, (_, __) => fetchResult.refresh());
 
     return Column(
       children: [

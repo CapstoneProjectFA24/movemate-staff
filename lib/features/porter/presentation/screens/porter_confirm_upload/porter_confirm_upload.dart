@@ -261,8 +261,10 @@ class PorterConfirmScreen extends HookConsumerWidget {
         backgroundColor: primaryOrange,
         backButtonColor: AssetsConstants.whiteColor,
         onBackButtonPressed: () {
-          context.router.push(PorterDetailScreenRoute(
-              job: _currentJob.value, bookingStatus: status, ref: ref));
+          context.router.popAndPushAll([
+            PorterDetailScreenRoute(
+                job: _currentJob.value, bookingStatus: status, ref: ref)
+          ]);
         },
         title: "Xác nhận hình ảnh",
         showBackButton: true,

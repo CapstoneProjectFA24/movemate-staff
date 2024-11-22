@@ -56,6 +56,7 @@ class DriversScreen extends HookConsumerWidget {
       fetchResult.items,
       selectedDate.value,
     );
+    
     jobs.sort((a, b) {
       final aStartTime = DateFormat('MM/dd/yyyy HH:mm:ss').parse(a.bookingAt);
       final bStartTime = DateFormat('MM/dd/yyyy HH:mm:ss').parse(b.bookingAt);

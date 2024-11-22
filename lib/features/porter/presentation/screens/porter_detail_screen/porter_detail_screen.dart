@@ -803,11 +803,12 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
       _stopNavigation();
     }
 
-    context.router.push(PorterScreenRoute());
-    // context.router.replaceAll([
-    //   // const DriversScreenRoute(),
-    //   // const HomeScreenRoute(),
-    //   const TabViewScreenRoute()
-    // ]);
+    // context.router.pushAll([PorterScreenRoute()]);
+
+    context.router.replaceAll([
+      const DriversScreenRoute(),
+      // const HomeScreenRoute(),
+      // const TabViewScreenRoute()
+    ]);
   }
 }

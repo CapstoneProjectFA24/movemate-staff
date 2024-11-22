@@ -205,7 +205,6 @@ class DriverConfirmUpload extends HookConsumerWidget {
                         break;
                     }
                   }),
-         
           ],
         ),
       );
@@ -217,9 +216,9 @@ class DriverConfirmUpload extends HookConsumerWidget {
         backgroundColor: primaryOrange,
         backButtonColor: AssetsConstants.whiteColor,
         onBackButtonPressed: () {
-   
-          context.router.push(DriverDetailScreenRoute(
-              job: job, bookingStatus: status, ref: ref));
+          context.router.popAndPushAll([
+            DriverDetailScreenRoute(job: job, bookingStatus: status, ref: ref)
+          ]);
         },
         title: "Xác nhận hình ảnh",
         showBackButton: true,
@@ -275,7 +274,6 @@ class DriverConfirmUpload extends HookConsumerWidget {
                             context: context,
                           );
                       bookingAsync.isRefreshing;
-
                     },
                     actionButtonLabel: 'Xác nhận đến',
                     actionIcon: Icons.location_on,
@@ -315,17 +313,15 @@ class DriverConfirmUpload extends HookConsumerWidget {
                             request: request,
                             context: context,
                           );
-      
+
                       bookingAsync.isRefreshing;
                     },
                     actionButtonLabel: 'Xác nhận giao hàng',
                     actionIcon: Icons.check_circle,
                     isEnabled: status.canDriverCompleteDelivery,
-                
                     showCameraButton: true,
                     request: request.value,
                   ),
-                
                 ],
               ),
             ),

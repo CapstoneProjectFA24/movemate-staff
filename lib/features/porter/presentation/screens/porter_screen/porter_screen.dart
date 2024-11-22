@@ -49,6 +49,7 @@ class PorterScreen extends HookConsumerWidget {
       print("tuan check log card real time: ");
       return scrollController.dispose;
     }, const []);
+    
     ref.listen<bool>(refreshPorterList, (_, __) => fetchResult.refresh());
 
     final jobs = _getJobsFromBookingResponseEntity(
@@ -103,7 +104,7 @@ class PorterScreen extends HookConsumerWidget {
               scrollDirection: Axis.horizontal,
               itemCount: 9,
               itemBuilder: (context, index) {
-                final day = DateTime.now().add(Duration(days: index - 2));
+                final day = DateTime.now().add(Duration(days: index - 7));
                 final isSelected = DateFormat.yMd().format(day) ==
                     DateFormat.yMd().format(selectedDate.value);
                 return GestureDetector(

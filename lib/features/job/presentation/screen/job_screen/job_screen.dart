@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:auto_route/auto_route.dart';
+import 'package:movemate_staff/features/drivers/presentation/controllers/driver_controller/driver_controller.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/presentation/controllers/booking_controller/booking_controller.dart';
 import 'package:movemate_staff/features/job/presentation/controllers/reviewer_update_controller/reviewer_update_controller.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/main_detail_ui/custom_tab_container.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/jobcard/job_card.dart';
+import 'package:movemate_staff/features/porter/presentation/controllers/porter_controller.dart';
 import 'package:movemate_staff/hooks/use_fetch.dart';
 import 'package:movemate_staff/models/request/paging_model.dart';
 import 'package:movemate_staff/utils/commons/widgets/widgets_common_export.dart';
@@ -75,7 +77,9 @@ class JobScreen extends HookConsumerWidget {
     }
 
     ref.listen<bool>(refreshJobList, (_, __) => fetchResult.refresh());
-
+    ref.listen<bool>(refreshDriverList, (_, __) => fetchResult.refresh());
+    ref.listen<bool>(refreshPorterList, (_, __) => fetchResult.refresh());
+    
     Widget buildTabContent(String tabName) {
       List<BookingResponseEntity> filteredBookings = getJobsForSelectedDate();
 

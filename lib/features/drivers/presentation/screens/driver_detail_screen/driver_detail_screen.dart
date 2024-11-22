@@ -764,11 +764,11 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
     if (_navigationController != null && _isNavigationStarted) {
       _stopNavigation();
     }
-    context.router.push(DriversScreenRoute());
-    // context.router.replaceAll([
-    //   // const DriversScreenRoute(),
-    //   // const HomeScreenRoute(),
-    //   const TabViewScreenRoute()
-    // ]);
+    // context.router.push(DriversScreenRoute());
+    context.router.replaceAll([
+      const DriversScreenRoute(),
+      // const HomeScreenRoute(),
+      // const TabViewScreenRoute()
+    ]);
   }
 }

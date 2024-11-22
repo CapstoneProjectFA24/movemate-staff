@@ -102,6 +102,25 @@ class CustomTabContainer extends HookConsumerWidget {
       }
     }, [porterItems, driverItems]);
 
+    final stateDriver = ref.watch(driverControllerProvider);
+    final driverController = ref.read(driverControllerProvider.notifier);
+    final useFetchResultDriver = useFetchObject<AvailableStaffEntities>(
+      function: (context) =>
+          driverController.getDriverAvailableByBookingId(context, bookingId),
+      context: context,
+    );
+    final datasDriver = useFetchResultDriver.data;
+
+    final statePorter = ref.watch(porterControllerProvider);
+    final porterController = ref.read(porterControllerProvider.notifier);
+
+    final useFetchResultPorter = useFetchObject<AvailableStaffEntities>(
+      function: (context) =>
+          porterController.getPorterAvailableByBookingId(context, bookingId),
+      context: context,
+    );
+    final datasPorter = useFetchResultPorter.data;
+
     return Container(
       height: 400,
       decoration: BoxDecoration(
@@ -153,11 +172,8 @@ class CustomTabContainer extends HookConsumerWidget {
                                     ),
                                   ),
                                   const SizedBox(height: 16),
-                                  buildPorterActionButtons(
-                                    selectedPorter.value,
-                                    ref,
-                                    context,
-                                  ),
+                                  buildPorterActionButtons(selectedPorter.value,
+                                      ref, context, datasPorter),
                                 ],
                               )
                             : Column(
@@ -171,11 +187,8 @@ class CustomTabContainer extends HookConsumerWidget {
                                     ),
                                   ),
                                   const SizedBox(height: 16),
-                                  buildDriverActionButtons(
-                                    selectedDriver.value,
-                                    ref,
-                                    context,
-                                  ),
+                                  buildDriverActionButtons(selectedDriver.value,
+                                      ref, context, datasDriver),
                                 ],
                               ),
                       ),
@@ -314,21 +327,13 @@ class CustomTabContainer extends HookConsumerWidget {
     AssignmentsResponseEntity? selectedPorter,
     WidgetRef ref,
     BuildContext context,
+    AvailableStaffEntities? datasPorter,
   ) {
     // Kiểm tra nếu có bất kỳ porter nào đã có isResponsible = true
     final bool hasResponsiblePorter =
         porterItems.any((item) => item.isResponsible == true);
 
     // Fetching porter data
-    final statePorter = ref.watch(porterControllerProvider);
-    final porterController = ref.read(porterControllerProvider.notifier);
-
-    final useFetchResultPorter = useFetchObject<AvailableStaffEntities>(
-      function: (context) =>
-          porterController.getPorterAvailableByBookingId(context, bookingId),
-      context: context,
-    );
-    final datasPorter = useFetchResultPorter.data;
 
     // Kiểm tra nếu danh sách assignmentInBooking của porter không rỗng
     final bool isPorterAssignmentExists =
@@ -389,23 +394,14 @@ class CustomTabContainer extends HookConsumerWidget {
     AssignmentsResponseEntity? selectedDriver,
     WidgetRef ref,
     BuildContext context,
+    AvailableStaffEntities? datasDriver,
   ) {
     // Kiểm tra nếu có bất kỳ driver nào đã có isResponsible = true
     final bool hasResponsibleDriver =
         driverItems.any((item) => item.isResponsible == true);
 
-    // Fetching driver data
-    final stateDriver = ref.watch(driverControllerProvider);
-    final driverController = ref.read(driverControllerProvider.notifier);
-
-    final useFetchResultDriver = useFetchObject<AvailableStaffEntities>(
-      function: (context) =>
-          driverController.getDriverAvailableByBookingId(context, bookingId),
-      context: context,
-    );
-
-    final datasDriver = useFetchResultDriver.data;
-
+    print(
+        "tuan check assignmentInBooking  ${datasDriver?.assignmentInBooking.length ?? 0} ");
     // Kiểm tra nếu danh sách assignmentInBooking của driver không rỗng
     final bool isDriverAssignmentExists =
         (datasDriver?.assignmentInBooking.length ?? 0) > 0;
