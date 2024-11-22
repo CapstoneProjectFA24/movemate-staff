@@ -8,6 +8,7 @@ import 'package:movemate_staff/configs/routes/app_router.dart';
 
 // Models & Entities
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
+import 'package:movemate_staff/features/job/presentation/controllers/reviewer_update_controller/reviewer_update_controller.dart';
 import 'package:movemate_staff/features/job/presentation/screen/chat_screens/reviewer_chat_with_customer/reviewer_chat_with_customer.dart';
 import 'package:movemate_staff/features/job/presentation/screen/check_available/check_available.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/main_detail_ui/detail_info_basic.dart';
@@ -125,6 +126,7 @@ class JobDetailsScreen extends HookConsumerWidget {
         (isStepCompleted(5, progressionStatesOffline) ||
             isStepCompleted(6, progressionStatesOffline) ||
             isStepCompleted(7, progressionStatesOffline));
+    ref.listen<bool>(refreshJobList, (_, __) => fetchResult.refresh());
     return LoadingOverlay(
       isLoading: state.isLoading,
       child: Scaffold(

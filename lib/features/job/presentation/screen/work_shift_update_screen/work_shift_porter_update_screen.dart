@@ -38,7 +38,7 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
     );
 
     final datas = useFetchResult.data;
-
+    ref.listen<bool>(refreshPorterList, (_, __) => useFetchResult.refresh());
     return LoadingOverlay(
       isLoading: state.isLoading,
       child: Scaffold(

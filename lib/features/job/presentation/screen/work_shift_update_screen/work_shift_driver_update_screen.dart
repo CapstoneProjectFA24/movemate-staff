@@ -41,7 +41,7 @@ class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
     );
 
     final datas = useFetchResult.data;
-
+    ref.listen<bool>(refreshDriverList, (_, __) => useFetchResult.refresh());
     return LoadingOverlay(
       isLoading: state.isLoading,
       child: Scaffold(
@@ -128,9 +128,7 @@ class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
       {required BuildContext context,
       required WidgetRef ref,
       required int id,
-      required AvailableStaffEntities? datas}) 
-      
-      {
+      required AvailableStaffEntities? datas}) {
     final state = ref.watch(driverControllerProvider);
     final driverController = ref.read(driverControllerProvider.notifier);
 
@@ -180,7 +178,6 @@ class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
                 ),
               ],
             ),
-
           ],
         ),
       ),
