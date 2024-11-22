@@ -395,9 +395,11 @@ BookingStatusResult useBookingStatus(
             isPorterUnloaded) {
           canPorterComplete = true;
         }
-        isPorterAtDeliveryPoint =
-            (isPorterArrived || isPorterInProgress || isPorterOngoing) &&
-                (!isPorterCompleted || !isPorterUnloaded && !isPorterDelivered);
+        isPorterAtDeliveryPoint = (isPorterArrived ||
+                isPorterInProgress ||
+                isPorterPacking ||
+                isPorterOngoing) &&
+            (!isPorterCompleted || !isPorterUnloaded && !isPorterDelivered);
 
         isPorterEndDeliveryPoint =
             isPorterCompleted || isPorterDelivered || isPorterUnloaded;

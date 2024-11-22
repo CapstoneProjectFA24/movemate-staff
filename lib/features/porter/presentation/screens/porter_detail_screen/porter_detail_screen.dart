@@ -292,13 +292,21 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
     // flag ở đây check xóa sau
 
     if (_navigationController != null && _currentPosition != null) {
+      if (_currentPosition != null) {
+        print("Current Position: $_currentPosition");
+      } else {
+        print("Current Position is null");
+      }
       LatLng waypoint;
       if (widget.bookingStatus.isPorterStartPoint) {
+        print("vinh log status build route 1");
         waypoint = _getPickupPointLatLng();
         _nextDestination = _getDeliveryPointLatLng();
       } else if (widget.bookingStatus.isPorterAtDeliveryPoint) {
+        print("vinh log status build route 2");
         waypoint = _getDeliveryPointLatLng();
       } else if (widget.bookingStatus.isPorterEndDeliveryPoint) {
+        print("vinh log status build route 3");
         waypoint = _getDeliveryPointLatLng();
       } else {
         return;
@@ -470,8 +478,14 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
     // print(
     //     "vinh log status8 ${widget.bookingStatus.canPorterCompleteUnloading}");
     // print("vinh log status9 ${widget.bookingStatus.canPorterComplete}");
-    // print(
-    //     "vinh log status realtime ${_currentJob.assignments.map((e) => e.toJson())}");
+    print(
+        "vinh log status realtime ${_currentJob.assignments.map((e) => e.toJson())}");
+
+    if (_currentPosition != null) {
+      print("Current Position: $_currentPosition");
+    } else {
+      print("Current Position is null");
+    }
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -806,7 +820,7 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
     // context.router.pushAll([PorterScreenRoute()]);
 
     context.router.replaceAll([
-      const DriversScreenRoute(),
+      const PorterScreenRoute(),
       // const HomeScreenRoute(),
       // const TabViewScreenRoute()
     ]);
