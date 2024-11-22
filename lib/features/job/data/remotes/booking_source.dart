@@ -136,16 +136,33 @@ abstract class BookingSource {
     @Path('id') int id,
   );
 
-  //get available
+  //get available driver
   @GET('${APIConstants.available_drivers}/{id}')
   Future<HttpResponse<StaffResponse>> getDriverAvailableByBookingId(
     @Header(APIConstants.contentHeader) String contentType,
     @Header(APIConstants.authHeader) String accessToken,
     @Path('id') int id,
   );
-  //get available
+
+  //assign manual available driver
+  @PATCH('${APIConstants.assign_manual_available_drivers}/{id}')
+  Future<HttpResponse<SuccessModel>> updateManualDriverAvailableByBookingId(
+    @Header(APIConstants.contentHeader) String contentType,
+    @Header(APIConstants.authHeader) String accessToken,
+    @Path('id') int id,
+  );
+
+  //get available porter
   @GET('${APIConstants.available_porters}/{id}')
   Future<HttpResponse<StaffResponse>> getPorterAvailableByBookingId(
+    @Header(APIConstants.contentHeader) String contentType,
+    @Header(APIConstants.authHeader) String accessToken,
+    @Path('id') int id,
+  );
+
+  //assign manual available porter
+  @PATCH('${APIConstants.assign_manual_available_porters}/{id}')
+  Future<HttpResponse<SuccessModel>> updateManualPorterAvailableByBookingId(
     @Header(APIConstants.contentHeader) String contentType,
     @Header(APIConstants.authHeader) String accessToken,
     @Path('id') int id,

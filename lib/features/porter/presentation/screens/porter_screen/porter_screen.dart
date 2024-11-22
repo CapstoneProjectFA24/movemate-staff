@@ -49,6 +49,7 @@ class PorterScreen extends HookConsumerWidget {
       print("tuan check log card real time: ");
       return scrollController.dispose;
     }, const []);
+    ref.listen<bool>(refreshPorterList, (_, __) => fetchResult.refresh());
 
     final jobs = _getJobsFromBookingResponseEntity(
       fetchResult.items,

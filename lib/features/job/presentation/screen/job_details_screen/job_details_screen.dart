@@ -82,9 +82,49 @@ class JobDetailsScreen extends HookConsumerWidget {
       context: context,
     );
     final bookingAsync = ref.watch(bookingStreamProvider(job.id.toString()));
-    final bookingStatus =
-        useBookingStatus(bookingAsync.value, job.isReviewOnline);
+    final status = useBookingStatus(bookingAsync.value, job.isReviewOnline);
 
+    bool isStepCompleted(int currentStep, List<bool> conditions) {
+      for (int i = currentStep; i < conditions.length; i++) {
+        if (conditions[i]) return true;
+      }
+      return false;
+    }
+
+    final progressionStates = [
+      status.canConfirmReview,
+      status.canUpdateServices,
+      status.canConfirmSuggestion,
+      status.isReviewed,
+      status.isWaitingPayment,
+      status.isReviewed,
+      status.isBookingComing || status.isInProgress || status.isConfirmed,
+      status.isCompleted,
+    ];
+
+    final progressionStatesOffline = [
+      status.canCreateSchedule,
+      status.isWaitingCustomer || status.isWaitingPayment,
+      status.canConfirmMoving,
+      status.isStaffEnroute,
+      status.canUpdateServices,
+      status.canConfirmSuggestion,
+      status.isReviewed,
+      status.isBookingComing,
+      status.isBookingComing || status.isInProgress || status.isConfirmed,
+      status.isCompleted,
+    ];
+
+    final availableOnline = job.isReviewOnline &&
+        (isStepCompleted(2, progressionStates) ||
+            isStepCompleted(3, progressionStates) ||
+            isStepCompleted(4, progressionStates) ||
+            isStepCompleted(6, progressionStates));
+
+    final availableOffline = !job.isReviewOnline &&
+        (isStepCompleted(5, progressionStatesOffline) ||
+            isStepCompleted(6, progressionStatesOffline) ||
+            isStepCompleted(7, progressionStatesOffline));
     return LoadingOverlay(
       isLoading: state.isLoading,
       child: Scaffold(
@@ -121,9 +161,8 @@ class JobDetailsScreen extends HookConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // check điều kiện
-                // CheckAvailable(job: job),
-
+                if (availableOnline || availableOffline)
+                  CheckAvailable(job: job),
                 BookingHeaderStatusSection(
                   isReviewOnline: job.isReviewOnline,
                   job: job,

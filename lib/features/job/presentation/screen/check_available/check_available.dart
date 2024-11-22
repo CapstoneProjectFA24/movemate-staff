@@ -78,7 +78,7 @@ class CheckAvailable extends HookConsumerWidget {
                                   // For Drivers
                                   if (datasDriver != null &&
                                       datasDriver.staffInSlot.isNotEmpty &&
-                                      datasDriver.staffInSlot.length >=
+                                      datasDriver.countStaffInslots >=
                                           datasDriver.bookingNeedStaffs)
                                     // Case 1: Staff in slot >= booking need staffs
                                     Column(
@@ -118,25 +118,25 @@ class CheckAvailable extends HookConsumerWidget {
                                                 style: const TextStyle(
                                                     color: Colors.black54),
                                               ),
-                                              trailing: IconButton(
-                                                icon: const Icon(
-                                                  Icons.chat,
-                                                  color: Colors.blue,
-                                                  size: 20,
-                                                ),
-                                                onPressed: () {
-                                                  // Navigate to chat screen with driver
-                                                  navigateToChatScreen(
-                                                    context: context,
-                                                    userId:
-                                                        reviewer.id.toString(),
-                                                    name: reviewer.name ?? '',
-                                                    avatarUrl:
-                                                        reviewer.avatarUrl,
-                                                    role: 'driver',
-                                                  );
-                                                },
-                                              ),
+                                              // trailing: IconButton(
+                                              //   icon: const Icon(
+                                              //     Icons.chat,
+                                              //     color: Colors.blue,
+                                              //     size: 20,
+                                              //   ),
+                                              //   onPressed: () {
+                                              //     // Navigate to chat screen with driver
+                                              //     navigateToChatScreen(
+                                              //       context: context,
+                                              //       userId:
+                                              //           reviewer.id.toString(),
+                                              //       name: reviewer.name ?? '',
+                                              //       avatarUrl:
+                                              //           reviewer.avatarUrl,
+                                              //       role: 'driver',
+                                              //     );
+                                              //   },
+                                              // ),
                                             );
                                           },
                                         ),
@@ -252,25 +252,25 @@ class CheckAvailable extends HookConsumerWidget {
                                                 style: const TextStyle(
                                                     color: Colors.black54),
                                               ),
-                                              trailing: IconButton(
-                                                icon: const Icon(
-                                                  Icons.chat,
-                                                  color: Colors.blue,
-                                                  size: 20,
-                                                ),
-                                                onPressed: () {
-                                                  // Navigate to chat screen with porter
-                                                  navigateToChatScreen(
-                                                    context: context,
-                                                    userId:
-                                                        reviewer.id.toString(),
-                                                    name: reviewer.name ?? '',
-                                                    avatarUrl:
-                                                        reviewer.avatarUrl,
-                                                    role: 'porter',
-                                                  );
-                                                },
-                                              ),
+                                              // trailing: IconButton(
+                                              //   icon: const Icon(
+                                              //     Icons.chat,
+                                              //     color: Colors.blue,
+                                              //     size: 20,
+                                              //   ),
+                                              //   onPressed: () {
+                                              //     // Navigate to chat screen with porter
+                                              //     navigateToChatScreen(
+                                              //       context: context,
+                                              //       userId:
+                                              //           reviewer.id.toString(),
+                                              //       name: reviewer.name ?? '',
+                                              //       avatarUrl:
+                                              //           reviewer.avatarUrl,
+                                              //       role: 'porter',
+                                              //     );
+                                              //   },
+                                              // ),
                                             );
                                           },
                                         ),
@@ -381,7 +381,8 @@ class CheckAvailable extends HookConsumerWidget {
               },
             );
           },
-          icon: (datasDriver?.isSussed == true || datasPorter?.isSussed == true)
+          icon: (datasDriver?.isSuccessed == true ||
+                  datasPorter?.isSuccessed == true)
               ? const Icon(
                   Icons.check,
                   color: Colors.green,
@@ -393,12 +394,13 @@ class CheckAvailable extends HookConsumerWidget {
                   size: 14,
                 ),
           label: Text(
-            (datasDriver?.isSussed == true || datasPorter?.isSussed == true)
+            (datasDriver?.isSuccessed == true ||
+                    datasPorter?.isSuccessed == true)
                 ? 'Đơn hàng khả dụng'
                 : 'Đơn hàng không khả dụng',
             style: TextStyle(
-              color: (datasDriver?.isSussed == true ||
-                      datasPorter?.isSussed == true)
+              color: (datasDriver?.isSuccessed == true ||
+                      datasPorter?.isSuccessed == true)
                   ? Colors.green
                   : Colors.red,
               fontSize: 12,

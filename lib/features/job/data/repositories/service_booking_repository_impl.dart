@@ -274,6 +274,20 @@ class BookingRepositoryImpl extends RemoteBaseRepository
           APIConstants.contentType, accessToken, id),
     );
   }
+
+  //  assign manual  available driver
+  @override
+  Future<SuccessModel> updateManualDriverAvailableByBookingId({
+    required String accessToken,
+    required int id,
+  }) async {
+    // print("  check list repo log $id");
+    return getDataOf(
+      request: () => _bookingSource.updateManualDriverAvailableByBookingId(
+          APIConstants.contentType, accessToken, id),
+    );
+  }
+
   // get available porter
   @override
   Future<StaffResponse> getPorterAvailableByBookingId({
@@ -283,6 +297,19 @@ class BookingRepositoryImpl extends RemoteBaseRepository
     // print("  check list repo log $id");
     return getDataOf(
       request: () => _bookingSource.getPorterAvailableByBookingId(
+          APIConstants.contentType, accessToken, id),
+    );
+  }
+
+  //  assign manual available porter
+  @override
+  Future<SuccessModel> updateManualPorterAvailableByBookingId({
+    required String accessToken,
+    required int id,
+  }) async {
+    print("tuan check id in repo 1 $id ");
+    return getDataOf(
+      request: () => _bookingSource.updateManualPorterAvailableByBookingId(
           APIConstants.contentType, accessToken, id),
     );
   }

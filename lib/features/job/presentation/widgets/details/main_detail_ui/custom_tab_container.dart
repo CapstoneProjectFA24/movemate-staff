@@ -3,10 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
+import 'package:movemate_staff/features/drivers/presentation/controllers/driver_controller/driver_controller.dart';
+import 'package:movemate_staff/features/job/domain/entities/available_staff_entities.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/assignment_response_entity.dart';
 import 'package:movemate_staff/features/job/presentation/controllers/booking_controller/booking_controller.dart';
 import 'package:movemate_staff/features/job/presentation/controllers/reviewer_update_controller/reviewer_update_controller.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/main_detail_ui/tab_container/list_widget_item.dart';
+import 'package:movemate_staff/features/porter/presentation/controllers/porter_controller.dart';
 import 'package:movemate_staff/features/profile/domain/entities/profile_entity.dart';
 import 'package:movemate_staff/features/profile/presentation/controllers/profile_controller/profile_controller.dart';
 import 'package:movemate_staff/hooks/use_fetch_obj.dart';
@@ -85,15 +88,6 @@ class CustomTabContainer extends HookConsumerWidget {
     final selectedTab = useState<String>('Bốc vác');
     final selectedPorter = useState<AssignmentsResponseEntity?>(null);
     final selectedDriver = useState<AssignmentsResponseEntity?>(null);
-
-    //  final bookingAsync = ref.watch(bookingStreamProvider(job.id.toString()));
-
-    // final userProfile = useFetchObject<ProfileEntity>(
-    //   function: (context) => ref
-    //       .read(profileControllerProvider.notifier)
-    //       .getUserInfo(item.userId, context),
-    //   context: context,
-    // );
 
     useEffect(() {
       if (porterItems.isNotEmpty &&
@@ -321,11 +315,30 @@ class CustomTabContainer extends HookConsumerWidget {
     WidgetRef ref,
     BuildContext context,
   ) {
+    // Kiểm tra nếu có bất kỳ porter nào đã có isResponsible = true
+    final bool hasResponsiblePorter =
+        porterItems.any((item) => item.isResponsible == true);
+
+    // Fetching porter data
+    final statePorter = ref.watch(porterControllerProvider);
+    final porterController = ref.read(porterControllerProvider.notifier);
+
+    final useFetchResultPorter = useFetchObject<AvailableStaffEntities>(
+      function: (context) =>
+          porterController.getPorterAvailableByBookingId(context, bookingId),
+      context: context,
+    );
+    final datasPorter = useFetchResultPorter.data;
+
+    // Kiểm tra nếu danh sách assignmentInBooking của porter không rỗng
+    final bool isPorterAssignmentExists =
+        (datasPorter?.assignmentInBooking.length ?? 0) > 0;
+
     return Row(
       children: [
         Expanded(
           child: buildButton(
-            onPressed: selectedPorter != null
+            onPressed: (selectedPorter != null && !hasResponsiblePorter)
                 ? () async {
                     final currentState =
                         ref.read(reviewerUpdateControllerProvider);
@@ -349,20 +362,23 @@ class CustomTabContainer extends HookConsumerWidget {
                 : null,
             label: 'Gán bốc vác trưởng',
             isPrimary: true,
-            isEnabled: selectedPorter != null,
+            isEnabled: selectedPorter != null && !hasResponsiblePorter,
           ),
         ),
         const SizedBox(width: 12),
         Expanded(
           child: buildButton(
-            onPressed: () {
-              // Perform Chọn bốc vác khác action
-              context.router
-                  .push(WorkShiftPorterUpdateScreenRoute(bookingId: bookingId));
-            },
+            onPressed: !isPorterAssignmentExists
+                ? () {
+                    // Perform Chọn bốc vác khác action
+                    context.router.push(
+                      WorkShiftPorterUpdateScreenRoute(bookingId: bookingId),
+                    );
+                  }
+                : null,
             label: 'Chọn bốc vác khác',
             isPrimary: false,
-            isEnabled: true,
+            isEnabled: !isPorterAssignmentExists,
           ),
         ),
       ],
@@ -374,11 +390,31 @@ class CustomTabContainer extends HookConsumerWidget {
     WidgetRef ref,
     BuildContext context,
   ) {
+    // Kiểm tra nếu có bất kỳ driver nào đã có isResponsible = true
+    final bool hasResponsibleDriver =
+        driverItems.any((item) => item.isResponsible == true);
+
+    // Fetching driver data
+    final stateDriver = ref.watch(driverControllerProvider);
+    final driverController = ref.read(driverControllerProvider.notifier);
+
+    final useFetchResultDriver = useFetchObject<AvailableStaffEntities>(
+      function: (context) =>
+          driverController.getDriverAvailableByBookingId(context, bookingId),
+      context: context,
+    );
+
+    final datasDriver = useFetchResultDriver.data;
+
+    // Kiểm tra nếu danh sách assignmentInBooking của driver không rỗng
+    final bool isDriverAssignmentExists =
+        (datasDriver?.assignmentInBooking.length ?? 0) > 0;
+
     return Row(
       children: [
         Expanded(
           child: buildButton(
-            onPressed: selectedDriver != null
+            onPressed: (selectedDriver != null && !hasResponsibleDriver)
                 ? () async {
                     final currentState =
                         ref.read(reviewerUpdateControllerProvider);
@@ -393,28 +429,32 @@ class CustomTabContainer extends HookConsumerWidget {
                       await ref
                           .read(reviewerUpdateControllerProvider.notifier)
                           .updateAssignStaffIsResponsibility(
-                              assignmentId: selectedDriver.id,
-                              context: context,
-                              ref: ref);
+                            assignmentId: selectedDriver.id,
+                            context: context,
+                            ref: ref,
+                          );
                     }
                   }
                 : null,
             label: 'Gán tài xế trưởng',
             isPrimary: true,
-            isEnabled: selectedDriver != null,
+            isEnabled: selectedDriver != null && !hasResponsibleDriver,
           ),
         ),
         const SizedBox(width: 12),
         Expanded(
           child: buildButton(
-            onPressed: () {
-              // Perform Chọn tài xế khác action
-              context.router
-                  .push(WorkShiftDriverUpdateScreenRoute(bookingId: bookingId));
-            },
+            onPressed: !isDriverAssignmentExists
+                ? () {
+                    // Perform Chọn tài xế khác action
+                    context.router.push(
+                      WorkShiftDriverUpdateScreenRoute(bookingId: bookingId),
+                    );
+                  }
+                : null,
             label: 'Chọn tài xế khác',
             isPrimary: false,
-            isEnabled: true,
+            isEnabled: !isDriverAssignmentExists,
           ),
         ),
       ],

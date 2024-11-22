@@ -10,6 +10,7 @@ import 'package:movemate_staff/features/job/presentation/controllers/booking_con
 import 'package:movemate_staff/hooks/use_fetch_obj.dart';
 import 'package:movemate_staff/utils/commons/widgets/app_bar.dart';
 import 'package:movemate_staff/utils/commons/widgets/widgets_common_export.dart';
+import 'package:movemate_staff/utils/constants/asset_constant.dart';
 
 @RoutePage()
 class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
@@ -28,7 +29,11 @@ class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
 
     final state = ref.watch(driverControllerProvider);
     final driverController = ref.read(driverControllerProvider.notifier);
-
+    useEffect(() {
+      // Fetch data when the widget is first built to avoid data inconsistency
+      driverController.getDriverAvailableByBookingId(context, bookingId);
+      return null;
+    }, []);
     final useFetchResult = useFetchObject<AvailableStaffEntities>(
       function: (context) =>
           driverController.getDriverAvailableByBookingId(context, bookingId),
@@ -79,11 +84,15 @@ class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
                               ),
                             ),
                             // SizedBox(height: 16),
-                            _buildWorkShiftInfo(context: context),
+                            _buildWorkShiftInfo(
+                                context: context,
+                                ref: ref,
+                                id: bookingId,
+                                datas: datas),
                             SizedBox(height: 16),
                             _buildRoleSelection(datas: datas),
                             SizedBox(height: 16),
-                            _buildEmployeeList(datas: datas),
+                            _buildEmployeeList(datas: datas, context: context),
                             SizedBox(height: 16),
                             _buildWorkTiming(startTime, endTime),
                             SizedBox(height: 16),
@@ -115,34 +124,65 @@ class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
     );
   }
 
-  Widget _buildWorkShiftInfo({required BuildContext context}) {
-    return Container(
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey[300]!),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('Ca làm việc', style: TextStyle(color: Colors.black)),
-              Text('Ngày: february 09, 2021',
-                  style: TextStyle(color: Colors.black)),
-            ],
-          ),
-          SizedBox(height: 8),
-          Container(
-            padding: EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.grey[300]!),
+  Widget _buildWorkShiftInfo(
+      {required BuildContext context,
+      required WidgetRef ref,
+      required int id,
+      required AvailableStaffEntities? datas}) 
+      
+      {
+    final state = ref.watch(driverControllerProvider);
+    final driverController = ref.read(driverControllerProvider.notifier);
+
+    print("tuan check  data ${datas?.assignmentInBooking.length}");
+    return LoadingOverlay(
+      isLoading: state.isLoading,
+      child: Container(
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Colors.grey[300]!),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Existing Row with 'Ca làm việc' and 'Ngày...'
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Ca làm việc', style: TextStyle(color: Colors.black)),
+                Text('Ngày: february 09, 2021',
+                    style: TextStyle(color: Colors.black)),
+              ],
             ),
-            child: Text('Ca 1'),
-          ),
-        ],
+            SizedBox(height: 8),
+            // New Row with 'Ca 1' and 'Thêm tự động' button
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Ca 1', style: TextStyle(fontSize: 16)),
+                ElevatedButton(
+                  onPressed: (datas?.assignmentInBooking.length ?? 0) > 0
+                      ? null
+                      : () async {
+                          // Handle the 'Thêm tự động' button press
+                          await driverController
+                              .updateManualDriverAvailableByBookingId(
+                            context,
+                            id,
+                          );
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue, // Choose your preferred color
+                  ),
+                  child: Text('Thêm tự động'),
+                ),
+              ],
+            ),
+
+          ],
+        ),
       ),
     );
   }
@@ -186,14 +226,14 @@ class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
                     child: Row(
                       children: [
                         CircleAvatar(
-                          backgroundColor: datas!.isSussed
+                          backgroundColor: datas!.isSuccessed
                               ? Colors.blue[100]
                               : Colors.orange[100],
                           child: Icon(
-                            datas!.isSussed
+                            datas!.isSuccessed
                                 ? Icons.drive_eta
                                 : Icons.engineering,
-                            color: datas!.isSussed
+                            color: datas!.isSuccessed
                                 ? Colors.blue[700]
                                 : Colors.orange[700],
                             size: 20,
@@ -219,7 +259,7 @@ class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
                                   '',
                               style: TextStyle(
                                 fontSize: 12,
-                                color: datas.isSussed
+                                color: datas.isSuccessed
                                     ? Colors.blue[700]
                                     : Colors.orange[700],
                               ),
@@ -238,7 +278,11 @@ class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
     );
   }
 
-  Widget _buildEmployeeList({required AvailableStaffEntities? datas}) {
+  // Updated _buildEmployeeList method
+  Widget _buildEmployeeList({
+    required BuildContext context,
+    required AvailableStaffEntities? datas,
+  }) {
     return Container(
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -262,6 +306,7 @@ class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
                 // Access each staff from datas.otherStaffs
                 final staff = datas!.otherStaffs[index];
                 return _buildEmployeeAvatar(
+                  context,
                   staff.name ?? '',
                   staff.avatarUrl ?? '',
                 );
@@ -273,21 +318,78 @@ class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
     );
   }
 
-// Existing _buildEmployeeAvatar method
-  Widget _buildEmployeeAvatar(String name, String imageUrl) {
+  // Updated _buildEmployeeAvatar method
+  Widget _buildEmployeeAvatar(
+    BuildContext context,
+    String name,
+    String imageUrl,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: Column(
         children: [
-          CircleAvatar(
-            radius: 25,
-            backgroundImage: NetworkImage(imageUrl),
+          // Wrap CircleAvatar with GestureDetector to make it clickable
+          GestureDetector(
+            onTap: () {
+              // Show popup modal when avatar is clicked
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    backgroundColor: Colors.white,
+                    title: LabelText(
+                      content: 'Xác nhận',
+                      size: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    content: LabelText(
+                        content:
+                            'Bạn có muốn thêm tài xế $name vào trong đơn hàng này?',
+                        size: 14,
+                        fontWeight: FontWeight.w400),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                        },
+                        child: LabelText(
+                            content: 'Hủy',
+                            size: 13,
+                            fontWeight: FontWeight.w400),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                          // Handle the confirmation action here
+                          // For example, add the driver to the order
+                          _addDriverToOrder(name);
+                        },
+                        child: LabelText(
+                            content: 'Xác nhận',
+                            size: 13,
+                            fontWeight: FontWeight.w400),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+            child: CircleAvatar(
+              radius: 25,
+              backgroundImage: NetworkImage(imageUrl),
+            ),
           ),
           SizedBox(height: 4),
           Text(name, style: TextStyle(fontSize: 12)),
         ],
       ),
     );
+  }
+
+  // Dummy method to handle adding driver to order
+  void _addDriverToOrder(String name) {
+    // Implement the logic to add the driver to the order
+    print('Driver $name has been added to the order.');
   }
 
   Widget _buildWorkTiming(

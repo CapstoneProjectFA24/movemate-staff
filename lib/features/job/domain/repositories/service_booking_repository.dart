@@ -109,13 +109,25 @@ abstract class BookingRepository {
     required UpdateResourseRequest request,
     required int id,
   });
+
   // get driver available
   Future<StaffResponse> getDriverAvailableByBookingId({
     required String accessToken,
     required int id,
   });
+  // assign manual driver available
+  Future<SuccessModel> updateManualDriverAvailableByBookingId({
+    required String accessToken,
+    required int id,
+  });
+
   // get porter available
   Future<StaffResponse> getPorterAvailableByBookingId({
+    required String accessToken,
+    required int id,
+  });
+  //  assign manual  porter available
+  Future<SuccessModel> updateManualPorterAvailableByBookingId({
     required String accessToken,
     required int id,
   });

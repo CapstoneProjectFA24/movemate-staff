@@ -232,4 +232,57 @@ class DriverController extends _$DriverController {
       return null;
     }
   }
+
+// assign manual  driver available
+  Future<void> updateManualDriverAvailableByBookingId(
+     BuildContext context,
+     int id,
+  ) async {
+    // AvailableStaffEntities? bookings;
+    state = const AsyncLoading();
+    final bookingRepository = ref.read(bookingRepositoryProvider);
+    final authRepository = ref.read(authRepositoryProvider);
+    final user = await SharedPreferencesUtils.getInstance('user_token');
+    state = await AsyncValue.guard(() async {
+      await ref
+          .read(bookingRepositoryProvider)
+          .updateManualDriverAvailableByBookingId(
+            accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
+            id: id,
+          );
+
+      ref
+          .read(refreshDriverList.notifier)
+          .update((state) => !ref.read(refreshDriverList));
+
+      showSnackBar(
+        context: context,
+        content: "Cập nhật trạng thái thành công",
+        icon: AssetsConstants.iconSuccess,
+        backgroundColor: Colors.green,
+        textColor: AssetsConstants.whiteColor,
+      );
+    });
+
+    if (state.hasError) {
+      state = await AsyncValue.guard(() async {
+        final statusCode = (state.error as DioException).onStatusDio();
+        await handleAPIError(
+          statusCode: statusCode,
+          stateError: state.error!,
+          context: context,
+          onCallBackGenerateToken: () async => await reGenerateToken(
+            authRepository,
+            context,
+          ),
+        );
+
+        if (state.hasError) {
+          await ref.read(signInControllerProvider.notifier).signOut(context);
+        }
+
+        if (statusCode != StatusCodeType.unauthentication.type) {}
+      });
+    }
+  }
 }

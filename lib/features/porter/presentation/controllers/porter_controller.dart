@@ -223,4 +223,59 @@ class PorterController extends _$PorterController {
       return null;
     }
   }
+
+// assign manual  porter available
+  Future<void> updateManualPorterAvailableByBookingId(
+    int id,
+    BuildContext context,
+  ) async {
+    // AvailableStaffEntities? bookings;
+    state = const AsyncLoading();
+    print("tuan check id in controller 1 $id ");
+    final bookingRepository = ref.read(bookingRepositoryProvider);
+    final authRepository = ref.read(authRepositoryProvider);
+    final user = await SharedPreferencesUtils.getInstance('user_token');
+    state = await AsyncValue.guard(() async {
+      print("tuan check id in controller 2 $id ");
+      await ref
+          .read(bookingRepositoryProvider)
+          .updateManualPorterAvailableByBookingId(
+            accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
+            id: id,
+          );
+
+      ref
+          .read(refreshPorterList.notifier)
+          .update((state) => !ref.read(refreshPorterList));
+      print("tuan check id in controller 3 $id ");
+      showSnackBar(
+        context: context,
+        content: "Cập nhật trạng thái thành công",
+        icon: AssetsConstants.iconSuccess,
+        backgroundColor: Colors.green,
+        textColor: AssetsConstants.whiteColor,
+      );
+    });
+
+    if (state.hasError) {
+      state = await AsyncValue.guard(() async {
+        final statusCode = (state.error as DioException).onStatusDio();
+        await handleAPIError(
+          statusCode: statusCode,
+          stateError: state.error!,
+          context: context,
+          onCallBackGenerateToken: () async => await reGenerateToken(
+            authRepository,
+            context,
+          ),
+        );
+
+        if (state.hasError) {
+          await ref.read(signInControllerProvider.notifier).signOut(context);
+        }
+
+        if (statusCode != StatusCodeType.unauthentication.type) {}
+      });
+    }
+  }
 }
