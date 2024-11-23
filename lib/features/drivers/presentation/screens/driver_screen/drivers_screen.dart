@@ -56,7 +56,7 @@ class DriversScreen extends HookConsumerWidget {
       fetchResult.items,
       selectedDate.value,
     );
-    
+
     jobs.sort((a, b) {
       final aStartTime = DateFormat('MM/dd/yyyy HH:mm:ss').parse(a.bookingAt);
       final bStartTime = DateFormat('MM/dd/yyyy HH:mm:ss').parse(b.bookingAt);
@@ -102,7 +102,7 @@ class DriversScreen extends HookConsumerWidget {
               scrollDirection: Axis.horizontal,
               itemCount: 9,
               itemBuilder: (context, index) {
-                final day = DateTime.now().add(Duration(days: index - 2));
+                final day = DateTime.now().add(Duration(days: index - 7));
                 final isSelected = DateFormat.yMd().format(day) ==
                     DateFormat.yMd().format(selectedDate.value);
                 return GestureDetector(
@@ -174,8 +174,13 @@ class DriversScreen extends HookConsumerWidget {
                               .parse(job.bookingAt);
                           final endTime = startTime.add(
                             Duration(
-                                minutes: int.parse(
-                                    job.estimatedDeliveryTime ?? '0')),
+                              minutes: ((double.tryParse(
+                                              job.estimatedDeliveryTime ??
+                                                  '0') ??
+                                          0) *
+                                      60)
+                                  .round(),
+                            ),
                           );
 
                           return Row(

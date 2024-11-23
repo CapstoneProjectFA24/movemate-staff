@@ -49,7 +49,7 @@ class PorterScreen extends HookConsumerWidget {
       print("tuan check log card real time: ");
       return scrollController.dispose;
     }, const []);
-    
+
     ref.listen<bool>(refreshPorterList, (_, __) => fetchResult.refresh());
 
     final jobs = _getJobsFromBookingResponseEntity(
@@ -166,7 +166,12 @@ class PorterScreen extends HookConsumerWidget {
                     DateFormat('MM/dd/yyyy HH:mm:ss').parse(job.bookingAt);
                 final endTime = startTime.add(
                   Duration(
-                      minutes: int.parse(job.estimatedDeliveryTime ?? '0')),
+                    minutes:
+                        ((double.tryParse(job.estimatedDeliveryTime ?? '0') ??
+                                    0) *
+                                60)
+                            .round(),
+                  ),
                 );
 
                 return Row(

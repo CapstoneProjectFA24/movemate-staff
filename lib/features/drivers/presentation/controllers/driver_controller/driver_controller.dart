@@ -194,12 +194,6 @@ class DriverController extends _$DriverController {
       final response = await bookingRepository.getDriverAvailableByBookingId(
           accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
           id: id);
-
-      // print(" check list controller 2");
-      // print(
-      //     " check list controller 2.2 bookingNeedStaffs ${response.payload.bookingNeedStaffs}");
-
-      // print('Repository response: ${response.payload}');
       bookings = response.payload;
       return response.payload;
     });
@@ -235,8 +229,8 @@ class DriverController extends _$DriverController {
 
 // assign manual  driver available
   Future<void> updateManualDriverAvailableByBookingId(
-     BuildContext context,
-     int id,
+    BuildContext context,
+    int id,
   ) async {
     // AvailableStaffEntities? bookings;
     state = const AsyncLoading();

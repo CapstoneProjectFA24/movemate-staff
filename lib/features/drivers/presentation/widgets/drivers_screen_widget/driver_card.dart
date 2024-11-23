@@ -21,9 +21,11 @@ class DriverCard extends HookConsumerWidget {
     final startTime = DateFormat('MM/dd/yyyy HH:mm:ss').parse(job.bookingAt);
     final endTime = startTime.add(
       Duration(
-        minutes: int.parse(job.estimatedDeliveryTime ?? '0'),
+        minutes: ((double.tryParse(job.estimatedDeliveryTime ?? '0') ?? 0) * 60)
+            .round(),
       ),
     );
+
     final bookingAsync = ref.watch(bookingStreamProvider(job.id.toString()));
     final bookingStatus =
         useBookingStatus(bookingAsync.value, job.isReviewOnline);

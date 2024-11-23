@@ -394,7 +394,7 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
     }
   }
 
-  Future<void> _startProgressToOngoing() async {
+  Future<void> _startPackingToOngoing() async {
     if (_isMapReady) {
       try {
         setState(() {
@@ -478,8 +478,26 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
     // print(
     //     "vinh log status8 ${widget.bookingStatus.canPorterCompleteUnloading}");
     // print("vinh log status9 ${widget.bookingStatus.canPorterComplete}");
+
     print(
-        "vinh log status realtime ${_currentJob.assignments.map((e) => e.toJson())}");
+        "updating status 0 ConfirmIncoming :  ${widget.bookingStatus.canPorterConfirmIncoming}");
+    print(
+        "updating status 1 ConfirmArrived :  ${widget.bookingStatus.canPorterConfirmArrived}");
+    print(
+        "updating status 2 ConfirmInprogress :  ${widget.bookingStatus.canPorterConfirmInprogress}");
+    print(
+        "updating status 3 ConfirmPacking :  ${widget.bookingStatus.canPorterConfirmPacking}");
+    print(
+        "updating status 4 ConfirmOngoing :  ${widget.bookingStatus.canPorterConfirmOngoing}");
+    print(
+        "updating status 5 ConfirmDelivered :  ${widget.bookingStatus.canPorterConfirmDelivered}");
+    print(
+        "updating status 6 CompleteUnloading :  ${widget.bookingStatus.canPorterCompleteUnloading}");
+    print(
+        "updating status 7 Complete :  ${widget.bookingStatus.canPorterComplete}");
+
+    print(
+        " updating vinh log status realtime ${_currentJob.assignments.map((e) => e.toJson())}");
 
     if (_currentPosition != null) {
       print("Current Position: $_currentPosition");
@@ -760,12 +778,16 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
                   if (widget.bookingStatus.canPorterConfirmInprogress)
                     FloatingActionButton(
                       onPressed: _isMapReady ? _startArrivedtoProgress : null,
-                      child: const Icon(Icons.garage_outlined),
+                      child: const Icon(
+                        Icons.play_for_work_sharp,
+                        size: 34,
+                      ),
                     ),
                 if (!_isNavigationStarted)
                   if (widget.bookingStatus.canPorterConfirmOngoing)
                     FloatingActionButton(
-                      onPressed: _isMapReady ? _startProgressToOngoing : null,
+                      onPressed: _isMapReady ? _startAssinedToComing : null,
+                      // onPressed: _isMapReady ? _startPackingToOngoing : null,
                       // onPressed: _isMapReady ? _startNavigation : null,
                       child: const Icon(Icons.directions_car),
                     ),

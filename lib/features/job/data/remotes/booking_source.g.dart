@@ -522,7 +522,7 @@ class _BookingSource implements BookingSource {
     _headers.removeWhere((k, v) => v == null);
     const Map<String, dynamic>? _data = null;
     final _options = _setStreamType<HttpResponse<SuccessModel>>(Options(
-      method: 'PUT',
+      method: 'PATCH',
       headers: _headers,
       extra: _extra,
       contentType: contentType,

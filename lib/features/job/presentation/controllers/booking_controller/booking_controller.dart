@@ -255,6 +255,7 @@ class BookingController extends _$BookingController {
       );
       // print("tuan object check controller 3  ");
       bookingById = response.payload;
+      ref.read(bookingResponseProvider.notifier).state = response.payload;
 
       // print("tuan object check controller 4 ${bookingById} ");
     });
@@ -280,7 +281,5 @@ class BookingController extends _$BookingController {
         await getBookingById(id, context);
       });
     }
-    // print("tuan object check controller 5 ${bookingById}");
-    // return bookingById;
   }
 }

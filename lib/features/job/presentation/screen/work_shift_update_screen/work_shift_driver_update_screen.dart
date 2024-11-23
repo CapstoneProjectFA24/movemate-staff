@@ -93,9 +93,9 @@ class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
                             _buildRoleSelection(datas: datas),
                             SizedBox(height: 16),
                             _buildEmployeeList(datas: datas, context: context),
-                            SizedBox(height: 16),
-                            _buildWorkTiming(startTime, endTime),
-                            SizedBox(height: 16),
+                            // SizedBox(height: 16),
+                            // _buildWorkTiming(startTime, endTime),
+                            // SizedBox(height: 16),
                           ],
                         ),
                       ),
@@ -128,9 +128,7 @@ class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
       {required BuildContext context,
       required WidgetRef ref,
       required int id,
-      required AvailableStaffEntities? datas}) 
-      
-      {
+      required AvailableStaffEntities? datas}) {
     final state = ref.watch(driverControllerProvider);
     final driverController = ref.read(driverControllerProvider.notifier);
 
@@ -147,21 +145,21 @@ class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Existing Row with 'Ca làm việc' and 'Ngày...'
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Ca làm việc', style: TextStyle(color: Colors.black)),
-                Text('Ngày: february 09, 2021',
-                    style: TextStyle(color: Colors.black)),
-              ],
-            ),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //   children: [
+            //     Text('Ca làm việc', style: TextStyle(color: Colors.black)),
+            //     Text('Ngày: february 09, 2021',
+            //         style: TextStyle(color: Colors.black)),
+            //   ],
+            // ),
             SizedBox(height: 8),
             // New Row with 'Ca 1' and 'Thêm tự động' button
 
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Ca 1', style: TextStyle(fontSize: 16)),
+                // Text('Ca 1', style: TextStyle(fontSize: 16)),
                 ElevatedButton(
                   onPressed: (datas?.assignmentInBooking.length ?? 0) > 0
                       ? null
@@ -180,7 +178,6 @@ class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
                 ),
               ],
             ),
-
           ],
         ),
       ),
@@ -200,10 +197,10 @@ class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Danh sách nhân viên',
+            'Danh sách tài xế sẵn sàng cho đơn hàng',
             style: TextStyle(
               color: Colors.grey[700],
-              fontSize: 16,
+              fontSize: 14,
               fontWeight: FontWeight.bold,
             ),
           ),

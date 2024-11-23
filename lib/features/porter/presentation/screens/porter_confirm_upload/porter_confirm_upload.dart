@@ -5,9 +5,11 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/features/drivers/presentation/controllers/stream_controller/job_stream_manager.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
+import 'package:movemate_staff/features/job/presentation/controllers/booking_controller/booking_controller.dart';
 import 'package:movemate_staff/features/porter/data/models/request/porter_update_resourse_request.dart';
 import 'package:movemate_staff/features/porter/presentation/controllers/porter_controller.dart';
 import 'package:movemate_staff/hooks/use_booking_status.dart';
+import 'package:movemate_staff/hooks/use_fetch_obj.dart';
 import 'package:movemate_staff/services/realtime_service/booking_status_realtime/booking_status_stream_provider.dart';
 import 'package:movemate_staff/utils/commons/widgets/app_bar.dart';
 import 'package:movemate_staff/utils/commons/widgets/cloudinary/cloudinary_camera_upload_widget.dart';
@@ -47,6 +49,20 @@ class PorterConfirmScreen extends HookConsumerWidget {
     final bookingAsync = ref.watch(bookingStreamProvider(job.id.toString()));
     final status = useBookingStatus(bookingAsync.value, job.isReviewOnline);
     final _currentJob = useState<BookingResponseEntity>(job);
+
+    final jobEntity = useFetchObject<BookingResponseEntity>(
+        function: (context) async {
+          return ref
+              .read(bookingControllerProvider.notifier)
+              .getBookingById(job.id, context);
+        },
+        context: context);
+
+    useEffect(() {
+      // Call refresh when component mounts
+      jobEntity.refresh();
+      return null; // cleanup function
+    }, []);
 
     useEffect(() {
       JobStreamManager().updateJob(job);
@@ -255,6 +271,23 @@ class PorterConfirmScreen extends HookConsumerWidget {
       );
     }
 
+    print("updating image ");
+
+    print(
+        "updating status 0 ConfirmIncoming :  ${status.canPorterConfirmIncoming}");
+    print(
+        "updating status 1 ConfirmArrived :  ${status.canPorterConfirmArrived}");
+    print(
+        "updating status 2 ConfirmInprogress :  ${status.canPorterConfirmInprogress}");
+    print(
+        "updating status 3 ConfirmPacking :  ${status.canPorterConfirmPacking}");
+    print(
+        "updating status 4 ConfirmOngoing :  ${status.canPorterConfirmOngoing}");
+    print(
+        "updating status 5 ConfirmDelivered :  ${status.canPorterConfirmDelivered}");
+    print(
+        "updating status 6 CompleteUnloading :  ${status.canPorterCompleteUnloading}");
+    print("updating status 7 Complete :  ${status.canPorterComplete}");
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: CustomAppBar(
@@ -337,6 +370,7 @@ class PorterConfirmScreen extends HookConsumerWidget {
                     request: request.value,
                   ),
                   const SizedBox(height: 16),
+                  //-----------------------------------------------------------------
                   //case 2
                   buildConfirmationSection(
                     title: 'Xác nhận đã dọn',
@@ -385,6 +419,7 @@ class PorterConfirmScreen extends HookConsumerWidget {
                     request: request.value,
                   ),
                   const SizedBox(height: 16),
+                  //-----------------------------------------------------------------
                   //case 3
                   buildConfirmationSection(
                     title: 'Xác nhận đã giao',
@@ -433,6 +468,7 @@ class PorterConfirmScreen extends HookConsumerWidget {
                     request: request.value,
                   ),
                   const SizedBox(height: 16),
+                  //-----------------------------------------------------------------
                   //case 4
                   buildConfirmationSection(
                     title: 'Xác nhận dỡ hàng',
@@ -481,6 +517,7 @@ class PorterConfirmScreen extends HookConsumerWidget {
                     request: request.value,
                   ),
                   const SizedBox(height: 16),
+                  //-----------------------------------------------------------------
                   //case 5
                   buildConfirmationSection(
                     title: 'Xác nhận hoàn thành',

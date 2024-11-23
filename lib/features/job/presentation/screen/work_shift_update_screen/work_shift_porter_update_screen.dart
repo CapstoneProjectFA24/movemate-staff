@@ -91,9 +91,9 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
                             _buildRoleSelection(datas: datas),
                             SizedBox(height: 16),
                             _buildEmployeeList(datas: datas, context: context),
-                            SizedBox(height: 16),
-                            _buildWorkTiming(startTime, endTime),
-                            SizedBox(height: 16),
+                            // SizedBox(height: 16),
+                            // _buildWorkTiming(startTime, endTime),
+                            // SizedBox(height: 16),
                           ],
                         ),
                       ),
@@ -139,20 +139,20 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Existing Row with 'Ca làm việc' and 'Ngày...'
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('Ca làm việc', style: TextStyle(color: Colors.black)),
-              Text('Ngày: february 09, 2021',
-                  style: TextStyle(color: Colors.black)),
-            ],
-          ),
+          // Row(
+          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //   children: [
+          //     Text('Ca làm việc', style: TextStyle(color: Colors.black)),
+          //     Text('Ngày: february 09, 2021',
+          //         style: TextStyle(color: Colors.black)),
+          //   ],
+          // ),
           SizedBox(height: 8),
           // New Row with 'Ca 1' and 'Thêm tự động' button
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Ca 1', style: TextStyle(fontSize: 16)),
+              // Text('Ca 1', style: TextStyle(fontSize: 16)),
               ElevatedButton(
                 onPressed: (datas?.assignmentInBooking.length ?? 0) > 0
                     ? null
@@ -187,10 +187,10 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Danh sách nhân viên',
+            'Danh sách bốc vác sẵn sàng cho đơn hàng',
             style: TextStyle(
               color: Colors.grey[700],
-              fontSize: 16,
+              fontSize: 14,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -201,11 +201,13 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
               color: Colors.grey[50],
               borderRadius: BorderRadius.circular(8),
             ),
-            child: ListView.separated(
+            child: ListView.builder(
               padding: EdgeInsets.symmetric(vertical: 8),
-              itemCount: datas?.countStaffInslots ?? 0,
-              separatorBuilder: (context, index) => Divider(height: 1),
+              itemCount: datas?.countStaffInslots ?? 0, // Số lượng nhân viên
               itemBuilder: (context, index) {
+                // Lấy thông tin từng nhân viên từ danh sách
+                final staff = datas?.staffInSlot[index];
+
                 return Material(
                   type: MaterialType.transparency,
                   child: Container(
@@ -213,17 +215,12 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
                     child: Row(
                       children: [
                         CircleAvatar(
-                          backgroundColor: datas!.isSuccessed
-                              ? Colors.blue[100]
-                              : Colors.orange[100],
-                          child: Icon(
-                            datas!.isSuccessed
-                                ? Icons.drive_eta
-                                : Icons.engineering,
-                            color: datas!.isSuccessed
-                                ? Colors.blue[700]
-                                : Colors.orange[700],
-                            size: 20,
+                          backgroundColor: Colors.blue[100],
+                          child: Text(
+                            staff?.name != null
+                                ? staff!.name![0].toUpperCase()
+                                : '',
+                            style: TextStyle(color: Colors.blue[700]),
                           ),
                         ),
                         SizedBox(width: 12),
@@ -231,24 +228,16 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              datas?.staffInSlot
-                                      .firstWhere((e) => e.id != null)
-                                      .name ??
-                                  '',
+                              staff?.name ?? 'Tên không xác định',
                               style:
                                   TextStyle(fontSize: 14, color: Colors.black),
                             ),
                             SizedBox(height: 4),
                             Text(
-                              datas?.staffInSlot
-                                      .firstWhere((e) => e.id != null)
-                                      .roleName ??
-                                  '',
+                              staff?.roleName ?? 'Vai trò không xác định',
                               style: TextStyle(
                                 fontSize: 12,
-                                color: datas!.isSuccessed
-                                    ? Colors.blue[700]
-                                    : Colors.orange[700],
+                                color: Colors.grey[700],
                               ),
                             ),
                           ],

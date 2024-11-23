@@ -113,7 +113,7 @@ abstract class BookingSource {
     @Body() ReviewerTimeRequest request,
     @Path('id') int id,
   );
-  @PUT('${APIConstants.assignments}/{id}')
+  @PATCH('${APIConstants.assignments}/{id}')
   Future<HttpResponse<SuccessModel>> updateAssignStaffIsResponsibility(
     @Header(APIConstants.contentHeader) String contentType,
     @Header(APIConstants.authHeader) String accessToken,

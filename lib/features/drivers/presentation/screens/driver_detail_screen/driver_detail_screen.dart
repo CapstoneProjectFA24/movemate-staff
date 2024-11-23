@@ -84,7 +84,8 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
           // _buildInitialRoute();
         });
       }
-    });
+    }
+    );
   }
 
   Future<void> _initNavigation() async {
@@ -448,6 +449,12 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
     print("vinh log status5 ${widget.bookingStatus.canDriverCompleteDelivery}");
     print(
         "vinh log status realtime ${_currentJob.assignments.map((e) => e.toJson())}");
+
+    if (_currentPosition != null) {
+      print("Current Position: $_currentPosition");
+    } else {
+      print("Current Position is null");
+    }
     return Scaffold(
       body: SafeArea(
         child: Column(

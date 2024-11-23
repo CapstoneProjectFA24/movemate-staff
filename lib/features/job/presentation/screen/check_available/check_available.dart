@@ -86,7 +86,7 @@ class CheckAvailable extends HookConsumerWidget {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          'Tài xế có trong đơn hàng',
+                                          'Tài xế dự bị cho đơn hàng',
                                           style: const TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 16,
@@ -147,211 +147,214 @@ class CheckAvailable extends HookConsumerWidget {
                                       datasDriver.staffInSlot.length <
                                           datasDriver.bookingNeedStaffs)
                                     // Case 2: Staff in slot < booking need staffs
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'Tài xế khả dụng ngoài đơn hàng',
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16,
-                                            color: Colors.black,
+                                    // Column(
+                                    //   crossAxisAlignment:
+                                    //       CrossAxisAlignment.start,
+                                    //   children: [
+                                    //     Text(
+                                    //       'Tài xế khả dụng ngoài đơn hàng',
+                                    //       style: const TextStyle(
+                                    //         fontWeight: FontWeight.bold,
+                                    //         fontSize: 16,
+                                    //         color: Colors.black,
+                                    //       ),
+                                    //     ),
+                                    //     const SizedBox(height: 16),
+                                    //     ListView.builder(
+                                    //       shrinkWrap: true,
+                                    //       physics:
+                                    //           const NeverScrollableScrollPhysics(),
+                                    //       itemCount:
+                                    //           datasDriver.countOtherStaff,
+                                    //       itemBuilder: (context, index) {
+                                    //         final reviewer =
+                                    //             datasDriver.otherStaffs[index];
+                                    //         return ListTile(
+                                    //           leading: CircleAvatar(
+                                    //             backgroundImage: NetworkImage(
+                                    //                 reviewer.avatarUrl ?? ''),
+                                    //           ),
+                                    //           title: Text(
+                                    //             reviewer.name ?? '',
+                                    //             style: const TextStyle(
+                                    //                 color: Colors.black),
+                                    //           ),
+                                    //           subtitle: Text(
+                                    //             reviewer.roleName ?? '',
+                                    //             style: const TextStyle(
+                                    //                 color: Colors.black54),
+                                    //           ),
+                                    //           trailing: IconButton(
+                                    //             icon: const Icon(
+                                    //               Icons.chat,
+                                    //               color: Colors.blue,
+                                    //               size: 20,
+                                    //             ),
+                                    //             onPressed: () {
+                                    //               // Navigate to chat screen with driver
+                                    //               navigateToChatScreen(
+                                    //                 context: context,
+                                    //                 userId:
+                                    //                     reviewer.id.toString(),
+                                    //                 name: reviewer.name ?? '',
+                                    //                 avatarUrl:
+                                    //                     reviewer.avatarUrl,
+                                    //                 role: 'driver',
+                                    //               );
+                                    //             },
+                                    //           ),
+                                    //         );
+                                    //       },
+                                    //     ),
+                                    //   ],
+                                    // ),
+
+                                    // For Porters
+                                    if (datasPorter != null &&
+                                        datasPorter.staffInSlot.isNotEmpty &&
+                                        datasPorter.staffInSlot.length >=
+                                            datasPorter.bookingNeedStaffs)
+                                      // Case 1: Staff in slot >= booking need staffs
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const SizedBox(height: 16),
+                                          Text(
+                                            'Khuân vác dự bị cho đơn hàng',
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
+                                              color: Colors.black,
+                                            ),
                                           ),
-                                        ),
-                                        const SizedBox(height: 16),
-                                        ListView.builder(
-                                          shrinkWrap: true,
-                                          physics:
-                                              const NeverScrollableScrollPhysics(),
-                                          itemCount:
-                                              datasDriver.countOtherStaff,
-                                          itemBuilder: (context, index) {
-                                            final reviewer =
-                                                datasDriver.otherStaffs[index];
-                                            return ListTile(
-                                              leading: CircleAvatar(
-                                                backgroundImage: NetworkImage(
-                                                    reviewer.avatarUrl ?? ''),
-                                              ),
-                                              title: Text(
-                                                reviewer.name ?? '',
-                                                style: const TextStyle(
-                                                    color: Colors.black),
-                                              ),
-                                              subtitle: Text(
-                                                reviewer.roleName ?? '',
-                                                style: const TextStyle(
-                                                    color: Colors.black54),
-                                              ),
-                                              trailing: IconButton(
-                                                icon: const Icon(
-                                                  Icons.chat,
-                                                  color: Colors.blue,
-                                                  size: 20,
+                                          const SizedBox(height: 16),
+                                          ListView.builder(
+                                            shrinkWrap: true,
+                                            physics:
+                                                const NeverScrollableScrollPhysics(),
+                                            itemCount:
+                                                datasPorter.countStaffInslots,
+                                            itemBuilder: (context, index) {
+                                              final reviewer = datasPorter
+                                                  .staffInSlot[index];
+                                              return ListTile(
+                                                leading: CircleAvatar(
+                                                  backgroundImage: NetworkImage(
+                                                      reviewer.avatarUrl ?? ''),
                                                 ),
-                                                onPressed: () {
-                                                  // Navigate to chat screen with driver
-                                                  navigateToChatScreen(
-                                                    context: context,
-                                                    userId:
-                                                        reviewer.id.toString(),
-                                                    name: reviewer.name ?? '',
-                                                    avatarUrl:
-                                                        reviewer.avatarUrl,
-                                                    role: 'driver',
-                                                  );
-                                                },
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  // For Porters
-                                  if (datasPorter != null &&
-                                      datasPorter.staffInSlot.isNotEmpty &&
-                                      datasPorter.staffInSlot.length >=
-                                          datasPorter.bookingNeedStaffs)
-                                    // Case 1: Staff in slot >= booking need staffs
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        const SizedBox(height: 16),
-                                        Text(
-                                          'Khuân vác có trong đơn hàng',
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16,
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 16),
-                                        ListView.builder(
-                                          shrinkWrap: true,
-                                          physics:
-                                              const NeverScrollableScrollPhysics(),
-                                          itemCount:
-                                              datasPorter.countStaffInslots,
-                                          itemBuilder: (context, index) {
-                                            final reviewer =
-                                                datasPorter.staffInSlot[index];
-                                            return ListTile(
-                                              leading: CircleAvatar(
-                                                backgroundImage: NetworkImage(
-                                                    reviewer.avatarUrl ?? ''),
-                                              ),
-                                              title: Text(
-                                                reviewer.name ?? '',
-                                                style: const TextStyle(
-                                                    color: Colors.black),
-                                              ),
-                                              subtitle: Text(
-                                                reviewer.roleName ?? '',
-                                                style: const TextStyle(
-                                                    color: Colors.black54),
-                                              ),
-                                              // trailing: IconButton(
-                                              //   icon: const Icon(
-                                              //     Icons.chat,
-                                              //     color: Colors.blue,
-                                              //     size: 20,
-                                              //   ),
-                                              //   onPressed: () {
-                                              //     // Navigate to chat screen with porter
-                                              //     navigateToChatScreen(
-                                              //       context: context,
-                                              //       userId:
-                                              //           reviewer.id.toString(),
-                                              //       name: reviewer.name ?? '',
-                                              //       avatarUrl:
-                                              //           reviewer.avatarUrl,
-                                              //       role: 'porter',
-                                              //     );
-                                              //   },
-                                              // ),
-                                            );
-                                          },
-                                        ),
-                                      ],
-                                    )
-                                  else if (datasPorter != null &&
-                                      datasPorter.staffInSlot.isNotEmpty &&
-                                      datasPorter.staffInSlot.length <
-                                          datasPorter.bookingNeedStaffs)
-                                    // Case 2: Staff in slot < booking need staffs
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        const SizedBox(height: 16),
-                                        Text(
-                                          'Khuân vác khả dụng ngoài đơn hàng',
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16,
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 16),
-                                        ListView.builder(
-                                          shrinkWrap: true,
-                                          physics:
-                                              const NeverScrollableScrollPhysics(),
-                                          itemCount:
-                                              datasPorter.countOtherStaff,
-                                          itemBuilder: (context, index) {
-                                            final reviewer =
-                                                datasPorter.otherStaffs[index];
-                                            return ListTile(
-                                              leading: CircleAvatar(
-                                                backgroundImage: NetworkImage(
-                                                    reviewer.avatarUrl ?? ''),
-                                              ),
-                                              title: Text(
-                                                reviewer.name ?? '',
-                                                style: const TextStyle(
-                                                    color: Colors.black),
-                                              ),
-                                              subtitle: Text(
-                                                reviewer.roleName ?? '',
-                                                style: const TextStyle(
-                                                    color: Colors.black54),
-                                              ),
-                                              trailing: IconButton(
-                                                icon: const Icon(
-                                                  Icons.chat,
-                                                  color: Colors.blue,
-                                                  size: 20,
+                                                title: Text(
+                                                  reviewer.name ?? '',
+                                                  style: const TextStyle(
+                                                      color: Colors.black),
                                                 ),
-                                                onPressed: () {
-                                                  // Navigate to chat screen with porter
-                                                  navigateToChatScreen(
-                                                    context: context,
-                                                    userId:
-                                                        reviewer.id.toString(),
-                                                    name: reviewer.name ?? '',
-                                                    avatarUrl:
-                                                        reviewer.avatarUrl,
-                                                    role: 'porter',
-                                                  );
-                                                },
-                                              ),
-                                            );
-                                          },
+                                                subtitle: Text(
+                                                  reviewer.roleName ?? '',
+                                                  style: const TextStyle(
+                                                      color: Colors.black54),
+                                                ),
+                                                // trailing: IconButton(
+                                                //   icon: const Icon(
+                                                //     Icons.chat,
+                                                //     color: Colors.blue,
+                                                //     size: 20,
+                                                //   ),
+                                                //   onPressed: () {
+                                                //     // Navigate to chat screen with porter
+                                                //     navigateToChatScreen(
+                                                //       context: context,
+                                                //       userId:
+                                                //           reviewer.id.toString(),
+                                                //       name: reviewer.name ?? '',
+                                                //       avatarUrl:
+                                                //           reviewer.avatarUrl,
+                                                //       role: 'porter',
+                                                //     );
+                                                //   },
+                                                // ),
+                                              );
+                                            },
+                                          ),
+                                        ],
+                                      )
+                                    else if (datasPorter != null &&
+                                        datasPorter.staffInSlot.isNotEmpty &&
+                                        datasPorter.staffInSlot.length <
+                                            datasPorter.bookingNeedStaffs)
+                                      // Case 2: Staff in slot < booking need staffs
+                                      // Column(
+                                      //   crossAxisAlignment:
+                                      //       CrossAxisAlignment.start,
+                                      //   children: [
+                                      //     const SizedBox(height: 16),
+                                      //     Text(
+                                      //       'Khuân vác khả dụng ngoài đơn hàng',
+                                      //       style: const TextStyle(
+                                      //         fontWeight: FontWeight.bold,
+                                      //         fontSize: 16,
+                                      //         color: Colors.black,
+                                      //       ),
+                                      //     ),
+                                      //     const SizedBox(height: 16),
+                                      //     ListView.builder(
+                                      //       shrinkWrap: true,
+                                      //       physics:
+                                      //           const NeverScrollableScrollPhysics(),
+                                      //       itemCount:
+                                      //           datasPorter.countOtherStaff,
+                                      //       itemBuilder: (context, index) {
+                                      //         final reviewer =
+                                      //             datasPorter.otherStaffs[index];
+                                      //         return ListTile(
+                                      //           leading: CircleAvatar(
+                                      //             backgroundImage: NetworkImage(
+                                      //                 reviewer.avatarUrl ?? ''),
+                                      //           ),
+                                      //           title: Text(
+                                      //             reviewer.name ?? '',
+                                      //             style: const TextStyle(
+                                      //                 color: Colors.black),
+                                      //           ),
+                                      //           subtitle: Text(
+                                      //             reviewer.roleName ?? '',
+                                      //             style: const TextStyle(
+                                      //                 color: Colors.black54),
+                                      //           ),
+                                      //           trailing: IconButton(
+                                      //             icon: const Icon(
+                                      //               Icons.chat,
+                                      //               color: Colors.blue,
+                                      //               size: 20,
+                                      //             ),
+                                      //             onPressed: () {
+                                      //               // Navigate to chat screen with porter
+                                      //               navigateToChatScreen(
+                                      //                 context: context,
+                                      //                 userId:
+                                      //                     reviewer.id.toString(),
+                                      //                 name: reviewer.name ?? '',
+                                      //                 avatarUrl:
+                                      //                     reviewer.avatarUrl,
+                                      //                 role: 'porter',
+                                      //               );
+                                      //             },
+                                      //           ),
+                                      //         );
+                                      //       },
+                                      //     ),
+                                      //   ],
+                                      // ),
+
+                                      // Nếu không có nhân viên khả dụng
+                                      if ((datasDriver == null ||
+                                              datasDriver
+                                                  .staffInSlot.isEmpty) &&
+                                          (datasPorter == null ||
+                                              datasPorter.staffInSlot.isEmpty))
+                                        const Text(
+                                          'Không có nhân viên khả dụng.',
+                                          style: TextStyle(color: Colors.black),
                                         ),
-                                      ],
-                                    ),
-                                  // Nếu không có nhân viên khả dụng
-                                  if ((datasDriver == null ||
-                                          datasDriver.staffInSlot.isEmpty) &&
-                                      (datasPorter == null ||
-                                          datasPorter.staffInSlot.isEmpty))
-                                    const Text(
-                                      'Không có nhân viên khả dụng.',
-                                      style: TextStyle(color: Colors.black),
-                                    ),
                                 ],
                               ),
                             ),

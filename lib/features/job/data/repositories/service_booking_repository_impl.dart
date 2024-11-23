@@ -230,7 +230,7 @@ class BookingRepositoryImpl extends RemoteBaseRepository
     required int assignmentId,
   }) async {
     // print("repo log ${request.toJson()}");
-    // print("repo log $assignmentId");
+    print("repo log $assignmentId");
 
     return getDataOf(
       request: () => _bookingSource.updateAssignStaffIsResponsibility(
