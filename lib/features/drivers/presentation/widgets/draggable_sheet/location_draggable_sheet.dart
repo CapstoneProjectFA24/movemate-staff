@@ -1,8 +1,10 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/assignment_response_entity.dart';
+import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_details_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/presentation/controllers/house_type_controller/house_type_controller.dart';
 import 'package:movemate_staff/features/porter/presentation/screens/porter_confirm_upload/porter_confirm_upload.dart';
@@ -302,6 +304,23 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
                   _buildServiceInfo(job: job, house: houseTypeById),
                   const SizedBox(height: 16),
                   _buildLocationInfo(job: job),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    height: (job.bookingDetails.length * 25)
+                        .toDouble(), // Fixed height for services list
+                    child: SingleChildScrollView(
+                      physics: const ClampingScrollPhysics(),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          //TODO: OPTIONAL field for services list have type TRUCK
+                          buildServicesList(
+                            job.bookingDetails,
+                          ), // Hiển thị danh sách
+                        ],
+                      ),
+                    ),
+                  ),
                   const Divider(height: 32),
                   _buildSectionTitle('Thông tin khách hàng'),
                   const SizedBox(height: 16),
@@ -548,5 +567,62 @@ Widget _buildProgressLine(bool isCompleted) {
       height: 2,
       color: isCompleted ? Colors.orange : Colors.grey[300],
     ),
+  );
+}
+
+Widget buildPriceItem(String description, String price) {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      Expanded(
+        child: Text(
+          description,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+            color: Colors.black,
+          ),
+        ),
+      ),
+      Row(
+        children: [
+          const SizedBox(width: 12),
+          Text(
+            price,
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w400,
+              color: Colors.black,
+            ),
+          ),
+          const SizedBox(width: 12),
+        ],
+      ),
+    ],
+  );
+}
+
+// Hàm hỗ trợ để định dạng giá
+String formatPrice(int price) {
+  final formatter = NumberFormat('#,###', 'vi_VN');
+  return '${formatter.format(price)} đ';
+}
+
+Widget buildServicesList(List<BookingDetailsResponseEntity> bookingDetails,
+    {bool isFilterByTruck = false}) {
+  // Lọc các dịch vụ có type là 'TRUCK'
+  // Lọc danh sách nếu cần
+  final filteredServices = isFilterByTruck
+      ? bookingDetails.where((detail) => detail.type == 'TRUCK').toList()
+      : bookingDetails;
+
+  // Trả về danh sách Widget để hiển thị
+  return Column(
+    children: filteredServices.map((detail) {
+      return buildPriceItem(detail.name ?? 'Unknown Service',
+          '${formatPrice(detail.price?.toInt() ?? 0)}');
+    }).toList(),
   );
 }

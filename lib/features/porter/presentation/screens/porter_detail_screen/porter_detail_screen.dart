@@ -495,6 +495,12 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
         "updating status 6 CompleteUnloading :  ${widget.bookingStatus.canPorterCompleteUnloading}");
     print(
         "updating status 7 Complete :  ${widget.bookingStatus.canPorterComplete}");
+    print(
+        "updating status 8 Porter at Start Point :  ${widget.bookingStatus.isPorterStartPoint}");
+    print(
+        "updating status 9 Porter At Delivery Point :  ${widget.bookingStatus.isPorterAtDeliveryPoint}");
+    print(
+        "updating status 10 Porter End Delivery Point :  ${widget.bookingStatus.isPorterEndDeliveryPoint}");
 
     print(
         " updating vinh log status realtime ${_currentJob.assignments.map((e) => e.toJson())}");
