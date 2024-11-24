@@ -108,11 +108,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
 
   Widget _buildStatusMessage(String statusMessage) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      decoration: BoxDecoration(
-        color: Colors.orange.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       child: Text(
         statusMessage,
         style: const TextStyle(
@@ -176,7 +172,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
                       ),
                       child: Icon(
                         step.isCompleted ? Icons.check : step.icon,
-                        size: 20,
+                        size: 16,
                         color: step.isCompleted
                             ? Colors.orange
                             : step.isActive
@@ -193,15 +189,15 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
                         child: Wrap(
                           alignment: WrapAlignment.center,
                           crossAxisAlignment: WrapCrossAlignment.center,
-                          spacing: 4, // horizontal space between items
-                          runSpacing: 4, // vertical space between lines
+                          spacing: 2, // horizontal space between items
+                          runSpacing: 2, // vertical space between lines
                           children: [
                             // Title
                             Text(
                               step.title,
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                fontSize: 13,
+                                fontSize: 12,
                                 color: step.isCompleted
                                     ? Colors.orange
                                     : step.isActive
@@ -233,8 +229,8 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
                                   child: Text(
                                     step.action!,
                                     style: const TextStyle(
-                                      color: Colors.orange,
-                                      fontSize: 12,
+                                      color: Colors.red,
+                                      fontSize: 10,
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),

@@ -69,10 +69,10 @@ class CombinedInfoSection extends HookConsumerWidget {
               job.roomNumber.toString(),
             ),
             const SizedBox(height: 16),
-            _buildInfoRow(context, 'Địa điểm đón',
-                job.pickupAddress ?? 'Không có địa chỉ'),
-            _buildInfoRow(context, 'Địa điểm đến',
-                job.deliveryAddress ?? 'Không có địa chỉ'),
+            _buildInfoRow(
+                context, 'Từ', job.pickupAddress ?? 'Không có địa chỉ'),
+            _buildInfoRow(
+                context, 'Đến', job.deliveryAddress ?? 'Không có địa chỉ'),
           ]),
           const Divider(height: 32, thickness: 1),
           _buildSection('Thông tin khách hàng', [
