@@ -189,8 +189,8 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
                         child: Wrap(
                           alignment: WrapAlignment.center,
                           crossAxisAlignment: WrapCrossAlignment.center,
-                          spacing: 2, // horizontal space between items
-                          runSpacing: 2, // vertical space between lines
+                          spacing: 4, // horizontal space between items
+                          runSpacing: 4, // vertical space between lines
                           children: [
                             // Title
                             Text(

@@ -84,20 +84,20 @@ class ServicePackageTile extends HookConsumerWidget {
           title: Text(
             servicePackage.name.trim(),
             style: const TextStyle(
-              fontSize: 18,
+              fontSize: 16,
               fontWeight: FontWeight.bold,
               color: Colors.black,
             ),
           ),
-          subtitle: Text(
-            servicePackage.description,
-            style: const TextStyle(
-              fontSize: 14,
-              color: Colors.grey,
-            ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
+          // subtitle: Text(
+          //   servicePackage.description,
+          //   style: const TextStyle(
+          //     fontSize: 14,
+          //     color: Colors.grey,
+          //   ),
+          //   maxLines: 2,
+          //   overflow: TextOverflow.ellipsis,
+          // ),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -130,7 +130,7 @@ class ServicePackageTile extends HookConsumerWidget {
                   color: isExpanded
                       ? AssetsConstants.primaryDark
                       : AssetsConstants.primaryDark,
-                  size: 20, // Kích thước của icon
+                  size: 16, // Kích thước của icon
                 ),
               ),
             ],
@@ -181,7 +181,7 @@ class ServicePackageTile extends HookConsumerWidget {
               Text(
                 servicePackage.name.trim(),
                 style: const TextStyle(
-                  fontSize: 16,
+                  fontSize: 12,
                   fontWeight: FontWeight.bold,
                   color: Colors.black87,
                   letterSpacing: 0.2,
