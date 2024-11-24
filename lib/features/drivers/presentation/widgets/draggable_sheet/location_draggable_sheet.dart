@@ -91,8 +91,7 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
     final minute = timeParts[1];
 
     // Tạo chuỗi định dạng
-    final formattedBookingAt = '$day tháng $month/$year Vào lúc $hour:$minute';
-
+    final formattedBookingAt = '$hour:$minute $day/$month/$year';
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
@@ -113,9 +112,9 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Giao vào ${formattedBookingAt}',
+              'Thời gian dự kiến ${formattedBookingAt}',
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 14,
                 fontWeight: FontWeight.bold,
               ),
             ),
