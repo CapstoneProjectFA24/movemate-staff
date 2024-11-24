@@ -30,25 +30,25 @@ class HomeScreen extends HookConsumerWidget {
                 ),
               ),
             ),
-            const Positioned(
-              top: 20,
-              right: 20,
-              child: Text(
-                'Địa chỉ hiện tại: HCM - Việt Nam',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  shadows: [
-                    Shadow(
-                      offset: Offset(1.0, 1.0),
-                      blurRadius: 3.0,
-                      color: Color.fromARGB(255, 0, 0, 0),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            // const Positioned(
+            //   top: 50,
+            //   right: 20,
+            //   child: Text(
+            //     'Địa chỉ hiện tại: HCM - Việt Nam',
+            //     style: TextStyle(
+            //       color: Colors.white,
+            //       fontSize: 14,
+            //       fontWeight: FontWeight.w400,
+            //       shadows: [
+            //         Shadow(
+            //           offset: Offset(1.0, 1.0),
+            //           blurRadius: 3.0,
+            //           color: Color.fromARGB(255, 0, 0, 0),
+            //         ),
+            //       ],
+            //     ),
+            //   ),
+            // ),
             Positioned(
               left: 20,
               top: 100,
@@ -65,7 +65,7 @@ class HomeScreen extends HookConsumerWidget {
                       'CHÀO MỪNG',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 36,
+                        fontSize: 30,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -97,7 +97,7 @@ class HomeScreen extends HookConsumerWidget {
             ),
             const Positioned(
               left: 20,
-              top: 280,
+              top: 220,
               child: Icon(
                 Icons.notifications,
                 color: Colors.white,
@@ -112,7 +112,7 @@ class HomeScreen extends HookConsumerWidget {
               ),
             ),
             DraggableScrollableSheet(
-              initialChildSize: 0.4, // Chiều cao ban đầu là 40% màn hình
+              initialChildSize: 0.65, // Chiều cao ban đầu là 40% màn hình
               minChildSize: 0.3, // Chiều cao tối thiểu
               maxChildSize: 0.8, // Chiều cao tối đa khi kéo lên
               builder: (context, scrollController) {
@@ -152,7 +152,6 @@ class HomeScreen extends HookConsumerWidget {
                           icon: Icons.add_to_home_screen_rounded,
                           color: Colors.orange,
                           title: 'Đánh giá tại nhà',
-                          description: 'Nhưng yêu cầu offline đag chờ bạn',
                           onTap: () {
                             context.router
                                 .push(JobScreenRoute(isReviewOnline: false));
@@ -162,7 +161,6 @@ class HomeScreen extends HookConsumerWidget {
                           icon: Icons.online_prediction_rounded,
                           color: Colors.greenAccent,
                           title: 'Đánh giá trực tuyến',
-                          description: 'Nhưng yêu cầu online đag chờ bạn',
                           onTap: () {
                             context.router
                                 .push(JobScreenRoute(isReviewOnline: true));
@@ -172,7 +170,6 @@ class HomeScreen extends HookConsumerWidget {
                           icon: Icons.tab,
                           color: Colors.orange,
                           title: 'Công việc bốc vác',
-                          description: 'Công việc của bạn',
                           onTap: () {
                             context.router.push(const PorterScreenRoute());
                           },
@@ -191,7 +188,6 @@ class HomeScreen extends HookConsumerWidget {
                           icon: Icons.notification_add_outlined,
                           color: const Color.fromARGB(255, 86, 76, 175),
                           title: 'Yêu cầu',
-                          description: 'những yêu cầu đang chờ bạn duyệt.',
                           onTap: () {
                             context.router.push(const OrderScreenRoute());
                           },
@@ -200,7 +196,6 @@ class HomeScreen extends HookConsumerWidget {
                           icon: Icons.local_shipping,
                           color: AssetsConstants.primaryMain,
                           title: 'Tài xế',
-                          description: 'tài xế theo yêu cầu.',
                           onTap: () {
                             context.router.push(const DriversScreenRoute());
                           },

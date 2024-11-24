@@ -97,7 +97,7 @@ class CombinedInfoSection extends HookConsumerWidget {
         Text(
           title,
           style: const TextStyle(
-              fontSize: 18,
+              fontSize: 16,
               fontWeight: FontWeight.bold,
               color: AssetsConstants.primaryLighter),
         ),
@@ -134,9 +134,9 @@ class CombinedInfoSection extends HookConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontSize: 14, color: Colors.grey)),
+        Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
         Text(value,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
       ],
     );
   }
@@ -148,7 +148,7 @@ class CombinedInfoSection extends HookConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(label,
-              style: const TextStyle(fontSize: 16, color: Colors.black)),
+              style: const TextStyle(fontSize: 12, color: Colors.black)),
           const SizedBox(
             height: 5,
           ),
@@ -159,7 +159,7 @@ class CombinedInfoSection extends HookConsumerWidget {
                 child: Text(
                   value,
                   style: const TextStyle(
-                    fontSize: 16,
+                    fontSize: 12,
                     fontWeight: FontWeight.w500,
                     color: Colors.grey,
                   ),
@@ -174,12 +174,12 @@ class CombinedInfoSection extends HookConsumerWidget {
                       context: context,
                       builder: (context) => AlertDialog(
                         title:
-                            Text(label, style: const TextStyle(fontSize: 18)),
+                            Text(label, style: const TextStyle(fontSize: 14)),
                         backgroundColor: AssetsConstants.whiteColor,
                         content: SingleChildScrollView(
                           child: Text(
                             value,
-                            style: const TextStyle(fontSize: 16),
+                            style: const TextStyle(fontSize: 14),
                           ),
                         ),
                         actions: [
@@ -187,7 +187,7 @@ class CombinedInfoSection extends HookConsumerWidget {
                             onPressed: () => Navigator.pop(context),
                             child: const LabelText(
                               content: "Đóng",
-                              size: 16,
+                              size: 12,
                               fontWeight: FontWeight.bold,
                               color: AssetsConstants.blackColor,
                             ),
@@ -201,7 +201,7 @@ class CombinedInfoSection extends HookConsumerWidget {
                     child: Text(
                       'Xem thêm',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 10,
                         color: AssetsConstants.primaryLight,
                         fontWeight: FontWeight.w500,
                       ),
@@ -255,14 +255,14 @@ class CombinedInfoSection extends HookConsumerWidget {
           child: const Row(
             children: [
               Icon(Icons.receipt_long,
-                  size: 20, color: AssetsConstants.blackColor),
+                  size: 20, color: AssetsConstants.whiteColor),
               SizedBox(width: 4),
               Text(
                 'Chi tiết giá',
                 style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
-                    color: AssetsConstants.blackColor),
+                    color: AssetsConstants.whiteColor),
               ),
             ],
           ),
@@ -282,13 +282,13 @@ class CombinedInfoSection extends HookConsumerWidget {
         children: [
           const Text('Tổng cộng',
               style: TextStyle(
-                  fontSize: 18,
+                  fontSize: 16,
                   fontWeight: FontWeight.bold,
                   color: AssetsConstants.whiteColor)),
           Text(
             formatPrice(job.totalReal.toInt()),
             style: const TextStyle(
-                fontSize: 22,
+                fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: AssetsConstants.whiteColor),
           ),
@@ -327,7 +327,7 @@ class CombinedInfoSection extends HookConsumerWidget {
                     color: Colors.grey[100],
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Icon(icon, size: 18, color: Colors.grey),
+                  child: Icon(icon, size: 14, color: Colors.grey),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -339,18 +339,13 @@ class CombinedInfoSection extends HookConsumerWidget {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
-                            fontSize: 16, color: Colors.black87),
+                            fontSize: 12, color: Colors.black87),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         'Số lượng: $quantity',
                         style:
-                            const TextStyle(fontSize: 14, color: Colors.grey),
-                      ),
-                      Text(
-                        'Loại: $type',
-                        style:
-                            const TextStyle(fontSize: 14, color: Colors.grey),
+                            const TextStyle(fontSize: 10, color: Colors.grey),
                       ),
                     ],
                   ),
@@ -362,7 +357,7 @@ class CombinedInfoSection extends HookConsumerWidget {
           LabelText(
             content: price,
             fontWeight: FontWeight.bold,
-            size: 16,
+            size: 12,
             color: AssetsConstants.blackColor,
           ),
         ],
@@ -389,7 +384,7 @@ class CombinedInfoSection extends HookConsumerWidget {
       children: [
         const LabelText(
           content: 'Thông tin hình ảnh',
-          size: 18,
+          size: 16,
           color: AssetsConstants.primaryLight,
           fontWeight: FontWeight.bold,
         ),
@@ -397,7 +392,7 @@ class CombinedInfoSection extends HookConsumerWidget {
           icon: Icon(
               isExpanded.value ? Icons.arrow_drop_up : Icons.arrow_drop_down,
               color: Colors.black54,
-              size: 24),
+              size: 18),
           onPressed: toggleDropdown,
         ),
       ],

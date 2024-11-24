@@ -415,8 +415,8 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildLocationRow('Địa điểm đón', '${job.pickupAddress}'),
-        _buildLocationRow('Địa điểm đến', '${job.deliveryAddress}'),
+        _buildLocationRow('Từ', '${job.pickupAddress}'),
+        _buildLocationRow('Đến', '${job.deliveryAddress}'),
       ],
     );
   }

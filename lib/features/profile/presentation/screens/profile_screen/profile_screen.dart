@@ -67,7 +67,7 @@ class ProfileScreen extends HookConsumerWidget {
         color: Colors.red,
       ),
     ];
- final user = ref.read(authProvider);
+    final user = ref.read(authProvider);
     return Scaffold(
       appBar: CustomAppBar(
         backgroundColor: AssetsConstants.primaryMain,
@@ -89,9 +89,9 @@ class ProfileScreen extends HookConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ProfileHeader(profile: user),
-            const SizedBox(height: 24.0),
-            const PromoSection(),
-            const SizedBox(height: 24.0),
+            // const SizedBox(height: 24.0),
+            // const PromoSection(),
+            // const SizedBox(height: 24.0),
             Expanded(
               child: ListView.builder(
                 itemCount: menuItems.length,

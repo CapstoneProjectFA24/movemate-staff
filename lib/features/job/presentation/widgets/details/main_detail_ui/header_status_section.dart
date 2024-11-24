@@ -870,7 +870,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
                               child: Text(
                                 "Đóng",
                                 style: TextStyle(
-                                  fontSize: 16,
+                                  fontSize: 12,
                                   fontWeight: FontWeight.w600,
                                   color: Colors.grey.shade700,
                                 ),
@@ -964,7 +964,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
                                   Text(
                                     "Xác nhận",
                                     style: TextStyle(
-                                      fontSize: 16,
+                                      fontSize: 12,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),

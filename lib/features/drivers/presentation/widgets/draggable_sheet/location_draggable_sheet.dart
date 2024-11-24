@@ -342,7 +342,7 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
     return Text(
       title,
       style: const TextStyle(
-        fontSize: 16,
+        fontSize: 12,
         fontWeight: FontWeight.w500,
         color: Color(0xFFFF7643),
       ),
@@ -363,13 +363,13 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
                 'Loại nhà',
                 style: TextStyle(
                   color: Colors.grey,
-                  fontSize: 14,
+                  fontSize: 12,
                 ),
               ),
               SizedBox(height: 4),
               Text(
                 house?.name ?? '',
-                style: TextStyle(fontSize: 14),
+                style: TextStyle(fontSize: 12),
               ),
             ],
           ),
@@ -382,13 +382,13 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
                 'Số tầng',
                 style: TextStyle(
                   color: Colors.grey,
-                  fontSize: 14,
+                  fontSize: 12,
                 ),
               ),
               SizedBox(height: 4),
               Text(
                 job.floorsNumber,
-                style: TextStyle(fontSize: 14),
+                style: TextStyle(fontSize: 12),
               ),
             ],
           ),
@@ -401,13 +401,13 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
                 'Số phòng',
                 style: TextStyle(
                   color: Colors.grey,
-                  fontSize: 14,
+                  fontSize: 12,
                 ),
               ),
               SizedBox(height: 4),
               Text(
                 job.roomNumber,
-                style: TextStyle(fontSize: 14),
+                style: TextStyle(fontSize: 12),
               ),
             ],
           ),
@@ -420,8 +420,8 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildLocationRow('Địa điểm đón', '${job.pickupAddress}'),
-        _buildLocationRow('Địa điểm đến', '${job.deliveryAddress}'),
+        _buildLocationRow('Từ', '${job.pickupAddress}'),
+        _buildLocationRow('Đến', '${job.deliveryAddress}'),
       ],
     );
   }
