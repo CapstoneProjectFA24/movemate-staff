@@ -85,7 +85,7 @@ class PorterController extends _$PorterController {
     state = const AsyncLoading();
     final authRepository = ref.read(authRepositoryProvider);
     final user = await SharedPreferencesUtils.getInstance('user_token');
-
+    print("check 1 controller request ${id}");
     state = await AsyncValue.guard(() async {
       await ref
           .read(bookingRepositoryProvider)

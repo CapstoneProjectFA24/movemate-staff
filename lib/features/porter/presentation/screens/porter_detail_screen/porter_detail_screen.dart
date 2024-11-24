@@ -383,7 +383,7 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
               );
         } catch (driverError) {
           print(
-              "Lỗi khi bắt đầu điều hướng từ assined lên incoming: $driverError");
+              "Lỗi khi bắt đầu điều hướng từ assined lên incoming: ${driverError.toString()}");
         }
       } catch (e) {
         print("Lỗi khi bắt đầu di chuyển $e");
@@ -578,8 +578,8 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
                                           children: [
                                             Text(
                                               _isFirstNavigation
-                                                  ? "Đã đến điểm nhận hàng"
-                                                  : "Đã đến điểm giao hàng",
+                                                  ? "Đã đến điểm chuyển nhà"
+                                                  : "Đã đến điểm mới",
                                               style: const TextStyle(
                                                 fontSize: 20,
                                                 fontWeight: FontWeight.bold,
@@ -655,8 +655,8 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
                                             ),
                                             child: Text(
                                               _isFirstNavigation
-                                                  ? "Xác nhận đã nhận hàng"
-                                                  : "Xác nhận đã giao hàng",
+                                                  ? "Xác nhận đã đến"
+                                                  : "Xác nhận đã đến",
                                               style: const TextStyle(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600,
