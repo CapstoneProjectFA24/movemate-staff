@@ -37,7 +37,7 @@ class CloudinaryCameraUploadWidget extends HookConsumerWidget {
     final picker = useMemoized(() => ImagePicker());
     final isLoading = useState(false);
     final cloudinary = useMemoized(
-        () => CloudinaryPublic('dkpnkjnxs', 'movemate', cache: false));
+        () => CloudinaryPublic('dve1zpp4s', 'movemate', cache: false));
     final uploadedImages = ref.watch(uploadedImagesProvider);
     Future<void> uploadImageFromCamera() async {
       if (disabled || isLoading.value) return;
@@ -105,7 +105,7 @@ class CloudinaryCameraUploadWidget extends HookConsumerWidget {
               itemCount: imagePublicIds.length,
               itemBuilder: (context, index) {
                 final imageUrl =
-                    'https://res.cloudinary.com/dkpnkjnxs/image/upload/${imagePublicIds[index]}';
+                    'https://res.cloudinary.com/dve1zpp4s/image/upload/${imagePublicIds[index]}';
                 return Stack(
                   children: [
                     Container(
