@@ -159,48 +159,50 @@ class CompleteProposalScreen extends HookConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-                const Text('Chụp ảnh',
-                    style:
-                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                if (!job.isReviewOnline)
+                  const Text('Chụp ảnh',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 16),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade50,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.grey.shade100),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: AssetsConstants.primaryLighter
-                                  .withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(12),
+                if (!job.isReviewOnline)
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade50,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.grey.shade100),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: AssetsConstants.primaryLighter
+                                    .withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Icon(
+                                Icons.add_photo_alternate_rounded,
+                                color: AssetsConstants.primaryLighter,
+                              ),
                             ),
-                            child: const Icon(
-                              Icons.add_photo_alternate_rounded,
-                              color: AssetsConstants.primaryLighter,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          const Text('Tải ảnh lên',
-                              style: TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.w600)),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      const RoomMediaSection(
-                        roomTitle: '',
-                        roomType: RoomType.livingRoom,
-                      ),
-                    ],
+                            const SizedBox(width: 12),
+                            const Text('Tải ảnh lên',
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.w600)),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        const RoomMediaSection(
+                          roomTitle: '',
+                          roomType: RoomType.livingRoom,
+                        ),
+                      ],
+                    ),
                   ),
-                ),
               ],
             ),
             const SizedBox(height: 32),
@@ -233,7 +235,6 @@ class CompleteProposalScreen extends HookConsumerWidget {
                       context: context,
                       id: job.id,
                     );
-             
 
                 context.router.popUntil(
                     (route) => route.settings.name == 'JobScreenRoute');
@@ -252,8 +253,8 @@ class CompleteProposalScreen extends HookConsumerWidget {
       SnackBar(
         content: Row(
           children: [
-            Icon(Icons.warning_rounded, color: Colors.white),
-            SizedBox(width: 12),
+            const Icon(Icons.warning_rounded, color: Colors.white),
+            const SizedBox(width: 12),
             Text(message),
           ],
         ),
@@ -288,16 +289,16 @@ class CompleteProposalScreen extends HookConsumerWidget {
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('Hủy',
+                  child: const Text('Hủy',
                       style: TextStyle(color: AssetsConstants.primaryMain)),
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                     onConfirm?.call();
                   },
-                  child: Text('Xác nhận',
+                  child: const Text('Xác nhận',
                       style: TextStyle(color: AssetsConstants.primaryMain)),
                 ),
               ],

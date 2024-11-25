@@ -46,7 +46,7 @@ class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
       isLoading: state.isLoading,
       child: Scaffold(
         backgroundColor: Colors.grey[100],
-        appBar: CustomAppBar(
+        appBar: const CustomAppBar(
           centerTitle: true,
           title: 'Cập nhật tài xế',
           // iconFirst: Icons.refresh_rounded,
@@ -57,7 +57,7 @@ class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
               child: SingleChildScrollView(
                 child: Container(
                   width: double.infinity,
-                  padding: EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(16),
                   child: Column(
                     children: [
                       Container(
@@ -79,7 +79,7 @@ class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
                               (datas?.staffType == null)
                                   ? 'null'
                                   : 'có dữ liệu',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: Colors.black,
                               ),
                             ),
@@ -89,9 +89,9 @@ class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
                                 ref: ref,
                                 id: bookingId,
                                 datas: datas),
-                            SizedBox(height: 16),
+                            const SizedBox(height: 16),
                             _buildRoleSelection(datas: datas),
-                            SizedBox(height: 16),
+                            const SizedBox(height: 16),
                             _buildEmployeeList(datas: datas, context: context),
                             // SizedBox(height: 16),
                             // _buildWorkTiming(startTime, endTime),
@@ -105,13 +105,13 @@ class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
               ),
             ),
             Container(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.1),
-                    offset: Offset(0, -2),
+                    offset: const Offset(0, -2),
                     blurRadius: 4,
                   ),
                 ],
@@ -136,7 +136,7 @@ class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
     return LoadingOverlay(
       isLoading: state.isLoading,
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
           border: Border.all(color: Colors.grey[300]!),
@@ -153,7 +153,7 @@ class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
             //         style: TextStyle(color: Colors.black)),
             //   ],
             // ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             // New Row with 'Ca 1' and 'Thêm tự động' button
 
             Row(
@@ -174,7 +174,7 @@ class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue, // Choose your preferred color
                   ),
-                  child: Text('Thêm tự động'),
+                  child: const Text('Thêm tự động'),
                 ),
               ],
             ),
@@ -188,7 +188,7 @@ class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
     // Danh sách mẫu bao gồm cả tài xế và bốc vác
 
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: Colors.grey[300]!),
@@ -204,7 +204,7 @@ class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           Container(
             height: 200,
             decoration: BoxDecoration(
@@ -212,14 +212,14 @@ class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
               borderRadius: BorderRadius.circular(8),
             ),
             child: ListView.separated(
-              padding: EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.symmetric(vertical: 8),
               itemCount: datas?.countStaffInslots ?? 0,
-              separatorBuilder: (context, index) => Divider(height: 1),
+              separatorBuilder: (context, index) => const Divider(height: 1),
               itemBuilder: (context, index) {
                 return Material(
                   type: MaterialType.transparency,
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     child: Row(
                       children: [
                         CircleAvatar(
@@ -227,30 +227,30 @@ class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
                               ? Colors.blue[100]
                               : Colors.orange[100],
                           child: Icon(
-                            datas!.isSuccessed
+                            datas.isSuccessed
                                 ? Icons.drive_eta
                                 : Icons.engineering,
-                            color: datas!.isSuccessed
+                            color: datas.isSuccessed
                                 ? Colors.blue[700]
                                 : Colors.orange[700],
                             size: 20,
                           ),
                         ),
-                        SizedBox(width: 12),
+                        const SizedBox(width: 12),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              datas?.staffInSlot
+                              datas.staffInSlot
                                       .firstWhere((e) => e.id != null)
                                       .name ??
                                   '',
                               style:
-                                  TextStyle(fontSize: 14, color: Colors.black),
+                                  const TextStyle(fontSize: 14, color: Colors.black),
                             ),
-                            SizedBox(height: 4),
+                            const SizedBox(height: 4),
                             Text(
-                              datas?.staffInSlot
+                              datas.staffInSlot
                                       .firstWhere((e) => e.id != null)
                                       .roleName ??
                                   '',
@@ -281,7 +281,7 @@ class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
     required AvailableStaffEntities? datas,
   }) {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: Colors.grey[300]!),
@@ -289,12 +289,12 @@ class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'Thêm nhân viên',
             style: TextStyle(color: Colors.black),
           ),
-          SizedBox(height: 8),
-          Container(
+          const SizedBox(height: 8),
+          SizedBox(
             height: 100, // Adjust the height as needed
             child: ListView.builder(
               scrollDirection: Axis.horizontal, // Scroll horizontally
@@ -334,7 +334,7 @@ class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
                 builder: (context) {
                   return AlertDialog(
                     backgroundColor: Colors.white,
-                    title: LabelText(
+                    title: const LabelText(
                       content: 'Xác nhận',
                       size: 16,
                       fontWeight: FontWeight.w700,
@@ -349,7 +349,7 @@ class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
                         onPressed: () {
                           Navigator.of(context).pop(); // Close the dialog
                         },
-                        child: LabelText(
+                        child: const LabelText(
                             content: 'Hủy',
                             size: 13,
                             fontWeight: FontWeight.w400),
@@ -361,7 +361,7 @@ class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
                           // For example, add the driver to the order
                           _addDriverToOrder(name);
                         },
-                        child: LabelText(
+                        child: const LabelText(
                             content: 'Xác nhận',
                             size: 13,
                             fontWeight: FontWeight.w400),
@@ -376,8 +376,8 @@ class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
               backgroundImage: NetworkImage(imageUrl),
             ),
           ),
-          SizedBox(height: 4),
-          Text(name, style: TextStyle(fontSize: 12)),
+          const SizedBox(height: 4),
+          Text(name, style: const TextStyle(fontSize: 12)),
         ],
       ),
     );
@@ -392,26 +392,26 @@ class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
   Widget _buildWorkTiming(
       ValueNotifier<String> startTime, ValueNotifier<String> endTime) {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: Colors.grey[300]!),
       ),
       child: Column(
         children: [
-          Row(
+          const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text('Start Time', style: TextStyle(color: Colors.black)),
               Text('End Time', style: TextStyle(color: Colors.black)),
             ],
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Row(
             children: [
               Expanded(
                 child: Container(
-                  padding: EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(color: Colors.grey[300]!),
@@ -419,10 +419,10 @@ class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
                   child: Center(child: Text(startTime.value)),
                 ),
               ),
-              SizedBox(width: 16),
+              const SizedBox(width: 16),
               Expanded(
                 child: Container(
-                  padding: EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(color: Colors.grey[300]!),
@@ -444,12 +444,12 @@ class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
         onPressed: () {
           // Xử lý lưu dữ liệu
         },
-        child: Text('Lưu'),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.orange,
-          padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
+        child: Text('Lưu'),
       ),
     );
   }

@@ -11,10 +11,8 @@ class PorterUpdateResourseRequest {
 
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = {};
-    if (resourceList != null) {
-      map['resourceList'] = resourceList?.map((e) => e.toMap()).toList();
-    }
-    return map;
+    map['resourceList'] = resourceList?.map((e) => e.toMap()).toList();
+      return map;
   }
 
   factory PorterUpdateResourseRequest.fromMap(Map<String, dynamic> map) {

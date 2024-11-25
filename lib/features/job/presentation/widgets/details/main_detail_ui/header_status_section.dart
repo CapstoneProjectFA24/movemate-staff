@@ -740,49 +740,49 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
                       ),
 
                       const SizedBox(height: 12),
-
-                      // Room Media Section
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade50,
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: Colors.grey.shade100),
+                      if (!isReviewOnline)
+                        // Room Media Section
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade50,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: Colors.grey.shade100),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: AssetsConstants.primaryLighter
+                                          .withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: const Icon(
+                                      Icons.add_photo_alternate_rounded,
+                                      color: AssetsConstants.primaryLighter,
+                                    ),
+                                  ),
+                                  const Text(
+                                    'Tải ảnh lên',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                              const RoomMediaSection(
+                                roomTitle: '',
+                                roomType: RoomType.livingRoom,
+                              ),
+                            ],
+                          ),
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: AssetsConstants.primaryLighter
-                                        .withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: const Icon(
-                                    Icons.add_photo_alternate_rounded,
-                                    color: AssetsConstants.primaryLighter,
-                                  ),
-                                ),
-                                const Text(
-                                  'Tải ảnh lên',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-                            const RoomMediaSection(
-                              roomTitle: '',
-                              roomType: RoomType.livingRoom,
-                            ),
-                          ],
-                        ),
-                      ),
 
                       const SizedBox(height: 32),
 

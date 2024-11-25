@@ -4,7 +4,6 @@ import 'package:movemate_staff/features/auth/presentation/screens/sign_in/sign_i
 import 'package:movemate_staff/features/job/data/model/request/reviewer_status_request.dart';
 import 'package:movemate_staff/features/job/data/model/request/reviewer_time_request.dart';
 import 'package:movemate_staff/features/job/domain/repositories/service_booking_repository.dart';
-import 'package:movemate_staff/features/job/presentation/controllers/booking_controller/booking_controller.dart';
 
 import 'package:movemate_staff/utils/commons/functions/shared_preference_utils.dart';
 import 'package:movemate_staff/utils/commons/widgets/snack_bar.dart';

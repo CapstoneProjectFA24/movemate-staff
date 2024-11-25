@@ -6,7 +6,7 @@ import 'package:movemate_staff/utils/providers/common_provider.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 
 class CallPage extends HookConsumerWidget {
-  const CallPage({Key? key, required this.callID}) : super(key: key);
+  const CallPage({super.key, required this.callID});
   final String callID;
 
   @override

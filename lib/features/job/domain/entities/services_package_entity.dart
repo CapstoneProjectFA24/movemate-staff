@@ -2,7 +2,6 @@
 
 import 'dart:convert';
 import 'package:movemate_staff/features/job/domain/entities/truck_category_entity.dart';
-import 'package:movemate_staff/features/job/domain/entities/sub_service_entity.dart';
 
 class ServicesPackageEntity {
   final int id;

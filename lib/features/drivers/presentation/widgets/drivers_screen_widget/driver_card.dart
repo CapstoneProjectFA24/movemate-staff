@@ -3,7 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/features/drivers/presentation/controllers/stream_controller/job_stream_manager.dart';
-import 'package:movemate_staff/features/drivers/presentation/screens/driver_detail_screen/driver_detail_screen.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:intl/intl.dart';
 import 'package:auto_route/auto_route.dart';

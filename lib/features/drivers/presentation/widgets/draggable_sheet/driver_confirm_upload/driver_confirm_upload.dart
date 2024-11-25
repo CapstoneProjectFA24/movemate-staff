@@ -94,6 +94,7 @@ class DriverConfirmUpload extends HookConsumerWidget {
             .map((source) => source['resourceCode'] as String)
             .toList();
       }
+      return null;
     }, [imagesSourceArrived, imagesSourceCompleted]);
 
     Widget buildConfirmationSection({
@@ -156,7 +157,7 @@ class DriverConfirmUpload extends HookConsumerWidget {
                   ),
                   child: Text(
                     '${imagePublicIds.length} ảnh',
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: primaryOrange,
                       fontWeight: FontWeight.w600,
                       fontSize: 14,
