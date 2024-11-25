@@ -65,7 +65,7 @@ class HomeScreen extends HookConsumerWidget {
                       'CHÀO MỪNG',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 30,
+                        fontSize: 26,
                         fontWeight: FontWeight.bold,
                       ),
                     ),

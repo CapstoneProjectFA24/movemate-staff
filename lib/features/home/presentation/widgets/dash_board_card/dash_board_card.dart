@@ -30,7 +30,7 @@ class DashboardCard extends StatelessWidget {
             BoxShadow(
               color: Colors.black.withOpacity(0.1),
               blurRadius: 5,
-              offset: const Offset(0, 2),
+              // offset: const Offset(0, 0),
             ),
           ],
         ),
@@ -39,7 +39,7 @@ class DashboardCard extends StatelessWidget {
           children: [
             Icon(
               icon,
-              size: 36,
+              size: 30,
               color: color,
             ),
             const SizedBox(height: 10),
