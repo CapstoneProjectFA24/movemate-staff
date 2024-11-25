@@ -85,19 +85,20 @@ class PorterController extends _$PorterController {
     state = const AsyncLoading();
     final authRepository = ref.read(authRepositoryProvider);
     final user = await SharedPreferencesUtils.getInstance('user_token');
-    print("check 1 controller request ${id}");
+    print("vinh go here  controller request $id");
     state = await AsyncValue.guard(() async {
+      print("vinh go here 2 controller request $id");
       await ref
           .read(bookingRepositoryProvider)
           .updateStatusPorterWithoutResourse(
             accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
             id: id,
           );
-
+      print("vinh go here 3 controller request $id");
       ref
           .read(refreshPorterList.notifier)
           .update((state) => !ref.read(refreshPorterList));
-
+      print("vinh go here 4 controller request $id");
       showSnackBar(
         context: context,
         content: "Cập nhật trạng thái thành công",

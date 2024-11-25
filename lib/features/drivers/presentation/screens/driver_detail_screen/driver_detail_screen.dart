@@ -44,7 +44,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
   LatLng? _currentPosition;
   LatLng? _lastPosition;
   bool _isMapReady = false; // Thêm biến để track trạng thái map
-  bool _showNavigationButton = true;
+  final bool _showNavigationButton = true;
   Widget recenterButton = const SizedBox.shrink();
   Widget instructionImage = const SizedBox.shrink();
   bool _isNavigationStarted = false;

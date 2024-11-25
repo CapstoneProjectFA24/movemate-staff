@@ -67,26 +67,26 @@ class ProfileDetailScreen extends HookConsumerWidget {
                               .toString() ??
                           'https://storage.googleapis.com/a1aa/image/tYEQXye9fdnxoUhSmM0BNG3N43SB0eCaJKQ3wWsBBo12mmJnA.jpg'),
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
                           user.name ?? "",
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(width: 5),
-                        FaIcon(
+                        const SizedBox(width: 5),
+                        const FaIcon(
                           FontAwesomeIcons.checkCircle,
                           color: Colors.green,
                           size: 16,
                         ),
                       ],
                     ),
-                    FaIcon(
+                    const FaIcon(
                       FontAwesomeIcons.edit,
                       color: Colors.grey,
                     ),
@@ -119,7 +119,7 @@ class ProfileDetailScreen extends HookConsumerWidget {
                     context.router.push(
                         const InfoScreenRoute()); // Điều hướng đến trang Info
                   },
-                  children: [
+                  children: const [
                     InfoRow(label: 'Tên thân mật', value: "Vinh"),
                     InfoRow(label: 'Tên thật', value: 'Nguyễn Vinh'),
                     InfoRow(label: 'Giới tính', value: 'Nam'),
@@ -137,7 +137,7 @@ class ProfileDetailScreen extends HookConsumerWidget {
                   children: [
                     InfoRow(label: 'Số điện thoại', value: '${user.phone}'),
                     InfoRow(label: 'Gmail', value: user.email),
-                    InfoRow(
+                    const InfoRow(
                         label: 'Địa chỉ',
                         value: 'Quận 9, Thành phố Hồ Chí Minh'),
                   ],

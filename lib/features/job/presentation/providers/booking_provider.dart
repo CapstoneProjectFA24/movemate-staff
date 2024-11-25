@@ -224,7 +224,7 @@ class BookingNotifier extends StateNotifier<Booking> {
 
   // Method to set the loading state for uploading living room images
   void setUploadingLivingRoomImage(bool isUploading) {
-    state = state!.copyWith(isUploadingLivingRoomImage: isUploading);
+    state = state.copyWith(isUploadingLivingRoomImage: isUploading);
   }
 
   bool canAddImage(RoomType roomType) {
@@ -248,7 +248,7 @@ class BookingNotifier extends StateNotifier<Booking> {
       switch (roomType) {
         case RoomType.livingRoom:
           final currentImages =
-              List<ImageData>.from(state.livingRoomImages ?? []);
+              List<ImageData>.from(state.livingRoomImages?.toList() ?? []);
           if (currentImages.length < BookingNotifier.maxImages) {
             currentImages.add(imageData);
             state = state.copyWith(livingRoomImages: currentImages);
@@ -276,6 +276,7 @@ class BookingNotifier extends StateNotifier<Booking> {
           break;
       }
     } finally {
+      
       // Reset loading state
       if (roomType == RoomType.livingRoom) {
         setUploadingLivingRoomImage(false);

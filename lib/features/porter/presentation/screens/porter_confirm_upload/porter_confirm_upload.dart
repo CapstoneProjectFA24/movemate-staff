@@ -48,7 +48,7 @@ class PorterConfirmScreen extends HookConsumerWidget {
     final uploadedImages = ref.watch(uploadedImagesProvider);
     final bookingAsync = ref.watch(bookingStreamProvider(job.id.toString()));
     final status = useBookingStatus(bookingAsync.value, job.isReviewOnline);
-    final _currentJob = useState<BookingResponseEntity>(job);
+    final currentJob = useState<BookingResponseEntity>(job);
 
     final jobEntity = useFetchObject<BookingResponseEntity>(
         function: (context) async {
@@ -57,6 +57,12 @@ class PorterConfirmScreen extends HookConsumerWidget {
               .getBookingById(job.id, context);
         },
         context: context);
+
+    final currentListStaff = ref
+        .watch(bookingStreamProvider(job.id.toString()))
+        .value
+        ?.assignments
+        .toList();
 
     useEffect(() {
       // Call refresh when component mounts
@@ -74,7 +80,7 @@ class PorterConfirmScreen extends HookConsumerWidget {
         if (updateJob.id == job.id) {
           print(
               'tuan Received updated order in PorterConfirmScreen: ${updateJob.id}');
-          _currentJob.value = updateJob;
+          currentJob.value = updateJob;
         }
       });
       return subscription.cancel;
@@ -144,6 +150,7 @@ class PorterConfirmScreen extends HookConsumerWidget {
             .map((source) => source['resourceCode'] as String)
             .toList();
       }
+      return null;
     }, [
       imagesSourceCompleted,
       imagesSourceUnloaded,
@@ -296,7 +303,7 @@ class PorterConfirmScreen extends HookConsumerWidget {
         onBackButtonPressed: () {
           context.router.popAndPushAll([
             PorterDetailScreenRoute(
-                job: _currentJob.value, bookingStatus: status, ref: ref)
+                job: currentJob.value, bookingStatus: status, ref: ref)
           ]);
         },
         title: "Xác nhận hình ảnh",

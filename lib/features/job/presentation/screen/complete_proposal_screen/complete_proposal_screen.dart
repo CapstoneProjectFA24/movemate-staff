@@ -252,8 +252,8 @@ class CompleteProposalScreen extends HookConsumerWidget {
       SnackBar(
         content: Row(
           children: [
-            Icon(Icons.warning_rounded, color: Colors.white),
-            SizedBox(width: 12),
+            const Icon(Icons.warning_rounded, color: Colors.white),
+            const SizedBox(width: 12),
             Text(message),
           ],
         ),
@@ -288,16 +288,16 @@ class CompleteProposalScreen extends HookConsumerWidget {
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('Hủy',
+                  child: const Text('Hủy',
                       style: TextStyle(color: AssetsConstants.primaryMain)),
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                     onConfirm?.call();
                   },
-                  child: Text('Xác nhận',
+                  child: const Text('Xác nhận',
                       style: TextStyle(color: AssetsConstants.primaryMain)),
                 ),
               ],

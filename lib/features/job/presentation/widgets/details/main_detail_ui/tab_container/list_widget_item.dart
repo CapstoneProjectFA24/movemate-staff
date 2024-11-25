@@ -45,7 +45,7 @@ class ListItemWidget extends HookConsumerWidget {
   final String role; // Thêm role để xác định loại người dùng
 
   const ListItemWidget({
-    Key? key,
+    super.key,
     required this.item,
     required this.selectedValue,
     required this.selectionNotifier,
@@ -53,7 +53,7 @@ class ListItemWidget extends HookConsumerWidget {
     required this.iconColor,
     required this.subtitle,
     required this.role,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

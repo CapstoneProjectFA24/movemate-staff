@@ -10,7 +10,6 @@ import 'add_image_button.dart';
 class RoomMediaSection extends ConsumerWidget {
   final String roomTitle;
   final RoomType roomType;
-  
 
   const RoomMediaSection({
     super.key,
@@ -20,8 +19,12 @@ class RoomMediaSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // final bookingNotifier = ref.read(bookingProvider.notifier);
+    // final List<ImageData> images = bookingNotifier.getImages(roomType);
     final bookingNotifier = ref.read(bookingProvider.notifier);
-    final List<ImageData> images = bookingNotifier.getImages(roomType);
+    final List<ImageData> images = ref.watch(
+        bookingProvider.select((value) => bookingNotifier.getImages(roomType)));
+
     final bool canAddMoreImages = bookingNotifier.canAddImage(roomType);
 
     return Column(

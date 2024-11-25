@@ -43,7 +43,7 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
       isLoading: state.isLoading,
       child: Scaffold(
         backgroundColor: Colors.grey[100],
-        appBar: CustomAppBar(
+        appBar: const CustomAppBar(
           centerTitle: true,
           title: 'Cập nhật bốc vác',
           // iconFirst: Icons.refresh_rounded,
@@ -54,7 +54,7 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
               child: SingleChildScrollView(
                 child: Container(
                   width: double.infinity,
-                  padding: EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(16),
                   child: Column(
                     children: [
                       Container(
@@ -77,19 +77,19 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
                               (datas?.staffType == null)
                                   ? 'null'
                                   : 'có dữ liệu',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: Colors.black,
                               ),
                             ),
-                            SizedBox(height: 16),
+                            const SizedBox(height: 16),
                             _buildWorkShiftInfo(
                                 context: context,
                                 ref: ref,
                                 id: bookingId,
                                 datas: datas),
-                            SizedBox(height: 16),
+                            const SizedBox(height: 16),
                             _buildRoleSelection(datas: datas),
-                            SizedBox(height: 16),
+                            const SizedBox(height: 16),
                             _buildEmployeeList(datas: datas, context: context),
                             // SizedBox(height: 16),
                             // _buildWorkTiming(startTime, endTime),
@@ -103,13 +103,13 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
               ),
             ),
             Container(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.1),
-                    offset: Offset(0, -2),
+                    offset: const Offset(0, -2),
                     blurRadius: 4,
                   ),
                 ],
@@ -130,7 +130,7 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
     final state = ref.read(porterControllerProvider);
     final porterController = ref.read(porterControllerProvider.notifier);
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: Colors.grey[300]!),
@@ -147,7 +147,7 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
           //         style: TextStyle(color: Colors.black)),
           //   ],
           // ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           // New Row with 'Ca 1' and 'Thêm tự động' button
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -167,7 +167,7 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue, // Choose your preferred color
                 ),
-                child: Text('Thêm tự động'),
+                child: const Text('Thêm tự động'),
               ),
             ],
           ),
@@ -178,7 +178,7 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
 
   Widget _buildRoleSelection({required AvailableStaffEntities? datas}) {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: Colors.grey[300]!),
@@ -194,7 +194,7 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           Container(
             height: 200,
             decoration: BoxDecoration(
@@ -202,7 +202,7 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
               borderRadius: BorderRadius.circular(8),
             ),
             child: ListView.builder(
-              padding: EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.symmetric(vertical: 8),
               itemCount: datas?.countStaffInslots ?? 0, // Số lượng nhân viên
               itemBuilder: (context, index) {
                 // Lấy thông tin từng nhân viên từ danh sách
@@ -211,28 +211,28 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
                 return Material(
                   type: MaterialType.transparency,
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     child: Row(
                       children: [
                         CircleAvatar(
                           backgroundColor: Colors.blue[100],
                           child: Text(
                             staff?.name != null
-                                ? staff!.name![0].toUpperCase()
+                                ? staff!.name[0].toUpperCase()
                                 : '',
                             style: TextStyle(color: Colors.blue[700]),
                           ),
                         ),
-                        SizedBox(width: 12),
+                        const SizedBox(width: 12),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               staff?.name ?? 'Tên không xác định',
                               style:
-                                  TextStyle(fontSize: 14, color: Colors.black),
+                                  const TextStyle(fontSize: 14, color: Colors.black),
                             ),
-                            SizedBox(height: 4),
+                            const SizedBox(height: 4),
                             Text(
                               staff?.roleName ?? 'Vai trò không xác định',
                               style: TextStyle(
@@ -260,7 +260,7 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
     required AvailableStaffEntities? datas,
   }) {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: Colors.grey[300]!),
@@ -268,12 +268,12 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'Thêm nhân viên',
             style: TextStyle(color: Colors.black),
           ),
-          SizedBox(height: 8),
-          Container(
+          const SizedBox(height: 8),
+          SizedBox(
             height: 100, // Adjust the height as needed
             child: ListView.builder(
               scrollDirection: Axis.horizontal, // Scroll horizontally
@@ -313,7 +313,7 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
                 builder: (context) {
                   return AlertDialog(
                     backgroundColor: Colors.white,
-                    title: LabelText(
+                    title: const LabelText(
                       content: 'Xác nhận',
                       size: 16,
                       fontWeight: FontWeight.w700,
@@ -328,7 +328,7 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
                         onPressed: () {
                           Navigator.of(context).pop(); // Close the dialog
                         },
-                        child: LabelText(
+                        child: const LabelText(
                             content: 'Hủy',
                             size: 13,
                             fontWeight: FontWeight.w400),
@@ -340,7 +340,7 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
                           // For example, add the driver to the order
                           _addDriverToOrder(name);
                         },
-                        child: LabelText(
+                        child: const LabelText(
                             content: 'Xác nhận',
                             size: 13,
                             fontWeight: FontWeight.w400),
@@ -355,8 +355,8 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
               backgroundImage: NetworkImage(imageUrl),
             ),
           ),
-          SizedBox(height: 4),
-          Text(name, style: TextStyle(fontSize: 12)),
+          const SizedBox(height: 4),
+          Text(name, style: const TextStyle(fontSize: 12)),
         ],
       ),
     );
@@ -371,26 +371,26 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
   Widget _buildWorkTiming(
       ValueNotifier<String> startTime, ValueNotifier<String> endTime) {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: Colors.grey[300]!),
       ),
       child: Column(
         children: [
-          Row(
+          const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text('Start Time', style: TextStyle(color: Colors.black)),
               Text('End Time', style: TextStyle(color: Colors.black)),
             ],
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Row(
             children: [
               Expanded(
                 child: Container(
-                  padding: EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(color: Colors.grey[300]!),
@@ -398,10 +398,10 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
                   child: Center(child: Text(startTime.value)),
                 ),
               ),
-              SizedBox(width: 16),
+              const SizedBox(width: 16),
               Expanded(
                 child: Container(
-                  padding: EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(color: Colors.grey[300]!),
@@ -423,12 +423,12 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
         onPressed: () {
           // Xử lý lưu dữ liệu
         },
-        child: Text('Lưu'),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.orange,
-          padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
+        child: Text('Lưu'),
       ),
     );
   }

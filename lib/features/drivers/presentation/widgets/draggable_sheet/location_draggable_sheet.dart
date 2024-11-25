@@ -112,8 +112,8 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Thời gian dự kiến ${formattedBookingAt}',
-              style: TextStyle(
+              'Thời gian dự kiến $formattedBookingAt',
+              style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
               ),
@@ -358,17 +358,17 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 'Loại nhà',
                 style: TextStyle(
                   color: Colors.grey,
                   fontSize: 12,
                 ),
               ),
-              SizedBox(height: 4),
+              const SizedBox(height: 4),
               Text(
                 house?.name ?? '',
-                style: TextStyle(fontSize: 12),
+                style: const TextStyle(fontSize: 12),
               ),
             ],
           ),
@@ -377,17 +377,17 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 'Số tầng',
                 style: TextStyle(
                   color: Colors.grey,
                   fontSize: 12,
                 ),
               ),
-              SizedBox(height: 4),
+              const SizedBox(height: 4),
               Text(
                 job.floorsNumber,
-                style: TextStyle(fontSize: 12),
+                style: const TextStyle(fontSize: 12),
               ),
             ],
           ),
@@ -396,17 +396,17 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 'Số phòng',
                 style: TextStyle(
                   color: Colors.grey,
                   fontSize: 12,
                 ),
               ),
-              SizedBox(height: 4),
+              const SizedBox(height: 4),
               Text(
                 job.roomNumber,
-                style: TextStyle(fontSize: 12),
+                style: const TextStyle(fontSize: 12),
               ),
             ],
           ),
@@ -419,8 +419,8 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildLocationRow('Từ', '${job.pickupAddress}'),
-        _buildLocationRow('Đến', '${job.deliveryAddress}'),
+        _buildLocationRow('Từ', job.pickupAddress),
+        _buildLocationRow('Đến', job.deliveryAddress),
       ],
     );
   }
@@ -472,35 +472,35 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Tên khách hàng',
               style: TextStyle(
                 color: Colors.grey,
                 fontSize: 14,
               ),
             ),
-            SizedBox(height: 4),
+            const SizedBox(height: 4),
             Text(
               profile?.name ?? '',
-              style: TextStyle(fontSize: 14),
+              style: const TextStyle(fontSize: 14),
             ),
           ],
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Số điện thoại',
               style: TextStyle(
                 color: Colors.grey,
                 fontSize: 14,
               ),
             ),
-            SizedBox(height: 4),
+            const SizedBox(height: 4),
             Text(
               profile?.phone ?? '',
-              style: TextStyle(fontSize: 14),
+              style: const TextStyle(fontSize: 14),
             ),
           ],
         ),
@@ -621,7 +621,7 @@ Widget buildServicesList(List<BookingDetailsResponseEntity> bookingDetails,
   return Column(
     children: filteredServices.map((detail) {
       return buildPriceItem(detail.name ?? 'Unknown Service',
-          '${formatPrice(detail.price?.toInt() ?? 0)}');
+          formatPrice(detail.price?.toInt() ?? 0));
     }).toList(),
   );
 }

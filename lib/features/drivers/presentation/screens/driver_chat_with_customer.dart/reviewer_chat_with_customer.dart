@@ -28,8 +28,8 @@ class DriverChatWithCustomerScreen extends HookConsumerWidget {
       currentUserRole: 'driver',
     );
 
-    final customerName = "vinh";
-    final customerImageAvatar = "";
+    const customerName = "vinh";
+    const customerImageAvatar = "";
 
     return Scaffold(
       appBar: CustomAppBar(

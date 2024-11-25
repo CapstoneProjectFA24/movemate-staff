@@ -14,9 +14,9 @@ class CheckAvailable extends HookConsumerWidget {
   final BookingResponseEntity job;
 
   const CheckAvailable({
-    Key? key,
+    super.key,
     required this.job,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -85,9 +85,9 @@ class CheckAvailable extends HookConsumerWidget {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text(
+                                        const Text(
                                           'Tài xế dự bị cho đơn hàng',
-                                          style: const TextStyle(
+                                          style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 16,
                                             color: Colors.black,
@@ -220,9 +220,9 @@ class CheckAvailable extends HookConsumerWidget {
                                             CrossAxisAlignment.start,
                                         children: [
                                           const SizedBox(height: 16),
-                                          Text(
+                                          const Text(
                                             'Khuân vác dự bị cho đơn hàng',
-                                            style: const TextStyle(
+                                            style: TextStyle(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 16,
                                               color: Colors.black,
@@ -346,11 +346,9 @@ class CheckAvailable extends HookConsumerWidget {
                                       // ),
 
                                       // Nếu không có nhân viên khả dụng
-                                      if ((datasDriver == null ||
-                                              datasDriver
+                                      if ((datasDriver
                                                   .staffInSlot.isEmpty) &&
-                                          (datasPorter == null ||
-                                              datasPorter.staffInSlot.isEmpty))
+                                          (datasPorter.staffInSlot.isEmpty))
                                         const Text(
                                           'Không có nhân viên khả dụng.',
                                           style: TextStyle(color: Colors.black),

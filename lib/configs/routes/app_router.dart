@@ -40,7 +40,6 @@ import 'package:movemate_staff/features/job/presentation/screen/job_screen/job_s
 import 'package:movemate_staff/features/job/presentation/screen/chat_screens/reviewer_chat_with_customer/reviewer_chat_with_customer.dart';
 import 'package:movemate_staff/features/job/presentation/screen/chat_screens/reviewer_chat_with_driver/reviewer_chat_with_driver.dart';
 import 'package:movemate_staff/features/job/presentation/screen/chat_screens/reviewer_chat_with_porter/reviewer_chat_with_porter.dart';
-import 'package:movemate_staff/features/drivers/presentation/screens/driver_chat_with_customer.dart/reviewer_chat_with_customer.dart';
 import 'package:movemate_staff/features/job/presentation/screen/add_job_screen/add_job_screen.dart';
 import 'package:movemate_staff/features/porter/presentation/screens/porter_screen/porter_screen.dart';
 import 'package:movemate_staff/features/history/presentation/screen/history_screen.dart';

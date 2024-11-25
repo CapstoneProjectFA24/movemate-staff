@@ -21,11 +21,11 @@ class CustomTabContainer extends HookConsumerWidget {
   final List<AssignmentsResponseEntity> driverItems;
 
   const CustomTabContainer({
-    Key? key,
+    super.key,
     required this.porterItems,
     required this.driverItems,
     required this.bookingId,
-  }) : super(key: key);
+  });
 
   Future<bool?> _showConfirmationDialog(
     BuildContext context,
@@ -100,6 +100,7 @@ class CustomTabContainer extends HookConsumerWidget {
         selectedDriver.value =
             driverItems.firstWhere((item) => item.isResponsible!);
       }
+      return null;
     }, [porterItems, driverItems]);
 
     final stateDriver = ref.watch(driverControllerProvider);

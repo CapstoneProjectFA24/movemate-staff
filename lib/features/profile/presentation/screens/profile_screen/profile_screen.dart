@@ -5,7 +5,6 @@ import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/features/auth/presentation/screens/sign_in/sign_in_controller.dart';
 import 'package:movemate_staff/features/profile/presentation/widgets/profile/profile_header.dart';
 import 'package:movemate_staff/features/profile/presentation/widgets/profile/profile_menu.dart';
-import 'package:movemate_staff/features/profile/presentation/widgets/profile/promo_section.dart';
 import 'package:movemate_staff/utils/commons/widgets/app_bar.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
 import 'package:movemate_staff/utils/providers/common_provider.dart';

@@ -29,8 +29,8 @@ class ChatWithCustomerScreen extends HookConsumerWidget {
       currentUserRole: 'reviewer',
     );
 
-    final customerName = "vinh";
-    final customerImageAvatar = "";
+    const customerName = "vinh";
+    const customerImageAvatar = "";
 
     return Scaffold(
       appBar: CustomAppBar(

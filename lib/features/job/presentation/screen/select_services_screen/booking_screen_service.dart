@@ -1,21 +1,17 @@
 // booking_screen_service.dart
 //route
-import 'dart:convert';
 import 'package:collection/collection.dart';
 
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:movemate_staff/configs/routes/app_router.dart';
-import 'package:movemate_staff/features/job/data/model/request/booking_requesst.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_details_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/services_package_entity.dart';
 import 'package:movemate_staff/features/job/presentation/controllers/booking_controller/booking_controller.dart';
 import 'package:movemate_staff/features/job/presentation/providers/booking_provider.dart';
 import 'package:movemate_staff/features/job/presentation/screen/complete_proposal_screen/complete_proposal_screen.dart';
-import 'package:movemate_staff/features/job/presentation/screen/job_details_screen/job_details_screen.dart';
 import 'package:movemate_staff/features/job/presentation/screen/select_services_screen/service_package_tile.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/button_next/summary_section.dart';
 //entity
