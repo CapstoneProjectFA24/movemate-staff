@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:movemate_staff/features/auth/presentation/screens/sign_in/sign_in_controller.dart';
+import 'package:movemate_staff/features/drivers/presentation/controllers/driver_controller/driver_controller.dart';
 import 'package:movemate_staff/features/job/data/model/request/reviewer_status_request.dart';
 import 'package:movemate_staff/features/job/data/model/request/reviewer_time_request.dart';
 import 'package:movemate_staff/features/job/domain/repositories/service_booking_repository.dart';
+import 'package:movemate_staff/features/porter/presentation/controllers/porter_controller.dart';
 
 import 'package:movemate_staff/utils/commons/functions/shared_preference_utils.dart';
 import 'package:movemate_staff/utils/commons/widgets/snack_bar.dart';
@@ -143,6 +145,10 @@ class ReviewerUpdateController extends _$ReviewerUpdateController {
       ref
           .read(refreshJobList.notifier)
           .update((state) => !ref.read(refreshJobList));
+      // Trigger tất cả các refresh cần thiết
+      ref.read(refreshJobList.notifier).update((state) => !state);
+      ref.read(refreshDriverList.notifier).update((state) => !state);
+      ref.read(refreshPorterList.notifier).update((state) => !state);
 
       showSnackBar(
         context: context,

@@ -457,7 +457,7 @@ class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
-        child: Text('Lưu'),
+        child: const Text('Lưu'),
       ),
     );
   }

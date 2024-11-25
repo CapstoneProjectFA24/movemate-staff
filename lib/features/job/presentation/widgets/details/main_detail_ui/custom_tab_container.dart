@@ -6,14 +6,12 @@ import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/features/drivers/presentation/controllers/driver_controller/driver_controller.dart';
 import 'package:movemate_staff/features/job/domain/entities/available_staff_entities.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/assignment_response_entity.dart';
-import 'package:movemate_staff/features/job/presentation/controllers/booking_controller/booking_controller.dart';
 import 'package:movemate_staff/features/job/presentation/controllers/reviewer_update_controller/reviewer_update_controller.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/main_detail_ui/tab_container/list_widget_item.dart';
 import 'package:movemate_staff/features/porter/presentation/controllers/porter_controller.dart';
-import 'package:movemate_staff/features/profile/domain/entities/profile_entity.dart';
-import 'package:movemate_staff/features/profile/presentation/controllers/profile_controller/profile_controller.dart';
 import 'package:movemate_staff/hooks/use_fetch_obj.dart';
 import 'package:movemate_staff/services/realtime_service/booking_status_realtime/booking_status_stream_provider.dart';
+import 'package:movemate_staff/utils/commons/widgets/loading_overlay.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
 
 class CustomTabContainer extends HookConsumerWidget {
@@ -91,19 +89,61 @@ class CustomTabContainer extends HookConsumerWidget {
     final selectedDriver = useState<AssignmentsResponseEntity?>(null);
     final bookingAsync = ref.watch(bookingStreamProvider(bookingId.toString()));
 
+    // useEffect(() {
+    //   if (porterItems.isNotEmpty &&
+    //       porterItems.any((item) => item.isResponsible!)) {
+    //     selectedPorter.value =
+    //         porterItems.firstWhere((item) => item.isResponsible!);
+    //   }
+    //   if (driverItems.isNotEmpty &&
+    //       driverItems.any((item) => item.isResponsible!)) {
+    //     selectedDriver.value =
+    //         driverItems.firstWhere((item) => item.isResponsible!);
+    //   }
+    //   return null;
+    // }, [porterItems, driverItems]);
+    // Add watch for refresh triggers
+
+    // Watch trạng thái loading
+    final isLoading = ref.watch(reviewerUpdateControllerProvider).isLoading;
+
+    // Watch tất cả các refresh state
+    final refreshJobListState = ref.watch(refreshJobList);
+    final refreshDriverListState = ref.watch(refreshDriverList);
+    final refreshPorterListState = ref.watch(refreshPorterList);
+
+    // Listen to refresh state changes
+    ref.listen<bool>(refreshJobList, (_, __) {
+      // Reset selection when list is refreshed
+      selectedPorter.value = null;
+      selectedDriver.value = null;
+    });
+
+    // Thêm useEffect để handle refresh
     useEffect(() {
       if (porterItems.isNotEmpty &&
           porterItems.any((item) => item.isResponsible!)) {
         selectedPorter.value =
             porterItems.firstWhere((item) => item.isResponsible!);
+      } else {
+        selectedPorter.value = null;
       }
+
       if (driverItems.isNotEmpty &&
           driverItems.any((item) => item.isResponsible!)) {
         selectedDriver.value =
             driverItems.firstWhere((item) => item.isResponsible!);
+      } else {
+        selectedDriver.value = null;
       }
       return null;
-    }, [porterItems, driverItems]);
+    }, [
+      porterItems,
+      driverItems,
+      refreshJobListState,
+      refreshDriverListState,
+      refreshPorterListState
+    ]);
 
     final stateDriver = ref.watch(driverControllerProvider);
     final driverController = ref.read(driverControllerProvider.notifier);
@@ -343,55 +383,74 @@ class CustomTabContainer extends HookConsumerWidget {
     // Kiểm tra nếu danh sách assignmentInBooking của porter không rỗng
     final bool isPorterAssignmentExists =
         (datasPorter?.assignmentInBooking.length ?? 0) > 0;
+    final isLoading = ref.watch(reviewerUpdateControllerProvider).isLoading;
 
-    return Row(
-      children: [
-        Expanded(
-          child: buildButton(
-            onPressed: (selectedPorter != null && !hasResponsiblePorter)
-                ? () async {
-                    final currentState =
-                        ref.read(reviewerUpdateControllerProvider);
-                    if (currentState is AsyncLoading) return;
-                    final confirmed = await _showConfirmationDialog(
-                      context,
-                      'Bốc vác',
-                      selectedPorter.staffType,
-                    );
+    return LoadingOverlay(
+      isLoading: isLoading,
+      child: Row(
+        children: [
+          Expanded(
+            child: buildButton(
+              onPressed: (selectedPorter != null &&
+                      !hasResponsiblePorter &&
+                      !isLoading)
+                  ? () async {
+                      final currentState =
+                          ref.read(reviewerUpdateControllerProvider);
+                      if (currentState is AsyncLoading) return;
+                      final confirmed = await _showConfirmationDialog(
+                        context,
+                        'Bốc vác',
+                        selectedPorter.staffType,
+                      );
 
-                    if (confirmed == true) {
-                      await ref
-                          .read(reviewerUpdateControllerProvider.notifier)
-                          .updateAssignStaffIsResponsibility(
-                            assignmentId: selectedPorter.id,
-                            context: context,
-                            ref: ref,
-                          );
+                      if (confirmed == true) {
+                        await ref
+                            .read(reviewerUpdateControllerProvider.notifier)
+                            .updateAssignStaffIsResponsibility(
+                              assignmentId: selectedPorter.id,
+                              context: context,
+                              ref: ref,
+                            );
+                        // Trigger refresh sau khi update thành công
+                        ref
+                            .read(refreshJobList.notifier)
+                            .update((state) => !state);
+                        ref
+                            .read(refreshPorterList.notifier)
+                            .update((state) => !state);
+
+                        Future.delayed(const Duration(milliseconds: 500), () {
+                          ref.refresh(
+                              bookingStreamProvider(bookingId.toString()));
+                        });
+                      }
                     }
-                  }
-                : null,
-            label: 'Gán bốc vác trưởng',
-            isPrimary: true,
-            isEnabled: selectedPorter != null && !hasResponsiblePorter,
+                  : null,
+              label: isLoading ? 'Đang xử lý...' : 'Gán bốc vác trưởng',
+              isPrimary: true,
+              isEnabled:
+                  selectedPorter != null && !hasResponsiblePorter && !isLoading,
+            ),
           ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: buildButton(
-            onPressed: !isPorterAssignmentExists
-                ? () {
-                    // Perform Chọn bốc vác khác action
-                    context.router.push(
-                      WorkShiftPorterUpdateScreenRoute(bookingId: bookingId),
-                    );
-                  }
-                : null,
-            label: 'Chọn bốc vác khác',
-            isPrimary: false,
-            isEnabled: !isPorterAssignmentExists,
+          const SizedBox(width: 12),
+          Expanded(
+            child: buildButton(
+              onPressed: !isPorterAssignmentExists
+                  ? () {
+                      // Perform Chọn bốc vác khác action
+                      context.router.push(
+                        WorkShiftPorterUpdateScreenRoute(bookingId: bookingId),
+                      );
+                    }
+                  : null,
+              label: 'Chọn bốc vác khác',
+              isPrimary: false,
+              isEnabled: !isPorterAssignmentExists,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -410,55 +469,75 @@ class CustomTabContainer extends HookConsumerWidget {
     // Kiểm tra nếu danh sách assignmentInBooking của driver không rỗng
     final bool isDriverAssignmentExists =
         (datasDriver?.assignmentInBooking.length ?? 0) > 0;
+    final isLoading = ref.watch(reviewerUpdateControllerProvider).isLoading;
 
-    return Row(
-      children: [
-        Expanded(
-          child: buildButton(
-            onPressed: (selectedDriver != null && !hasResponsibleDriver)
-                ? () async {
-                    final currentState =
-                        ref.read(reviewerUpdateControllerProvider);
-                    if (currentState is AsyncLoading) return;
-                    final confirmed = await _showConfirmationDialog(
-                      context,
-                      'Tài xế',
-                      selectedDriver.staffType,
-                    );
+    return LoadingOverlay(
+      isLoading: isLoading,
+      child: Row(
+        children: [
+          Expanded(
+            child: buildButton(
+              onPressed: (selectedDriver != null &&
+                      !hasResponsibleDriver &&
+                      !isLoading)
+                  ? () async {
+                      final currentState =
+                          ref.read(reviewerUpdateControllerProvider);
+                      if (currentState is AsyncLoading) return;
+                      final confirmed = await _showConfirmationDialog(
+                        context,
+                        'Tài xế',
+                        selectedDriver.staffType,
+                      );
 
-                    if (confirmed == true) {
-                      await ref
-                          .read(reviewerUpdateControllerProvider.notifier)
-                          .updateAssignStaffIsResponsibility(
-                            assignmentId: selectedDriver.id,
-                            context: context,
-                            ref: ref,
-                          );
+                      if (confirmed == true) {
+                        await ref
+                            .read(reviewerUpdateControllerProvider.notifier)
+                            .updateAssignStaffIsResponsibility(
+                              assignmentId: selectedDriver.id,
+                              context: context,
+                              ref: ref,
+                            );
+                        // Trigger refresh sau khi update thành công
+                        ref
+                            .read(refreshJobList.notifier)
+                            .update((state) => !state);
+                        ref
+                            .read(refreshDriverList.notifier)
+                            .update((state) => !state);
+
+                        // Force refresh sau khi update
+                        Future.delayed(const Duration(milliseconds: 500), () {
+                          ref.refresh(
+                              bookingStreamProvider(bookingId.toString()));
+                        });
+                      }
                     }
-                  }
-                : null,
-            label: 'Gán tài xế trưởng',
-            isPrimary: true,
-            isEnabled: selectedDriver != null && !hasResponsibleDriver,
+                  : null,
+              label: isLoading ? 'Đang xử lý...' : 'Gán tài xế trưởng',
+              isPrimary: true,
+              isEnabled:
+                  selectedDriver != null && !hasResponsibleDriver && !isLoading,
+            ),
           ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: buildButton(
-            onPressed: !isDriverAssignmentExists
-                ? () {
-                    // Perform Chọn tài xế khác action
-                    context.router.push(
-                      WorkShiftDriverUpdateScreenRoute(bookingId: bookingId),
-                    );
-                  }
-                : null,
-            label: 'Chọn tài xế khác',
-            isPrimary: false,
-            isEnabled: !isDriverAssignmentExists,
+          const SizedBox(width: 12),
+          Expanded(
+            child: buildButton(
+              onPressed: !isDriverAssignmentExists
+                  ? () {
+                      // Perform Chọn tài xế khác action
+                      context.router.push(
+                        WorkShiftDriverUpdateScreenRoute(bookingId: bookingId),
+                      );
+                    }
+                  : null,
+              label: 'Chọn tài xế khác',
+              isPrimary: false,
+              isEnabled: !isDriverAssignmentExists,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

@@ -3,11 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
-import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/assignment_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_details_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/presentation/controllers/house_type_controller/house_type_controller.dart';
-import 'package:movemate_staff/features/porter/presentation/screens/porter_confirm_upload/porter_confirm_upload.dart';
 import 'package:movemate_staff/features/profile/domain/entities/profile_entity.dart';
 import 'package:movemate_staff/features/profile/presentation/controllers/profile_controller/profile_controller.dart';
 import 'package:movemate_staff/features/test/domain/entities/house_entities.dart';
@@ -15,7 +13,6 @@ import 'package:movemate_staff/hooks/use_booking_status.dart';
 import 'package:movemate_staff/hooks/use_fetch_obj.dart';
 import 'package:movemate_staff/services/realtime_service/booking_status_realtime/booking_status_stream_provider.dart';
 import 'package:movemate_staff/utils/commons/widgets/loading_overlay.dart';
-import 'package:movemate_staff/utils/enums/booking_status_type.dart';
 
 class DeliveryDetailsBottomSheet extends HookConsumerWidget {
   final BookingResponseEntity job;

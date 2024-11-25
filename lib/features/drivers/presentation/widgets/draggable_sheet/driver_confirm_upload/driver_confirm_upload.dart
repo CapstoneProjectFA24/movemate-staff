@@ -1,6 +1,5 @@
 // File: driver_confirm_upload.dart
 
-import 'package:cloudinary_url_gen/transformation/source/source.dart';
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -9,9 +8,7 @@ import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/features/drivers/data/models/request/update_resourse_request.dart';
 import 'package:movemate_staff/features/drivers/presentation/controllers/driver_controller/driver_controller.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
-import 'package:movemate_staff/features/job/presentation/controllers/booking_controller/booking_controller.dart';
 import 'package:movemate_staff/hooks/use_booking_status.dart';
-import 'package:movemate_staff/hooks/use_fetch_obj.dart';
 import 'package:movemate_staff/services/realtime_service/booking_status_realtime/booking_status_stream_provider.dart';
 import 'package:movemate_staff/utils/commons/widgets/cloudinary/cloudinary_camera_upload_widget.dart';
 import 'package:movemate_staff/utils/commons/widgets/widgets_common_export.dart';

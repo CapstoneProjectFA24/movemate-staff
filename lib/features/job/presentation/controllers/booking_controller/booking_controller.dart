@@ -6,13 +6,11 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:movemate_staff/features/auth/presentation/screens/sign_in/sign_in_controller.dart';
 import 'package:movemate_staff/features/job/data/model/request/booking_requesst.dart';
 import 'package:movemate_staff/features/job/data/model/request/reviewer_status_request.dart';
-import 'package:movemate_staff/features/job/data/model/response/booking_response_object.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/service_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/services_package_entity.dart';
 import 'package:movemate_staff/features/job/domain/repositories/service_booking_repository.dart';
 import 'package:movemate_staff/features/job/presentation/providers/booking_provider.dart';
-import 'package:movemate_staff/features/job/presentation/screen/job_details_screen/job_details_screen.dart';
 
 import 'package:movemate_staff/models/request/paging_model.dart';
 import 'package:movemate_staff/utils/commons/functions/shared_preference_utils.dart';

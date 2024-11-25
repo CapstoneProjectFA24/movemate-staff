@@ -42,6 +42,10 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
     final datas = useFetchResult.data;
 
     useEffect(() {
+      useFetchResult.refresh;
+      return null;
+    }, [bookingAsync.value?.assignments.length]);
+    useEffect(() {
       useFetchResult.refresh();
       return null;
     }, [bookingAsync.value?.assignments.length]);
@@ -136,6 +140,7 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
       required AvailableStaffEntities? datas}) {
     final state = ref.read(porterControllerProvider);
     final porterController = ref.read(porterControllerProvider.notifier);
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -436,7 +441,7 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
-        child: Text('Lưu'),
+        child: const Text('Lưu'),
       ),
     );
   }

@@ -88,7 +88,7 @@ class GenerateNewJobScreen extends HookConsumerWidget {
 
     final selectedDateTime = useState<DateTime?>(initialBookingDate);
 
-    Future<void> _selectDateTime(BuildContext context) async {
+    Future<void> selectDateTime(BuildContext context) async {
       //kiểm tra lấy giờ hiện tại + phút lên
       final now =
           DateTime.now().toUtc().add(const Duration(minutes: 15)); // Giờ UTC+7
@@ -192,7 +192,7 @@ class GenerateNewJobScreen extends HookConsumerWidget {
                       // ),
 
                       GestureDetector(
-                        onTap: () => _selectDateTime(context),
+                        onTap: () => selectDateTime(context),
                         child: Container(
                           padding: const EdgeInsets.symmetric(
                               vertical: 15, horizontal: 10),

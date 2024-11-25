@@ -1,6 +1,4 @@
 // booking_screen_service.dart
-import 'dart:convert';
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -8,19 +6,12 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/features/job/data/model/request/booking_requesst.dart';
 import 'package:movemate_staff/features/job/data/model/request/resource.dart';
-import 'package:movemate_staff/features/job/data/model/request/reviewer_status_request.dart';
-import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_details_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/image_data.dart';
 import 'package:movemate_staff/features/job/presentation/controllers/booking_controller/booking_controller.dart';
-import 'package:movemate_staff/features/job/presentation/controllers/reviewer_update_controller/reviewer_update_controller.dart';
 import 'package:movemate_staff/features/job/presentation/providers/booking_provider.dart';
-import 'package:movemate_staff/features/job/presentation/screen/job_details_screen/job_details_screen.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/button_next/summary_section.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/image_button/room_media_section.dart';
-import 'package:movemate_staff/hooks/use_fetch.dart';
-import 'package:movemate_staff/models/request/paging_model.dart';
-import 'package:movemate_staff/utils/commons/widgets/widgets_common_export.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
 
 @RoutePage()
