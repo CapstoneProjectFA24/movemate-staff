@@ -121,9 +121,9 @@ class PorterController extends _$PorterController {
         ),
       );
 
-      if (state.hasError) {
-        await ref.read(signInControllerProvider.notifier).signOut(context);
-      }
+      // if (state.hasError) {
+      //   await ref.read(signInControllerProvider.notifier).signOut(context);
+      // }
     }
   }
 
