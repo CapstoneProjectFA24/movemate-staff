@@ -6,6 +6,7 @@ import 'package:movemate_staff/features/job/domain/entities/available_staff_enti
 import 'package:movemate_staff/features/job/domain/entities/staff_entity.dart';
 import 'package:movemate_staff/features/porter/presentation/controllers/porter_controller.dart';
 import 'package:movemate_staff/hooks/use_fetch_obj.dart';
+import 'package:movemate_staff/services/realtime_service/booking_status_realtime/booking_status_stream_provider.dart';
 import 'package:movemate_staff/utils/commons/widgets/app_bar.dart';
 import 'package:movemate_staff/utils/commons/widgets/widgets_common_export.dart';
 
@@ -20,6 +21,7 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final bookingAsync = ref.watch(bookingStreamProvider(bookingId.toString()));
     final selectedRole = useState('Bốc vác');
     final startTime = useState('9:30 am');
     final endTime = useState('3:30 pm');
@@ -38,6 +40,11 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
     );
 
     final datas = useFetchResult.data;
+
+    useEffect(() {
+      useFetchResult.refresh();
+      return null;
+    }, [bookingAsync.value?.assignments.length]);
 
     return LoadingOverlay(
       isLoading: state.isLoading,
@@ -75,8 +82,8 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
                             // SizedBox(height: 16),
                             Text(
                               (datas?.staffType == null)
-                                  ? 'null'
-                                  : 'có dữ liệu',
+                                  ? 'Null'
+                                  : 'Thêm bốc vác',
                               style: const TextStyle(
                                 color: Colors.black,
                               ),
@@ -211,7 +218,8 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
                 return Material(
                   type: MaterialType.transparency,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
                     child: Row(
                       children: [
                         CircleAvatar(
@@ -229,8 +237,8 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
                           children: [
                             Text(
                               staff?.name ?? 'Tên không xác định',
-                              style:
-                                  const TextStyle(fontSize: 14, color: Colors.black),
+                              style: const TextStyle(
+                                  fontSize: 14, color: Colors.black),
                             ),
                             const SizedBox(height: 4),
                             Text(

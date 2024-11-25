@@ -13,6 +13,7 @@ import 'package:movemate_staff/features/porter/presentation/controllers/porter_c
 import 'package:movemate_staff/features/profile/domain/entities/profile_entity.dart';
 import 'package:movemate_staff/features/profile/presentation/controllers/profile_controller/profile_controller.dart';
 import 'package:movemate_staff/hooks/use_fetch_obj.dart';
+import 'package:movemate_staff/services/realtime_service/booking_status_realtime/booking_status_stream_provider.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
 
 class CustomTabContainer extends HookConsumerWidget {
@@ -88,7 +89,7 @@ class CustomTabContainer extends HookConsumerWidget {
     final selectedTab = useState<String>('Bốc vác');
     final selectedPorter = useState<AssignmentsResponseEntity?>(null);
     final selectedDriver = useState<AssignmentsResponseEntity?>(null);
-
+    final bookingAsync = ref.watch(bookingStreamProvider(bookingId.toString()));
     useEffect(() {
       if (porterItems.isNotEmpty &&
           porterItems.any((item) => item.isResponsible!)) {
@@ -105,11 +106,13 @@ class CustomTabContainer extends HookConsumerWidget {
 
     final stateDriver = ref.watch(driverControllerProvider);
     final driverController = ref.read(driverControllerProvider.notifier);
+
     final useFetchResultDriver = useFetchObject<AvailableStaffEntities>(
       function: (context) =>
           driverController.getDriverAvailableByBookingId(context, bookingId),
       context: context,
     );
+
     final datasDriver = useFetchResultDriver.data;
 
     final statePorter = ref.watch(porterControllerProvider);

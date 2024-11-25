@@ -127,9 +127,30 @@ class JobDetailsScreen extends HookConsumerWidget {
             isStepCompleted(7, progressionStatesOffline));
 
     // flag true hoặc false
-    ref.listen<bool>(refreshDriverList, (_, __) => fetchResult.refresh());
-    ref.listen<bool>(refreshPorterList, (_, __) => fetchResult.refresh());
-    ref.listen<bool>(refreshJobList, (_, __) => fetchResult.refresh());
+    ref.listen<bool>(
+      refreshDriverList,
+      (_, __) {
+        fetchResult.refresh();
+      },
+    );
+    ref.listen<bool>(
+      refreshPorterList,
+      (_, __) {
+        fetchResult.refresh();
+      },
+    );
+    ref.listen<bool>(
+      refreshJobList,
+      (_, __) {
+        fetchResult.refresh();
+      },
+    );
+
+    useEffect(() {
+      fetchResult.refresh();
+      return null;
+    }, [bookingAsync.value?.assignments.length]);
+
     return LoadingOverlay(
       isLoading: state.isLoading,
       child: Scaffold(

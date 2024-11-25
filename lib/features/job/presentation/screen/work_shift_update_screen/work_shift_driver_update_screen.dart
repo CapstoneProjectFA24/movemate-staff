@@ -8,6 +8,7 @@ import 'package:movemate_staff/features/job/domain/entities/available_staff_enti
 import 'package:movemate_staff/features/job/domain/entities/staff_entity.dart';
 import 'package:movemate_staff/features/job/presentation/controllers/booking_controller/booking_controller.dart';
 import 'package:movemate_staff/hooks/use_fetch_obj.dart';
+import 'package:movemate_staff/services/realtime_service/booking_status_realtime/booking_status_stream_provider.dart';
 import 'package:movemate_staff/utils/commons/widgets/app_bar.dart';
 import 'package:movemate_staff/utils/commons/widgets/widgets_common_export.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
@@ -23,6 +24,7 @@ class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final bookingAsync = ref.watch(bookingStreamProvider(bookingId.toString()));
     final selectedRole = useState('Bốc vác');
     final startTime = useState('9:30 am');
     final endTime = useState('3:30 pm');
@@ -39,6 +41,11 @@ class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
           driverController.getDriverAvailableByBookingId(context, bookingId),
       context: context,
     );
+
+    useEffect(() {
+      useFetchResult.refresh();
+      return null;
+    }, [bookingAsync.value?.assignments.length]);
 
     final datas = useFetchResult.data;
 
@@ -77,8 +84,8 @@ class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
                           children: [
                             Text(
                               (datas?.staffType == null)
-                                  ? 'null'
-                                  : 'có dữ liệu',
+                                  ? 'Null'
+                                  : 'Thêm tài xế',
                               style: const TextStyle(
                                 color: Colors.black,
                               ),
@@ -219,7 +226,8 @@ class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
                 return Material(
                   type: MaterialType.transparency,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
                     child: Row(
                       children: [
                         CircleAvatar(
@@ -245,8 +253,8 @@ class WorkShiftDriverUpdateScreen extends HookConsumerWidget {
                                       .firstWhere((e) => e.id != null)
                                       .name ??
                                   '',
-                              style:
-                                  const TextStyle(fontSize: 14, color: Colors.black),
+                              style: const TextStyle(
+                                  fontSize: 14, color: Colors.black),
                             ),
                             const SizedBox(height: 4),
                             Text(

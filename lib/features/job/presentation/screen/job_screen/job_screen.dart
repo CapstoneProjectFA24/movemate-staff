@@ -78,7 +78,7 @@ class JobScreen extends HookConsumerWidget {
     ref.listen<bool>(refreshJobList, (_, __) => fetchResult.refresh());
     ref.listen<bool>(refreshDriverList, (_, __) => fetchResult.refresh());
     ref.listen<bool>(refreshPorterList, (_, __) => fetchResult.refresh());
-    
+
     Widget buildTabContent(String tabName) {
       List<BookingResponseEntity> filteredBookings = getJobsForSelectedDate();
 
@@ -124,9 +124,10 @@ class JobScreen extends HookConsumerWidget {
                       initialScrollOffset: todayIndex.value * 80.0,
                     ),
                     scrollDirection: Axis.horizontal,
-                    itemCount: 20,
+                    itemCount: 30,
                     itemBuilder: (context, index) {
-                      final day = DateTime.now().add(Duration(days: index - 7));
+                      final day =
+                          DateTime.now().add(Duration(days: index - 14));
                       bool isSelected = DateFormat.yMd().format(day) ==
                           DateFormat.yMd().format(selectedDate.value);
                       return GestureDetector(
