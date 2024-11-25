@@ -94,10 +94,11 @@ class AddImageButton extends ConsumerWidget {
       final ImagePicker picker = ImagePicker();
       final XFile? pickedFile =
           await picker.pickImage(source: ImageSource.camera);
-
+//dkpnkjnxs
+//dve1zpp4s
       if (pickedFile != null) {
         final cloudinary =
-            CloudinaryPublic('dve1zpp4s', 'movemate', cache: false);
+            CloudinaryPublic('dkpnkjnxs', 'movemate', cache: false);
         try {
           print('loanh ânhr');
           final CloudinaryResponse response = await cloudinary.uploadFile(
