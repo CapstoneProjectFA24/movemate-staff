@@ -90,6 +90,7 @@ class CustomTabContainer extends HookConsumerWidget {
     final selectedPorter = useState<AssignmentsResponseEntity?>(null);
     final selectedDriver = useState<AssignmentsResponseEntity?>(null);
     final bookingAsync = ref.watch(bookingStreamProvider(bookingId.toString()));
+
     useEffect(() {
       if (porterItems.isNotEmpty &&
           porterItems.any((item) => item.isResponsible!)) {

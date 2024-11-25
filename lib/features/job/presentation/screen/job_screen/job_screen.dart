@@ -124,10 +124,10 @@ class JobScreen extends HookConsumerWidget {
                       initialScrollOffset: todayIndex.value * 80.0,
                     ),
                     scrollDirection: Axis.horizontal,
-                    itemCount: 30,
+                    itemCount: 40,
                     itemBuilder: (context, index) {
                       final day =
-                          DateTime.now().add(Duration(days: index - 14));
+                          DateTime.now().add(Duration(days: index - 20));
                       bool isSelected = DateFormat.yMd().format(day) ==
                           DateFormat.yMd().format(selectedDate.value);
                       return GestureDetector(

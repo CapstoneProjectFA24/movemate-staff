@@ -89,8 +89,9 @@ class GenerateNewJobScreen extends HookConsumerWidget {
     final selectedDateTime = useState<DateTime?>(initialBookingDate);
 
     Future<void> _selectDateTime(BuildContext context) async {
+      //kiểm tra lấy giờ hiện tại + phút lên
       final now =
-          DateTime.now().toUtc().add(const Duration(hours: 7)); // Giờ UTC+7
+          DateTime.now().toUtc().add(const Duration(minutes: 15)); // Giờ UTC+7
       final DateTime? pickedDate = await showDatePicker(
         context: context,
         initialDate: selectedDateTime.value ?? now,
@@ -107,7 +108,7 @@ class GenerateNewJobScreen extends HookConsumerWidget {
         final TimeOfDay? pickedTime = await showTimePicker(
           context: context,
           initialTime: isToday
-              ? TimeOfDay.fromDateTime(now.add(const Duration(hours: 1)))
+              ? TimeOfDay.fromDateTime(now.add(const Duration(minutes: 1)))
               : const TimeOfDay(hour: 0, minute: 0),
           builder: (context, child) {
             return MediaQuery(
