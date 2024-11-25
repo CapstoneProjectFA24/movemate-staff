@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -12,6 +14,8 @@ import 'package:movemate_staff/hooks/use_fetch.dart';
 import 'package:movemate_staff/models/request/paging_model.dart';
 import 'package:movemate_staff/utils/commons/functions/datetime_utils.dart';
 import 'package:movemate_staff/utils/commons/widgets/app_bar.dart';
+import 'package:movemate_staff/utils/commons/widgets/empty_box.dart';
+import 'package:movemate_staff/utils/commons/widgets/home_shimmer.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
 import 'package:movemate_staff/utils/extensions/scroll_controller.dart';
 
@@ -34,6 +38,24 @@ class PorterScreen extends HookConsumerWidget {
     final systemStatus = ref.watch(filterPorterSystemStatus);
     final scrollController = useScrollController();
     final selectedDate = useState(DateTime.now());
+    final todayIndex = useState(30); // Thay đổi giá trị mặc định thành 30
+    final horizontalScrollController = useScrollController();
+    final dateListKey = useMemoized(() => GlobalKey());
+
+    // Khởi tạo scroll controller để focus vào ngày hiện tại
+    useEffect(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        // Focus vào ngày hiện tại
+        final offset = max(0, (todayIndex.value * 80.0) - (size.width / 2) + 40)
+            .toDouble();
+        horizontalScrollController.animateTo(
+          offset,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      });
+      return null;
+    }, []);
     final fetchResult = useFetch<BookingResponseEntity>(
       function: (model, context) => ref
           .read(porterControllerProvider.notifier)
@@ -41,6 +63,24 @@ class PorterScreen extends HookConsumerWidget {
       initialPagingModel: PagingModel(filterContent: systemStatus.type),
       context: context,
     );
+
+    // Listen for changes to refresh the focus
+    useEffect(() {
+      ref.listen<bool>(refreshPorterList, (prev, next) {
+        if (next) {
+          // Re-focus to current date when refreshing
+          final offset =
+              max(0, (todayIndex.value * 80.0) - (size.width / 2) + 40)
+                  .toDouble();
+          horizontalScrollController.animateTo(
+            offset,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+          );
+        }
+      });
+      return null;
+    }, []);
 
     useEffect(() {
       scrollController.onScrollEndsListener(fetchResult.loadMore);
@@ -99,15 +139,26 @@ class PorterScreen extends HookConsumerWidget {
           SizedBox(
             height: 90,
             child: ListView.builder(
+              controller: horizontalScrollController,
               scrollDirection: Axis.horizontal,
               itemCount: 60,
               itemBuilder: (context, index) {
-                final day = DateTime.now().add(Duration(days: index - 30));
+                final day = DateTime.now().add(Duration(days: index - 26));
                 final isSelected = DateFormat.yMd().format(day) ==
                     DateFormat.yMd().format(selectedDate.value);
                 return GestureDetector(
                   onTap: () {
                     selectedDate.value = day;
+                    // Scroll to selected date
+                    final offset =
+                        max(0, (index * 80.0) - (size.width / 2) + 40)
+                            .toDouble();
+                    horizontalScrollController.animateTo(
+                      offset,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                    );
+                    fetchResult.refresh();
                   },
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 300),
@@ -154,57 +205,54 @@ class PorterScreen extends HookConsumerWidget {
             ),
           ),
           const Divider(),
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.all(10),
-              itemCount: jobs.length,
-              itemBuilder: (context, index) {
-                final job = jobs[index];
-                final startTime =
-                    DateFormat('MM/dd/yyyy HH:mm:ss').parse(job.bookingAt);
-                final endTime = startTime.add(
-                  Duration(
-                    minutes:
-                        ((double.tryParse(job.estimatedDeliveryTime ?? '0') ??
-                                    0) *
-                                60)
-                            .round(),
-                  ),
-                );
-
-                return Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Column(
-                      children: [
-                        Text(
-                          DateFormat.Hm().format(startTime),
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.orange.shade800,
-                          ),
-                        ),
-                        if (index < jobs.length - 1)
-                          Container(
-                            height: 80,
-                            width: 2,
-                            color: Colors.orange.shade200,
-                          ),
-                      ],
-                    ),
-                    const SizedBox(width: 10),
-                    // Job Card
-                    Expanded(
-                      child: PorterCard(
-                        job: job,
+          (state.isLoading && fetchResult.loadMore == false)
+              ? const Center(
+                  child: HomeShimmer(amount: 4),
+                )
+              : fetchResult.items.isEmpty
+                  ? const Align(
+                      alignment: Alignment.topCenter,
+                      child: EmptyBox(title: 'Đơn hàng trống'),
+                    )
+                  : Expanded(
+                      child: ListView.builder(
+                        controller: scrollController,
+                        padding: const EdgeInsets.all(10),
+                        itemCount: jobs.length,
+                        itemBuilder: (context, index) {
+                          final job = jobs[index];
+                          final startTime = DateFormat('MM/dd/yyyy HH:mm:ss')
+                              .parse(job.bookingAt);
+                          return Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Column(
+                                children: [
+                                  Text(
+                                    DateFormat.Hm().format(startTime),
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.orange.shade800,
+                                    ),
+                                  ),
+                                  if (index < jobs.length - 1)
+                                    Container(
+                                      height: 80,
+                                      width: 2,
+                                      color: Colors.orange.shade200,
+                                    ),
+                                ],
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: PorterCard(job: job),
+                              ),
+                            ],
+                          );
+                        },
                       ),
                     ),
-                  ],
-                );
-              },
-            ),
-          )
         ],
       ),
     );

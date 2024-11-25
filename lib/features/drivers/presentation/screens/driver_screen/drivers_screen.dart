@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -34,6 +36,24 @@ class DriversScreen extends HookConsumerWidget {
     final systemStatus = ref.watch(filterSystemStatus);
     final scrollController = useScrollController();
     final selectedDate = useState(DateTime.now());
+    final todayIndex = useState(30); // Thay đổi giá trị mặc định thành 30
+    final horizontalScrollController = useScrollController();
+    final dateListKey = useMemoized(() => GlobalKey());
+
+    // Khởi tạo scroll controller để focus vào ngày hiện tại
+    useEffect(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        // Focus vào ngày hiện tại
+        final offset = max(0, (todayIndex.value * 80.0) - (size.width / 2) + 40)
+            .toDouble();
+        horizontalScrollController.animateTo(
+          offset,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      });
+      return null;
+    }, []);
 
     final fetchResult = useFetch<BookingResponseEntity>(
       function: (model, context) => ref
@@ -43,15 +63,31 @@ class DriversScreen extends HookConsumerWidget {
       context: context,
     );
 
+    // Listen for changes to refresh the focus
+    useEffect(() {
+      ref.listen<bool>(refreshDriverList, (prev, next) {
+        if (next) {
+          // Re-focus to current date when refreshing
+          final offset =
+              max(0, (todayIndex.value * 80.0) - (size.width / 2) + 40)
+                  .toDouble();
+          horizontalScrollController.animateTo(
+            offset,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+          );
+        }
+      });
+      return null;
+    }, []);
+
     useEffect(() {
       scrollController.onScrollEndsListener(fetchResult.loadMore);
-
       return scrollController.dispose;
     }, const []);
-    // flag true hoặc false
+
     ref.listen<bool>(refreshDriverList, (_, __) => fetchResult.refresh());
 
-    // can thiệp dc
     final jobs = _getJobsFromBookingResponseEntity(
       fetchResult.items,
       selectedDate.value,
@@ -65,55 +101,68 @@ class DriversScreen extends HookConsumerWidget {
 
     return Scaffold(
       appBar: CustomAppBar(
-          title: 'Lịch công việc lái xe',
-          backgroundColor: AssetsConstants.primaryMain,
-          backButtonColor: AssetsConstants.whiteColor,
-          iconFirst: Icons.refresh_rounded,
-          iconSecond: Icons.filter_list_alt,
-          onCallBackFirst: fetchResult.refresh,
-          showBackButton: true,
-          onBackButtonPressed: () {
-            final tabsRouter = context.router.root
-                .innerRouterOf<TabsRouter>(TabViewScreenRoute.name);
-            if (tabsRouter != null) {
-              tabsRouter.setActiveIndex(0);
-              context.router.popUntilRouteWithName(TabViewScreenRoute.name);
-            } else {
-              context.router.pushAndPopUntil(
-                const TabViewScreenRoute(children: [
-                  HomeScreenRoute(),
-                ]),
-                predicate: (route) => false,
-              );
-            }
-          },
-          onCallBackSecond: () {
-            showDriverCustomBottomSheet(
-              onCallback: fetchResult.refresh,
-              context: context,
-              size: size,
+        title: 'Lịch công việc lái xe',
+        backgroundColor: AssetsConstants.primaryMain,
+        backButtonColor: AssetsConstants.whiteColor,
+        iconFirst: Icons.refresh_rounded,
+        iconSecond: Icons.filter_list_alt,
+        onCallBackFirst: fetchResult.refresh,
+        showBackButton: true,
+        onBackButtonPressed: () {
+          final tabsRouter = context.router.root
+              .innerRouterOf<TabsRouter>(TabViewScreenRoute.name);
+          if (tabsRouter != null) {
+            tabsRouter.setActiveIndex(0);
+            context.router.popUntilRouteWithName(TabViewScreenRoute.name);
+          } else {
+            context.router.pushAndPopUntil(
+              const TabViewScreenRoute(children: [HomeScreenRoute()]),
+              predicate: (route) => false,
             );
-          }),
+          }
+        },
+        onCallBackSecond: () {
+          showDriverCustomBottomSheet(
+            onCallback: fetchResult.refresh,
+            context: context,
+            size: size,
+          );
+        },
+      ),
       body: Column(
         children: [
           SizedBox(
+            key: dateListKey,
             height: 90,
             child: ListView.builder(
+              controller: horizontalScrollController,
               scrollDirection: Axis.horizontal,
               itemCount: 60,
               itemBuilder: (context, index) {
-                final day = DateTime.now().add(Duration(days: index - 30));
+                final day = DateTime.now().add(Duration(days: index - 26));
                 final isSelected = DateFormat.yMd().format(day) ==
                     DateFormat.yMd().format(selectedDate.value);
                 return GestureDetector(
                   onTap: () {
                     selectedDate.value = day;
+                    // Scroll to selected date
+                    final offset =
+                        max(0, (index * 80.0) - (size.width / 2) + 40)
+                            .toDouble();
+                    horizontalScrollController.animateTo(
+                      offset,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                    );
+                    fetchResult.refresh();
                   },
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 300),
                     width: 80,
-                    margin:
-                        const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 5,
+                      vertical: 10,
+                    ),
                     decoration: BoxDecoration(
                       color: isSelected
                           ? Colors.orange.shade800
@@ -122,9 +171,10 @@ class DriversScreen extends HookConsumerWidget {
                       boxShadow: isSelected
                           ? [
                               BoxShadow(
-                                  color: Colors.orange.shade200,
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 4))
+                                color: Colors.orange.shade200,
+                                blurRadius: 8,
+                                offset: const Offset(0, 4),
+                              )
                             ]
                           : [],
                     ),
@@ -166,27 +216,16 @@ class DriversScreen extends HookConsumerWidget {
                     )
                   : Expanded(
                       child: ListView.builder(
+                        controller: scrollController,
                         padding: const EdgeInsets.all(10),
                         itemCount: jobs.length,
                         itemBuilder: (context, index) {
                           final job = jobs[index];
                           final startTime = DateFormat('MM/dd/yyyy HH:mm:ss')
                               .parse(job.bookingAt);
-                          final endTime = startTime.add(
-                            Duration(
-                              minutes: ((double.tryParse(
-                                              job.estimatedDeliveryTime ??
-                                                  '0') ??
-                                          0) *
-                                      60)
-                                  .round(),
-                            ),
-                          );
-
                           return Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Time Indicator and Timeline Line
                               Column(
                                 children: [
                                   Text(
@@ -206,33 +245,28 @@ class DriversScreen extends HookConsumerWidget {
                                 ],
                               ),
                               const SizedBox(width: 10),
-                              // Job Card
                               Expanded(
-                                child: DriverCard(
-                                  job: job,
-                                ),
+                                child: DriverCard(job: job),
                               ),
                             ],
                           );
                         },
                       ),
-                    )
+                    ),
         ],
       ),
     );
   }
 
   List<BookingResponseEntity> _getJobsFromBookingResponseEntity(
-      List<BookingResponseEntity> bookingResponseEntities,
-      DateTime selectedDate) {
-    return bookingResponseEntities
-        .where((entity) =>
-            DateFormat('MM/dd/yyyy').parse(entity.bookingAt).day ==
-                selectedDate.day &&
-            DateFormat('MM/dd/yyyy').parse(entity.bookingAt).month ==
-                selectedDate.month &&
-            DateFormat('MM/dd/yyyy').parse(entity.bookingAt).year ==
-                selectedDate.year)
-        .toList();
+    List<BookingResponseEntity> bookingResponseEntities,
+    DateTime selectedDate,
+  ) {
+    return bookingResponseEntities.where((entity) {
+      final bookingDate = DateFormat('MM/dd/yyyy').parse(entity.bookingAt);
+      return bookingDate.day == selectedDate.day &&
+          bookingDate.month == selectedDate.month &&
+          bookingDate.year == selectedDate.year;
+    }).toList();
   }
 }
