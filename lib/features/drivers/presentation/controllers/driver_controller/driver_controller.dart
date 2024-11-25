@@ -112,20 +112,23 @@ class DriverController extends _$DriverController {
     });
 
     if (state.hasError) {
-      final statusCode = (state.error as DioException).onStatusDio();
+      final error = state.error!;
+      if (error is DioException) {
+        final statusCode = error.response?.statusCode ?? error.onStatusDio();
 
-      await handleAPIError(
-        statusCode: statusCode,
-        stateError: state.error!,
-        context: context,
-        onCallBackGenerateToken: () async => await reGenerateToken(
-          authRepository,
-          context,
-        ),
-      );
-
-      if (state.hasError) {
-        await ref.read(signInControllerProvider.notifier).signOut(context);
+        handleAPIError(
+          statusCode: statusCode,
+          stateError: state.error!,
+          context: context,
+        );
+      } else {
+        showSnackBar(
+          context: context,
+          content: error.toString(),
+          icon: AssetsConstants.iconError,
+          backgroundColor: Colors.red,
+          textColor: AssetsConstants.whiteColor,
+        );
       }
     }
   }
@@ -161,20 +164,23 @@ class DriverController extends _$DriverController {
     });
 
     if (state.hasError) {
-      final statusCode = (state.error as DioException).onStatusDio();
+      final error = state.error!;
+      if (error is DioException) {
+        final statusCode = error.response?.statusCode ?? error.onStatusDio();
 
-      await handleAPIError(
-        statusCode: statusCode,
-        stateError: state.error!,
-        context: context,
-        onCallBackGenerateToken: () async => await reGenerateToken(
-          authRepository,
-          context,
-        ),
-      );
-
-      if (state.hasError) {
-        await ref.read(signInControllerProvider.notifier).signOut(context);
+        handleAPIError(
+          statusCode: statusCode,
+          stateError: state.error!,
+          context: context,
+        );
+      } else {
+        showSnackBar(
+          context: context,
+          content: error.toString(),
+          icon: AssetsConstants.iconError,
+          backgroundColor: Colors.red,
+          textColor: AssetsConstants.whiteColor,
+        );
       }
     }
   }
@@ -200,24 +206,24 @@ class DriverController extends _$DriverController {
     state = result;
 
     if (state.hasError) {
-      state = await AsyncValue.guard(() async {
-        final statusCode = (state.error as DioException).onStatusDio();
-        await handleAPIError(
+      final error = state.error!;
+      if (error is DioException) {
+        final statusCode = error.response?.statusCode ?? error.onStatusDio();
+
+        handleAPIError(
           statusCode: statusCode,
           stateError: state.error!,
           context: context,
-          onCallBackGenerateToken: () async => await reGenerateToken(
-            authRepository,
-            context,
-          ),
         );
-
-        if (state.hasError) {
-          await ref.read(signInControllerProvider.notifier).signOut(context);
-        }
-
-        if (statusCode != StatusCodeType.unauthentication.type) {}
-      });
+      } else {
+        showSnackBar(
+          context: context,
+          content: error.toString(),
+          icon: AssetsConstants.iconError,
+          backgroundColor: Colors.red,
+          textColor: AssetsConstants.whiteColor,
+        );
+      }
     }
 
     if (result is AsyncData<AvailableStaffEntities>) {

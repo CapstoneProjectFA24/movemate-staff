@@ -202,7 +202,7 @@ BookingStatusResult useBookingStatus(
     switch (status) {
       case BookingStatusType.coming:
         if (isDriverAssigned &&
-            isValidDate &&
+            // isValidDate &&
             !isDriverWaiting &&
             !isDriverIncoming) {
           canDriverConfirmIncoming = true;
