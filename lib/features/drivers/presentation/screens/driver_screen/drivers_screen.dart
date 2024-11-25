@@ -100,9 +100,9 @@ class DriversScreen extends HookConsumerWidget {
             height: 90,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: 9,
+              itemCount: 60,
               itemBuilder: (context, index) {
-                final day = DateTime.now().add(Duration(days: index - 7));
+                final day = DateTime.now().add(Duration(days: index - 30));
                 final isSelected = DateFormat.yMd().format(day) ==
                     DateFormat.yMd().format(selectedDate.value);
                 return GestureDetector(

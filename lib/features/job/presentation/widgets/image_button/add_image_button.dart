@@ -59,11 +59,24 @@ class AddImageButton extends ConsumerWidget {
                   radius: const Radius.circular(12),
                   dashPattern: const [8, 4],
                   child: Center(
-                    child: hasImages
-                        ? const Icon(Icons.add,
-                            color: AssetsConstants.greyColor)
-                        : const Text('Thêm ảnh',
-                            style: TextStyle(color: AssetsConstants.greyColor)),
+                    child: SizedBox(
+                      width: 50, // Chiều rộng nhỏ hơn
+                      height: 50, // Chiều cao nhỏ hơn
+                      child: hasImages
+                          ? const Icon(
+                              Icons.add,
+                              color: AssetsConstants.greyColor,
+                              size: 24, // Giảm kích thước icon
+                            )
+                          : const Text(
+                              'Thêm ảnh',
+                              style: TextStyle(
+                                color: AssetsConstants.greyColor,
+                                fontSize: 12, // Giảm kích thước font chữ
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                    ),
                   ),
                 ),
               ),

@@ -3,6 +3,9 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:movemate_staff/features/call_page/call_page.dart';
+import 'package:movemate_staff/features/profile/domain/entities/profile_entity.dart';
+import 'package:movemate_staff/features/profile/presentation/controllers/profile_controller/profile_controller.dart';
+import 'package:movemate_staff/hooks/use_fetch_obj.dart';
 
 import 'package:movemate_staff/services/chat_services/data/chat_services.dart';
 import 'package:movemate_staff/services/chat_services/models/chat_model.dart';
@@ -29,8 +32,17 @@ class ChatWithCustomerScreen extends HookConsumerWidget {
       currentUserRole: 'reviewer',
     );
 
-    const customerName = "vinh";
-    const customerImageAvatar = "";
+    final useFetchUserResult = useFetchObject<ProfileEntity>(
+      function: (context) => ref
+          .read(profileControllerProvider.notifier)
+          .getUserInfo(int.parse(customerId), context),
+      context: context,
+    );
+    final userProfileById = useFetchUserResult.data;
+
+    final customerName = userProfileById?.name ?? "";
+    final customerImageAvatar = userProfileById?.avatarUrl ??
+        "https://res.cloudinary.com/dkpnkjnxs/image/upload/v1732365346/movemate_logo_esm5fx.png";
 
     return Scaffold(
       appBar: CustomAppBar(

@@ -565,32 +565,32 @@ String determineStatusMessage(
       case BookingStatusType.assigned:
         return "Đã được phân công";
       case BookingStatusType.reviewing:
-        if (isStaffArrived) return "Bạn đang đánh giá tình trạng của nhà";
-        return "Đang đợi bạn đánh giá";
+        if (isStaffArrived) return "Đang đánh giá";
+        return "Đang đợi đánh giá";
       case BookingStatusType.reviewed:
-        return "Đã đánh giá xong";
+        return "Đã đánh giá";
       case BookingStatusType.depositing:
         return "Chờ khách hàng thanh toán";
       case BookingStatusType.coming:
         if (!isDriverAssigned && !isPorterAssigned) {
-          return "Chờ phân công nhân viên vận chuyển";
+          return "Chờ phân công nhân viên";
         }
         if (isDriverAssigned && !isPorterAssigned) {
-          return "Đã phân công tài xế - Chờ phân công porter";
+          return "Đã phân công tài xế - Chờ phân công nhân viên bốc xếp";
         }
         if (!isDriverAssigned && isPorterAssigned) {
-          return "Đã phân công porter - Chờ phân công tài xế";
+          return "Đã phân công nhân viên bốc xếp - Chờ phân công tài xế";
         }
-        return "Đã phân công đầy đủ nhân viên vận chuyển";
+        return "Đã phân công";
 
       case BookingStatusType.inProgress:
-        return "Đang trong quá trình vận chuyển";
+        return "Đang vận chuyển";
 
       case BookingStatusType.confirmed:
-        return "Đang trong quá trình thảo luận với khách";
+        return "Đang thảo luận với khách";
 
       case BookingStatusType.completed:
-        return "Đã hoàn thành toàn bộ quy trình";
+        return "Đã hoàn thành";
 
       case BookingStatusType.cancelled:
         return "Đã hủy";
@@ -619,15 +619,15 @@ String determineStatusMessage(
         return "Đã đánh giá xong";
       case BookingStatusType.coming:
         if (!isDriverAssigned && !isPorterAssigned) {
-          return "Chờ phân công nhân viên vận chuyển";
+          return "Chờ phân công";
         }
         if (isDriverAssigned && !isPorterAssigned) {
-          return "Đã phân công tài xế - Chờ phân công bốc vác";
+          return "Đã phân công tài xế - Chờ phân công nhân viên bốc xếp";
         }
         if (!isDriverAssigned && isPorterAssigned) {
-          return "Đã phân công bốc vác - Chờ phân công tài xế";
+          return "Đã phân công nhân viên bốc xếp - Chờ phân công tài xế";
         }
-        return "Đã phân công đủ nhân viên vận chuyển";
+        return "Đã phân công";
 
       case BookingStatusType.inProgress:
         return "Đang vận chuyển";

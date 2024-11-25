@@ -603,107 +603,44 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
       barrierDismissible: false,
       barrierColor: Colors.black87,
       builder: (context) => Dialog(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.orange,
         elevation: 0,
         child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16),
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width *
+                0.95, // Chiều rộng 95% màn hình
+            maxHeight: MediaQuery.of(context).size.height *
+                0.9, // Chiều cao 90% màn hình
+          ),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(24),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
-              ),
-            ],
-          ),
-          constraints: BoxConstraints(
-            maxWidth: MediaQuery.of(context).size.width * 0.9,
-            maxHeight: MediaQuery.of(context).size.height * 0.9,
           ),
           child: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Header với gradient background
+                // Header và nội dung ở đây
                 Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        AssetsConstants.primaryLighter,
-                        AssetsConstants.primaryLighter.withOpacity(0.8),
-                      ],
-                    ),
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(24),
-                      topRight: Radius.circular(24),
-                    ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            'Xác nhận đề suất',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w800,
-                              fontSize: 24,
-                              color: Colors.white,
-                              letterSpacing: -0.5,
-                            ),
-                          ),
-                          IconButton(
-                            onPressed: () => Navigator.pop(context),
-                            icon: Container(
-                              padding: const EdgeInsets.all(4),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: const Icon(
-                                Icons.close,
-                                color: Colors.white,
-                                size: 20,
-                              ),
-                            ),
-                            padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: const Text(
-                          'Hoàn thành tiến trình đánh giá',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                  padding: const EdgeInsets.all(6),
+                  // decoration: BoxDecoration(
+                  //   gradient: LinearGradient(
+                  //     begin: Alignment.topLeft,
+                  //     end: Alignment.bottomRight,
+                  //     colors: [
+                  //       AssetsConstants.primaryLighter,
+                  //       AssetsConstants.primaryLighter.withOpacity(0.8),
+                  //     ],
+                  //   ),
+                  //   borderRadius: const BorderRadius.only(
+                  //     topLeft: Radius.circular(24),
+                  //     topRight: Radius.circular(24),
+                  //   ),
+                  // ),
 
-                // Content Section
-                Padding(
-                  padding: const EdgeInsets.all(16),
+                  // Content Section
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -756,7 +693,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
 
                       const SizedBox(height: 24),
 
-                      // Time Input Field with floating label
+                      // Time Input Field
                       Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(16),
@@ -804,7 +741,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
 
                       const SizedBox(height: 12),
 
-                      // Room Media Section with modern styling
+                      // Room Media Section
                       Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
@@ -822,19 +759,18 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
                                   decoration: BoxDecoration(
                                     color: AssetsConstants.primaryLighter
                                         .withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(12),
+                                    borderRadius: BorderRadius.circular(10),
                                   ),
                                   child: const Icon(
                                     Icons.add_photo_alternate_rounded,
                                     color: AssetsConstants.primaryLighter,
                                   ),
                                 ),
-                                const SizedBox(width: 12),
                                 const Text(
                                   'Tải ảnh lên',
                                   style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w600,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w400,
                                   ),
                                 ),
                               ],
@@ -850,7 +786,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
 
                       const SizedBox(height: 32),
 
-                      // Modern Action Buttons
+                      // Action Buttons
                       Row(
                         children: [
                           Expanded(
@@ -883,23 +819,8 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
                                 if (inputTime == null) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
-                                      content: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 8,
-                                          horizontal: 16,
-                                        ),
-                                        child: const Row(
-                                          children: [
-                                            Icon(
-                                              Icons.warning_rounded,
-                                              color: Colors.white,
-                                            ),
-                                            SizedBox(width: 12),
-                                            Text(
-                                                'Vui lòng nhập thời gian hợp lệ'),
-                                          ],
-                                        ),
-                                      ),
+                                      content: const Text(
+                                          'Vui lòng nhập thời gian hợp lệ'),
                                       behavior: SnackBarBehavior.floating,
                                       backgroundColor: Colors.redAccent,
                                       shape: RoundedRectangleBorder(
@@ -917,7 +838,6 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
                                 final images =
                                     ref.read(bookingProvider).livingRoomImages;
 
-                                // convert list image with type ImageData => Resource
                                 List<Resource> convertImage(
                                     List<ImageData>? images) {
                                   return images!
@@ -929,7 +849,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
                                       .toList();
                                 }
 
-                                final resourseListReq = convertImage(images);
+                                final resourceListReq = convertImage(images);
                                 await ref
                                     .read(reviewerUpdateControllerProvider
                                         .notifier)
@@ -938,7 +858,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
                                       context: context,
                                       request: ReviewerStatusRequest(
                                         estimatedDeliveryTime: estimatedTime,
-                                        resourceList: resourseListReq,
+                                        resourceList: resourceListReq,
                                       ),
                                     );
                                 fetchResult.refresh();
@@ -947,11 +867,9 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AssetsConstants.primaryLighter,
                                 foregroundColor: Colors.white,
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 16),
                                 elevation: 0,
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
                               ),
                               child: const Row(
@@ -964,8 +882,6 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
-                                  SizedBox(width: 8),
-                                  Icon(Icons.arrow_forward_rounded, size: 20),
                                 ],
                               ),
                             ),
@@ -974,7 +890,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
                       ),
                     ],
                   ),
-                ),
+                )
               ],
             ),
           ),

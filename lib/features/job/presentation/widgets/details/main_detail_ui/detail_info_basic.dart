@@ -286,7 +286,7 @@ class CombinedInfoSection extends HookConsumerWidget {
                   fontWeight: FontWeight.bold,
                   color: AssetsConstants.whiteColor)),
           Text(
-            formatPrice(job.totalReal.toInt()),
+            formatPrice(job.total.toInt()),
             style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
