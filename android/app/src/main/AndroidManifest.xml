@@ -22,7 +22,7 @@
 
 
     <application
-        android:label="movemate_staff"
+        android:label="Nhân viên MoveMate"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

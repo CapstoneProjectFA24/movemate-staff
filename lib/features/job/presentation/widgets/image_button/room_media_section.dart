@@ -10,7 +10,6 @@ import 'add_image_button.dart';
 class RoomMediaSection extends ConsumerWidget {
   final String roomTitle;
   final RoomType roomType;
-  
 
   const RoomMediaSection({
     super.key,
