@@ -90,7 +90,7 @@ class GenerateNewJobScreen extends HookConsumerWidget {
 
     Future<void> _selectDateTime(BuildContext context) async {
       final now =
-          DateTime.now().toUtc().add(const Duration(hours: 7)); // Giờ UTC+7
+          DateTime.now().toUtc().add(const Duration(minutes: 15)); // Giờ UTC+7
       final DateTime? pickedDate = await showDatePicker(
         context: context,
         initialDate: selectedDateTime.value ?? now,
