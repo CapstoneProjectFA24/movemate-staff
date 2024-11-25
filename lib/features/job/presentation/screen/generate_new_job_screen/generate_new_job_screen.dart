@@ -2,14 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
+import 'package:movemate_staff/features/job/data/model/request/booking_requesst.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/presentation/controllers/house_type_controller/house_type_controller.dart';
 import 'package:movemate_staff/features/job/presentation/providers/booking_provider.dart';
+import 'package:movemate_staff/features/job/presentation/widgets/function/image.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/function/label.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/function/number_input.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/function/text_input.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/house_type/house_type_selection_modal.dart';
+import 'package:movemate_staff/features/porter/presentation/screens/porter_detail_screen/porter_detail_screen.dart';
 import 'package:movemate_staff/features/test/domain/entities/house_entities.dart';
 import 'package:movemate_staff/hooks/use_fetch_obj.dart';
 import 'package:movemate_staff/utils/commons/widgets/app_bar.dart';
@@ -31,6 +37,8 @@ class GenerateNewJobScreen extends HookConsumerWidget {
 
     // Truy cập BookingController
     final bookingController = ref.read(houseTypeControllerProvider.notifier);
+
+    final isDateTimeInvalid = useState<bool>(false);
 
     // Sử dụng useFetchObject để gọi getHouseDetails
     final useFetchResult = useFetchObject<HouseEntities>(
@@ -66,6 +74,72 @@ class GenerateNewJobScreen extends HookConsumerWidget {
       return null;
     }, [roomNumberController, floorsNumberController]);
 
+// Lấy giá trị mặc định từ job.bookingAt
+    final initialBookingDate = useMemoized(() {
+      try {
+        return job.bookingAt != null
+            ? parseCustomDate(job.bookingAt)
+            : DateTime.now();
+      } catch (e) {
+        print("Error parsing bookingAt: $e");
+        return DateTime.now();
+      }
+    });
+
+    final selectedDateTime = useState<DateTime?>(initialBookingDate);
+
+    Future<void> _selectDateTime(BuildContext context) async {
+      final now =
+          DateTime.now().toUtc().add(const Duration(hours: 7)); // Giờ UTC+7
+      final DateTime? pickedDate = await showDatePicker(
+        context: context,
+        initialDate: selectedDateTime.value ?? now,
+        firstDate: now,
+        lastDate: DateTime(2101),
+      );
+
+      if (pickedDate != null) {
+        // Giới hạn giờ nếu ngày được chọn là ngày hiện tại
+        final isToday = pickedDate.year == now.year &&
+            pickedDate.month == now.month &&
+            pickedDate.day == now.day;
+
+        final TimeOfDay? pickedTime = await showTimePicker(
+          context: context,
+          initialTime: isToday
+              ? TimeOfDay.fromDateTime(now.add(const Duration(hours: 1)))
+              : const TimeOfDay(hour: 0, minute: 0),
+          builder: (context, child) {
+            return MediaQuery(
+              data:
+                  MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+              child: child!,
+            );
+          },
+        );
+
+        if (pickedTime != null) {
+          final selectedTime = DateTime(
+            pickedDate.year,
+            pickedDate.month,
+            pickedDate.day,
+            pickedTime.hour,
+            pickedTime.minute,
+          );
+
+          // Kiểm tra tính hợp lệ và cập nhật giá trị
+          if (selectedTime.isAfter(now)) {
+            isDateTimeInvalid.value = false; // Xóa lỗi nếu thời gian hợp lệ
+            selectedDateTime.value = selectedTime;
+            bookingNotifier
+                .updateBookingDate(selectedTime); // Cập nhật vào provider
+          } else {
+            isDateTimeInvalid.value = true; // Đánh dấu thời gian không hợp lệ
+          }
+        }
+      }
+    }
+
     return Scaffold(
       appBar: CustomAppBar(
         backgroundColor: AssetsConstants.primaryMain,
@@ -74,7 +148,14 @@ class GenerateNewJobScreen extends HookConsumerWidget {
         title: "Cập nhật Thông tin đơn hàng",
         onBackButtonPressed: () {
           // bookingNotifier.reset();
-          print("bookingState reset: ${bookingState.selectedVehicle}");
+          final resetDateTime = job.bookingAt != null
+              ? parseCustomDate(job.bookingAt)
+              : DateTime.now();
+
+          // Cập nhật lại thời gian trong provider
+          bookingNotifier.updateBookingDate(resetDateTime);
+
+          // print("Reset booking date to: $resetDateTime");
           Navigator.of(context).pop();
         },
       ),
@@ -103,11 +184,52 @@ class GenerateNewJobScreen extends HookConsumerWidget {
                     children: [
                       // Date/Time Input Field
                       buildLabel("Ngày/ giờ"),
-                      buildTextInput(
-                        defaultValue: job.createdAt,
-                        hintText: "Chọn ngày/ giờ",
-                        icon: Icons.calendar_today,
+                      // buildTextInput(
+                      //   defaultValue: job.bookingAt,
+                      //   hintText: "Chọn ngày/ giờ",
+                      //   icon: Icons.calendar_today,
+                      // ),
+
+                      GestureDetector(
+                        onTap: () => _selectDateTime(context),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 15, horizontal: 10),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                selectedDateTime.value != null
+                                    ? "${selectedDateTime.value!.day.toString().padLeft(2, '0')}/${selectedDateTime.value!.month.toString().padLeft(2, '0')}/${selectedDateTime.value!.year} ${selectedDateTime.value!.hour.toString().padLeft(2, '0')}:${selectedDateTime.value!.minute.toString().padLeft(2, '0')}"
+                                    : "Chọn ngày/ giờ",
+                                style: TextStyle(
+                                  color: selectedDateTime.value != null
+                                      ? Colors.black
+                                      : Colors.grey,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              const Icon(Icons.calendar_today),
+                            ],
+                          ),
+                        ),
                       ),
+                      if (isDateTimeInvalid
+                          .value) // Hiển thị thông báo lỗi nếu không hợp lệ
+                        const Padding(
+                          padding: EdgeInsets.only(top: 5),
+                          child: Text(
+                            'Không thể chọn thời gian trong quá khứ',
+                            style: TextStyle(
+                              color: Colors.red,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
                       const SizedBox(height: 16),
                       // Start Location Input Field
                       buildLabel("Địa điểm bắt đầu chuyển"),
@@ -221,6 +343,11 @@ class GenerateNewJobScreen extends HookConsumerWidget {
                           bottom: 30.0, top: 30, right: 10, left: 10),
                       child: ElevatedButton(
                         onPressed: () {
+                          // final bookingRequest =
+                          //     BookingUpdateRequest.fromBookingUpdate(
+                          //         bookingState);
+                          // print(
+                          //     "requesst object ${bookingRequest.bookingAt.toString()}");
                           context.router
                               .push(AvailableVehiclesScreenRoute(job: job));
                           // bookingNotifier.updateDropOffLocation(Location(latitude: job.pickupPoint, longitude: job.deliveryPoint));
@@ -252,4 +379,10 @@ class GenerateNewJobScreen extends HookConsumerWidget {
       ),
     );
   }
+}
+
+// Hàm phân tích chuỗi ngày/giờ với định dạng tùy chỉnh
+DateTime parseCustomDate(String dateString) {
+  final DateFormat formatter = DateFormat('MM/dd/yyyy hh:mm');
+  return formatter.parse(dateString);
 }

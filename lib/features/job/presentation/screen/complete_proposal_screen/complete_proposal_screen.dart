@@ -223,7 +223,7 @@ class CompleteProposalScreen extends HookConsumerWidget {
               showSnackBar(context, 'Vui lòng nhập thời gian hợp lệ');
               return;
             }
-
+            print("object bookingRequest  ${bookingRequest.bookingAt}");
             showConfirmationDialog(
               context,
               'Xác nhận',
@@ -242,7 +242,7 @@ class CompleteProposalScreen extends HookConsumerWidget {
               },
             );
           },
-          buttonText: 'Xác nhận cập chính sửa',
+          buttonText: 'Xác nhận',
         ),
       ),
     );

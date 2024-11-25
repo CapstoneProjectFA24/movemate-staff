@@ -373,15 +373,7 @@ class BookingUpdateRequest {
       );
     }
     String estimatedDeliveryTime = booking.estimatedDeliveryTime;
-    // Thêm selectedVehicle mới vào bookingDetails
-    // if (booking.selectedVehicle != null) {
-    //   bookingDetails.add(
-    //     ServiceDetail(
-    //       serviceId: booking.selectedVehicle!.id,
-    //       quantity: 1,
-    //     ),
-    //   );
-    // }
+
 
     // Thêm selectedPackages với số lượng vào bookingDetails
     bookingDetails.addAll(booking.selectedPackages

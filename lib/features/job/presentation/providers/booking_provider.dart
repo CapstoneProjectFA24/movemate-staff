@@ -23,7 +23,7 @@ class BookingNotifier extends StateNotifier<Booking> {
     state = state.copyWith(
       numberOfRooms: int.tryParse(job.roomNumber),
       numberOfFloors: int.tryParse(job.floorsNumber),
-      bookingDate: DateTime.parse(job.createdAt),
+      bookingDate: DateTime.parse(job.bookingAt),
       houseType: HouseEntities(
         id: job.houseTypeId,
         // thêm các thông tin house type khác nếu có
@@ -276,7 +276,6 @@ class BookingNotifier extends StateNotifier<Booking> {
           break;
       }
     } finally {
-      
       // Reset loading state
       if (roomType == RoomType.livingRoom) {
         setUploadingLivingRoomImage(false);
