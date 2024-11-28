@@ -8,7 +8,6 @@ import 'package:movemate_staff/features/job/domain/entities/location_model_entit
 import 'package:movemate_staff/features/job/domain/entities/service_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/services_fee_system_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/services_package_entity.dart';
-import 'package:movemate_staff/features/job/domain/entities/sub_service_entity.dart';
 import 'package:movemate_staff/features/test/domain/entities/house_entities.dart';
 
 class BookingNotifier extends StateNotifier<Booking> {

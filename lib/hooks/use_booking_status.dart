@@ -1,6 +1,5 @@
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:intl/intl.dart';
-import 'package:movemate_staff/features/job/domain/entities/booking_enities.dart';
 import 'package:movemate_staff/services/realtime_service/booking_realtime_entity/booking_realtime_entity.dart';
 import 'package:movemate_staff/utils/enums/booking_status_type.dart';
 

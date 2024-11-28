@@ -6,12 +6,9 @@ import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/features/drivers/presentation/controllers/driver_controller/driver_controller.dart';
 import 'package:movemate_staff/features/job/domain/entities/available_staff_entities.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/assignment_response_entity.dart';
-import 'package:movemate_staff/features/job/presentation/controllers/booking_controller/booking_controller.dart';
 import 'package:movemate_staff/features/job/presentation/controllers/reviewer_update_controller/reviewer_update_controller.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/details/main_detail_ui/tab_container/list_widget_item.dart';
 import 'package:movemate_staff/features/porter/presentation/controllers/porter_controller.dart';
-import 'package:movemate_staff/features/profile/domain/entities/profile_entity.dart';
-import 'package:movemate_staff/features/profile/presentation/controllers/profile_controller/profile_controller.dart';
 import 'package:movemate_staff/hooks/use_fetch_obj.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
 

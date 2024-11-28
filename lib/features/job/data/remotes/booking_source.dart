@@ -151,6 +151,14 @@ abstract class BookingSource {
     @Header(APIConstants.authHeader) String accessToken,
     @Path('id') int id,
   );
+  // Driver confirms receipt of cash from customer
+
+  @PATCH('${APIConstants.driver_confirms_cash}/{bookingId}')
+  Future<HttpResponse<SuccessModel>> driverConfirmCashPayment(
+    @Header(APIConstants.contentHeader) String contentType,
+    @Header(APIConstants.authHeader) String accessToken,
+    @Path('bookingId') int id,
+  );
 
   //get available porter
   @GET('${APIConstants.available_porters}/{id}')

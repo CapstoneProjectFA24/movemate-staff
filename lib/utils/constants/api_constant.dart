@@ -39,6 +39,8 @@ class APIConstants {
   static const available_drivers = '/assignments/available-driver';
   static const assign_manual_available_drivers =
       '/assignments/assign-auto-by-manual-driver';
+  static const driver_confirms_cash =
+      '/bookings/confirm-pay-by-cash';
 
   //porter
   static const porters = '/bookingdetails/porter/update-status';

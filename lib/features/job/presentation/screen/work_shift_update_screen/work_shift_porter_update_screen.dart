@@ -3,10 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:movemate_staff/features/job/domain/entities/available_staff_entities.dart';
-import 'package:movemate_staff/features/job/domain/entities/staff_entity.dart';
 import 'package:movemate_staff/features/porter/presentation/controllers/porter_controller.dart';
 import 'package:movemate_staff/hooks/use_fetch_obj.dart';
-import 'package:movemate_staff/utils/commons/widgets/app_bar.dart';
 import 'package:movemate_staff/utils/commons/widgets/widgets_common_export.dart';
 
 @RoutePage()
@@ -428,7 +426,7 @@ class WorkShiftPorterUpdateScreen extends HookConsumerWidget {
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
-        child: Text('Lưu'),
+        child: const Text('Lưu'),
       ),
     );
   }

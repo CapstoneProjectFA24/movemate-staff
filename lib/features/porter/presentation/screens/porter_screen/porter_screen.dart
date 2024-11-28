@@ -56,6 +56,7 @@ class PorterScreen extends HookConsumerWidget {
       });
       return null;
     }, []);
+    
     final fetchResult = useFetch<BookingResponseEntity>(
       function: (model, context) => ref
           .read(porterControllerProvider.notifier)

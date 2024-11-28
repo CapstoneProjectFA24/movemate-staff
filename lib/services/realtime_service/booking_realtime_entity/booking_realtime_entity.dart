@@ -5,12 +5,14 @@ class BookingRealtimeEntity {
   final String status;
   final String bookingAt;
   final List<AssignmentsRealtimeEntity> assignments;
+  final bool? isCredit;
 
   BookingRealtimeEntity({
     required this.id,
     required this.status,
     required this.bookingAt,
     required this.assignments,
+    this.isCredit,
   });
 
   factory BookingRealtimeEntity.fromMap(Map<String, dynamic> data, String id) {
@@ -22,6 +24,7 @@ class BookingRealtimeEntity {
               ?.map((e) => AssignmentsRealtimeEntity.fromMap(e))
               .toList() ??
           [],
+      isCredit: data['IsCredit'] as bool?,
     );
   }
 
@@ -31,6 +34,7 @@ class BookingRealtimeEntity {
       'Status': status,
       'BookingAt': bookingAt,
       'Assignments': assignments.map((e) => e.toMap()).toList(),
+      'IsCredit': isCredit,
     };
   }
 

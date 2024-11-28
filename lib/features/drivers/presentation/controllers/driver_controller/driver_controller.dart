@@ -1,17 +1,13 @@
-import 'dart:convert';
-
 import 'package:auto_route/auto_route.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/features/auth/domain/repositories/auth_repository.dart';
 import 'package:movemate_staff/features/auth/presentation/screens/sign_in/sign_in_controller.dart';
 import 'package:movemate_staff/features/drivers/data/models/request/update_resourse_request.dart';
 import 'package:movemate_staff/features/drivers/presentation/widgets/drivers_screen_widget/custom_bottom_sheet.dart';
-import 'package:movemate_staff/features/job/data/model/response/staff_response.dart';
 import 'package:movemate_staff/features/job/domain/entities/available_staff_entities.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
-import 'package:movemate_staff/features/job/domain/entities/staff_entity.dart';
 import 'package:movemate_staff/features/job/domain/repositories/service_booking_repository.dart';
 import 'package:movemate_staff/models/request/paging_model.dart';
 import 'package:movemate_staff/utils/commons/functions/functions_common_export.dart';
@@ -110,6 +106,64 @@ class DriverController extends _$DriverController {
         textColor: AssetsConstants.whiteColor,
       );
     });
+
+    if (state.hasError) {
+      final error = state.error!;
+      if (error is DioException) {
+        final statusCode = error.response?.statusCode ?? error.onStatusDio();
+
+        handleAPIError(
+          statusCode: statusCode,
+          stateError: state.error!,
+          context: context,
+        );
+      } else {
+        showSnackBar(
+          context: context,
+          content: error.toString(),
+          icon: AssetsConstants.iconError,
+          backgroundColor: Colors.red,
+          textColor: AssetsConstants.whiteColor,
+        );
+      }
+    }
+  }
+
+//Driver confirms receipt of cash from customer
+  Future<void> driverConfirmCashPayment({
+    required BuildContext context,
+    required int id,
+  }) async {
+    state = const AsyncLoading();
+    final authRepository = ref.read(authRepositoryProvider);
+    final user = await SharedPreferencesUtils.getInstance('user_token');
+    state = await AsyncValue.guard(() async {
+      await ref.read(bookingRepositoryProvider).driverConfirmCashPayment(
+            accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
+            id: id,
+          );
+
+      showSnackBar(
+        context: context,
+        content: "Cập nhật trạng thái thành công",
+        icon: AssetsConstants.iconSuccess,
+        backgroundColor: Colors.green,
+        textColor: AssetsConstants.whiteColor,
+      );
+    });
+
+    // if (state.hasValue) {
+    //   final tabsRouter = context.router.root
+    //       .innerRouterOf<TabsRouter>(TabViewScreenRoute.name);
+    //   if (tabsRouter != null) {
+    //     tabsRouter.setActiveIndex(0);
+    //     context.router.popUntilRouteWithName(TabViewScreenRoute.name);
+    //   } else {
+    //     context.router.replaceAll([
+    //       const TabViewScreenRoute(children: [HomeScreenRoute()]),
+    //     ]);
+    //   }
+    // }
 
     if (state.hasError) {
       final error = state.error!;

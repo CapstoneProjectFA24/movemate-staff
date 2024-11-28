@@ -2,20 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
-import 'package:movemate_staff/features/job/data/model/request/booking_requesst.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/presentation/controllers/house_type_controller/house_type_controller.dart';
 import 'package:movemate_staff/features/job/presentation/providers/booking_provider.dart';
-import 'package:movemate_staff/features/job/presentation/widgets/function/image.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/function/label.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/function/number_input.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/function/text_input.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/house_type/house_type_selection_modal.dart';
-import 'package:movemate_staff/features/porter/presentation/screens/porter_detail_screen/porter_detail_screen.dart';
 import 'package:movemate_staff/features/test/domain/entities/house_entities.dart';
 import 'package:movemate_staff/hooks/use_fetch_obj.dart';
 import 'package:movemate_staff/utils/commons/widgets/app_bar.dart';
@@ -88,7 +83,7 @@ class GenerateNewJobScreen extends HookConsumerWidget {
 
     final selectedDateTime = useState<DateTime?>(initialBookingDate);
 
-    Future<void> _selectDateTime(BuildContext context) async {
+    Future<void> selectDateTime(BuildContext context) async {
       final now =
           DateTime.now().toUtc().add(const Duration(minutes: 15)); // Giờ UTC+7
       final DateTime? pickedDate = await showDatePicker(
@@ -191,7 +186,7 @@ class GenerateNewJobScreen extends HookConsumerWidget {
                       // ),
 
                       GestureDetector(
-                        onTap: () => _selectDateTime(context),
+                        onTap: () => selectDateTime(context),
                         child: Container(
                           padding: const EdgeInsets.symmetric(
                               vertical: 15, horizontal: 10),

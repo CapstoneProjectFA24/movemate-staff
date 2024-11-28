@@ -250,6 +250,20 @@ class BookingRepositoryImpl extends RemoteBaseRepository
     );
   }
 
+//Driver confirms receipt of cash from customer
+  @override
+  Future<SuccessModel> driverConfirmCashPayment({
+    required String accessToken,
+    required int id,
+  }) async {
+    print("tuan checking repo  $id ");
+
+    return getDataOf(
+      request: () => _bookingSource.driverConfirmCashPayment(
+          APIConstants.contentType, accessToken, id),
+    );
+  }
+
   @override
   Future<SuccessModel> updateStatusDriverResourse({
     required String accessToken,

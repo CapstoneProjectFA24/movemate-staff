@@ -115,6 +115,11 @@ abstract class BookingRepository {
     required String accessToken,
     required int id,
   });
+  //Driver confirms receipt of cash from customer
+  Future<SuccessModel> driverConfirmCashPayment({
+    required String accessToken,
+    required int id,
+  });
   // assign manual driver available
   Future<SuccessModel> updateManualDriverAvailableByBookingId({
     required String accessToken,

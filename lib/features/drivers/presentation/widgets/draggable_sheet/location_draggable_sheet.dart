@@ -1,21 +1,21 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart'; // Import for hooks
 import 'package:intl/intl.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
-import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/assignment_response_entity.dart';
+import 'package:movemate_staff/features/drivers/presentation/controllers/driver_controller/driver_controller.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_details_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/presentation/controllers/house_type_controller/house_type_controller.dart';
-import 'package:movemate_staff/features/porter/presentation/screens/porter_confirm_upload/porter_confirm_upload.dart';
 import 'package:movemate_staff/features/profile/domain/entities/profile_entity.dart';
 import 'package:movemate_staff/features/profile/presentation/controllers/profile_controller/profile_controller.dart';
 import 'package:movemate_staff/features/test/domain/entities/house_entities.dart';
 import 'package:movemate_staff/hooks/use_booking_status.dart';
 import 'package:movemate_staff/hooks/use_fetch_obj.dart';
+import 'package:movemate_staff/services/realtime_service/booking_realtime_entity/booking_realtime_entity.dart';
 import 'package:movemate_staff/services/realtime_service/booking_status_realtime/booking_status_stream_provider.dart';
 import 'package:movemate_staff/utils/commons/widgets/loading_overlay.dart';
-import 'package:movemate_staff/utils/enums/booking_status_type.dart';
 
 class DeliveryDetailsBottomSheet extends HookConsumerWidget {
   final BookingResponseEntity job;
@@ -29,8 +29,12 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
     final bookingStatus =
         useBookingStatus(bookingAsync.value, job.isReviewOnline);
     final state = ref.watch(houseTypeControllerProvider);
+
     print("vinh status ${bookingStatus.driverStatusMessage}");
     print("vinh status ${bookingStatus.isDriverMoving}");
+
+    // Show 'Credit Booking' only if isCredit is true
+
     final bookingControllerHouse =
         ref.read(houseTypeControllerProvider.notifier);
 
@@ -50,6 +54,7 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
     );
     final userProfileById = useFetchUserResult.data;
 
+// Normal content if isCredit is false
     return LoadingOverlay(
       isLoading: state.isLoading,
       child: DraggableScrollableSheet(
@@ -61,15 +66,25 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
             controller: scrollController,
             child: Column(
               children: [
-                _buildDeliveryStatusCard(job: job, status: bookingStatus),
+                _buildDeliveryStatusCard(
+                  job: job,
+                  status: bookingStatus,
+                  bookingAsync: bookingAsync.value,
+                  context: context,
+                  ref: ref,
+                ),
                 _buildTrackingInfoCard(
-                    job: job, status: bookingStatus, context: context),
+                  job: job,
+                  status: bookingStatus,
+                  context: context,
+                ),
                 _buildDetailsSheet(
-                    context: context,
-                    job: job,
-                    houseTypeById: houseTypeById,
-                    profile: userProfileById,
-                    status: bookingStatus),
+                  context: context,
+                  job: job,
+                  houseTypeById: houseTypeById,
+                  profile: userProfileById,
+                  status: bookingStatus,
+                ),
               ],
             ),
           );
@@ -78,9 +93,100 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
     );
   }
 
+  void _showConfirmModal(BuildContext context, WidgetRef ref, int id) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor:
+              Colors.white, // Keep the background white for contrast
+          title: const Text(
+            'Xác nhận đã nhận tiền mặt',
+            style: TextStyle(
+              color: Colors.green, // Set title color to blue for emphasis
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
+          ),
+          content: const Text(
+            'Bạn có chắc chắn đã nhận tiền mặt cho đơn này?',
+            style: TextStyle(
+              color: Colors.black87, // Slightly softer color for content text
+              fontSize: 16,
+            ),
+          ),
+          actions: <Widget>[
+            //button hủy
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close the dialog
+              },
+              style: TextButton.styleFrom(
+                backgroundColor:
+                    Colors.orange, // Orange background for the Cancel button
+                iconColor: Colors.white, // White text on the orange button
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(
+                      8), // Rounded corners for the button
+                ),
+              ),
+              child: const Text(
+                'Hủy',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            //button: xác nhận
+            TextButton(
+              onPressed: () async {
+                // Handle confirm action here
+                Navigator.pop(context); // Close the dialog
+                await ref
+                    .read(driverControllerProvider.notifier)
+                    .driverConfirmCashPayment(context: context, id: id);
+
+                // final tabsRouter = context.router.root
+                //     .innerRouterOf<TabsRouter>(TabViewScreenRoute.name);
+                // if (tabsRouter != null) {
+                //   tabsRouter.setActiveIndex(0);
+                //   context.router.popUntilRouteWithName(TabViewScreenRoute.name);
+                // } else {
+                //   context.router.replaceAll([
+                //     const TabViewScreenRoute(children: [HomeScreenRoute()]),
+                //   ]);
+                // }
+              },
+              style: TextButton.styleFrom(
+                backgroundColor:
+                    Colors.green, // Blue background for the Confirm button
+                iconColor: Colors.white, // White text on the blue button
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(
+                      8), // Rounded corners for the button
+                ),
+              ),
+              child: const Text(
+                'Xác nhận',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Widget _buildDeliveryStatusCard({
     required BookingResponseEntity job,
     required BookingStatusResult status,
+    required BookingRealtimeEntity? bookingAsync,
+    required BuildContext context,
+    required WidgetRef ref,
   }) {
     final dateParts = job.bookingAt.split(' ')[0].split('/');
     final timeParts = job.bookingAt.split(' ')[1].split(':');
@@ -111,12 +217,42 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Thời gian dự kiến $formattedBookingAt',
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
+            Row(
+              children: [
+                Text(
+                  'Thời gian dự kiến $formattedBookingAt',
+                  style: TextStyle(
+                    fontSize: bookingAsync?.isCredit == null
+                        ? 14
+                        : (bookingAsync!.isCredit! ? 12 : 14),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Spacer(),
+                if (bookingAsync?.isCredit == true && !status.isCompleted)
+                  Positioned(
+                    top: 16,
+                    right: 25,
+                    child: Column(
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.credit_card, color: Colors.green),
+                          onPressed: () {
+                            _showConfirmModal(context, ref, job.id);
+                          },
+                        ),
+                        const FittedBox(
+                          child: Text(
+                            'Nhận tiền mặt',
+                            style: const TextStyle(
+                              fontSize: 9,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
             ),
             const SizedBox(height: 12),
             Row(
