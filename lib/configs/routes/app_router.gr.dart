@@ -264,6 +264,18 @@ abstract class _$AppRouter extends RootStackRouter {
         child: const ProfileScreen(),
       );
     },
+    ReviewerMovingScreenRoute.name: (routeData) {
+      final args = routeData.argsAs<ReviewerMovingScreenRouteArgs>();
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: ReviewerMovingScreen(
+          key: args.key,
+          job: args.job,
+          bookingStatus: args.bookingStatus,
+          ref: args.ref,
+        ),
+      );
+    },
     SignInScreenRoute.name: (routeData) {
       final args = routeData.argsAs<SignInScreenRouteArgs>(
           orElse: () => const SignInScreenRouteArgs());
@@ -1204,6 +1216,55 @@ class ProfileScreenRoute extends PageRouteInfo<void> {
   static const String name = 'ProfileScreenRoute';
 
   static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [ReviewerMovingScreen]
+class ReviewerMovingScreenRoute
+    extends PageRouteInfo<ReviewerMovingScreenRouteArgs> {
+  ReviewerMovingScreenRoute({
+    Key? key,
+    required BookingResponseEntity job,
+    required BookingStatusResult bookingStatus,
+    required WidgetRef ref,
+    List<PageRouteInfo>? children,
+  }) : super(
+          ReviewerMovingScreenRoute.name,
+          args: ReviewerMovingScreenRouteArgs(
+            key: key,
+            job: job,
+            bookingStatus: bookingStatus,
+            ref: ref,
+          ),
+          initialChildren: children,
+        );
+
+  static const String name = 'ReviewerMovingScreenRoute';
+
+  static const PageInfo<ReviewerMovingScreenRouteArgs> page =
+      PageInfo<ReviewerMovingScreenRouteArgs>(name);
+}
+
+class ReviewerMovingScreenRouteArgs {
+  const ReviewerMovingScreenRouteArgs({
+    this.key,
+    required this.job,
+    required this.bookingStatus,
+    required this.ref,
+  });
+
+  final Key? key;
+
+  final BookingResponseEntity job;
+
+  final BookingStatusResult bookingStatus;
+
+  final WidgetRef ref;
+
+  @override
+  String toString() {
+    return 'ReviewerMovingScreenRouteArgs{key: $key, job: $job, bookingStatus: $bookingStatus, ref: $ref}';
+  }
 }
 
 /// generated route for
