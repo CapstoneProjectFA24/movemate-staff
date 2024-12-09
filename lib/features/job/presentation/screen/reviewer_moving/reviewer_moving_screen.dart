@@ -212,54 +212,203 @@ class _ReviewerMovingScreenState extends State<ReviewerMovingScreen> {
     }
   }
 
-  // void _buildInitialRoute({bool useFirebaseLocation = false}) async {
-  //   if (_navigationController != null && _currentPosition != null) {
-  //     LatLng waypoint;
-  //     LatLng? startPosition;
+  Future<void> _simulateCompleteJourney() async {
+    if (_navigationController != null) {
+      LatLng destination = _getPickupPointLatLng();
+      // Cập nhật vị trí cuối cùng lên Firebase
+      _updateLocationRealtime(destination, "REVIEWER");
 
-  //     if (useFirebaseLocation) {
-  //       // Lấy vị trí từ Firebase
-  //       startPosition = await _getLastLocationFromFirebase();
-  //     }
-  //     startPosition ??= _currentPosition;
-  //     if (startPosition != null) {
-  //       waypoint = _getPickupPointLatLng();
+      // Kết thúc điều hướng
+      _finishNavigation();
 
-  //       await _navigationController?.buildRoute(
-  //         waypoints: [
-  //           LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
-  //           waypoint,
-  //           // LatLng(10.751169, 106.607249),
-  //           // LatLng(10.775458, 106.601052)
-  //         ],
-  //         profile: DrivingProfile.drivingTraffic,
-  //       );
-  //     }
-  //   }
-  // }
+      // Thông báo hoàn thành (tùy chọn)
+      if (mounted) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+            backgroundColor: AssetsConstants.whiteColor,
+            contentPadding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
+            actionsPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            title: Row(
+              children: [
+                const Icon(
+                  Icons.location_on,
+                  color: AssetsConstants.primaryLight,
+                  size: 28,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        "Xác nhận tới ngay",
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: AssetsConstants.blackColor,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        "Vui lòng xác nhận để tiếp tục",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AssetsConstants.blackColor.withOpacity(0.7),
+                          fontWeight: FontWeight.normal,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              Row(
+                children: [
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        context.router.pop();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AssetsConstants.primaryLight,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: const Text(
+                        "Xác nhận đã đến",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: AssetsConstants.whiteColor,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      }
+    }
+  }
 
   Future<void> _buildInitialRoute({bool useFirebaseLocation = false}) async {
     if (_navigationController != null) {
       LatLng? startPosition;
 
       if (useFirebaseLocation) {
-        // Lấy vị trí từ Firebase
         startPosition = await _getLastLocationFromFirebase();
       }
 
-      // Nếu không lấy được từ Firebase thì dùng vị trí hiện tại
       startPosition ??= _currentPosition;
 
       if (startPosition != null) {
         LatLng waypoint = _getPickupPointLatLng();
 
-        await _navigationController?.buildRoute(
-          waypoints: [
-            LatLng(startPosition.latitude, startPosition.longitude),
-            waypoint,
-          ],
-          profile: DrivingProfile.drivingTraffic,
-        );
+        // Chỉ vẽ route nếu chưa đến điểm cuối
+        if (startPosition.latitude != waypoint.latitude ||
+            startPosition.longitude != waypoint.longitude) {
+          await _navigationController?.buildRoute(
+            waypoints: [
+              LatLng(startPosition.latitude, startPosition.longitude),
+              waypoint,
+            ],
+            profile: DrivingProfile.drivingTraffic,
+          );
+        } else {
+          if (mounted) {
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) => AlertDialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                backgroundColor: AssetsConstants.whiteColor,
+                title: Row(
+                  children: [
+                    const Icon(
+                      Icons.location_on,
+                      color: AssetsConstants.primaryLight,
+                      size: 28,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text(
+                            "Đã đến điểm đến",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: AssetsConstants.blackColor,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            "Bạn đã tới vui lòng bấm xác nhận để hoàn thành",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color:
+                                  AssetsConstants.blackColor.withOpacity(0.7),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                actions: [
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          context.router.pop();
+                          context.router
+                              .push(JobDetailsScreenRoute(job: widget.job));
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AssetsConstants.primaryLight,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: const Text(
+                          "Xác nhận",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+          print("Đã đến điểm cuối");
+        }
       } else {
         print("No valid starting position available");
       }
@@ -281,6 +430,15 @@ class _ReviewerMovingScreenState extends State<ReviewerMovingScreen> {
         });
       }
     }
+  }
+
+  void _finishNavigation() {
+    setState(() {
+      _isNavigationStarted = false;
+      routeProgressEvent = null;
+    });
+    _navigationController?.finishNavigation();
+    _buildInitialRoute();
   }
 
   @override
@@ -328,13 +486,142 @@ class _ReviewerMovingScreenState extends State<ReviewerMovingScreen> {
                               "REVIEWER",
                             );
                           }
+                          if (routeProgressEvent.distanceRemaining != null &&
+                              routeProgressEvent.distanceRemaining! <= 50) {
+                            showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (context) => AlertDialog(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                title: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.location_on,
+                                      color: AssetsConstants.primaryLight,
+                                      size: 28,
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            "Đã đến điểm mới",
+                                            style: const TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                              color: AssetsConstants.blackColor,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            "Vui lòng xác nhận để tiếp tục",
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color: AssetsConstants.blackColor
+                                                  .withOpacity(0.7),
+                                              fontWeight: FontWeight.normal,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                backgroundColor: AssetsConstants.whiteColor,
+                                contentPadding:
+                                    const EdgeInsets.fromLTRB(24, 20, 24, 0),
+                                actionsPadding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 12),
+                                actions: [
+                                  Row(
+                                    children: [
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: ElevatedButton(
+                                          onPressed: () async {
+                                            context.router.pop();
+                                            // if (_isFirstNavigation) {
+                                            //   setState(() {
+                                            //     instructionImage =
+                                            //         const SizedBox.shrink();
+                                            //     // routeProgressEvent = null;
+                                            //   });
+                                            //   context.router.push(
+                                            //       DriverConfirmUploadRoute(
+                                            //     job: _currentJob,
+                                            //   ));
+
+                                            //   _startNextRoute();
+                                            // } else {
+                                            //   setState(() {
+                                            //     instructionImage =
+                                            //         const SizedBox.shrink();
+                                            //     // routeProgressEvent = null;
+                                            //     _stopNavigation();
+                                            //   });
+                                            //   context.router.push(
+                                            //       DriverConfirmUploadRoute(
+                                            //     job: _currentJob,
+                                            //   ));
+                                            // }
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor:
+                                                AssetsConstants.primaryLight,
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 12),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            elevation: 0,
+                                          ),
+                                          child: Text(
+                                            "Xác nhận đã đến",
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w600,
+                                              color: AssetsConstants.whiteColor,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
                         });
                       }
                     },
+                  ),
+                  Positioned(
+                    bottom: _isNavigationStarted ? 20 : 280,
+                    left: 0,
+                    right: 0,
+                    child: BottomActionView(
+                      onStopNavigationCallback: () {
+                        setState(() {
+                          instructionImage = const SizedBox.shrink();
+                          routeProgressEvent = null;
+                          _finishNavigation();
+                        });
+                      },
+                      recenterButton: recenterButton,
+                      controller: _navigationController,
+                      routeProgressEvent: routeProgressEvent,
+                    ),
                   )
                 ],
               ),
-            )
+            ),
+            instructionImage,
           ],
         ),
       ),
@@ -346,6 +633,13 @@ class _ReviewerMovingScreenState extends State<ReviewerMovingScreen> {
                   FloatingActionButton(
                     onPressed: _isMapReady ? _startNavigation : null,
                     child: const Icon(Icons.directions),
+                  ),
+                const SizedBox(height: 10), // Khoảng cách giữa các nút
+                if (!_isNavigationStarted)
+                  FloatingActionButton(
+                    onPressed: _simulateCompleteJourney,
+                    backgroundColor: Colors.green,
+                    child: const Icon(Icons.check),
                   ),
               ],
             )
@@ -375,6 +669,9 @@ class _ReviewerMovingScreenState extends State<ReviewerMovingScreen> {
 
     if (_navigationController != null) {
       _navigationController!.onDispose();
+    }
+    if (_isNavigationStarted) {
+      _finishNavigation();
     }
   }
 }
