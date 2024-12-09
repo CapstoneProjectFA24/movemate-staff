@@ -145,7 +145,6 @@ class JobDetailsScreen extends HookConsumerWidget {
             Navigator.of(context).pop();
           },
           onCallBackFirst: () {
-            print("onCallBackFirst triggered");
             context.router.push(ChatWithCustomerScreenRoute(
               customerId: job.userId.toString(),
               bookingId: job.id.toString(),

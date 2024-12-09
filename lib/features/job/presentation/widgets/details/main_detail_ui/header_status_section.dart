@@ -410,8 +410,9 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
         isActive: status.canConfirmMoving,
         isCompleted: isStepCompleted(3, progressionStates),
         action: status.canConfirmMoving ? 'Bắt đầu' : null,
-        onPressed:
-            status.canConfirmMoving ? () => _confirmMoving(context, ref) : null,
+        onPressed: status.canConfirmMoving
+            ? () => _confirmMoving(context, ref, status)
+            : null,
       ),
       _TimelineStep(
         title: 'Đang đến',
@@ -503,13 +504,59 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
   void _confirmReviewAssignment(BuildContext context, WidgetRef ref) =>
       _confirmAction(
           context, ref, "Xác nhận đánh giá", "Xác nhận", job.id.toString());
-  void _confirmMoving(BuildContext context, WidgetRef ref) => _confirmAction(
-      context, ref, "Bắt đầu di chuyển", "Bắt đầu", job.id.toString());
+  void _confirmMoving(
+          BuildContext context, WidgetRef ref, BookingStatusResult status) =>
+      _confirmOpenMap(context, ref, "Bắt đầu di chuyển", "Mở bản đồ",
+          job.id.toString(), status, job);
   void _confirmArrival(BuildContext context, WidgetRef ref) => _confirmAction(
       context, ref, "Xác nhận đã tới", "Đã tới", job.id.toString());
   void _confirmUpdate(BuildContext context, WidgetRef ref) =>
       _confirmActionUpdate(
           context, ref, "Xác nhận cập nhật", "Cập nhật mới", job.id.toString());
+
+  void _confirmOpenMap(
+      BuildContext context,
+      WidgetRef ref,
+      String title,
+      String action,
+      String jobId,
+      BookingStatusResult status,
+      BookingResponseEntity job) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        backgroundColor: AssetsConstants.whiteColor,
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const LabelText(
+                content: "Đóng",
+                size: 16,
+                fontWeight: FontWeight.bold,
+                color: AssetsConstants.blackColor),
+          ),
+          TextButton(
+            onPressed: () {
+              context.router.push(ReviewerMovingScreenRoute(
+                  job: job, bookingStatus: status, ref: ref));
+              Navigator.pop(context);
+              // await ref
+              //     .read(reviewerUpdateControllerProvider.notifier)
+              //     .updateReviewerStatus(id: job.id, context: context);
+              // fetchResult.refresh();
+              // Navigator.pop(context);
+            },
+            child: LabelText(
+                content: action,
+                size: 16,
+                fontWeight: FontWeight.bold,
+                color: AssetsConstants.primaryLight),
+          ),
+        ],
+      ),
+    );
+  }
 
   void _confirmAction(BuildContext context, WidgetRef ref, String title,
       String action, String jobId) {
