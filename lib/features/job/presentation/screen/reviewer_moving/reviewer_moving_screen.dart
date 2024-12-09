@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
@@ -11,6 +12,7 @@ import 'package:movemate_staff/features/drivers/presentation/controllers/stream_
 import 'package:movemate_staff/features/drivers/presentation/widgets/draggable_sheet/location_draggable_sheet.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/assignment_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
+import 'package:movemate_staff/features/job/presentation/controllers/reviewer_update_controller/reviewer_update_controller.dart';
 import 'package:movemate_staff/hooks/use_booking_status.dart';
 import 'package:movemate_staff/models/user_model.dart';
 import 'package:movemate_staff/utils/commons/functions/functions_common_export.dart';
@@ -53,7 +55,7 @@ class _ReviewerMovingScreenState extends State<ReviewerMovingScreen> {
   UserModel? user;
   final DatabaseReference locationRef =
       FirebaseDatabase.instance.ref().child('tracking_locations');
-
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   @override
   void initState() {
     super.initState();
@@ -75,6 +77,23 @@ class _ReviewerMovingScreenState extends State<ReviewerMovingScreen> {
 
   Future<void> _initUserId() async {
     user = await SharedPreferencesUtils.getInstance("user_token");
+  }
+
+  Future<Map<String, dynamic>?> _getBookingData() async {
+    try {
+      final docSnapshot = await _firestore
+          .collection('bookings')
+          .doc(widget.job.id.toString())
+          .get();
+
+      if (docSnapshot.exists) {
+        return docSnapshot.data();
+      }
+      return null;
+    } catch (e) {
+      print("Error getting Firestore data: $e");
+      return null;
+    }
   }
 
   Future<void> _initUserIdAndStart() async {
@@ -422,9 +441,34 @@ class _ReviewerMovingScreenState extends State<ReviewerMovingScreen> {
         setState(() {
           _isNavigationStarted = true;
         });
+
         await _navigationController?.startNavigation();
+
+        final bookingData = await _getBookingData();
+
+        if (bookingData != null && bookingData['Assignments'] != null) {
+          final assignments = bookingData['Assignments'] as List;
+
+          final hasValidAssignment = assignments.any((assignment) =>
+              assignment['StaffType'] == 'REVIEWER' &&
+              assignment['Status'] == 'ASSIGNED');
+
+          try {
+            if (hasValidAssignment) {
+              await widget.ref
+                  .read(reviewerUpdateControllerProvider.notifier)
+                  .updateReviewerStatus(
+                    id: widget.job.id,
+                    context: context,
+                  );
+            }
+          } catch (reviewerError) {
+            print(
+                "Lỗi khi bắt đầu điều hướng chuyển status:  ${reviewerError.toString()}");
+          }
+        }
       } catch (e) {
-        print("Lỗi khi bắt đầu điều hướng: $e");
+        print("Lỗi khi bắt đầu di chuyển $e");
         setState(() {
           _isNavigationStarted = false;
         });
