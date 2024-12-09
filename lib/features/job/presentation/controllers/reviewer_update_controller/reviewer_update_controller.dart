@@ -87,7 +87,7 @@ class ReviewerUpdateController extends _$ReviewerUpdateController {
 
     state = await AsyncValue.guard(() async {
       print("log here go 1");
-      print("log here go 2 $request ");
+     
       final response = await ref
           .read(bookingRepositoryProvider)
           .updateStateReviewer(
@@ -117,9 +117,9 @@ class ReviewerUpdateController extends _$ReviewerUpdateController {
         ),
       );
 
-      if (state.hasError) {
-        await ref.read(signInControllerProvider.notifier).signOut(context);
-      }
+      // if (state.hasError) {
+      //   await ref.read(signInControllerProvider.notifier).signOut(context);
+      // }
     }
   }
 
