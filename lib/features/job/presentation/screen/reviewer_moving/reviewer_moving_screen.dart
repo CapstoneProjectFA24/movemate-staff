@@ -50,6 +50,7 @@ class _ReviewerMovingScreenState extends State<ReviewerMovingScreen> {
   LatLng? _simulatedPosition; // Thêm biến để lưu vị trí giả lập
   Timer? _locationUpdateTimer;
   LatLng? _currentPosition;
+  bool _isDoneTrip = false;
   //Location tracking
   StreamSubscription<Position>? _positionStreamSubscription;
   UserModel? user;
@@ -233,14 +234,8 @@ class _ReviewerMovingScreenState extends State<ReviewerMovingScreen> {
 
   Future<void> _simulateCompleteJourney() async {
     if (_navigationController != null) {
-      LatLng destination = _getPickupPointLatLng();
-      // Cập nhật vị trí cuối cùng lên Firebase
-      _updateLocationRealtime(destination, "REVIEWER");
-
-      // Kết thúc điều hướng
       _finishNavigation();
 
-      // Thông báo hoàn thành (tùy chọn)
       if (mounted) {
         showDialog(
           context: context,
@@ -295,7 +290,18 @@ class _ReviewerMovingScreenState extends State<ReviewerMovingScreen> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () async {
-                        context.router.pop();
+                        LatLng destination = _getPickupPointLatLng();
+                        // Cập nhật vị trí cuối cùng lên Firebase
+                        _updateLocationRealtime(destination, "REVIEWER");
+                        context.router
+                          ..pop()
+                          ..replace(JobDetailsScreenRoute(job: widget.job));
+                        await widget.ref
+                            .read(reviewerUpdateControllerProvider.notifier)
+                            .updateReviewerStatus(
+                              id: widget.job.id,
+                              context: context,
+                            );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AssetsConstants.primaryLight,
@@ -349,6 +355,9 @@ class _ReviewerMovingScreenState extends State<ReviewerMovingScreen> {
           );
         } else {
           if (mounted) {
+            setState(() {
+              _isDoneTrip = true;
+            });
             showDialog(
               context: context,
               barrierDismissible: false,
@@ -399,10 +408,16 @@ class _ReviewerMovingScreenState extends State<ReviewerMovingScreen> {
                     child: SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () {
-                          context.router.pop();
+                        onPressed: () async {
                           context.router
-                              .push(JobDetailsScreenRoute(job: widget.job));
+                            ..pop()
+                            ..replace(JobDetailsScreenRoute(job: widget.job));
+                          await widget.ref
+                              .read(reviewerUpdateControllerProvider.notifier)
+                              .updateReviewerStatus(
+                                id: widget.job.id,
+                                context: context,
+                              );
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AssetsConstants.primaryLight,
@@ -588,31 +603,24 @@ class _ReviewerMovingScreenState extends State<ReviewerMovingScreen> {
                                       Expanded(
                                         child: ElevatedButton(
                                           onPressed: () async {
-                                            context.router.pop();
-                                            // if (_isFirstNavigation) {
-                                            //   setState(() {
-                                            //     instructionImage =
-                                            //         const SizedBox.shrink();
-                                            //     // routeProgressEvent = null;
-                                            //   });
-                                            //   context.router.push(
-                                            //       DriverConfirmUploadRoute(
-                                            //     job: _currentJob,
-                                            //   ));
+                                            context.router
+                                              ..pop()
+                                              ..replace(JobDetailsScreenRoute(
+                                                  job: widget.job));
+                                            await widget.ref
+                                                .read(
+                                                    reviewerUpdateControllerProvider
+                                                        .notifier)
+                                                .updateReviewerStatus(
+                                                  id: widget.job.id,
+                                                  context: context,
+                                                );
 
-                                            //   _startNextRoute();
-                                            // } else {
-                                            //   setState(() {
-                                            //     instructionImage =
-                                            //         const SizedBox.shrink();
-                                            //     // routeProgressEvent = null;
-                                            //     _stopNavigation();
-                                            //   });
-                                            //   context.router.push(
-                                            //       DriverConfirmUploadRoute(
-                                            //     job: _currentJob,
-                                            //   ));
-                                            // }
+                                            setState(() {
+                                              instructionImage =
+                                                  const SizedBox.shrink();
+                                              _finishNavigation();
+                                            });
                                           },
                                           style: ElevatedButton.styleFrom(
                                             backgroundColor:
@@ -669,7 +677,7 @@ class _ReviewerMovingScreenState extends State<ReviewerMovingScreen> {
           ],
         ),
       ),
-      floatingActionButton: _showNavigationButton
+      floatingActionButton: _showNavigationButton && !_isDoneTrip
           ? Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
