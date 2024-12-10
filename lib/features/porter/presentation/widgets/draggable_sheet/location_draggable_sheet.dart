@@ -439,16 +439,16 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
                 style: const TextStyle(fontSize: 14),
               ),
             ),
-            TextButton(
-              onPressed: () {},
-              child: const Text(
-                'Xem thêm',
-                style: TextStyle(
-                  color: Color(0xFFFF7643),
-                  fontSize: 14,
-                ),
-              ),
-            ),
+            // TextButton(
+            //   onPressed: () {},
+            //   child: const Text(
+            //     'Xem thêm',
+            //     style: TextStyle(
+            //       color: Color(0xFFFF7643),
+            //       fontSize: 14,
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ],

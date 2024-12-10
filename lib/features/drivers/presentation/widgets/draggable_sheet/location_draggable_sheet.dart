@@ -583,17 +583,17 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            const SizedBox(width: 12),
-            TextButton(
-              onPressed: () {},
-              child: const Text(
-                'Xem thêm',
-                style: TextStyle(
-                  color: Color(0xFFFF7643),
-                  fontSize: 14,
-                ),
-              ),
-            ),
+            // const SizedBox(width: 12),
+            // TextButton(
+            //   onPressed: () {},
+            //   child: const Text(
+            //     'Xem thêm',
+            //     style: TextStyle(
+            //       color: Color(0xFFFF7643),
+            //       fontSize: 14,
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ],
