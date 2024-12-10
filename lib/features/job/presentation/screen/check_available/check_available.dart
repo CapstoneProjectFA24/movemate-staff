@@ -43,6 +43,12 @@ class CheckAvailable extends HookConsumerWidget {
 
     final datasPorter = useFetchResultPorter.data;
 
+    bool hasAssignmentInbooking(String bookingDetailsType) {
+      return job.bookingDetails.any((a) => a.type == bookingDetailsType);
+    }
+
+    // final checkAvailable = hasAssignmentInbooking();
+
     return Stack(
       alignment: Alignment.topRight,
       children: [
