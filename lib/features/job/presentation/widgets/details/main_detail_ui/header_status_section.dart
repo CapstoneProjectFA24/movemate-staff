@@ -421,7 +421,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
         isCompleted: isStepCompleted(4, progressionStates),
         action: status.canConfirmArrival ? 'Đã tới' : null,
         onPressed: status.canConfirmArrival
-            ? () => _confirmArrival(context, ref)
+            ? () => _confirmArrival(context, ref, status)
             : null,
       ),
       _TimelineStep(
@@ -508,8 +508,10 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
           BuildContext context, WidgetRef ref, BookingStatusResult status) =>
       _confirmOpenMap(context, ref, "Bắt đầu di chuyển", "Mở bản đồ",
           job.id.toString(), status, job);
-  void _confirmArrival(BuildContext context, WidgetRef ref) => _confirmAction(
-      context, ref, "Xác nhận đã tới", "Đã tới", job.id.toString());
+  void _confirmArrival(
+          BuildContext context, WidgetRef ref, BookingStatusResult status) =>
+      _confirmOpenMap(context, ref, "Xác nhận đã tới", "Đã tới",
+          job.id.toString(), status, job);
   void _confirmUpdate(BuildContext context, WidgetRef ref) =>
       _confirmActionUpdate(
           context, ref, "Xác nhận cập nhật", "Cập nhật mới", job.id.toString());
