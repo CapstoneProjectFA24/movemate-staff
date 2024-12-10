@@ -87,7 +87,7 @@ class ReviewerUpdateController extends _$ReviewerUpdateController {
 
     state = await AsyncValue.guard(() async {
       print("log here go 1");
-     
+
       final response = await ref
           .read(bookingRepositoryProvider)
           .updateStateReviewer(
