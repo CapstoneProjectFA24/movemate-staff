@@ -1,5 +1,6 @@
 // File: driver_confirm_upload.dart
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -42,20 +43,38 @@ class DriverConfirmUpload extends HookConsumerWidget {
     final uploadedImages = ref.watch(uploadedImagesProvider);
     final bookingAsync = ref.watch(bookingStreamProvider(job.id.toString()));
     final status = useBookingStatus(bookingAsync.value, job.isReviewOnline);
-    // final bookingController = ref.read(bookingControllerProvider.notifier);
 
-    // final useFetchResult = useFetchObject<BookingResponseEntity>(
-    //   function: (context) => bookingController.getBookingById(job.id, context),
-    //   context: context,
-    // );
-    // useFetchResult.refresh;
-    // final bookingTypeData = useFetchResult.data;
-    // final  job = useFetchResult.data;
-    // print("tuan object check 1${bookingTypeData} ");
-    // print("tuan object check 2 ${useFetchResult.data} ");
-    // print("tuan object check 3 ${useFetchResult.isFetchingData} ");
+    // final bookingTrackers = bookingAsync.value?.bookingTrackers ?? [];
+    // if (bookingTrackers.isNotEmpty) {
+    //   // Do something with the bookingTrackers list
+    // }
+    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+    final _bookingData = useState<Map<String, dynamic>?>(null);
 
-    // print("tuan check ${job.id} ");
+    Future<void> _getBookingData() async {
+      try {
+        final data = await _firestore
+            .collection('bookings')
+            .doc(job.id.toString())
+            .get()
+            .then((doc) => doc.data());
+        _bookingData.value = data;
+      } catch (e) {
+        print("Error getting Firestore data: $e");
+      }
+    }
+
+    useEffect(() {
+      // Fetch booking data when the widget is first built
+      _getBookingData();
+    }, []);
+
+    if (_bookingData.value == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    print('Booking ID: ${_bookingData.value?['Id']}');
+    print('Booking Status: ${_bookingData.value?['Status']}');
 
     List<dynamic> getTrackerSources(
         BookingResponseEntity job, String trackerType) {

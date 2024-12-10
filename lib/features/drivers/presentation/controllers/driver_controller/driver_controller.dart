@@ -84,20 +84,18 @@ class DriverController extends _$DriverController {
     final authRepository = ref.read(authRepositoryProvider);
     final user = await SharedPreferencesUtils.getInstance('user_token');
 
-    print("vinh go here $id");
     state = await AsyncValue.guard(() async {
-      print("vinh go here 1 $id");
       await ref
           .read(bookingRepositoryProvider)
           .updateStatusDriverWithoutResourse(
             accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
             id: id,
           );
-      print("vinh go here 2 $id");
+
       ref
           .read(refreshDriverList.notifier)
           .update((state) => !ref.read(refreshDriverList));
-      print("vinh go here 3 $id");
+
       showSnackBar(
         context: context,
         content: "Cập nhật trạng thái thành công",
@@ -108,24 +106,23 @@ class DriverController extends _$DriverController {
     });
 
     if (state.hasError) {
-      final error = state.error!;
-      if (error is DioException) {
-        final statusCode = error.response?.statusCode ?? error.onStatusDio();
+      final statusCode = (state.error as DioException).onStatusDio();
 
-        handleAPIError(
+      if (statusCode != 400) {
+        await handleAPIError(
           statusCode: statusCode,
           stateError: state.error!,
           context: context,
-        );
-      } else {
-        showSnackBar(
-          context: context,
-          content: error.toString(),
-          icon: AssetsConstants.iconError,
-          backgroundColor: Colors.red,
-          textColor: AssetsConstants.whiteColor,
+          onCallBackGenerateToken: () async => await reGenerateToken(
+            authRepository,
+            context,
+          ),
         );
       }
+
+      // if (state.hasError) {
+      //   await ref.read(signInControllerProvider.notifier).signOut(context);
+      // }
     }
   }
 
