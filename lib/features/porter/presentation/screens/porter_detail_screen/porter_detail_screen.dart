@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
@@ -54,12 +55,14 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
   //Location tracking
   StreamSubscription<Position>? _positionStreamSubscription;
   Timer? _locationUpdateTimer;
-  bool _isFirstNavigation = true; // Add this flag
-  LatLng? _nextDestination; // Add this to store next destination
+  bool _isFirstNavigation = true;
+  LatLng? _nextDestination;
   // realtime
   UserModel? user;
   final DatabaseReference locationRef =
       FirebaseDatabase.instance.ref().child('tracking_locations');
+
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   late StreamSubscription<BookingResponseEntity> _jobSubscription;
   late BookingResponseEntity _currentJob;
@@ -87,6 +90,23 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
         });
       }
     });
+  }
+
+  Future<Map<String, dynamic>?> _getBookingData() async {
+    try {
+      final docSnapshot = await _firestore
+          .collection('bookings')
+          .doc(widget.job.id.toString())
+          .get();
+
+      if (docSnapshot.exists) {
+        return docSnapshot.data();
+      }
+      return null;
+    } catch (e) {
+      print("Error getting Firestore data: $e");
+      return null;
+    }
   }
 
   Future<void> _initNavigation() async {
@@ -266,20 +286,41 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
       );
 
       if (mounted) {
-        setState(() {
-          if (widget.bookingStatus.isPorterStartPoint) {
-            _currentPosition = LatLng(position.latitude, position.longitude);
-          } else if (widget.bookingStatus.isPorterAtDeliveryPoint) {
-            _currentPosition = _getPickupPointLatLng();
-          } else if (widget.bookingStatus.isPorterEndDeliveryPoint) {
-            _currentPosition = _getDeliveryPointLatLng();
-          }
+        setState(() async {
+          final bookingData = await _getBookingData();
 
-          if (_currentPosition != null) {
-            _updateLocationOnce(_currentPosition!, "PORTER");
-            _buildInitialRoute();
-          } else {
-            print("Invalid position. Unable to update location.");
+          if (bookingData != null &&
+              bookingData["Assignments"] != null &&
+              bookingData["Status"] != null) {
+            final assignments = bookingData["Assignments"] as List;
+            final fireStoreBookingStatus = bookingData["Status"] as String;
+
+            final porterAssignmentStatus =
+                _getPorterAssignmentStatus(assignments);
+            final buildRouteFlags = _getBuildRouteFlags(
+                porterAssignmentStatus, fireStoreBookingStatus);
+
+            if (buildRouteFlags['isPorterStartBuildRoute']!) {
+              _currentPosition = LatLng(position.latitude, position.longitude);
+            } else if (buildRouteFlags['isPorterAtDeliveryPointBuildRoute']!) {
+              _currentPosition = _getPickupPointLatLng();
+            } else if (buildRouteFlags['isPorterEndDeliveryPointBuildRoute']!) {
+              _currentPosition = _getDeliveryPointLatLng();
+            }
+
+            if (_currentPosition != null) {
+              LatLng? lastLocation = await _getLastLocationFromFirebase();
+
+              if (lastLocation != null) {
+                _updateLocationOnce(_currentPosition!, "PORTER");
+                await _buildInitialRoute(useFirebaseLocation: true);
+              } else {
+                _updateLocationOnce(_currentPosition!, "PORTER");
+                _buildInitialRoute(useFirebaseLocation: false);
+              }
+            } else {
+              print("Invalid position. Unable to update location.");
+            }
           }
         });
       }
@@ -288,39 +329,195 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
     }
   }
 
-  void _buildInitialRoute() async {
-    // flag ở đây check xóa sau
+  Map<String, bool> _getPorterAssignmentStatus(List assignments) {
+    return {
+      'isPorterWaiting': assignments
+          .any((a) => a['StaffType'] == "PORTER" && a["Status"] == "WAITING"),
+      'isPorterAssigned': assignments
+          .any((a) => a['StaffType'] == "PORTER" && a["Status"] == "ASSIGNED"),
+      'isPorterIncoming': assignments
+          .any((a) => a['StaffType'] == "PORTER" && a["Status"] == "INCOMING"),
+      'isPorterArrived': assignments
+          .any((a) => a['StaffType'] == "PORTER" && a["Status"] == "ARRIVED"),
+      'isPorterInprogress': assignments.any(
+          (a) => a['StaffType'] == "PORTER" && a["Status"] == "IN_PROGRESS"),
+      'isPorterPacking': assignments
+          .any((a) => a["StaffType"] == "PORTER" && a["Status"] == "PACKING"),
+      'isPorterOngoing': assignments
+          .any((a) => a['StaffType'] == "PORTER" && a["Status"] == "ONGOING"),
+      'isPorterDelivered': assignments
+          .any((a) => a['StaffType'] == "PORTER" && a["Status"] == "DELIVERED"),
+      'isPorterUnloaded': assignments
+          .any((a) => a['StaffType'] == "PORTER" && a["Status"] == "UNLOADED"),
+      'isPorterCompleted': assignments
+          .any((a) => a['StaffType'] == "PORTER" && a["Status"] == "COMPLETED"),
+      'isPorterFailed': assignments
+          .any((a) => a['StaffType'] == "PORTER" && a["Status"] == "FAILED"),
+    };
+  }
 
-    if (_navigationController != null && _currentPosition != null) {
-      if (_currentPosition != null) {
-        print("Current Position: $_currentPosition");
-      } else {
-        print("Current Position is null");
-      }
-      LatLng waypoint;
-      if (widget.bookingStatus.isPorterStartPoint) {
-        print("vinh log status build route 1");
-        waypoint = _getPickupPointLatLng();
-        _nextDestination = _getDeliveryPointLatLng();
-      } else if (widget.bookingStatus.isPorterAtDeliveryPoint) {
-        print("vinh log status build route 2");
-        waypoint = _getDeliveryPointLatLng();
-      } else if (widget.bookingStatus.isPorterEndDeliveryPoint) {
-        print("vinh log status build route 3");
-        waypoint = _getDeliveryPointLatLng();
-      } else {
-        return;
-      }
+  Map<String, bool> _getBuildRouteFlags(
+      Map<String, bool> porterAssignmentStatus, String fireStoreBookingStatus) {
+    bool isPorterStartBuildRoute = false;
+    bool isPorterAtDeliveryPointBuildRoute = false;
+    bool isPorterEndDeliveryPointBuildRoute = false;
 
-      await _navigationController?.buildRoute(
-        waypoints: [
-          LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
-          waypoint,
-          // LatLng(10.751169, 106.607249),
-          // LatLng(10.775458, 106.601052)
-        ],
-        profile: DrivingProfile.drivingTraffic,
-      );
+    switch (fireStoreBookingStatus) {
+      case "COMING":
+        isPorterStartBuildRoute = porterAssignmentStatus['isPorterWaiting']! ||
+            porterAssignmentStatus['isPorterAssigned']! ||
+            porterAssignmentStatus['isPorterIncoming']! ||
+            (!porterAssignmentStatus['isPorterInprogress']! &&
+                !porterAssignmentStatus['isPorterCompleted']! &&
+                !porterAssignmentStatus['isPorterFailed']!);
+
+        if (porterAssignmentStatus['isPorterIncoming']! ||
+            porterAssignmentStatus['isPorterAssigned']!) {
+          setState(() {
+            // canDriverConfirmIncomingFlag = true;
+          });
+        } else {
+          setState(() {
+            // canDriverConfirmIncomingFlag = false;
+          });
+        }
+
+        break;
+      case "IN_PROGRESS":
+        isPorterStartBuildRoute = porterAssignmentStatus['isPorterWaiting']! ||
+            porterAssignmentStatus['isPorterAssigned']! ||
+            porterAssignmentStatus['isPorterIncoming']! ||
+            (!porterAssignmentStatus['isPorterInprogress']! &&
+                !porterAssignmentStatus['isPorterArrived']! &&
+                !porterAssignmentStatus['isPorterCompleted']! &&
+                !porterAssignmentStatus['isPorterFailed']!);
+        isPorterAtDeliveryPointBuildRoute =
+            (porterAssignmentStatus['isPorterArrived']! ||
+                    porterAssignmentStatus['isPorterInprogress']! ||
+                    porterAssignmentStatus["isPorterPacking"]! ||
+                    porterAssignmentStatus["isPorterOngoing"]!) &&
+                (!porterAssignmentStatus["isPorterUnloaded"]! ||
+                    !porterAssignmentStatus['isPorterDelivered']! ||
+                    !porterAssignmentStatus['isPorterCompleted']! ||
+                    !porterAssignmentStatus['isPorterFailed']!);
+        isPorterEndDeliveryPointBuildRoute =
+            (porterAssignmentStatus['isPorterCompleted']! ||
+                    porterAssignmentStatus["isPorterDelivered"]! ||
+                    porterAssignmentStatus["isPorterUnloaded"]!) &&
+                !porterAssignmentStatus['isPorterFailed']!;
+
+        if (porterAssignmentStatus['isPorterIncoming']! ||
+            porterAssignmentStatus['isPorterAssigned']!) {
+          setState(() {
+            // canDriverConfirmIncomingFlag = true;
+          });
+        } else if (porterAssignmentStatus['isPorterArrived']! ||
+            porterAssignmentStatus['isPorterInprogress']!) {
+          setState(() {
+            // canDriverConfirmIncomingFlag = false;
+            // canDriverStartMovingFlag = true;
+          });
+        } else {
+          setState(() {
+            // canDriverConfirmIncomingFlag = false;
+            // canDriverStartMovingFlag = false;
+          });
+        }
+        break;
+      case "COMPLETED":
+        isPorterEndDeliveryPointBuildRoute =
+            (porterAssignmentStatus['isPorterCompleted']! ||
+                    porterAssignmentStatus["isPorterDelivered"]! ||
+                    porterAssignmentStatus["isPorterUnloaded"]!) &&
+                !porterAssignmentStatus['isPorterFailed']!;
+        setState(() {
+          // canDriverConfirmIncomingFlag = false;
+          // canDriverStartMovingFlag = false;
+        });
+        break;
+      default:
+        break;
+    }
+
+    return {
+      'isPorterStartBuildRoute': isPorterStartBuildRoute,
+      'isPorterAtDeliveryPointBuildRoute': isPorterAtDeliveryPointBuildRoute,
+      'isPorterEndDeliveryPointBuildRoute': isPorterEndDeliveryPointBuildRoute,
+    };
+  }
+
+  Future<LatLng?> _getLastLocationFromFirebase() async {
+    final String bookingId = widget.job.id.toString();
+    try {
+      final snapshot =
+          await locationRef.child('$bookingId/PORTER/${user?.id}').get();
+
+      if (snapshot.exists) {
+        final data = snapshot.value as Map<dynamic, dynamic>;
+        return LatLng(
+          data['lat'] as double,
+          data['long'] as double,
+        );
+      }
+      return null;
+    } catch (e) {
+      print("Error getting last location from Firebase: $e");
+      return null;
+    }
+  }
+
+  Future<void> _buildInitialRoute({bool useFirebaseLocation = false}) async {
+    final bookingData = await _getBookingData();
+
+    if (bookingData != null &&
+        bookingData["Assignments"] != null &&
+        bookingData["Status"] != null) {
+      final assignments = bookingData["Assignments"] as List;
+      final fireStoreBookingStatus = bookingData["Status"] as String;
+
+      final porterAssignmentStatus = _getPorterAssignmentStatus(assignments);
+      final buildRouteFlags =
+          _getBuildRouteFlags(porterAssignmentStatus, fireStoreBookingStatus);
+
+      print("vinh debug : ${buildRouteFlags['isPorterStartBuildRoute']!}");
+      print(
+          "vinh debug 1 : ${buildRouteFlags['isPorterAtDeliveryPointBuildRoute']!}");
+      print(
+          "vinh debug 2 : ${buildRouteFlags['isPorterEndDeliveryPointBuildRoute']!}");
+
+      if (_navigationController != null && _currentPosition != null) {
+        LatLng? startPosition;
+
+        if (useFirebaseLocation) {
+          startPosition = await _getLastLocationFromFirebase();
+        }
+        startPosition ??= _currentPosition;
+        if (startPosition != null) {
+          LatLng waypoint;
+          if (buildRouteFlags['isPorterStartBuildRoute']!) {
+            waypoint = _getPickupPointLatLng();
+            _nextDestination = _getDeliveryPointLatLng();
+          } else if (buildRouteFlags['isPorterAtDeliveryPointBuildRoute']!) {
+            waypoint = _getDeliveryPointLatLng();
+          } else if (buildRouteFlags['isPorterEndDeliveryPointBuildRoute']!) {
+            waypoint = _getDeliveryPointLatLng();
+          } else {
+            return;
+          }
+
+          await _navigationController?.buildRoute(
+            waypoints: [
+              LatLng(startPosition.latitude, startPosition.longitude),
+              waypoint,
+              // LatLng(10.751169, 106.607249),
+              // LatLng(10.775458, 106.601052)
+            ],
+            profile: DrivingProfile.drivingTraffic,
+          );
+        } else {
+          print("No valid starting position available");
+        }
+      }
     }
   }
 
@@ -466,12 +663,6 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-
-    if (_currentPosition != null) {
-      print("Current Position: $_currentPosition");
-    } else {
-      print("Current Position is null");
-    }
     return Scaffold(
       body: SafeArea(
         child: Column(
