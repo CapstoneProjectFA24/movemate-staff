@@ -326,7 +326,6 @@ class _ReviewerMovingScreenState extends State<ReviewerMovingScreen> {
             ],
           ),
         );
-     
       }
     }
   }

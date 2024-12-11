@@ -737,6 +737,106 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
     }
   }
 
+  Future<void> _fastFinishToComplete() async {
+    if (_navigationController != null) {
+      if (mounted) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+            backgroundColor: AssetsConstants.whiteColor,
+            contentPadding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
+            actionsPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            title: Row(
+              children: [
+                const Icon(
+                  Icons.location_on,
+                  color: AssetsConstants.primaryLight,
+                  size: 28,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        "Xác nhận tới ngay",
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: AssetsConstants.blackColor,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        "Vui lòng xác nhận để tiếp tục",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AssetsConstants.blackColor.withOpacity(0.7),
+                          fontWeight: FontWeight.normal,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              Row(
+                children: [
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        LatLng destination = _getDeliveryPointLatLng();
+                        // Cập nhật vị trí cuối cùng lên Firebase
+                        _updateLocationRealtime(destination, "REVIEWER");
+
+                        try {
+                          await widget.ref
+                              .read(driverControllerProvider.notifier)
+                              .updateStatusDriverWithoutResourse(
+                                id: widget.job.id,
+                                context: context,
+                              );
+                        } finally {
+                          context.router.push(DriverConfirmUploadRoute(
+                            job: _currentJob,
+                          ));
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AssetsConstants.primaryLight,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: const Text(
+                        "Xác nhận đã đến",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: AssetsConstants.whiteColor,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -1022,6 +1122,13 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                       onPressed: _isMapReady ? _startArrivedToInprogress : null,
                       // onPressed: _isMapReady ? _startNavigation : null,
                       child: const Icon(Icons.directions_car),
+                    ),
+                if (!_isNavigationStarted)
+                  if (canDriverStartMovingFlag)
+                    FloatingActionButton(
+                      onPressed: _fastFinishToComplete,
+                      backgroundColor: Colors.green,
+                      child: const Icon(Icons.check),
                     ),
               ],
             )
