@@ -1,9 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/features/drivers/presentation/controllers/stream_controller/job_stream_manager.dart';
+import 'package:movemate_staff/features/drivers/presentation/widgets/draggable_sheet/driver_confirm_upload/driver_confirm_upload.dart';
 import 'package:movemate_staff/features/job/data/model/request/resource.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/presentation/controllers/booking_controller/booking_controller.dart';
@@ -17,7 +19,7 @@ import 'package:movemate_staff/utils/commons/widgets/cloudinary/cloudinary_camer
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
 
 @RoutePage()
-final uploadedImagesProvider = StateProvider<List<Resource>>((ref) => []);
+// final uploadedImagesProvider = StateProvider<List<Resource>>((ref) => []);
 
 class PorterConfirmScreen extends HookConsumerWidget {
   final BookingResponseEntity job;
@@ -48,7 +50,7 @@ class PorterConfirmScreen extends HookConsumerWidget {
     final fullScreenImage = useState<String?>(null);
 
     final request = useState(PorterUpdateResourseRequest(resourceList: []));
-    final uploadedImages = ref.watch(uploadedImagesProvider);
+    // final uploadedImages = ref.watch(uploadedImagesProvider);
     final bookingAsync = ref.watch(bookingStreamProvider(job.id.toString()));
     final status = useBookingStatus(bookingAsync.value, job.isReviewOnline);
     final currentJob = useState<BookingResponseEntity>(job);
@@ -81,76 +83,122 @@ class PorterConfirmScreen extends HookConsumerWidget {
     useEffect(() {
       final subscription = JobStreamManager().jobStream.listen((updateJob) {
         if (updateJob.id == job.id) {
-          print(
-              'tuan Received updated order in PorterConfirmScreen: ${updateJob.id}');
+          // print(
+          //     'tuan Received updated order in PorterConfirmScreen: ${updateJob.id}');
           currentJob.value = updateJob;
         }
       });
       return subscription.cancel;
     }, [job]);
 
-    List<dynamic> getTrackerSources(
-        BookingResponseEntity job, String trackerType) {
-      try {
-        final trackers =
-            job.bookingTrackers.firstWhere((e) => e.type == trackerType);
+    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+    final _bookingData = useState<Map<String, dynamic>?>(null);
 
-        return trackers.trackerSources;
+    Future<void> _getBookingData() async {
+      try {
+        final data = await _firestore
+            .collection('bookings')
+            .doc(job.id.toString())
+            .get()
+            .then((doc) => doc.data());
+        _bookingData.value = data;
+      } catch (e) {
+        print("Error getting Firestore data: $e");
+      }
+    }
+
+    useEffect(() {
+      _getBookingData();
+    }, []);
+
+    if (_bookingData.value == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    // List<dynamic> getTrackerSources(
+    //     BookingResponseEntity job, String trackerType) {
+    //   try {
+    //     final trackers =
+    //         job.bookingTrackers.firstWhere((e) => e.type == trackerType);
+
+    //     return trackers.trackerSources;
+    //   } catch (e) {
+    //     return [];
+    //   }
+    // }
+
+    List<dynamic> getTrackerSources(
+        Map<String, dynamic> bookingData, String trackerType) {
+      try {
+        final trackers = bookingData["BookingTrackers"]
+            ?.firstWhere((e) => e["Type"] == trackerType);
+
+        return trackers['TrackerSources'];
       } catch (e) {
         return [];
       }
     }
 
-    final imagesSourceArrived = getTrackerSources(job, "PORTER_ARRIVED");
-    final imagesSourcePacking = getTrackerSources(job, "PORTER_PACKING");
-    final imagesSourceDelivered = getTrackerSources(job, "PORTER_DELIVERED");
-    final imagesSourceUnloaded = getTrackerSources(job, "PORTER_UNLOADED");
-    final imagesSourceCompleted = getTrackerSources(job, "PORTER_COMPLETED");
+    // final imagesSourceArrivedTesst =
+    //     getTrackerSources(_bookingData.value!, "PORTER_ARRIVED");
+    // print("checking lisst resource ${imagesSourceArrivedTesst.length}");
+    // final imagesSourcePacking =
+    //     getTrackerSourcesPorter(_bookingData.value!, "PORTER_PACKING");
+    final imagesSourceArrived =
+        getTrackerSources(_bookingData.value!, "PORTER_ARRIVED");
+    final imagesSourcePacking =
+        getTrackerSources(_bookingData.value!, "PORTER_PACKING");
+    final imagesSourceDelivered =
+        getTrackerSources(_bookingData.value!, "PORTER_DELIVERED");
+    final imagesSourceUnloaded =
+        getTrackerSources(_bookingData.value!, "PORTER_UNLOADED");
+    final imagesSourceCompleted =
+        getTrackerSources(_bookingData.value!, "PORTER_COMPLETED");
 
     useEffect(() {
       if (imagesSourceArrived.isNotEmpty) {
         images1.value = imagesSourceArrived
-            .map((source) => source['resourceUrl'] as String)
+            .map((source) => source['ResourceUrl'] as String)
             .toList();
 
         imagePublicIds1.value = imagesSourceArrived
-            .map((source) => source['resourceCode'] as String)
+            .map((source) => source['ResourceCode'] as String)
             .toList();
       }
       if (imagesSourcePacking.isNotEmpty) {
         images2.value = imagesSourcePacking
-            .map((source) => source['resourceUrl'] as String)
+            .map((source) => source['ResourceUrl'] as String)
             .toList();
 
         imagePublicIds2.value = imagesSourcePacking
-            .map((source) => source['resourceCode'] as String)
+            .map((source) => source['ResourceCode'] as String)
             .toList();
       }
       if (imagesSourceDelivered.isNotEmpty) {
         images3.value = imagesSourceDelivered
-            .map((source) => source['resourceUrl'] as String)
+            .map((source) => source['ResourceUrl'] as String)
             .toList();
 
         imagePublicIds3.value = imagesSourceDelivered
-            .map((source) => source['resourceCode'] as String)
+            .map((source) => source['ResourceCode'] as String)
             .toList();
       }
       if (imagesSourceUnloaded.isNotEmpty) {
         images4.value = imagesSourceUnloaded
-            .map((source) => source['resourceUrl'] as String)
+            .map((source) => source['ResourceUrl'] as String)
             .toList();
 
         imagePublicIds4.value = imagesSourceUnloaded
-            .map((source) => source['resourceCode'] as String)
+            .map((source) => source['ResourceCode'] as String)
             .toList();
       }
       if (imagesSourceCompleted.isNotEmpty) {
         images5.value = imagesSourceCompleted
-            .map((source) => source['resourceUrl'] as String)
+            .map((source) => source['ResourceUrl'] as String)
             .toList();
 
         imagePublicIds5.value = imagesSourceCompleted
-            .map((source) => source['resourceCode'] as String)
+            .map((source) => source['ResourceCode'] as String)
             .toList();
       }
       return null;
@@ -351,16 +399,29 @@ class PorterConfirmScreen extends HookConsumerWidget {
                       );
                     },
                     onImageRemoved: (publicId) {
+                      images1.value = images1.value
+                          .where((url) => !url.contains(publicId))
+                          .toList();
                       imagePublicIds1.value = imagePublicIds1.value
                           .where((id) => id != publicId)
                           .toList();
+
+                      // Cập nhật lại resourceList trong IncidentRequest
+                      request.value = PorterUpdateResourseRequest(
+                        resourceList: request.value.resourceList
+                            .where(
+                                (resource) => resource.resourceCode != publicId)
+                            .toList(),
+                      );
                     },
                     onImageTapped: (url) => fullScreenImage.value = url,
                     onActionPressed: () async {
                       // Xử lý khi tài xế xác nhận đã đến
+                      final List<Resource> resources1 = convertToResourceList(
+                          images1.value, imagePublicIds1.value);
 
                       final request = PorterUpdateResourseRequest(
-                        resourceList: uploadedImages,
+                        resourceList: resources1,
                       );
 
                       await ref
@@ -370,6 +431,8 @@ class PorterConfirmScreen extends HookConsumerWidget {
                             request: request,
                             context: context,
                           );
+                      print(
+                          "objects checking lisst 1 resource ${request.resourceList.length}");
                       bookingAsync.isRefreshing;
                     },
                     actionButtonLabel: 'Xác nhận đến',
@@ -400,16 +463,29 @@ class PorterConfirmScreen extends HookConsumerWidget {
                       );
                     },
                     onImageRemoved: (publicId) {
+                      images2.value = images2.value
+                          .where((url) => !url.contains(publicId))
+                          .toList();
                       imagePublicIds2.value = imagePublicIds2.value
                           .where((id) => id != publicId)
                           .toList();
+
+                      // Cập nhật lại resourceList trong IncidentRequest
+                      request.value = PorterUpdateResourseRequest(
+                        resourceList: request.value.resourceList
+                            .where(
+                                (resource) => resource.resourceCode != publicId)
+                            .toList(),
+                      );
                     },
                     onImageTapped: (url) => fullScreenImage.value = url,
                     onActionPressed: () async {
                       // Xử lý khi tài xế xác nhận đã đến
+                      final List<Resource> resources2 = convertToResourceList(
+                          images2.value, imagePublicIds2.value);
 
                       final request = PorterUpdateResourseRequest(
-                        resourceList: uploadedImages,
+                        resourceList: resources2,
                       );
 
                       await ref
@@ -449,16 +525,28 @@ class PorterConfirmScreen extends HookConsumerWidget {
                       );
                     },
                     onImageRemoved: (publicId) {
+                      images3.value = images3.value
+                          .where((url) => !url.contains(publicId))
+                          .toList();
                       imagePublicIds3.value = imagePublicIds3.value
                           .where((id) => id != publicId)
                           .toList();
+
+                      // Cập nhật lại resourceList trong IncidentRequest
+                      request.value = PorterUpdateResourseRequest(
+                        resourceList: request.value.resourceList
+                            .where(
+                                (resource) => resource.resourceCode != publicId)
+                            .toList(),
+                      );
                     },
                     onImageTapped: (url) => fullScreenImage.value = url,
                     onActionPressed: () async {
                       // Xử lý khi tài xế xác nhận đã đến
-
+                      final List<Resource> resources3 = convertToResourceList(
+                          images3.value, imagePublicIds3.value);
                       final request = PorterUpdateResourseRequest(
-                        resourceList: uploadedImages,
+                        resourceList: resources3,
                       );
 
                       await ref
@@ -498,16 +586,28 @@ class PorterConfirmScreen extends HookConsumerWidget {
                       );
                     },
                     onImageRemoved: (publicId) {
+                      images4.value = images4.value
+                          .where((url) => !url.contains(publicId))
+                          .toList();
                       imagePublicIds4.value = imagePublicIds4.value
                           .where((id) => id != publicId)
                           .toList();
+
+                      // Cập nhật lại resourceList trong IncidentRequest
+                      request.value = PorterUpdateResourseRequest(
+                        resourceList: request.value.resourceList
+                            .where(
+                                (resource) => resource.resourceCode != publicId)
+                            .toList(),
+                      );
                     },
                     onImageTapped: (url) => fullScreenImage.value = url,
                     onActionPressed: () async {
                       // Xử lý khi tài xế xác nhận đã đến
-
+                      final List<Resource> resources4 = convertToResourceList(
+                          images4.value, imagePublicIds4.value);
                       final request = PorterUpdateResourseRequest(
-                        resourceList: uploadedImages,
+                        resourceList: resources4,
                       );
 
                       await ref
@@ -547,16 +647,28 @@ class PorterConfirmScreen extends HookConsumerWidget {
                       );
                     },
                     onImageRemoved: (publicId) {
+                      images5.value = images5.value
+                          .where((url) => !url.contains(publicId))
+                          .toList();
                       imagePublicIds5.value = imagePublicIds5.value
                           .where((id) => id != publicId)
                           .toList();
+
+                      // Cập nhật lại resourceList trong IncidentRequest
+                      request.value = PorterUpdateResourseRequest(
+                        resourceList: request.value.resourceList
+                            .where(
+                                (resource) => resource.resourceCode != publicId)
+                            .toList(),
+                      );
                     },
                     onImageTapped: (url) => fullScreenImage.value = url,
                     onActionPressed: () async {
                       // Xử lý khi tài xế xác nhận đã đến
-
+                      final List<Resource> resources5 = convertToResourceList(
+                          images5.value, imagePublicIds5.value);
                       final request = PorterUpdateResourseRequest(
-                        resourceList: uploadedImages,
+                        resourceList: resources5,
                       );
 
                       await ref

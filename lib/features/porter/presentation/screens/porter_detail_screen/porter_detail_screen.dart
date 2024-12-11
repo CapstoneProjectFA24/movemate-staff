@@ -466,44 +466,6 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // print("vinh log status ${widget.bookingStatus.isPorterStartPoint}");
-    // print("vinh log status1 ${widget.bookingStatus.isPorterAtDeliveryPoint}");
-    // print("vinh log status2 ${widget.bookingStatus.isPorterEndDeliveryPoint}");
-    // print("vinh log status3 ${widget.bookingStatus.canPorterConfirmIncoming}");
-    // print("vinh log status4 ${widget.bookingStatus.canPorterConfirmArrived}");
-    // print(
-    //     "vinh log status5 ${widget.bookingStatus.canPorterConfirmInprogress}");
-    // print("vinh log status6 ${widget.bookingStatus.canPorterConfirmOngoing}");
-    // print("vinh log status7 ${widget.bookingStatus.canPorterConfirmDelivered}");
-    // print(
-    //     "vinh log status8 ${widget.bookingStatus.canPorterCompleteUnloading}");
-    // print("vinh log status9 ${widget.bookingStatus.canPorterComplete}");
-
-    print(
-        "updating status 0 ConfirmIncoming :  ${widget.bookingStatus.canPorterConfirmIncoming}");
-    print(
-        "updating status 1 ConfirmArrived :  ${widget.bookingStatus.canPorterConfirmArrived}");
-    print(
-        "updating status 2 ConfirmInprogress :  ${widget.bookingStatus.canPorterConfirmInprogress}");
-    print(
-        "updating status 3 ConfirmPacking :  ${widget.bookingStatus.canPorterConfirmPacking}");
-    print(
-        "updating status 4 ConfirmOngoing :  ${widget.bookingStatus.canPorterConfirmOngoing}");
-    print(
-        "updating status 5 ConfirmDelivered :  ${widget.bookingStatus.canPorterConfirmDelivered}");
-    print(
-        "updating status 6 CompleteUnloading :  ${widget.bookingStatus.canPorterCompleteUnloading}");
-    print(
-        "updating status 7 Complete :  ${widget.bookingStatus.canPorterComplete}");
-    print(
-        "updating status 8 Porter at Start Point :  ${widget.bookingStatus.isPorterStartPoint}");
-    print(
-        "updating status 9 Porter At Delivery Point :  ${widget.bookingStatus.isPorterAtDeliveryPoint}");
-    print(
-        "updating status 10 Porter End Delivery Point :  ${widget.bookingStatus.isPorterEndDeliveryPoint}");
-
-    print(
-        " updating vinh log status realtime ${_currentJob.assignments.map((e) => e.toJson())}");
 
     if (_currentPosition != null) {
       print("Current Position: $_currentPosition");
