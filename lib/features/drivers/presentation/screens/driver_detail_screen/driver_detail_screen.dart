@@ -697,7 +697,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                       onPressed: () async {
                         LatLng destination = _getPickupPointLatLng();
                         // Cập nhật vị trí cuối cùng lên Firebase
-                        _updateLocationRealtime(destination, "REVIEWER");
+                        _updateLocationRealtime(destination, "DRIVER");
 
                         try {
                           await widget.ref
@@ -797,7 +797,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                       onPressed: () async {
                         LatLng destination = _getDeliveryPointLatLng();
                         // Cập nhật vị trí cuối cùng lên Firebase
-                        _updateLocationRealtime(destination, "REVIEWER");
+                        _updateLocationRealtime(destination, "DRIVER");
 
                         try {
                           await widget.ref
