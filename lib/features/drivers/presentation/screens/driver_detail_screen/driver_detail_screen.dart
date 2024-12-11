@@ -10,6 +10,7 @@ import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/features/drivers/presentation/controllers/driver_controller/driver_controller.dart';
 import 'package:movemate_staff/features/drivers/presentation/controllers/stream_controller/job_stream_manager.dart';
 import 'package:movemate_staff/features/drivers/presentation/widgets/draggable_sheet/location_draggable_sheet.dart';
+import 'package:movemate_staff/features/drivers/presentation/widgets/driver_report_incident/incidents_content_modal.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/assignment_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/hooks/use_booking_status.dart';
@@ -59,6 +60,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
 
   bool canDriverConfirmIncomingFlag = false;
   bool canDriverStartMovingFlag = false;
+  bool canDriverActiveIncident = false;
   // realtime
   UserModel? user;
   final DatabaseReference locationRef =
@@ -1055,6 +1057,8 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                                 // Add support action
                               },
                             ),
+
+// Modify the help icon button's onPressed callback:
                             IconButton(
                               icon: const Icon(
                                 Icons.help_outline,
@@ -1062,7 +1066,31 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                                 size: 24,
                               ),
                               onPressed: () {
-                                // Add help action
+                                setState(() {
+                                  canDriverActiveIncident = true;
+                                });
+
+                                showModalBottomSheet(
+                                  context: context,
+                                  isScrollControlled: true,
+                                  backgroundColor: Colors.transparent,
+                                  builder: (BuildContext context) {
+                                    return DriverIncidentReportModal(
+                                      order: widget.job,
+                                      onClose: () {
+                                        setState(() {
+                                          canDriverActiveIncident = false;
+                                        });
+                                        Navigator.pop(context);
+                                      },
+                                    );
+                                  },
+                                ).then((_) {
+                                  // This runs when the modal is closed
+                                  setState(() {
+                                    canDriverActiveIncident = false;
+                                  });
+                                });
                               },
                             ),
                           ],
@@ -1070,10 +1098,11 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                       ),
                     ),
                   if (!_isNavigationStarted)
-                    DeliveryDetailsBottomSheet(
-                      job: _currentJob,
-                      userId: user?.id,
-                    ),
+                    if (!canDriverActiveIncident)
+                      DeliveryDetailsBottomSheet(
+                        job: _currentJob,
+                        userId: user?.id,
+                      ),
                   Positioned(
                     bottom: _isNavigationStarted ? 20 : 280,
                     left: 0,
