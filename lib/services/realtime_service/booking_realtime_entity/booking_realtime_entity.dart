@@ -66,3 +66,58 @@ class AssignmentsRealtimeEntity {
 
   String toJson() => json.encode(toMap());
 }
+
+class BookingTrackersEntity {
+  final String type;
+  final List<TrackerSourseEntity> trackerSources;
+
+  BookingTrackersEntity({
+    required this.type,
+    required this.trackerSources,
+  });
+
+  factory BookingTrackersEntity.fromMap(Map<String, dynamic> data) {
+    return BookingTrackersEntity(
+      type: data['Type'],
+      trackerSources: (data['TrackerSources'] as List<dynamic>?)
+              ?.map((e) => TrackerSourseEntity.fromMap(e))
+              .toList() ??
+          [],
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'Type': type,
+      'TrackerSources': trackerSources.map((e) => e.toMap()).toList(),
+    };
+  }
+
+  String toJson() => json.encode(toMap());
+}
+
+class TrackerSourseEntity {
+  final String resourceUrl;
+  final String resourceCode;
+
+  TrackerSourseEntity({
+    required this.resourceUrl,
+    required this.resourceCode,
+  });
+
+  factory TrackerSourseEntity.fromMap(Map<String, dynamic> data) {
+    return TrackerSourseEntity(
+      resourceUrl: data['ResourceUrl'],
+      resourceCode: data['ResourceCode'],
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'ResourceUrl': resourceUrl,
+      'ResourceCode': resourceCode,
+    };
+  }
+
+  String toJson() => json.encode(toMap());
+}

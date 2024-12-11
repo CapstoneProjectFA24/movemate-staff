@@ -1,5 +1,6 @@
 // File: driver_confirm_upload.dart
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -42,53 +43,65 @@ class DriverConfirmUpload extends HookConsumerWidget {
     final uploadedImages = ref.watch(uploadedImagesProvider);
     final bookingAsync = ref.watch(bookingStreamProvider(job.id.toString()));
     final status = useBookingStatus(bookingAsync.value, job.isReviewOnline);
-    // final bookingController = ref.read(bookingControllerProvider.notifier);
 
-    // final useFetchResult = useFetchObject<BookingResponseEntity>(
-    //   function: (context) => bookingController.getBookingById(job.id, context),
-    //   context: context,
-    // );
-    // useFetchResult.refresh;
-    // final bookingTypeData = useFetchResult.data;
-    // final  job = useFetchResult.data;
-    // print("tuan object check 1${bookingTypeData} ");
-    // print("tuan object check 2 ${useFetchResult.data} ");
-    // print("tuan object check 3 ${useFetchResult.isFetchingData} ");
+    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+    final _bookingData = useState<Map<String, dynamic>?>(null);
 
-    // print("tuan check ${job.id} ");
+    Future<void> _getBookingData() async {
+      try {
+        final data = await _firestore
+            .collection('bookings')
+            .doc(job.id.toString())
+            .get()
+            .then((doc) => doc.data());
+        _bookingData.value = data;
+      } catch (e) {
+        print("Error getting Firestore data: $e");
+      }
+    }
+
+    useEffect(() {
+      _getBookingData();
+    }, []);
+
+    if (_bookingData.value == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
 
     List<dynamic> getTrackerSources(
-        BookingResponseEntity job, String trackerType) {
+        Map<String, dynamic> bookingData, String trackerType) {
       try {
-        final trackers =
-            job.bookingTrackers.firstWhere((e) => e.type == trackerType);
+        final trackers = bookingData["BookingTrackers"]
+            ?.firstWhere((e) => e["Type"] == trackerType);
 
-        return trackers.trackerSources;
+        return trackers['TrackerSources'];
       } catch (e) {
         return [];
       }
     }
 
-    final imagesSourceArrived = getTrackerSources(job, "DRIVER_ARRIVED");
-    final imagesSourceCompleted = getTrackerSources(job, "DRIVER_COMPLETED");
+    final imagesSourceArrived =
+        getTrackerSources(_bookingData.value!, "DRIVER_ARRIVED");
+    final imagesSourceCompleted =
+        getTrackerSources(_bookingData.value!, "DRIVER_COMPLETED");
 
     useEffect(() {
       if (imagesSourceArrived.isNotEmpty) {
         images1.value = imagesSourceArrived
-            .map((source) => source['resourceUrl'] as String)
+            .map((source) => source['ResourceUrl'] as String)
             .toList();
 
         imagePublicIds1.value = imagesSourceArrived
-            .map((source) => source['resourceCode'] as String)
+            .map((source) => source['ResourceCode'] as String)
             .toList();
       }
       if (imagesSourceCompleted.isNotEmpty) {
         images3.value = imagesSourceCompleted
-            .map((source) => source['resourceUrl'] as String)
+            .map((source) => source['ResourceUrl'] as String)
             .toList();
 
         imagePublicIds3.value = imagesSourceCompleted
-            .map((source) => source['resourceCode'] as String)
+            .map((source) => source['ResourceCode'] as String)
             .toList();
       }
       return null;

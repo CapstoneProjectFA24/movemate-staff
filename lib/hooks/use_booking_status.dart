@@ -125,11 +125,11 @@ BookingStatusResult useBookingStatus(
     final assignments = booking.assignments ?? [];
 
 // check valid Date and Time >= 30phuts (poster and driver )
-    final bookingAt = booking.bookingAt;
+    // final bookingAt = booking.bookingAt;
     final now = DateTime.now();
     final format = DateFormat("MM/dd/yyyy HH:mm:ss");
-    final bookingDateTime = format.parse(bookingAt);
-    final isValidDate = now.difference(bookingDateTime).inMinutes >= 30;
+    // final bookingDateTime = format.parse(bookingAt);
+    // final isValidDate = now.difference(bookingDateTime).inMinutes >= 30;
 
     // Helper functions
     bool hasAssignmentWithStatus(

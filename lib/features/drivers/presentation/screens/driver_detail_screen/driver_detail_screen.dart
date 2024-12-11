@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
@@ -16,6 +17,7 @@ import 'package:movemate_staff/models/user_model.dart';
 import 'package:movemate_staff/utils/commons/functions/functions_common_export.dart';
 import 'package:movemate_staff/utils/constants/api_constant.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
+import 'package:movemate_staff/utils/enums/booking_status_type.dart';
 import 'package:vietmap_flutter_navigation/vietmap_flutter_navigation.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -54,10 +56,15 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
   Timer? _locationUpdateTimer;
   bool _isFirstNavigation = true; // Add this flag
   LatLng? _nextDestination; // Add this to store next destination
+
+  bool canDriverConfirmIncomingFlag = false;
+  bool canDriverStartMovingFlag = false;
   // realtime
   UserModel? user;
   final DatabaseReference locationRef =
       FirebaseDatabase.instance.ref().child('tracking_locations');
+
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   late StreamSubscription<BookingResponseEntity> _jobSubscription;
   late BookingResponseEntity _currentJob;
@@ -84,6 +91,23 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
         });
       }
     });
+  }
+
+  Future<Map<String, dynamic>?> _getBookingData() async {
+    try {
+      final docSnapshot = await _firestore
+          .collection('bookings')
+          .doc(widget.job.id.toString())
+          .get();
+
+      if (docSnapshot.exists) {
+        return docSnapshot.data();
+      }
+      return null;
+    } catch (e) {
+      print("Error getting Firestore data: $e");
+      return null;
+    }
   }
 
   Future<void> _initNavigation() async {
@@ -263,20 +287,33 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
       );
 
       if (mounted) {
-        setState(() {
-          if (widget.bookingStatus.isDriverStartPoint) {
-            _currentPosition = LatLng(position.latitude, position.longitude);
-          } else if (widget.bookingStatus.isDriverAtDeliveryPoint) {
-            _currentPosition = _getPickupPointLatLng();
-          } else if (widget.bookingStatus.isDriverEndDeliveryPoint) {
-            _currentPosition = _getDeliveryPointLatLng();
-          }
+        setState(() async {
+          final bookingData = await _getBookingData();
+          if (bookingData != null &&
+              bookingData["Assignments"] != null &&
+              bookingData["Status"] != null) {
+            final assignments = bookingData["Assignments"] as List;
+            final fireStoreBookingStatus = bookingData["Status"] as String;
 
-          if (_currentPosition != null) {
-            _updateLocationOnce(_currentPosition!, "DRIVER");
-            _buildInitialRoute();
-          } else {
-            print("Invalid position. Unable to update location.");
+            final driverAssignmentStatus =
+                _getDriverAssignmentStatus(assignments);
+            final buildRouteFlags = _getBuildRouteFlags(
+                driverAssignmentStatus, fireStoreBookingStatus);
+
+            if (buildRouteFlags['isDriverStartBuildRoute']!) {
+              _currentPosition = LatLng(position.latitude, position.longitude);
+            } else if (buildRouteFlags['isDriverAtDeliveryPointBuildRoute']!) {
+              _currentPosition = _getPickupPointLatLng();
+            } else if (buildRouteFlags['isDriverEndDeliveryPointBuildRoute']!) {
+              _currentPosition = _getDeliveryPointLatLng();
+            }
+
+            if (_currentPosition != null) {
+              _updateLocationOnce(_currentPosition!, "DRIVER");
+              _buildInitialRoute();
+            } else {
+              print("Invalid position. Unable to update location.");
+            }
           }
         });
       }
@@ -285,34 +322,143 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
     }
   }
 
+  Map<String, bool> _getDriverAssignmentStatus(List assignments) {
+    return {
+      'isDriverWaiting': assignments
+          .any((a) => a['StaffType'] == "DRIVER" && a["Status"] == "WAITING"),
+      'isDriverAssigned': assignments
+          .any((a) => a['StaffType'] == "DRIVER" && a["Status"] == "ASSIGNED"),
+      'isDriverIncoming': assignments
+          .any((a) => a['StaffType'] == "DRIVER" && a["Status"] == "INCOMING"),
+      'isDriverArrived': assignments
+          .any((a) => a['StaffType'] == "DRIVER" && a["Status"] == "ARRIVED"),
+      'isDriverInprogress': assignments.any(
+          (a) => a['StaffType'] == "DRIVER" && a["Status"] == "IN_PROGRESS"),
+      'isDriverCompleted': assignments
+          .any((a) => a['StaffType'] == "DRIVER" && a["Status"] == "COMPLETED"),
+      'isDriverFailed': assignments
+          .any((a) => a['StaffType'] == "DRIVER" && a["Status"] == "FAILED"),
+    };
+  }
+
+  Map<String, bool> _getBuildRouteFlags(
+      Map<String, bool> driverAssignmentStatus, String fireStoreBookingStatus) {
+    bool isDriverStartBuildRoute = false;
+    bool isDriverAtDeliveryPointBuildRoute = false;
+    bool isDriverEndDeliveryPointBuildRoute = false;
+
+    switch (fireStoreBookingStatus) {
+      case "COMING":
+        isDriverStartBuildRoute = driverAssignmentStatus['isDriverWaiting']! ||
+            driverAssignmentStatus['isDriverAssigned']! ||
+            driverAssignmentStatus['isDriverIncoming']! ||
+            (!driverAssignmentStatus['isDriverInprogress']! &&
+                !driverAssignmentStatus['isDriverCompleted']! &&
+                !driverAssignmentStatus['isDriverFailed']!);
+
+        if (driverAssignmentStatus['isDriverIncoming']! ||
+            driverAssignmentStatus['isDriverAssigned']!) {
+          setState(() {
+            canDriverConfirmIncomingFlag = true;
+          });
+        } else {
+          setState(() {
+            canDriverConfirmIncomingFlag = false;
+          });
+        }
+
+        break;
+      case "IN_PROGRESS":
+        isDriverStartBuildRoute = driverAssignmentStatus['isDriverWaiting']! ||
+            driverAssignmentStatus['isDriverAssigned']! ||
+            driverAssignmentStatus['isDriverIncoming']! ||
+            (!driverAssignmentStatus['isDriverInprogress']! &&
+                !driverAssignmentStatus['isDriverArrived']! &&
+                !driverAssignmentStatus['isDriverCompleted']! &&
+                !driverAssignmentStatus['isDriverFailed']!);
+        isDriverAtDeliveryPointBuildRoute =
+            (driverAssignmentStatus['isDriverArrived']! ||
+                    driverAssignmentStatus['isDriverInprogress']!) &&
+                !driverAssignmentStatus['isDriverCompleted']! &&
+                !driverAssignmentStatus['isDriverFailed']!;
+        isDriverEndDeliveryPointBuildRoute =
+            driverAssignmentStatus['isDriverCompleted']! &&
+                !driverAssignmentStatus['isDriverFailed']!;
+
+        if (driverAssignmentStatus['isDriverIncoming']! ||
+            driverAssignmentStatus['isDriverAssigned']!) {
+          setState(() {
+            canDriverConfirmIncomingFlag = true;
+          });
+        } else if (driverAssignmentStatus['isDriverArrived']! ||
+            driverAssignmentStatus['isDriverInprogress']!) {
+          setState(() {
+            canDriverConfirmIncomingFlag = false;
+            canDriverStartMovingFlag = true;
+          });
+        } else {
+          setState(() {
+            canDriverConfirmIncomingFlag = false;
+            canDriverStartMovingFlag = false;
+          });
+        }
+        break;
+      case "COMPLETED":
+        isDriverEndDeliveryPointBuildRoute =
+            driverAssignmentStatus['isDriverCompleted']! &&
+                !driverAssignmentStatus['isDriverFailed']!;
+        setState(() {
+          canDriverConfirmIncomingFlag = false;
+          canDriverStartMovingFlag = false;
+        });
+        break;
+      default:
+        break;
+    }
+
+    return {
+      'isDriverStartBuildRoute': isDriverStartBuildRoute,
+      'isDriverAtDeliveryPointBuildRoute': isDriverAtDeliveryPointBuildRoute,
+      'isDriverEndDeliveryPointBuildRoute': isDriverEndDeliveryPointBuildRoute,
+    };
+  }
+
   void _buildInitialRoute() async {
-    // flag ở đây check xóa sau
+    final bookingData = await _getBookingData();
 
-    if (_navigationController != null && _currentPosition != null) {
-      LatLng waypoint;
-      if (widget.bookingStatus.isDriverStartPoint) {
-        print("vinh log status build route 1");
-        waypoint = _getPickupPointLatLng();
-        _nextDestination = _getDeliveryPointLatLng();
-      } else if (widget.bookingStatus.isDriverAtDeliveryPoint) {
-        print("vinh log status build route 2");
-        waypoint = _getDeliveryPointLatLng();
-      } else if (widget.bookingStatus.isDriverEndDeliveryPoint) {
-        print("vinh log status build route 3");
-        waypoint = _getDeliveryPointLatLng();
-      } else {
-        return;
+    if (bookingData != null &&
+        bookingData["Assignments"] != null &&
+        bookingData["Status"] != null) {
+      final assignments = bookingData["Assignments"] as List;
+      final fireStoreBookingStatus = bookingData["Status"] as String;
+
+      final driverAssignmentStatus = _getDriverAssignmentStatus(assignments);
+      final buildRouteFlags =
+          _getBuildRouteFlags(driverAssignmentStatus, fireStoreBookingStatus);
+
+      if (_navigationController != null && _currentPosition != null) {
+        LatLng waypoint;
+        if (buildRouteFlags['isDriverStartBuildRoute']!) {
+          waypoint = _getPickupPointLatLng();
+          _nextDestination = _getDeliveryPointLatLng();
+        } else if (buildRouteFlags['isDriverAtDeliveryPointBuildRoute']!) {
+          waypoint = _getDeliveryPointLatLng();
+        } else if (buildRouteFlags['isDriverEndDeliveryPointBuildRoute']!) {
+          waypoint = _getDeliveryPointLatLng();
+        } else {
+          return;
+        }
+
+        await _navigationController?.buildRoute(
+          waypoints: [
+            LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
+            waypoint,
+            // LatLng(10.751169, 106.607249),
+            // LatLng(10.775458, 106.601052)
+          ],
+          profile: DrivingProfile.drivingTraffic,
+        );
       }
-
-      await _navigationController?.buildRoute(
-        waypoints: [
-          LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
-          waypoint,
-          // LatLng(10.751169, 106.607249),
-          // LatLng(10.775458, 106.601052)
-        ],
-        profile: DrivingProfile.drivingTraffic,
-      );
     }
   }
 
@@ -367,7 +513,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
 
         await _navigationController?.startNavigation();
         try {
-          await widget.ref
+          await ProviderScope.containerOf(context, listen: false)
               .read(driverControllerProvider.notifier)
               .updateStatusDriverWithoutResourse(
                 id: widget.job.id,
@@ -395,7 +541,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
 
         await _navigationController?.startNavigation();
         try {
-          await widget.ref
+          await ProviderScope.containerOf(context, listen: false)
               .read(driverControllerProvider.notifier)
               .updateStatusDriverWithoutResourse(
                 id: widget.job.id,
@@ -439,20 +585,6 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print("vinh log status ${widget.bookingStatus.isDriverStartPoint}");
-    print("vinh log status1 ${widget.bookingStatus.isDriverAtDeliveryPoint}");
-    print("vinh log status2 ${widget.bookingStatus.isDriverEndDeliveryPoint}");
-    print("vinh log status3 ${widget.bookingStatus.canDriverConfirmIncoming}");
-    print("vinh log status4 ${widget.bookingStatus.canDriverStartMoving}");
-    print("vinh log status5 ${widget.bookingStatus.canDriverCompleteDelivery}");
-    print(
-        "vinh log status realtime ${_currentJob.assignments.map((e) => e.toJson())}");
-
-    if (_currentPosition != null) {
-      print("Current Position: $_currentPosition");
-    } else {
-      print("Current Position is null");
-    }
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -717,14 +849,14 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 if (!_isNavigationStarted)
-                  if (widget.bookingStatus.canDriverConfirmIncoming)
+                  if (canDriverConfirmIncomingFlag)
                     FloatingActionButton(
                       onPressed: _isMapReady ? _startAssinedToComing : null,
                       // onPressed: _isMapReady ? _startNavigation : null,
                       child: const Icon(Icons.directions),
                     ),
                 if (!_isNavigationStarted)
-                  if (widget.bookingStatus.canDriverStartMoving)
+                  if (canDriverStartMovingFlag)
                     FloatingActionButton(
                       onPressed: _isMapReady ? _startArrivedToInprogress : null,
                       // onPressed: _isMapReady ? _startNavigation : null,
