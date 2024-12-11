@@ -309,8 +309,15 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
             }
 
             if (_currentPosition != null) {
-              _updateLocationOnce(_currentPosition!, "DRIVER");
-              _buildInitialRoute();
+              LatLng? lastLocation = await _getLastLocationFromFirebase();
+
+              if (lastLocation != null) {
+                await _buildInitialRoute(useFirebaseLocation: true);
+                _updateLocationOnce(lastLocation!, "DRIVER");
+              } else {
+                _updateLocationOnce(_currentPosition!, "DRIVER");
+                await _buildInitialRoute(useFirebaseLocation: false);
+              }
             } else {
               print("Invalid position. Unable to update location.");
             }
@@ -423,7 +430,27 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
     };
   }
 
-  void _buildInitialRoute() async {
+  Future<LatLng?> _getLastLocationFromFirebase() async {
+    final String bookingId = widget.job.id.toString();
+    try {
+      final snapshot =
+          await locationRef.child('$bookingId/DRIVER/${user?.id}').get();
+
+      if (snapshot.exists) {
+        final data = snapshot.value as Map<dynamic, dynamic>;
+        return LatLng(
+          data['lat'] as double,
+          data['long'] as double,
+        );
+      }
+      return null;
+    } catch (e) {
+      print("Error getting last location from Firebase: $e");
+      return null;
+    }
+  }
+
+  Future<void> _buildInitialRoute({bool useFirebaseLocation = false}) async {
     final bookingData = await _getBookingData();
 
     if (bookingData != null &&
@@ -437,27 +464,37 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
           _getBuildRouteFlags(driverAssignmentStatus, fireStoreBookingStatus);
 
       if (_navigationController != null && _currentPosition != null) {
-        LatLng waypoint;
-        if (buildRouteFlags['isDriverStartBuildRoute']!) {
-          waypoint = _getPickupPointLatLng();
-          _nextDestination = _getDeliveryPointLatLng();
-        } else if (buildRouteFlags['isDriverAtDeliveryPointBuildRoute']!) {
-          waypoint = _getDeliveryPointLatLng();
-        } else if (buildRouteFlags['isDriverEndDeliveryPointBuildRoute']!) {
-          waypoint = _getDeliveryPointLatLng();
-        } else {
-          return;
-        }
+        LatLng? startPosition;
 
-        await _navigationController?.buildRoute(
-          waypoints: [
-            LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
-            waypoint,
-            // LatLng(10.751169, 106.607249),
-            // LatLng(10.775458, 106.601052)
-          ],
-          profile: DrivingProfile.drivingTraffic,
-        );
+        if (useFirebaseLocation) {
+          startPosition = await _getLastLocationFromFirebase();
+        }
+        startPosition ??= _currentPosition;
+        if (startPosition != null) {
+          LatLng waypoint;
+          if (buildRouteFlags['isDriverStartBuildRoute']!) {
+            waypoint = _getPickupPointLatLng();
+            _nextDestination = _getDeliveryPointLatLng();
+          } else if (buildRouteFlags['isDriverAtDeliveryPointBuildRoute']!) {
+            waypoint = _getDeliveryPointLatLng();
+          } else if (buildRouteFlags['isDriverEndDeliveryPointBuildRoute']!) {
+            waypoint = _getDeliveryPointLatLng();
+          } else {
+            return;
+          }
+
+          await _navigationController?.buildRoute(
+            waypoints: [
+              LatLng(startPosition.latitude, startPosition.longitude),
+              waypoint,
+              // LatLng(10.751169, 106.607249),
+              // LatLng(10.775458, 106.601052)
+            ],
+            profile: DrivingProfile.drivingTraffic,
+          );
+        } else {
+          print("No valid starting position available");
+        }
       }
     }
   }
@@ -504,9 +541,26 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
     }
   }
 
+  Future<void> _startAssignedToComingNow() async {
+    if (!_isMapReady) {
+      try {
+        await ProviderScope.containerOf(context, listen: false)
+            .read(driverControllerProvider.notifier)
+            .updateStatusDriverWithoutResourse(
+              id: widget.job.id,
+              context: context,
+            );
+      } catch (driverError) {
+        print(
+            "Lỗi khi bắt đầu điều hướng từ assined lên incoming:  ${driverError.toString()}");
+      }
+    }
+  }
+
   Future<void> _startAssinedToComing() async {
     if (_isMapReady) {
       try {
+        await _buildInitialRoute(useFirebaseLocation: true);
         setState(() {
           _isNavigationStarted = true;
         });
@@ -581,6 +635,106 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
     });
     _navigationController?.finishNavigation();
     _buildInitialRoute();
+  }
+
+  Future<void> _fastFinishToArrived() async {
+    if (_navigationController != null) {
+      if (mounted) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+            backgroundColor: AssetsConstants.whiteColor,
+            contentPadding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
+            actionsPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            title: Row(
+              children: [
+                const Icon(
+                  Icons.location_on,
+                  color: AssetsConstants.primaryLight,
+                  size: 28,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        "Xác nhận tới ngay",
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: AssetsConstants.blackColor,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        "Vui lòng xác nhận để tiếp tục",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AssetsConstants.blackColor.withOpacity(0.7),
+                          fontWeight: FontWeight.normal,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              Row(
+                children: [
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        LatLng destination = _getPickupPointLatLng();
+                        // Cập nhật vị trí cuối cùng lên Firebase
+                        _updateLocationRealtime(destination, "REVIEWER");
+
+                        try {
+                          await widget.ref
+                              .read(driverControllerProvider.notifier)
+                              .updateStatusDriverWithoutResourse(
+                                id: widget.job.id,
+                                context: context,
+                              );
+                        } finally {
+                          context.router.push(DriverConfirmUploadRoute(
+                            job: _currentJob,
+                          ));
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AssetsConstants.primaryLight,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: const Text(
+                        "Xác nhận đã đến",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: AssetsConstants.whiteColor,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -854,6 +1008,13 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                       onPressed: _isMapReady ? _startAssinedToComing : null,
                       // onPressed: _isMapReady ? _startNavigation : null,
                       child: const Icon(Icons.directions),
+                    ),
+                if (!_isNavigationStarted)
+                  if (canDriverConfirmIncomingFlag)
+                    FloatingActionButton(
+                      onPressed: _fastFinishToArrived,
+                      backgroundColor: Colors.green,
+                      child: const Icon(Icons.check),
                     ),
                 if (!_isNavigationStarted)
                   if (canDriverStartMovingFlag)
