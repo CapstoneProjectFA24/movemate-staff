@@ -8,6 +8,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/features/drivers/data/models/request/update_resourse_request.dart';
 import 'package:movemate_staff/features/drivers/presentation/controllers/driver_controller/driver_controller.dart';
+import 'package:movemate_staff/features/job/data/model/request/resource.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/hooks/use_booking_status.dart';
 import 'package:movemate_staff/services/realtime_service/booking_status_realtime/booking_status_stream_provider.dart';
@@ -38,9 +39,10 @@ class DriverConfirmUpload extends HookConsumerWidget {
 
     final images3 = useState<List<String>>([]);
     final imagePublicIds3 = useState<List<String>>([]);
+
     final fullScreenImage = useState<String?>(null);
     final request = useState(UpdateResourseRequest(resourceList: []));
-    final uploadedImages = ref.watch(uploadedImagesProvider);
+    // final uploadedImages = ref.watch(uploadedImagesProvider);
     final bookingAsync = ref.watch(bookingStreamProvider(job.id.toString()));
     final status = useBookingStatus(bookingAsync.value, job.isReviewOnline);
 
@@ -263,19 +265,42 @@ class DriverConfirmUpload extends HookConsumerWidget {
                         ...imagePublicIds1.value,
                         publicId
                       ];
+                      print(
+                          'onUplaoded success ${imagePublicIds1.value..length}');
                     },
                     onImageRemoved: (publicId) {
+                      // print("onImageRemoved called for publicId: $publicId");
+                      // Cập nhật danh sách hình ảnh
+                      images1.value = images1.value
+                          .where((url) => !url.contains(publicId))
+                          .toList();
                       imagePublicIds1.value = imagePublicIds1.value
                           .where((id) => id != publicId)
                           .toList();
+
+                      // Cập nhật lại resourceList trong IncidentRequest
+                      request.value = UpdateResourseRequest(
+                        resourceList: request.value.resourceList
+                            .where(
+                                (resource) => resource.resourceCode != publicId)
+                            .toList(),
+                      );
+
+                      // Kiểm tra sau khi xóa
+                      // print(
+                      //     "checking resource list after removal: ${request.value.resourceList.length}");
                     },
                     onImageTapped: (url) => fullScreenImage.value = url,
                     onActionPressed: () async {
                       // Xử lý khi tài xế xác nhận đã đến
+                      final List<Resource> resources1 = convertToResourceList(
+                          images1.value, imagePublicIds1.value);
 
                       final request = UpdateResourseRequest(
-                        resourceList: uploadedImages,
+                        resourceList: resources1,
                       );
+                      // print(
+                      //     'checking resource list: ${request.resourceList.length}');
 
                       await ref
                           .read(driverControllerProvider.notifier)
@@ -285,6 +310,8 @@ class DriverConfirmUpload extends HookConsumerWidget {
                             context: context,
                           );
                       bookingAsync.isRefreshing;
+                      // print(
+                      //     "checking resourse list  ${request.resourceList.length}");
                     },
                     actionButtonLabel: 'Xác nhận đến',
                     actionIcon: Icons.location_on,
@@ -307,16 +334,34 @@ class DriverConfirmUpload extends HookConsumerWidget {
                       ];
                     },
                     onImageRemoved: (publicId) {
+                      images3.value = images3.value
+                          .where((url) => !url.contains(publicId))
+                          .toList();
                       imagePublicIds3.value = imagePublicIds3.value
                           .where((id) => id != publicId)
                           .toList();
+
+                      // Cập nhật lại resourceList trong IncidentRequest
+                      request.value = UpdateResourseRequest(
+                        resourceList: request.value.resourceList
+                            .where(
+                                (resource) => resource.resourceCode != publicId)
+                            .toList(),
+                      );
                     },
                     onImageTapped: (url) => fullScreenImage.value = url,
                     onActionPressed: () async {
-                      final request = UpdateResourseRequest(
-                        resourceList: uploadedImages,
-                      );
+                      // final request = UpdateResourseRequest(
+                      //   resourceList: uploadedImages,
+                      // );
+                      final List<Resource> resources3 = convertToResourceList(
+                          images3.value, imagePublicIds3.value);
 
+                      final request = UpdateResourseRequest(
+                        resourceList: resources3,
+                      );
+                      print(
+                          "object list resource ${request.resourceList.length}");
                       await ref
                           .read(driverControllerProvider.notifier)
                           .updateStatusDriverResourse(
@@ -373,4 +418,18 @@ class DriverConfirmUpload extends HookConsumerWidget {
       ),
     );
   }
+}
+
+// When you need to convert List<String> to List<Resource>
+List<Resource> convertToResourceList(
+    List<String> imageUrls, List<String> publicIds) {
+  List<Resource> resources = [];
+  for (int i = 0; i < imageUrls.length; i++) {
+    resources.add(Resource(
+      type: 'image', // or any other type you need
+      resourceUrl: imageUrls[i],
+      resourceCode: publicIds[i], // or any other mapping for your publicId
+    ));
+  }
+  return resources;
 }

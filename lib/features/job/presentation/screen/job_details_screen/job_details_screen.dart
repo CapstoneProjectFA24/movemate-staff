@@ -165,8 +165,8 @@ class JobDetailsScreen extends HookConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (availableOnline || availableOffline)
-                  CheckAvailable(job: job),
+                // if (availableOnline || availableOffline)
+                //   CheckAvailable(job: job),
                 BookingHeaderStatusSection(
                   isReviewOnline: job.isReviewOnline,
                   job: job,

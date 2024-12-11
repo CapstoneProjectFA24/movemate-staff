@@ -9,7 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:cloudinary_public/cloudinary_public.dart';
 import 'package:movemate_staff/features/job/data/model/request/resource.dart';
 
-final uploadedImagesProvider = StateProvider<List<Resource>>((ref) => []);
+// final uploadedImagesProvider = StateProvider<List<Resource>>((ref) => []);
 
 class CloudinaryCameraUploadWidget extends HookConsumerWidget {
   final bool disabled;
@@ -38,7 +38,7 @@ class CloudinaryCameraUploadWidget extends HookConsumerWidget {
     final isLoading = useState(false);
     final cloudinary = useMemoized(
         () => CloudinaryPublic('dkpnkjnxs', 'movemate', cache: false));
-    final uploadedImages = ref.watch(uploadedImagesProvider);
+    // final uploadedImages = ref.watch(uploadedImagesProvider);
     Future<void> uploadImageFromCamera() async {
       if (disabled || isLoading.value) return;
 
@@ -70,14 +70,14 @@ class CloudinaryCameraUploadWidget extends HookConsumerWidget {
           response.secureUrl,
           response.publicId,
         );
-        ref.read(uploadedImagesProvider.notifier).state = [
-          ...uploadedImages,
-          Resource(
-            type: 'image',
-            resourceUrl: response.secureUrl,
-            resourceCode: response.publicId,
-          ),
-        ];
+        // ref.read(uploadedImagesProvider.notifier).state = [
+        //   ...uploadedImages,
+        //   Resource(
+        //     type: 'image',
+        //     resourceUrl: response.secureUrl,
+        //     resourceCode: response.publicId,
+        //   ),
+        // ];
       } catch (e) {
         if (e is DioException) {
           print('Failed to upload image: ${e.response?.data}');

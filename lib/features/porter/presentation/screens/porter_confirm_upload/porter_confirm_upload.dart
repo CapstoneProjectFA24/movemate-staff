@@ -4,6 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/features/drivers/presentation/controllers/stream_controller/job_stream_manager.dart';
+import 'package:movemate_staff/features/job/data/model/request/resource.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/presentation/controllers/booking_controller/booking_controller.dart';
 import 'package:movemate_staff/features/porter/data/models/request/porter_update_resourse_request.dart';
@@ -16,6 +17,8 @@ import 'package:movemate_staff/utils/commons/widgets/cloudinary/cloudinary_camer
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
 
 @RoutePage()
+final uploadedImagesProvider = StateProvider<List<Resource>>((ref) => []);
+
 class PorterConfirmScreen extends HookConsumerWidget {
   final BookingResponseEntity job;
   const PorterConfirmScreen({
