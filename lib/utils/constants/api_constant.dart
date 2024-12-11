@@ -24,6 +24,9 @@ class APIConstants {
   //post booking
 
   static const post_booking_service = '/bookings/reviewer/update-booking';
+  //post booking
+
+  static const put_driver_incident = '/bookingdetails/report-fail';
   // static const post_booking_service = '/bookings/register-booking';
   // order
   static const bookings = '/bookings';
