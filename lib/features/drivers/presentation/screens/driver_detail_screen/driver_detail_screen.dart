@@ -170,6 +170,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
   }
 
   void _updateLocationRealtime(LatLng position, String role) {
+    print("pro check 3 ${position}");
     final String bookingId = widget.job.id.toString();
     if (user?.id != null) {
       locationRef.child('$bookingId/$role/${user?.id}').update({
@@ -463,6 +464,12 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
       final buildRouteFlags =
           _getBuildRouteFlags(driverAssignmentStatus, fireStoreBookingStatus);
 
+      print("pro check ${buildRouteFlags["isDriverStartBuildRoute"]}");
+      print(
+          "pro check 1 ${buildRouteFlags["isDriverAtDeliveryPointBuildRoute"]}");
+      print(
+          "pro check 2 ${buildRouteFlags["isDriverEndDeliveryPointBuildRoute"]}");
+
       if (_navigationController != null && _currentPosition != null) {
         LatLng? startPosition;
 
@@ -695,7 +702,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                       onPressed: () async {
                         LatLng destination = _getPickupPointLatLng();
                         // Cập nhật vị trí cuối cùng lên Firebase
-                        _updateLocationRealtime(destination, "REVIEWER");
+                        _updateLocationRealtime(destination, "DRIVER");
 
                         try {
                           await widget.ref
@@ -795,7 +802,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                       onPressed: () async {
                         LatLng destination = _getDeliveryPointLatLng();
                         // Cập nhật vị trí cuối cùng lên Firebase
-                        _updateLocationRealtime(destination, "REVIEWER");
+                        _updateLocationRealtime(destination, "DRIVER");
 
                         try {
                           await widget.ref
