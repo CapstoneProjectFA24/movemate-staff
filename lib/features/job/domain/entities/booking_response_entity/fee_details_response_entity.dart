@@ -4,7 +4,7 @@ class FeeDetailsResponseEntity {
   final int feeSettingId;
   final String name;
   final String description;
-  final int amount;
+  final double amount;
   final String? quantity;
 
   FeeDetailsResponseEntity({
@@ -24,7 +24,7 @@ class FeeDetailsResponseEntity {
       feeSettingId: json['feeSettingId'] ?? 0,
       name: json['name'] ?? '',
       description: json['description'] ?? '',
-      amount: json['amount'] ?? 0,
+      amount: (json['amount'] ?? 0).toDouble(),
       quantity: json['quantity']?.toString(),
     );
   }

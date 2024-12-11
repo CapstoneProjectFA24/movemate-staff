@@ -2,7 +2,7 @@ import 'dart:convert';
 
 class WalletModel {
   final int walletId;
-  final int balance;
+  final double balance;
   final int totalDailyMoneyExchange;
   final int totalDailyShipperPayment;
   final int toTalOrderDaily;
@@ -33,7 +33,7 @@ class WalletModel {
   factory WalletModel.fromMap(Map<String, dynamic> map) {
     return WalletModel(
       walletId: map['walletId']?.toInt() ?? 0,
-      balance: map['balance']?.toInt() ?? 0,
+      balance: map['balance']?.toDouble() ?? 0,
       totalDailyMoneyExchange: map['totalDailyMoneyExchange']?.toInt() ?? 0,
       totalDailyShipperPayment: map['totalDailyShipperPayment']?.toInt() ?? 0,
       toTalOrderDaily: map['toTalOrderDaily']?.toInt() ?? 0,

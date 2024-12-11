@@ -3,7 +3,7 @@ import 'dart:convert';
 class TruckCategoryEntity {
   final int id;
   final String categoryName;
-  final int maxLoad;
+  final double maxLoad;
   final String description;
   final String imageUrl;
   final String? estimatedLenght;
@@ -29,7 +29,7 @@ class TruckCategoryEntity {
     return TruckCategoryEntity(
       id: map['id'] ?? 0,
       categoryName: map['categoryName'] ?? '',
-      maxLoad: map['maxLoad'] ?? 0,
+      maxLoad: (map['maxLoad'] as num?)?.toDouble() ?? 0,
       description: map['description'] ?? '',
       imageUrl: map['imageUrl'] ?? '',
       estimatedLenght: map['estimatedLenght'],
