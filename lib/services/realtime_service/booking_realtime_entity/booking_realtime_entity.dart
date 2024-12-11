@@ -5,7 +5,6 @@ class BookingRealtimeEntity {
   final String status;
   final String bookingAt;
   final List<AssignmentsRealtimeEntity> assignments;
-  final List<BookingTrackersEntity> bookingTrackers;
   final bool? isCredit;
 
   BookingRealtimeEntity({
@@ -13,7 +12,6 @@ class BookingRealtimeEntity {
     required this.status,
     required this.bookingAt,
     required this.assignments,
-    required this.bookingTrackers,
     this.isCredit,
   });
 
@@ -26,10 +24,6 @@ class BookingRealtimeEntity {
               ?.map((e) => AssignmentsRealtimeEntity.fromMap(e))
               .toList() ??
           [],
-      bookingTrackers: (data['BookingTrackers'] as List<dynamic>?)
-              ?.map((e) => BookingTrackersEntity.fromMap(e))
-              .toList() ??
-          [],
       isCredit: data['IsCredit'] as bool?,
     );
   }
@@ -40,7 +34,6 @@ class BookingRealtimeEntity {
       'Status': status,
       'BookingAt': bookingAt,
       'Assignments': assignments.map((e) => e.toMap()).toList(),
-      'BookingTrackers': bookingTrackers.map((e) => e.toMap()).toList(),
       'IsCredit': isCredit,
     };
   }

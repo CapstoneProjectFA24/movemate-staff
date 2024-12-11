@@ -44,10 +44,6 @@ class DriverConfirmUpload extends HookConsumerWidget {
     final bookingAsync = ref.watch(bookingStreamProvider(job.id.toString()));
     final status = useBookingStatus(bookingAsync.value, job.isReviewOnline);
 
-    // final bookingTrackers = bookingAsync.value?.bookingTrackers ?? [];
-    // if (bookingTrackers.isNotEmpty) {
-    //   // Do something with the bookingTrackers list
-    // }
     final FirebaseFirestore _firestore = FirebaseFirestore.instance;
     final _bookingData = useState<Map<String, dynamic>?>(null);
 
@@ -65,7 +61,6 @@ class DriverConfirmUpload extends HookConsumerWidget {
     }
 
     useEffect(() {
-      // Fetch booking data when the widget is first built
       _getBookingData();
     }, []);
 
@@ -73,41 +68,40 @@ class DriverConfirmUpload extends HookConsumerWidget {
       return const Center(child: CircularProgressIndicator());
     }
 
-    print('Booking ID: ${_bookingData.value?['Id']}');
-    print('Booking Status: ${_bookingData.value?['Status']}');
-
     List<dynamic> getTrackerSources(
-        BookingResponseEntity job, String trackerType) {
+        Map<String, dynamic> bookingData, String trackerType) {
       try {
-        final trackers =
-            job.bookingTrackers.firstWhere((e) => e.type == trackerType);
+        final trackers = bookingData["BookingTrackers"]
+            ?.firstWhere((e) => e["Type"] == trackerType);
 
-        return trackers.trackerSources;
+        return trackers['TrackerSources'];
       } catch (e) {
         return [];
       }
     }
 
-    final imagesSourceArrived = getTrackerSources(job, "DRIVER_ARRIVED");
-    final imagesSourceCompleted = getTrackerSources(job, "DRIVER_COMPLETED");
+    final imagesSourceArrived =
+        getTrackerSources(_bookingData.value!, "DRIVER_ARRIVED");
+    final imagesSourceCompleted =
+        getTrackerSources(_bookingData.value!, "DRIVER_COMPLETED");
 
     useEffect(() {
       if (imagesSourceArrived.isNotEmpty) {
         images1.value = imagesSourceArrived
-            .map((source) => source['resourceUrl'] as String)
+            .map((source) => source['ResourceUrl'] as String)
             .toList();
 
         imagePublicIds1.value = imagesSourceArrived
-            .map((source) => source['resourceCode'] as String)
+            .map((source) => source['ResourceCode'] as String)
             .toList();
       }
       if (imagesSourceCompleted.isNotEmpty) {
         images3.value = imagesSourceCompleted
-            .map((source) => source['resourceUrl'] as String)
+            .map((source) => source['ResourceUrl'] as String)
             .toList();
 
         imagePublicIds3.value = imagesSourceCompleted
-            .map((source) => source['resourceCode'] as String)
+            .map((source) => source['ResourceCode'] as String)
             .toList();
       }
       return null;
