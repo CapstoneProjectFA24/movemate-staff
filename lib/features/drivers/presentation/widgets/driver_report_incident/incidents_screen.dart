@@ -241,9 +241,16 @@ class IncidentsScreen extends HookConsumerWidget {
                               print('text controller ${description.value}');
                               print(
                                   'text controller  title ${supportType.value}');
+
+                              final int getAssignmentId = order.assignments
+                                  .firstWhere((e) =>
+                                      e.isResponsible == true &&
+                                      e.staffType == 'DRIVER')
+                                  .id;
                               final request = DriverReportIncidentRequest(
                                 type: description.value,
                               );
+
                               final String requests =
                                   'Loại hỗ trợ: ${supportType.value} ' +
                                       ' Mô tả : ${description.value}';
@@ -251,7 +258,7 @@ class IncidentsScreen extends HookConsumerWidget {
                                   .read(driverControllerProvider.notifier)
                                   .driverReportIncident(
                                     context: context,
-                                    orderId: order.id,
+                                    id: getAssignmentId,
                                     request: requests,
                                   );
 

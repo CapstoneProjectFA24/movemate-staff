@@ -341,7 +341,7 @@ class DriverController extends _$DriverController {
 //Driver report whern driver can not arived
   Future<void> driverReportIncident({
     required BuildContext context,
-    required int orderId,
+    required int id,
     required String request,
   }) async {
     state = const AsyncLoading();
@@ -352,7 +352,7 @@ class DriverController extends _$DriverController {
     state = await AsyncValue.guard(() async {
       await ref.read(bookingRepositoryProvider).driverReportIncident(
             accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
-            id: orderId,
+            id: id,
             request: request,
           );
 
@@ -363,20 +363,18 @@ class DriverController extends _$DriverController {
         backgroundColor: Colors.orange,
         textColor: AssetsConstants.whiteColor,
       );
+      // if (res.statusCode == 200) {
+      //   context.router.replaceAll([
+      //     const TabViewScreenRoute(children: [HomeScreenRoute()]),
+      //   ]);
+      // }
     });
 
-    // if (state.hasValue) {
-    //   final tabsRouter = context.router.root
-    //       .innerRouterOf<TabsRouter>(TabViewScreenRoute.name);
-    //   if (tabsRouter != null) {
-    //     tabsRouter.setActiveIndex(0);
-    //     context.router.popUntilRouteWithName(TabViewScreenRoute.name);
-    //   } else {
-    //     context.router.replaceAll([
-    //       const TabViewScreenRoute(children: [HomeScreenRoute()]),
-    //     ]);
-    //   }
-    // }
+    if (!state.hasError) {
+      context.router.replaceAll([
+        const TabViewScreenRoute(children: [HomeScreenRoute()]),
+      ]);
+    }
 
     if (state.hasError) {
       final error = state.error!;
