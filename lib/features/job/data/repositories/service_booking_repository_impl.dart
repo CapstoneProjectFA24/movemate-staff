@@ -3,6 +3,7 @@
 import 'package:movemate_staff/features/drivers/data/models/request/update_resourse_request.dart';
 import 'package:movemate_staff/features/job/data/model/queries/booking_queries.dart';
 import 'package:movemate_staff/features/job/data/model/request/booking_requesst.dart';
+import 'package:movemate_staff/features/job/data/model/request/driver_report_incident_request.dart';
 import 'package:movemate_staff/features/job/data/model/request/reviewer_status_request.dart';
 import 'package:movemate_staff/features/job/data/model/request/reviewer_time_request.dart';
 import 'package:movemate_staff/features/job/data/model/response/booking_response.dart';
@@ -261,6 +262,28 @@ class BookingRepositoryImpl extends RemoteBaseRepository
     return getDataOf(
       request: () => _bookingSource.driverConfirmCashPayment(
           APIConstants.contentType, accessToken, id),
+    );
+  }
+
+  @override
+  Future<SuccessModel> driverReportIncident({
+    required String request,
+    required String accessToken,
+    required int id,
+  }) {
+    // final requestIncident = DriverReportIncidentRequest(
+    //   type: request.type,
+    // );
+    final requestIncident = request.toString();
+    print('checking repo ${requestIncident}');
+    print('checking repo id ${id}');
+    return getDataOf(
+      request: () => _bookingSource.driverReportIncident(
+        requestIncident,
+        APIConstants.contentType,
+        accessToken,
+        id,
+      ),
     );
   }
 

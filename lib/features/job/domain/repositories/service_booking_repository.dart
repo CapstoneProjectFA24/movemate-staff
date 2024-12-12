@@ -2,6 +2,7 @@
 
 import 'package:movemate_staff/features/drivers/data/models/request/update_resourse_request.dart';
 import 'package:movemate_staff/features/job/data/model/request/booking_requesst.dart';
+import 'package:movemate_staff/features/job/data/model/request/driver_report_incident_request.dart';
 import 'package:movemate_staff/features/job/data/model/request/reviewer_status_request.dart';
 import 'package:movemate_staff/features/job/data/model/request/reviewer_time_request.dart';
 import 'package:movemate_staff/features/job/data/model/response/booking_response.dart';
@@ -117,6 +118,12 @@ abstract class BookingRepository {
   });
   //Driver confirms receipt of cash from customer
   Future<SuccessModel> driverConfirmCashPayment({
+    required String accessToken,
+    required int id,
+  });
+  //Driver confirms receipt of cash from customer
+  Future<SuccessModel> driverReportIncident({
+    required String request,
     required String accessToken,
     required int id,
   });

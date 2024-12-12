@@ -3,6 +3,7 @@
 import 'package:dio/dio.dart';
 import 'package:movemate_staff/features/drivers/data/models/request/update_resourse_request.dart';
 import 'package:movemate_staff/features/job/data/model/queries/booking_queries.dart';
+import 'package:movemate_staff/features/job/data/model/request/driver_report_incident_request.dart';
 import 'package:movemate_staff/features/job/data/model/request/reviewer_status_request.dart';
 import 'package:movemate_staff/features/job/data/model/request/reviewer_time_request.dart';
 import 'package:movemate_staff/features/job/data/model/response/booking_response_object.dart';
@@ -158,6 +159,16 @@ abstract class BookingSource {
     @Header(APIConstants.contentHeader) String contentType,
     @Header(APIConstants.authHeader) String accessToken,
     @Path('bookingId') int id,
+  );
+
+  // Driver report incident
+
+  @PUT('${APIConstants.put_driver_incident}/{id}')
+  Future<HttpResponse<SuccessModel>> driverReportIncident(
+    @Body() String request,
+    @Header(APIConstants.contentHeader) String contentType,
+    @Header(APIConstants.authHeader) String accessToken,
+    @Path('id') int id,
   );
 
   //get available porter

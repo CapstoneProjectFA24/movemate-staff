@@ -11,6 +11,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
+import 'package:movemate_staff/features/drivers/presentation/controllers/driver_controller/driver_controller.dart';
+import 'package:movemate_staff/features/job/data/model/request/driver_report_incident_request.dart';
 import 'package:movemate_staff/features/job/data/model/request/resource.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 
@@ -72,7 +74,7 @@ class IncidentsScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final supportType = useState<String?>('Vỡ hàng');
+    final supportType = useState<String?>('Hư xe');
 
     final stateIsLoading = useState<bool?>(false);
 
@@ -87,10 +89,10 @@ class IncidentsScreen extends HookConsumerWidget {
     final isRequestSent = useState<bool>(false);
 
     List<String> supportTypes = [
-      'Bảo hành',
-      'Vỡ hàng',
-      'Test 1',
-      'Checkking 1',
+      'Hư xe',
+      'Sự cố giao thông',
+      'Sự cố không mong muốn',
+      'Thay đổi xe',
     ];
 
     return Scaffold(
@@ -234,28 +236,31 @@ class IncidentsScreen extends HookConsumerWidget {
                     onPressed: stateIsLoading.value == false
                         ? () async {
                             try {
-                              print(
-                                  'text controller ${descriptionController.value}');
-                              print('text controller  title ${title.value}');
-                              // Create UserReportRequest
-                              // userReportRequest.value = UserReportRequest(
-                              //   bookingId: order.id,
-                              //   resourceList:
-                              //       userReportRequest.value.resourceList,
-                              //   location: displayAddress,
-                              //   point:
-                              //       "${position.latitude}, ${position.longitude}",
-                              //   description: description.value,
-                              //   title: supportType.value,
-                              //   reason: reason.value,
-                              //   estimatedAmount: amount,
-                              //   isInsurance: isInsurance.value,
-                              // );
+                              description.value = descriptionController.text;
 
-                              // await ref
-                              //     .read(orderControllerProvider.notifier)
-                              //     .postUserReport(userReportRequest.value,
-                              //         context, order.id);
+                              print('text controller ${description.value}');
+                              print(
+                                  'text controller  title ${supportType.value}');
+
+                              final int getAssignmentId = order.assignments
+                                  .firstWhere((e) =>
+                                      e.isResponsible == true &&
+                                      e.staffType == 'DRIVER')
+                                  .id;
+                              final request = DriverReportIncidentRequest(
+                                type: description.value,
+                              );
+
+                              final String requests =
+                                  'Loại hỗ trợ: ${supportType.value} ' +
+                                      ' Mô tả : ${description.value}';
+                              await ref
+                                  .read(driverControllerProvider.notifier)
+                                  .driverReportIncident(
+                                    context: context,
+                                    id: getAssignmentId,
+                                    request: requests,
+                                  );
 
                               // Đánh dấu yêu cầu đã được gửi
                               // isRequestSent.value = true;
