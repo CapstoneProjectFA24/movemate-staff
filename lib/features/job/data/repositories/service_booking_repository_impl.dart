@@ -321,7 +321,7 @@ class BookingRepositoryImpl extends RemoteBaseRepository
     required int id,
   }) {
     final requestIncident = DriverReportIncidentRequest(
-     failReason: request.failReason,
+      failReason: request.failReason,
     );
     // final requestIncident = request.toString();
     print('checking repo ${requestIncident}');

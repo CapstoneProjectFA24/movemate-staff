@@ -76,7 +76,7 @@ class IncidentsScreen extends HookConsumerWidget {
 
         final int getAssignmentId = order.assignments
             .firstWhere(
-                (e) => e.isResponsible == true && e.staffType == 'DRIVER')
+                (e) => e.staffType == 'DRIVER')
             .id;
 
         final String requests = 'Loại hỗ trợ: ${supportType.value}\n' +

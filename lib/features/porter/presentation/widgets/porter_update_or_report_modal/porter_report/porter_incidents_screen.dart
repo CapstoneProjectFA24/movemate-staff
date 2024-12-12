@@ -71,10 +71,8 @@ class PorterIncidentsScreen extends HookConsumerWidget {
 
         description.value = descriptionController.text;
 
-        final int getAssignmentId = order.assignments
-            .firstWhere(
-                (e) => e.isResponsible == true && e.staffType == 'PORTER')
-            .id;
+        final int getAssignmentId =
+            order.assignments.firstWhere((e) => e.staffType == 'PORTER').id;
 
         final String requests = 'Loại hỗ trợ: ${supportType.value} ' +
             ' Mô tả : ${description.value}';

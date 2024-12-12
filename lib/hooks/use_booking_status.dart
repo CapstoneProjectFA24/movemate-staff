@@ -579,10 +579,12 @@ String determineStatusMessage(
           return "Chờ phân công nhân viên";
         }
         if (isDriverAssigned && !isPorterAssigned) {
-          return "Đã phân công tài xế - Chờ phân công nhân viên bốc xếp";
+          // return "Đã phân công tài xế - Chờ phân công nhân viên bốc xếp";
+          return "Đã phân công nhân viên";
         }
         if (!isDriverAssigned && isPorterAssigned) {
-          return "Đã phân công nhân viên bốc xếp - Chờ phân công tài xế";
+          // return "Đã phân công nhân viên bốc xếp - Chờ phân công tài xế";
+          return "Đã phân công nhân viên";
         }
         return "Đã phân công";
 
@@ -625,10 +627,12 @@ String determineStatusMessage(
           return "Chờ phân công";
         }
         if (isDriverAssigned && !isPorterAssigned) {
-          return "Đã phân công tài xế - Chờ phân công nhân viên bốc xếp";
+          // return "Đã phân công tài xế - Chờ phân công nhân viên bốc xếp";
+          return "Đã phân công nhân viên";
         }
         if (!isDriverAssigned && isPorterAssigned) {
-          return "Đã phân công nhân viên bốc xếp - Chờ phân công tài xế";
+          // return "Đã phân công nhân viên bốc xếp - Chờ phân công tài xế";
+          return "Đã phân công nhân viên";
         }
         return "Đã phân công";
 
