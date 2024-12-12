@@ -75,10 +75,9 @@ class JobScreen extends HookConsumerWidget {
       }).toList();
     }
 
-    ref.listen<bool>(refreshJobList, (_, __) => fetchResult.refresh());
     ref.listen<bool>(refreshDriverList, (_, __) => fetchResult.refresh());
     ref.listen<bool>(refreshPorterList, (_, __) => fetchResult.refresh());
-    
+
     Widget buildTabContent(String tabName) {
       List<BookingResponseEntity> filteredBookings = getJobsForSelectedDate();
 

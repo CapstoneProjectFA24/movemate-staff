@@ -13,6 +13,7 @@ import 'package:movemate_staff/features/job/data/model/request/reviewer_status_r
 import 'package:movemate_staff/features/job/data/model/request/reviewer_time_request.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/image_data.dart';
+import 'package:movemate_staff/features/job/presentation/controllers/booking_controller/booking_controller.dart';
 
 // Controllers
 import 'package:movemate_staff/features/job/presentation/controllers/reviewer_update_controller/reviewer_update_controller.dart';
@@ -23,6 +24,8 @@ import 'package:movemate_staff/features/job/presentation/widgets/details/main_de
 import 'package:movemate_staff/features/job/presentation/widgets/dialog_schedule/schedule_dialog.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/image_button/room_media_section.dart';
 import 'package:movemate_staff/features/porter/presentation/controllers/porter_controller.dart';
+import 'package:movemate_staff/hooks/use_fetch_obj.dart';
+import 'package:movemate_staff/models/request/paging_model.dart';
 import 'package:movemate_staff/utils/commons/widgets/form_input/label_text.dart';
 
 // Hooks
@@ -54,14 +57,24 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
 
     final isExpanded = useState(false);
 
+    final fetchResultObject = useFetchObject<BookingResponseEntity>(
+        function: (context) async {
+          return ref
+              .read(bookingControllerProvider.notifier)
+              .getBookingById(job.id, context);
+        },
+        context: context);
+
+    final newJob = fetchResultObject.data ?? job;
+
     final porters =
-        job.assignments.where((e) => e.staffType == "PORTER").toList();
+        newJob.assignments.where((e) => e.staffType == "PORTER").toList();
     final drivers =
-        job.assignments.where((e) => e.staffType == "DRIVER").toList();
+        newJob.assignments.where((e) => e.staffType == "DRIVER").toList();
 
     ref.listen<bool>(refreshDriverList, (_, __) => fetchResult.refresh());
     ref.listen<bool>(refreshPorterList, (_, __) => fetchResult.refresh());
-    ref.listen<bool>(refreshJobList, (_, __) => fetchResult.refresh());
+    ref.listen<bool>(refreshJobList, (_, __) => fetchResultObject.refresh());
 
     return Column(
       children: [
