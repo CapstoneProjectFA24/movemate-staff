@@ -951,6 +951,10 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                                             onPressed: () async {
                                               context.router.pop();
                                               if (_isFirstNavigation) {
+                                                LatLng destination =
+                                                    _getPickupPointLatLng();
+                                                _updateLocationRealtime(
+                                                    destination, "DRIVER");
                                                 setState(() {
                                                   instructionImage =
                                                       const SizedBox.shrink();
@@ -963,6 +967,10 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
 
                                                 _startNextRoute();
                                               } else {
+                                                LatLng destination =
+                                                    _getDeliveryPointLatLng();
+                                                _updateLocationRealtime(
+                                                    destination, "DRIVER");
                                                 setState(() {
                                                   instructionImage =
                                                       const SizedBox.shrink();
