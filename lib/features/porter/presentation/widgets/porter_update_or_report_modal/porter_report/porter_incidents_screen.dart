@@ -34,7 +34,7 @@ class PorterIncidentsScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final supportType = useState<String?>('Hư xe');
 
-    final stateIsLoading = useState<bool?>(false);
+    final stateIsLoading = useState<bool>(false);
 
     final state = ref.watch(orderControllerProvider);
 
@@ -52,6 +52,81 @@ class PorterIncidentsScreen extends HookConsumerWidget {
       'Sự cố không mong muốn',
       'Thay đổi xe',
     ];
+
+    Future<void> handleSubmit() async {
+      try {
+        // Show loading dialog
+        if (context.mounted) {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (ctx) => const Center(
+              child: CircularProgressIndicator(
+                valueColor:
+                    AlwaysStoppedAnimation<Color>(AssetsConstants.primaryMain),
+              ),
+            ),
+          );
+        }
+
+        description.value = descriptionController.text;
+
+        final int getAssignmentId = order.assignments
+            .firstWhere(
+                (e) => e.isResponsible == true && e.staffType == 'PORTER')
+            .id;
+
+        final String requests = 'Loại hỗ trợ: ${supportType.value} ' +
+            ' Mô tả : ${description.value}';
+
+        final request = DriverReportIncidentRequest(
+          failReason: requests,
+        );
+
+        await ref.read(porterControllerProvider.notifier).porterReportIncident(
+              context: context,
+              id: getAssignmentId,
+              request: request,
+            );
+
+        // Remove loading dialog and handle success
+        if (context.mounted) {
+          Navigator.of(context).pop(); // Remove loading dialog
+
+          // // Show success message
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   const SnackBar(
+          //     content: Text('Gửi yêu cầu thành công'),
+          //     backgroundColor: Colors.green,
+          //   ),
+          // );
+
+          // Navigate back to home
+          final tabsRouter = context.router.root
+              .innerRouterOf<TabsRouter>(TabViewScreenRoute.name);
+          if (tabsRouter != null) {
+            tabsRouter.setActiveIndex(0);
+            context.router.popUntilRouteWithName(TabViewScreenRoute.name);
+          } else {
+            context.router.pushAndPopUntil(
+              const TabViewScreenRoute(children: [HomeScreenRoute()]),
+              predicate: (route) => false,
+            );
+          }
+        }
+      } catch (error) {
+        // Remove loading dialog and show error
+        if (context.mounted) {
+          Navigator.of(context).pop(); // Remove loading dialog
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Lỗi: ${error.toString()}'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    }
 
     return Scaffold(
       appBar: CustomAppBar(
@@ -187,78 +262,27 @@ class PorterIncidentsScreen extends HookConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-
                 SizedBox(
-                  width: double.infinity, // Chiều ngang toàn màn hình
+                  width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: stateIsLoading.value == false
-                        ? () async {
-                            try {
-                              description.value = descriptionController.text;
-
-                              print('text controller ${description.value}');
-                              print(
-                                  'text controller  title ${supportType.value}');
-
-                              final int getAssignmentId = order.assignments
-                                  .firstWhere((e) =>
-                                      e.isResponsible == true &&
-                                      e.staffType == 'PORTER')
-                                  .id;
-
-                              final String requests =
-                                  'Loại hỗ trợ: ${supportType.value} ' +
-                                      ' Mô tả : ${description.value}';
-
-                              final request = DriverReportIncidentRequest(
-                                failReason: requests,
-                              );
-
-                              await ref
-                                  .read(porterControllerProvider.notifier)
-                                  .porterReportIncident(
-                                    context: context,
-                                    id: getAssignmentId,
-                                    request: request,
-                                  );
-
-                              // Đánh dấu yêu cầu đã được gửi
-                              // isRequestSent.value = true;
-                            } catch (e) {
-                              // Xử lý lỗi nếu có
-                              print('Error sending report: $e');
-                            }
-                          }
-                        : null,
+                    onPressed: stateIsLoading.value ? null : handleSubmit,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.orange,
                       padding: const EdgeInsets.symmetric(
                           vertical: 14,
                           horizontal: AssetsConstants.defaultBorder),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8), // Bo góc
+                        borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: Consumer(builder: (context, ref, _) {
-                      final bookingState = ref.watch(orderControllerProvider);
-                      final isLoading = bookingState is AsyncLoading;
-                      return isLoading
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                    AssetsConstants.whiteColor),
-                                strokeWidth: 2.0,
-                              ),
-                            )
-                          : const LabelText(
-                              content: 'Gửi yêu cầu',
-                              size: 16,
-                              fontWeight: FontWeight.bold,
-                              color: AssetsConstants.whiteColor,
-                            );
-                    }),
+                    child: const Text(
+                      'Gửi yêu cầu',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: AssetsConstants.whiteColor,
+                      ),
+                    ),
                   ),
                 ),
               ],
