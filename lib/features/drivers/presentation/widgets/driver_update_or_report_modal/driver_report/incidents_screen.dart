@@ -20,7 +20,7 @@ import 'package:movemate_staff/utils/commons/widgets/cloudinary/cloudinary_camer
 import 'package:movemate_staff/utils/constants/api_constant.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
 
-import '../../../../../../utils/commons/widgets/widgets_common_export.dart';
+import '../../../../../../../utils/commons/widgets/widgets_common_export.dart';
 
 final orderControllerProvider = StateProvider<String>((ref) => '');
 
@@ -247,19 +247,21 @@ class IncidentsScreen extends HookConsumerWidget {
                                       e.isResponsible == true &&
                                       e.staffType == 'DRIVER')
                                   .id;
-                              final request = DriverReportIncidentRequest(
-                                type: description.value,
-                              );
 
-                              final String requests =
+                                       final String requests =
                                   'Loại hỗ trợ: ${supportType.value} ' +
                                       ' Mô tả : ${description.value}';
+                              final request = DriverReportIncidentRequest(
+                                failReason: requests,
+                              );
+
+                         
                               await ref
                                   .read(driverControllerProvider.notifier)
                                   .driverReportIncident(
                                     context: context,
                                     id: getAssignmentId,
-                                    request: requests,
+                                    request: request,
                                   );
 
                               // Đánh dấu yêu cầu đã được gửi

@@ -270,10 +270,42 @@ abstract class _$AppRouter extends RootStackRouter {
         ),
       );
     },
+    PorterIncidentsScreenRoute.name: (routeData) {
+      final args = routeData.argsAs<PorterIncidentsScreenRouteArgs>();
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: PorterIncidentsScreen(
+          key: args.key,
+          order: args.order,
+        ),
+      );
+    },
     PorterScreenRoute.name: (routeData) {
       return AutoRoutePage<dynamic>(
         routeData: routeData,
         child: const PorterScreen(),
+      );
+    },
+    PorterUpdateNewServiceChildrenScreenRoute.name: (routeData) {
+      final args =
+          routeData.argsAs<PorterUpdateNewServiceChildrenScreenRouteArgs>();
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: PorterUpdateNewServiceChildrenScreen(
+          key: args.key,
+          job: args.job,
+        ),
+      );
+    },
+    PorterUpdateNewServiceVehiclesScreenRoute.name: (routeData) {
+      final args =
+          routeData.argsAs<PorterUpdateNewServiceVehiclesScreenRouteArgs>();
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: PorterUpdateNewServiceVehiclesScreen(
+          key: args.key,
+          job: args.job,
+        ),
       );
     },
     PrivacyPolicyScreenRoute.name: (routeData) {
@@ -1295,6 +1327,45 @@ class PorterDetailScreenRouteArgs {
 }
 
 /// generated route for
+/// [PorterIncidentsScreen]
+class PorterIncidentsScreenRoute
+    extends PageRouteInfo<PorterIncidentsScreenRouteArgs> {
+  PorterIncidentsScreenRoute({
+    Key? key,
+    required BookingResponseEntity order,
+    List<PageRouteInfo>? children,
+  }) : super(
+          PorterIncidentsScreenRoute.name,
+          args: PorterIncidentsScreenRouteArgs(
+            key: key,
+            order: order,
+          ),
+          initialChildren: children,
+        );
+
+  static const String name = 'PorterIncidentsScreenRoute';
+
+  static const PageInfo<PorterIncidentsScreenRouteArgs> page =
+      PageInfo<PorterIncidentsScreenRouteArgs>(name);
+}
+
+class PorterIncidentsScreenRouteArgs {
+  const PorterIncidentsScreenRouteArgs({
+    this.key,
+    required this.order,
+  });
+
+  final Key? key;
+
+  final BookingResponseEntity order;
+
+  @override
+  String toString() {
+    return 'PorterIncidentsScreenRouteArgs{key: $key, order: $order}';
+  }
+}
+
+/// generated route for
 /// [PorterScreen]
 class PorterScreenRoute extends PageRouteInfo<void> {
   const PorterScreenRoute({List<PageRouteInfo>? children})
@@ -1306,6 +1377,84 @@ class PorterScreenRoute extends PageRouteInfo<void> {
   static const String name = 'PorterScreenRoute';
 
   static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [PorterUpdateNewServiceChildrenScreen]
+class PorterUpdateNewServiceChildrenScreenRoute
+    extends PageRouteInfo<PorterUpdateNewServiceChildrenScreenRouteArgs> {
+  PorterUpdateNewServiceChildrenScreenRoute({
+    Key? key,
+    required BookingResponseEntity job,
+    List<PageRouteInfo>? children,
+  }) : super(
+          PorterUpdateNewServiceChildrenScreenRoute.name,
+          args: PorterUpdateNewServiceChildrenScreenRouteArgs(
+            key: key,
+            job: job,
+          ),
+          initialChildren: children,
+        );
+
+  static const String name = 'PorterUpdateNewServiceChildrenScreenRoute';
+
+  static const PageInfo<PorterUpdateNewServiceChildrenScreenRouteArgs> page =
+      PageInfo<PorterUpdateNewServiceChildrenScreenRouteArgs>(name);
+}
+
+class PorterUpdateNewServiceChildrenScreenRouteArgs {
+  const PorterUpdateNewServiceChildrenScreenRouteArgs({
+    this.key,
+    required this.job,
+  });
+
+  final Key? key;
+
+  final BookingResponseEntity job;
+
+  @override
+  String toString() {
+    return 'PorterUpdateNewServiceChildrenScreenRouteArgs{key: $key, job: $job}';
+  }
+}
+
+/// generated route for
+/// [PorterUpdateNewServiceVehiclesScreen]
+class PorterUpdateNewServiceVehiclesScreenRoute
+    extends PageRouteInfo<PorterUpdateNewServiceVehiclesScreenRouteArgs> {
+  PorterUpdateNewServiceVehiclesScreenRoute({
+    Key? key,
+    required BookingResponseEntity job,
+    List<PageRouteInfo>? children,
+  }) : super(
+          PorterUpdateNewServiceVehiclesScreenRoute.name,
+          args: PorterUpdateNewServiceVehiclesScreenRouteArgs(
+            key: key,
+            job: job,
+          ),
+          initialChildren: children,
+        );
+
+  static const String name = 'PorterUpdateNewServiceVehiclesScreenRoute';
+
+  static const PageInfo<PorterUpdateNewServiceVehiclesScreenRouteArgs> page =
+      PageInfo<PorterUpdateNewServiceVehiclesScreenRouteArgs>(name);
+}
+
+class PorterUpdateNewServiceVehiclesScreenRouteArgs {
+  const PorterUpdateNewServiceVehiclesScreenRouteArgs({
+    this.key,
+    required this.job,
+  });
+
+  final Key? key;
+
+  final BookingResponseEntity job;
+
+  @override
+  String toString() {
+    return 'PorterUpdateNewServiceVehiclesScreenRouteArgs{key: $key, job: $job}';
+  }
 }
 
 /// generated route for

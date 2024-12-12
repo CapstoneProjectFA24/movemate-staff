@@ -1,27 +1,27 @@
 import 'dart:convert';
 
 class DriverReportIncidentRequest {
-  final String type;
+  final String failReason;
 
   DriverReportIncidentRequest({
-    required this.type,
+    required this.failReason,
   });
 
   Map<String, dynamic> toMap() {
     return {
-      'type': type,
+      'failReason': failReason,
     };
   }
 
   factory DriverReportIncidentRequest.fromMap(Map<String, dynamic> map) {
     return DriverReportIncidentRequest(
-      type: map['type'] ?? '',
+      failReason: map['failReason'] ?? '',
     );
   }
 
   String toJson() => json.encode(toMap());
   @override
-  String toString() => 'DriverReportIncidentRequest(type: $type)';
+  String toString() => 'DriverReportIncidentRequest(failReason: $failReason)';
   factory DriverReportIncidentRequest.fromJson(String source) =>
       DriverReportIncidentRequest.fromMap(json.decode(source));
 }

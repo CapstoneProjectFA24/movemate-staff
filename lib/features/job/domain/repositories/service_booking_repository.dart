@@ -1,6 +1,7 @@
 // service_booking_repository.dart
 
 import 'package:movemate_staff/features/drivers/data/models/request/driver_update_service_request.dart';
+import 'package:movemate_staff/features/drivers/data/models/request/porter_update_service_request.dart';
 import 'package:movemate_staff/features/drivers/data/models/request/update_resourse_request.dart';
 import 'package:movemate_staff/features/job/data/model/request/booking_requesst.dart';
 import 'package:movemate_staff/features/job/data/model/request/driver_report_incident_request.dart';
@@ -86,13 +87,6 @@ abstract class BookingRepository {
     required String accessToken,
   });
 
-  //driver update
-  Future<SuccessModel> driverUpdateNewService({
-    required String accessToken,
-    required DriverUpdateServiceRequest request,
-    required int id,
-  });
-
   Future<SuccessModel> updateStateReviewer({
     required String accessToken,
     ReviewerStatusRequest? request,
@@ -129,12 +123,34 @@ abstract class BookingRepository {
     required String accessToken,
     required int id,
   });
-  //Driver confirms receipt of cash from customer
+  //Driver report incldent s
   Future<SuccessModel> driverReportIncident({
-    required String request,
+    required DriverReportIncidentRequest request,
     required String accessToken,
     required int id,
   });
+
+  //driver update
+  Future<SuccessModel> driverUpdateNewService({
+    required String accessToken,
+    required DriverUpdateServiceRequest request,
+    required int id,
+  });
+
+  //porter report incldent s
+  Future<SuccessModel> porterReportIncident({
+    required DriverReportIncidentRequest request,
+    required String accessToken,
+    required int id,
+  });
+
+  //porter update
+  Future<SuccessModel> porterUpdateNewService({
+    required String accessToken,
+    required PorterUpdateServiceRequest request,
+    required int id,
+  });
+
   // assign manual driver available
   Future<SuccessModel> updateManualDriverAvailableByBookingId({
     required String accessToken,
@@ -163,6 +179,7 @@ abstract class BookingRepository {
     required int id,
   });
 }
+
 
 @Riverpod(keepAlive: true)
 BookingRepository bookingRepository(BookingRepositoryRef ref) {

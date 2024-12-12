@@ -12,6 +12,7 @@ import 'package:movemate_staff/features/job/domain/entities/booking_response_ent
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/porter/presentation/controllers/porter_controller.dart';
 import 'package:movemate_staff/features/porter/presentation/widgets/draggable_sheet/location_draggable_sheet.dart';
+import 'package:movemate_staff/features/porter/presentation/widgets/porter_update_or_report_modal/porter_update_or_incidents_content_modal.dart';
 import 'package:movemate_staff/hooks/use_booking_status.dart';
 import 'package:movemate_staff/models/user_model.dart';
 import 'package:movemate_staff/utils/commons/functions/functions_common_export.dart';
@@ -61,6 +62,7 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
   bool canPorterConfirmIncomingFlag = false;
   bool canPorterConfirmToUploadInprogress = false;
   bool canPorterConfirmToOngoingToEnd = false;
+  bool canPorterActiveModal = false;
 
   // realtime
   UserModel? user;
@@ -1110,7 +1112,31 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
                                 size: 24,
                               ),
                               onPressed: () {
-                                // Add help action
+                                setState(() {
+                                  canPorterActiveModal = true;
+                                });
+
+                                showModalBottomSheet(
+                                  context: context,
+                                  isScrollControlled: true,
+                                  backgroundColor: Colors.transparent,
+                                  builder: (BuildContext context) {
+                                    return PorterUpdateOrIncidentsContentModal(
+                                      order: widget.job,
+                                      onClose: () {
+                                        setState(() {
+                                          canPorterActiveModal = false;
+                                        });
+                                        Navigator.pop(context);
+                                      },
+                                    );
+                                  },
+                                ).then((_) {
+                                  // This runs when the modal is closed
+                                  setState(() {
+                                    canPorterActiveModal = false;
+                                  });
+                                });
                               },
                             ),
                           ],

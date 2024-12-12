@@ -343,7 +343,7 @@ class DriverController extends _$DriverController {
   Future<void> driverReportIncident({
     required BuildContext context,
     required int id,
-    required String request,
+    required DriverReportIncidentRequest request,
   }) async {
     state = const AsyncLoading();
     final authRepository = ref.read(authRepositoryProvider);
@@ -448,4 +448,5 @@ class DriverController extends _$DriverController {
       }
     }
   }
+
 }

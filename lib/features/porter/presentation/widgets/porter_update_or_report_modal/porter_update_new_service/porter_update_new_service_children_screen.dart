@@ -8,8 +8,9 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/features/drivers/data/models/request/driver_update_service_request.dart';
+import 'package:movemate_staff/features/drivers/data/models/request/porter_update_service_request.dart';
 import 'package:movemate_staff/features/drivers/presentation/controllers/driver_controller/driver_controller.dart';
-import 'package:movemate_staff/features/drivers/presentation/widgets/driver_update_new_service/driver_update_service_package_tile.dart';
+import 'package:movemate_staff/features/drivers/presentation/widgets/driver_update_or_report_modal/driver_update_new_service/driver_update_service_package_tile.dart';
 import 'package:movemate_staff/features/job/data/model/request/booking_requesst.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_details_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
@@ -19,6 +20,8 @@ import 'package:movemate_staff/features/job/presentation/providers/booking_provi
 import 'package:movemate_staff/features/job/presentation/screen/complete_proposal_screen/complete_proposal_screen.dart';
 import 'package:movemate_staff/features/job/presentation/screen/select_services_screen/service_package_tile.dart';
 import 'package:movemate_staff/features/job/presentation/widgets/button_next/summary_section.dart';
+import 'package:movemate_staff/features/porter/presentation/controllers/porter_controller.dart';
+import 'package:movemate_staff/features/porter/presentation/widgets/porter_update_or_report_modal/porter_update_new_service/porter_update_service_package_tile.dart';
 //entity
 
 //hook & extentions
@@ -28,8 +31,8 @@ import 'package:movemate_staff/utils/commons/widgets/widgets_common_export.dart'
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
 
 @RoutePage()
-class DriverUpdateNewServiceChildrenScreen extends HookConsumerWidget {
-  const DriverUpdateNewServiceChildrenScreen({
+class PorterUpdateNewServiceChildrenScreen extends HookConsumerWidget {
+  const PorterUpdateNewServiceChildrenScreen({
     super.key,
     required this.job,
   });
@@ -163,7 +166,7 @@ class DriverUpdateNewServiceChildrenScreen extends HookConsumerWidget {
                               : Container();
                         }
                         final package = fetchResult.items[index];
-                        return DriverUpdateServicePackageTile(
+                        return PorterUpdateServicePackageTile(
                           servicePackage: package,
                           job: job,
                           selectedServices: selectedServices,
@@ -218,11 +221,10 @@ class DriverUpdateNewServiceChildrenScreen extends HookConsumerWidget {
                           Navigator.of(dialogContext).pop();
 
                           try {
-                            final DriverUpdateServiceRequest driverRequest =
-                                DriverUpdateServiceRequest(
+                            final PorterUpdateServiceRequest porterRequest =
+                                PorterUpdateServiceRequest(
                               bookingDetails: bookingRequest.bookingDetails
                                 ..first,
-                              truckCategoryId: bookingRequest.truckCategoryId,
                             );
 
                             // Show loading indicator if needed
@@ -237,9 +239,9 @@ class DriverUpdateNewServiceChildrenScreen extends HookConsumerWidget {
 
                             // Perform the update
                             await ref
-                                .read(driverControllerProvider.notifier)
-                                .driverUpdateNewService(
-                                  request: driverRequest,
+                                .read(porterControllerProvider.notifier)
+                                .porterUpdateNewService(
+                                  request: porterRequest,
                                   context: context,
                                   id: job.id,
                                 );

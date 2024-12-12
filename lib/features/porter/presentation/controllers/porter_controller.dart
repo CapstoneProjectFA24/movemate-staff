@@ -1,7 +1,11 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/features/auth/domain/repositories/auth_repository.dart';
 import 'package:movemate_staff/features/auth/presentation/screens/sign_in/sign_in_controller.dart';
+import 'package:movemate_staff/features/drivers/data/models/request/porter_update_service_request.dart';
+import 'package:movemate_staff/features/job/data/model/request/driver_report_incident_request.dart';
 import 'package:movemate_staff/features/job/domain/entities/available_staff_entities.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/repositories/service_booking_repository.dart';
@@ -250,6 +254,116 @@ class PorterController extends _$PorterController {
         content: "Cập nhật trạng thái thành công",
         icon: AssetsConstants.iconSuccess,
         backgroundColor: Colors.green,
+        textColor: AssetsConstants.whiteColor,
+      );
+    });
+
+    if (state.hasError) {
+      final error = state.error!;
+      if (error is DioException) {
+        final statusCode = error.response?.statusCode ?? error.onStatusDio();
+
+        handleAPIError(
+          statusCode: statusCode,
+          stateError: state.error!,
+          context: context,
+        );
+      } else {
+        showSnackBar(
+          context: context,
+          content: error.toString(),
+          icon: AssetsConstants.iconError,
+          backgroundColor: Colors.red,
+          textColor: AssetsConstants.whiteColor,
+        );
+      }
+    }
+  }
+
+//porter report whern porter can not arived
+  Future<void> porterReportIncident({
+    required BuildContext context,
+    required int id,
+    required DriverReportIncidentRequest request,
+  }) async {
+    state = const AsyncLoading();
+    final authRepository = ref.read(authRepositoryProvider);
+    final user = await SharedPreferencesUtils.getInstance('user_token');
+
+    print('check requets $request');
+    state = await AsyncValue.guard(() async {
+      await ref.read(bookingRepositoryProvider).porterReportIncident(
+            accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
+            id: id,
+            request: request,
+          );
+
+      showSnackBar(
+        context: context,
+        content: "Gửi yêu cầu thành công",
+        icon: AssetsConstants.iconSuccess,
+        backgroundColor: Colors.orange,
+        textColor: AssetsConstants.whiteColor,
+      );
+      // if (res.statusCode == 200) {
+      //   context.router.replaceAll([
+      //     const TabViewScreenRoute(children: [HomeScreenRoute()]),
+      //   ]);
+      // }
+    });
+
+    if (!state.hasError) {
+      context.router.replaceAll([
+        const TabViewScreenRoute(children: [HomeScreenRoute()]),
+      ]);
+    }
+
+    if (state.hasError) {
+      final error = state.error!;
+      if (error is DioException) {
+        final statusCode = error.response?.statusCode ?? error.onStatusDio();
+
+        handleAPIError(
+          statusCode: statusCode,
+          stateError: state.error!,
+          context: context,
+        );
+      } else {
+        showSnackBar(
+          context: context,
+          content: error.toString(),
+          icon: AssetsConstants.iconError,
+          backgroundColor: Colors.red,
+          textColor: AssetsConstants.whiteColor,
+        );
+      }
+    }
+  }
+
+//Porter update service
+  Future<void> porterUpdateNewService({
+    required BuildContext context,
+    required int id,
+    required PorterUpdateServiceRequest request,
+  }) async {
+    state = const AsyncLoading();
+    final authRepository = ref.read(authRepositoryProvider);
+    final user = await SharedPreferencesUtils.getInstance('user_token');
+    // final porterRequest = porterUpdateServiceRequest.fromBookingUpdate;
+    // print('check requets $request');
+    state = await AsyncValue.guard(() async {
+      final res = await ref
+          .read(bookingRepositoryProvider)
+          .porterUpdateNewService(
+            request: request,
+            accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
+            id: id,
+          );
+      showSnackBar(
+        context: context,
+        content: "Gửi yêu cầu thành công",
+        icon: AssetsConstants.iconSuccess,
+        backgroundColor: Colors.orange,
         textColor: AssetsConstants.whiteColor,
       );
     });

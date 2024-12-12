@@ -769,7 +769,7 @@ class _BookingSource implements BookingSource {
 
   @override
   Future<HttpResponse<SuccessModel>> driverReportIncident(
-    String request,
+    DriverReportIncidentRequest request,
     String contentType,
     String accessToken,
     int id,
@@ -781,7 +781,8 @@ class _BookingSource implements BookingSource {
       r'Authorization': accessToken,
     };
     _headers.removeWhere((k, v) => v == null);
-    final _data = request;
+    final _data = <String, dynamic>{};
+    _data.addAll(request?.toMap() ?? <String, dynamic>{});
     final _options = _setStreamType<HttpResponse<SuccessModel>>(Options(
       method: 'PUT',
       headers: _headers,
@@ -790,7 +791,7 @@ class _BookingSource implements BookingSource {
     )
         .compose(
           _dio.options,
-          '/bookingdetails/report-fail/${id}',
+          '/assignments/report-booking-detail/${id}',
           queryParameters: queryParameters,
           data: _data,
         )
@@ -836,6 +837,96 @@ class _BookingSource implements BookingSource {
         .compose(
           _dio.options,
           '/bookingdetails/driver/update-booking/${id}',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        )));
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late SuccessModel _value;
+    try {
+      _value = SuccessModel.fromMap(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    final httpResponse = HttpResponse(_value, _result);
+    return httpResponse;
+  }
+
+  @override
+  Future<HttpResponse<SuccessModel>> porterReportIncident(
+    DriverReportIncidentRequest request,
+    String contentType,
+    String accessToken,
+    int id,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{
+      r'Content-Type': contentType,
+      r'Authorization': accessToken,
+    };
+    _headers.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    _data.addAll(request?.toMap() ?? <String, dynamic>{});
+    final _options = _setStreamType<HttpResponse<SuccessModel>>(Options(
+      method: 'PUT',
+      headers: _headers,
+      extra: _extra,
+      contentType: contentType,
+    )
+        .compose(
+          _dio.options,
+          '/assignments/report-booking-detail/${id}',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        )));
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late SuccessModel _value;
+    try {
+      _value = SuccessModel.fromMap(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    final httpResponse = HttpResponse(_value, _result);
+    return httpResponse;
+  }
+
+  @override
+  Future<HttpResponse<SuccessModel>> porterUpdateNewService(
+    PorterUpdateServiceRequest request,
+    String contentType,
+    String accessToken,
+    int id,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{
+      r'Content-Type': contentType,
+      r'Authorization': accessToken,
+    };
+    _headers.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
+    _data.addAll(request?.toMap() ?? <String, dynamic>{});
+    final _options = _setStreamType<HttpResponse<SuccessModel>>(Options(
+      method: 'PUT',
+      headers: _headers,
+      extra: _extra,
+      contentType: contentType,
+    )
+        .compose(
+          _dio.options,
+          '/bookingdetails/porter/update-booking/${id}',
           queryParameters: queryParameters,
           data: _data,
         )

@@ -2,6 +2,7 @@
 
 import 'package:dio/dio.dart';
 import 'package:movemate_staff/features/drivers/data/models/request/driver_update_service_request.dart';
+import 'package:movemate_staff/features/drivers/data/models/request/porter_update_service_request.dart';
 import 'package:movemate_staff/features/drivers/data/models/request/update_resourse_request.dart';
 import 'package:movemate_staff/features/job/data/model/queries/booking_queries.dart';
 import 'package:movemate_staff/features/job/data/model/request/driver_report_incident_request.dart';
@@ -163,18 +164,35 @@ abstract class BookingSource {
   );
 
   // Driver report incident
-
-  @PUT('${APIConstants.put_driver_incident}/{id}')
+  @PUT('${APIConstants.put_staff_incident}/{id}')
   Future<HttpResponse<SuccessModel>> driverReportIncident(
-    @Body() String request,
+    @Body() DriverReportIncidentRequest request,
     @Header(APIConstants.contentHeader) String contentType,
     @Header(APIConstants.authHeader) String accessToken,
     @Path('id') int id,
   );
+
   //driver update service
   @PUT('${APIConstants.put_driver_update_new_service}/{id}')
   Future<HttpResponse<SuccessModel>> driverUpdateNewService(
     @Body() DriverUpdateServiceRequest request,
+    @Header(APIConstants.contentHeader) String contentType,
+    @Header(APIConstants.authHeader) String accessToken,
+    @Path('id') int id,
+  );
+
+  // Porter report incident
+  @PUT('${APIConstants.put_staff_incident}/{id}')
+  Future<HttpResponse<SuccessModel>> porterReportIncident(
+    @Body() DriverReportIncidentRequest request,
+    @Header(APIConstants.contentHeader) String contentType,
+    @Header(APIConstants.authHeader) String accessToken,
+    @Path('id') int id,
+  );
+  //porter update service
+  @PUT('${APIConstants.put_porter_update_new_service}/{id}')
+  Future<HttpResponse<SuccessModel>> porterUpdateNewService(
+    @Body() PorterUpdateServiceRequest request,
     @Header(APIConstants.contentHeader) String contentType,
     @Header(APIConstants.authHeader) String accessToken,
     @Path('id') int id,

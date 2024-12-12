@@ -26,9 +26,6 @@ class APIConstants {
   static const post_booking_service = '/bookings/reviewer/update-booking';
   //post booking
 
-  static const put_driver_incident = '/bookingdetails/report-fail';
-  static const put_driver_update_new_service =
-      '/bookingdetails/driver/update-booking';
   // static const post_booking_service = '/bookings/register-booking';
   // order
   static const bookings = '/bookings';
@@ -46,11 +43,19 @@ class APIConstants {
       '/assignments/assign-auto-by-manual-driver';
   static const driver_confirms_cash = '/bookings/confirm-pay-by-cash';
 
+  static const put_staff_incident = '/assignments/report-booking-detail';
+  static const put_driver_update_new_service =
+      '/bookingdetails/driver/update-booking';
+
   //porter
   static const porters = '/bookingdetails/porter/update-status';
   static const available_porters = '/assignments/available-porter';
   static const assign_manual_available_porters =
       '/assignments/assign-auto-by-manual-porter';
+
+  static const put_porter_update_new_service =
+      '/bookingdetails/porter/update-booking';
+
   // payments
   static const paymentsBooking = '/payments/create-payment-url';
   static const paymentsDeposit = '/wallets/recharge';

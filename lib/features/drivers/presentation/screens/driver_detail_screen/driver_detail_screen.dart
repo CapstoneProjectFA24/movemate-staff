@@ -10,7 +10,7 @@ import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/features/drivers/presentation/controllers/driver_controller/driver_controller.dart';
 import 'package:movemate_staff/features/drivers/presentation/controllers/stream_controller/job_stream_manager.dart';
 import 'package:movemate_staff/features/drivers/presentation/widgets/draggable_sheet/location_draggable_sheet.dart';
-import 'package:movemate_staff/features/drivers/presentation/widgets/driver_report_incident/incidents_content_modal.dart';
+import 'package:movemate_staff/features/drivers/presentation/widgets/driver_update_or_report_modal/update_or_incidents_content_modal.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/assignment_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/hooks/use_booking_status.dart';
@@ -1065,6 +1065,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                                 color: Colors.black54,
                                 size: 24,
                               ),
+                            
                               onPressed: () {
                                 setState(() {
                                   canDriverActiveIncident = true;
@@ -1092,6 +1093,8 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                                   });
                                 });
                               },
+                            
+                            
                             ),
                           ],
                         ),

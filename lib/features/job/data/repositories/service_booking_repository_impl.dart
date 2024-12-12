@@ -1,6 +1,7 @@
 // service_booking_repository_impl.dart
 
 import 'package:movemate_staff/features/drivers/data/models/request/driver_update_service_request.dart';
+import 'package:movemate_staff/features/drivers/data/models/request/porter_update_service_request.dart';
 import 'package:movemate_staff/features/drivers/data/models/request/update_resourse_request.dart';
 import 'package:movemate_staff/features/job/data/model/queries/booking_queries.dart';
 import 'package:movemate_staff/features/job/data/model/request/booking_requesst.dart';
@@ -227,30 +228,6 @@ class BookingRepositoryImpl extends RemoteBaseRepository
   }
 
   @override
-  Future<SuccessModel> driverUpdateNewService({
-    required String accessToken,
-    required DriverUpdateServiceRequest request,
-    required int id,
-  }) async {
-    print("repo log ${request.toJson()}");
-    print("repo log $id");
-
-    final driverRequest = DriverUpdateServiceRequest(
-      bookingDetails: request.bookingDetails,
-      truckCategoryId: request.truckCategoryId,
-    );
-    print("repo object chekcRequest request ${driverRequest.toJson()}");
-    return getDataOf(
-      request: () => _bookingSource.driverUpdateNewService(
-        driverRequest,
-        APIConstants.contentType,
-        accessToken,
-        id,
-      ),
-    );
-  }
-
-  @override
   Future<SuccessModel> updateAssignStaffIsResponsibility({
     required String accessToken,
     required int assignmentId,
@@ -292,19 +269,91 @@ class BookingRepositoryImpl extends RemoteBaseRepository
 
   @override
   Future<SuccessModel> driverReportIncident({
-    required String request,
+    required DriverReportIncidentRequest request,
     required String accessToken,
     required int id,
   }) {
-    // final requestIncident = DriverReportIncidentRequest(
-    //   type: request.type,
-    // );
-    final requestIncident = request.toString();
+    final requestIncident = DriverReportIncidentRequest(
+      failReason: request.failReason,
+    );
+    // final requestIncident = request.toString();
     print('checking repo ${requestIncident}');
     print('checking repo id ${id}');
     return getDataOf(
       request: () => _bookingSource.driverReportIncident(
         requestIncident,
+        APIConstants.contentType,
+        accessToken,
+        id,
+      ),
+    );
+  }
+
+  @override
+  Future<SuccessModel> driverUpdateNewService({
+    required String accessToken,
+    required DriverUpdateServiceRequest request,
+    required int id,
+  }) async {
+    print("repo log ${request.toJson()}");
+    print("repo log $id");
+
+    final driverRequest = DriverUpdateServiceRequest(
+      bookingDetails: request.bookingDetails,
+      truckCategoryId: request.truckCategoryId,
+    );
+    print("repo object chekcRequest request ${driverRequest.toJson()}");
+    return getDataOf(
+      request: () => _bookingSource.driverUpdateNewService(
+        driverRequest,
+        APIConstants.contentType,
+        accessToken,
+        id,
+      ),
+    );
+  }
+
+  // porter report incident
+  @override
+  Future<SuccessModel> porterReportIncident({
+    required DriverReportIncidentRequest request,
+    required String accessToken,
+    required int id,
+  }) {
+    final requestIncident = DriverReportIncidentRequest(
+     failReason: request.failReason,
+    );
+    // final requestIncident = request.toString();
+    print('checking repo ${requestIncident}');
+    print('checking repo id ${id}');
+    return getDataOf(
+      request: () => _bookingSource.porterReportIncident(
+        requestIncident,
+        APIConstants.contentType,
+        accessToken,
+        id,
+      ),
+    );
+  }
+
+//porter update service
+  @override
+  Future<SuccessModel> porterUpdateNewService({
+    required String accessToken,
+    required PorterUpdateServiceRequest request,
+    required int id,
+  }) async {
+    print("repo log ${request.toJson()}");
+    print("repo log $id");
+
+    final porterRequest = PorterUpdateServiceRequest(
+      bookingDetails: request.bookingDetails,
+      // truckCategoryId: request.truckCategoryId,
+    );
+    print("repo object chekcRequest request ${porterRequest.toJson()}");
+    return getDataOf(
+      request: () => _bookingSource.porterUpdateNewService(
+        porterRequest,
         APIConstants.contentType,
         accessToken,
         id,
