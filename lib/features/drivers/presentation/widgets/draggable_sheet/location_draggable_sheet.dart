@@ -232,6 +232,7 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
                 ),
                 Spacer(),
                 if (bookingAsync?.isCredit == true && !status.isCompleted)
+              
                   Positioned(
                     top: 16,
                     right: 25,
@@ -254,6 +255,7 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
                       ],
                     ),
                   ),
+              
               ],
             ),
             const SizedBox(height: 12),
@@ -767,7 +769,7 @@ Widget buildPriceItem(String description, String price) {
 }
 
 // Hàm hỗ trợ để định dạng giá
-String formatPrice(int price) {
+String formatPrice(double price) {
   final formatter = NumberFormat('#,###', 'vi_VN');
   return '${formatter.format(price)} đ';
 }
@@ -784,7 +786,7 @@ Widget buildServicesList(List<BookingDetailsResponseEntity> bookingDetails,
   return Column(
     children: filteredServices.map((detail) {
       return buildPriceItem(detail.name ?? 'Unknown Service',
-          formatPrice(detail.price?.toInt() ?? 0));
+          formatPrice(detail.price?.toDouble() ?? 0));
     }).toList(),
   );
 }

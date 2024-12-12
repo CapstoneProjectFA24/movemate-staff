@@ -11,6 +11,7 @@ import 'package:movemate_staff/features/job/data/model/response/booking_response
 import 'package:movemate_staff/features/job/data/model/response/booking_response_object.dart';
 import 'package:movemate_staff/features/job/data/model/response/house_type_obj_response.dart';
 import 'package:movemate_staff/features/job/data/model/response/house_type_response.dart';
+import 'package:movemate_staff/features/job/data/model/response/incident_response.dart';
 import 'package:movemate_staff/features/job/data/model/response/services_fee_system_response.dart';
 import 'package:movemate_staff/features/job/data/model/response/services_package_response.dart';
 import 'package:movemate_staff/features/job/data/model/response/services_response.dart';
@@ -143,7 +144,12 @@ abstract class BookingRepository {
     required String accessToken,
     required int id,
   });
-
+  //get  incident list
+  Future<IncidentResponse> getIncidentListByBookingId({
+    PagingModel request,
+    required String accessToken,
+    required int bookingId,
+  });
   //porter update
   Future<SuccessModel> porterUpdateNewService({
     required String accessToken,

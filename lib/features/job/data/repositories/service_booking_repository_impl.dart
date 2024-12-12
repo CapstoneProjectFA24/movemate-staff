@@ -4,6 +4,7 @@ import 'package:movemate_staff/features/drivers/data/models/request/driver_updat
 import 'package:movemate_staff/features/drivers/data/models/request/porter_update_service_request.dart';
 import 'package:movemate_staff/features/drivers/data/models/request/update_resourse_request.dart';
 import 'package:movemate_staff/features/job/data/model/queries/booking_queries.dart';
+import 'package:movemate_staff/features/job/data/model/queries/incident_queries.dart';
 import 'package:movemate_staff/features/job/data/model/request/booking_requesst.dart';
 import 'package:movemate_staff/features/job/data/model/request/driver_report_incident_request.dart';
 import 'package:movemate_staff/features/job/data/model/request/reviewer_status_request.dart';
@@ -12,6 +13,7 @@ import 'package:movemate_staff/features/job/data/model/response/booking_response
 import 'package:movemate_staff/features/job/data/model/response/booking_response_object.dart';
 import 'package:movemate_staff/features/job/data/model/response/house_type_obj_response.dart';
 import 'package:movemate_staff/features/job/data/model/response/house_type_response.dart';
+import 'package:movemate_staff/features/job/data/model/response/incident_response.dart';
 import 'package:movemate_staff/features/job/data/model/response/services_fee_system_response.dart';
 import 'package:movemate_staff/features/job/data/model/response/services_package_response.dart';
 import 'package:movemate_staff/features/job/data/model/response/services_response.dart';
@@ -357,6 +359,27 @@ class BookingRepositoryImpl extends RemoteBaseRepository
         APIConstants.contentType,
         accessToken,
         id,
+      ),
+    );
+  }
+
+//get list incident by booking
+  //get list incident list
+  @override
+  Future<IncidentResponse> getIncidentListByBookingId({
+    PagingModel? request,
+    required String accessToken,
+    required int bookingId,
+  }) async {
+    final incidentQueries = IncidentQueries(
+      bookingId: bookingId,
+    ).toMap();
+
+    return getDataOf(
+      request: () => _bookingSource.getIncidentListByBookingId(
+        APIConstants.contentType,
+        accessToken,
+        incidentQueries,
       ),
     );
   }

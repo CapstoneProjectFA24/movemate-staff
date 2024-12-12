@@ -10,6 +10,7 @@ import 'package:movemate_staff/features/job/domain/entities/available_staff_enti
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/repositories/service_booking_repository.dart';
 import 'package:movemate_staff/features/porter/data/models/request/porter_update_resourse_request.dart';
+import 'package:movemate_staff/features/porter/domain/entities/order_tracker_entity_response.dart';
 import 'package:movemate_staff/features/porter/presentation/widgets/porter_screen_widget/porter_bottom_sheet.dart';
 import 'package:movemate_staff/models/request/paging_model.dart';
 import 'package:movemate_staff/utils/commons/functions/functions_common_export.dart';
@@ -388,5 +389,53 @@ class PorterController extends _$PorterController {
         );
       }
     }
+  }
+
+//get list incident by booking id
+
+  Future<List<BookingTrackersIncidentEntity>> getIncidentListByBookingId(
+    PagingModel request,
+    BuildContext context,
+    int bookingId,
+  ) async {
+    List<BookingTrackersIncidentEntity> incidents = [];
+
+    state = const AsyncLoading();
+    final incidentRepository = ref.read(bookingRepositoryProvider);
+    final authRepository = ref.read(authRepositoryProvider);
+    final user = await SharedPreferencesUtils.getInstance('user_token');
+
+    state = await AsyncValue.guard(() async {
+      final response = await incidentRepository.getIncidentListByBookingId(
+        accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
+        request: request,
+        bookingId: bookingId,
+      );
+      incidents = response.payload;
+    });
+
+    if (state.hasError) {
+      state = await AsyncValue.guard(() async {
+        final statusCode = (state.error as DioException).onStatusDio();
+        await handleAPIError(
+          statusCode: statusCode,
+          stateError: state.error!,
+          context: context,
+          onCallBackGenerateToken: () async => await reGenerateToken(
+            authRepository,
+            context,
+          ),
+        );
+
+        // if (state.hasError) {
+        //   await ref.read(signInControllerProvider.notifier).signOut(context);
+        // }
+
+        if (statusCode != StatusCodeType.unauthentication.type) {}
+        await getIncidentListByBookingId(request, context, bookingId);
+      });
+    }
+
+    return incidents;
   }
 }

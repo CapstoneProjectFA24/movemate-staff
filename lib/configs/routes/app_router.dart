@@ -26,6 +26,9 @@ import 'package:movemate_staff/features/auth/presentation/screens/sign_up/sign_u
 import 'package:movemate_staff/features/auth/presentation/screens/privacy_term/privacy_screen.dart';
 import 'package:movemate_staff/features/auth/presentation/screens/privacy_term/term_screen.dart';
 import 'package:movemate_staff/features/auth/presentation/screens/otp_verification/otp_verification_screen.dart';
+import 'package:movemate_staff/features/porter/domain/entities/order_tracker_entity_response.dart';
+import 'package:movemate_staff/features/porter/presentation/screens/incidents_list_screen/incident_details_screen.dart';
+import 'package:movemate_staff/features/porter/presentation/screens/incidents_list_screen/incidents_list_screen.dart';
 import 'package:movemate_staff/features/porter/presentation/screens/porter_confirm_upload/porter_confirm_upload.dart';
 import 'package:movemate_staff/features/porter/presentation/widgets/porter_update_or_report_modal/porter_report/porter_incidents_screen.dart';
 import 'package:movemate_staff/features/porter/presentation/widgets/porter_update_or_report_modal/porter_update_new_service/porter_update_new_service_children_screen.dart';
@@ -179,6 +182,12 @@ class AppRouter extends _$AppRouter {
         ),
         AutoRoute(
           page: IncidentsScreenRoute.page,
+        ),
+        AutoRoute(
+          page: IncidentsListScreenRoute.page,
+        ),
+        AutoRoute(
+          page: IncidentDetailsScreenRoute.page,
         ),
         AutoRoute(
           page: PorterIncidentsScreenRoute.page,

@@ -7,6 +7,7 @@ class AssignmentsResponseEntity {
   final String status;
   final double? price;
   final String staffType;
+  final String? failedReason;
   final bool? isResponsible;
 
   AssignmentsResponseEntity({
@@ -17,6 +18,7 @@ class AssignmentsResponseEntity {
     this.price,
     required this.staffType,
     this.isResponsible,
+    this.failedReason,
   });
 
   factory AssignmentsResponseEntity.fromMap(Map<String, dynamic> json) {
@@ -33,6 +35,7 @@ class AssignmentsResponseEntity {
                   : null))
           : null,
       staffType: json['staffType'] ?? '',
+      failedReason: json['failedReason'] ?? '',
       isResponsible: json['isResponsible'] != null
           ? (json['isResponsible'] is bool
               ? json['isResponsible']
@@ -51,6 +54,7 @@ class AssignmentsResponseEntity {
       'status': status,
       'price': price,
       'staffType': staffType,
+      'failedReason': failedReason,
       'isResponsible': isResponsible,
     };
   }

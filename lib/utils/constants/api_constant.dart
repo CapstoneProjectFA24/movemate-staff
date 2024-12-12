@@ -56,6 +56,8 @@ class APIConstants {
   static const put_porter_update_new_service =
       '/bookingdetails/porter/update-booking';
 
+  //get incident list
+  static const get_incident_list_by_booking_id = '/bookingtrackers';
   // payments
   static const paymentsBooking = '/payments/create-payment-url';
   static const paymentsDeposit = '/wallets/recharge';

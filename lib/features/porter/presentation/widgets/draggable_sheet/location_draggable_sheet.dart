@@ -1,6 +1,8 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_details_response_entity.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/presentation/controllers/house_type_controller/house_type_controller.dart';
@@ -284,6 +286,7 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
     required ProfileEntity? profile,
     required BookingStatusResult status,
   }) {
+    final screenWidth = MediaQuery.sizeOf(context).width;
     return Container(
       decoration: const BoxDecoration(
         color: Colors.white,
@@ -350,6 +353,47 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
                   _buildConfirmationImageLink(
                       context: context, job: job, status: status),
                   const SizedBox(height: 20),
+
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                    child: SizedBox(
+                      width: screenWidth,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          // Add your button action here
+                          context.router.push(
+                              IncidentsListScreenRoute(bookingId: job.id));
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.orange,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          elevation: 2,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.check_circle_outline,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              'Danh sách sự cố',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

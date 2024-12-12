@@ -10,6 +10,7 @@ import 'package:movemate_staff/features/job/data/model/request/reviewer_status_r
 import 'package:movemate_staff/features/job/data/model/request/reviewer_time_request.dart';
 import 'package:movemate_staff/features/job/data/model/response/booking_response_object.dart';
 import 'package:movemate_staff/features/job/data/model/response/house_type_obj_response.dart';
+import 'package:movemate_staff/features/job/data/model/response/incident_response.dart';
 import 'package:movemate_staff/features/job/data/model/response/staff_response.dart';
 import 'package:movemate_staff/features/job/data/model/response/update_booking_response.dart';
 import 'package:movemate_staff/features/porter/data/models/request/porter_update_resourse_request.dart';
@@ -196,6 +197,14 @@ abstract class BookingSource {
     @Header(APIConstants.contentHeader) String contentType,
     @Header(APIConstants.authHeader) String accessToken,
     @Path('id') int id,
+  );
+
+  // get list incident by booking id
+  @GET(APIConstants.get_incident_list_by_booking_id)
+  Future<HttpResponse<IncidentResponse>> getIncidentListByBookingId(
+    @Header(APIConstants.contentHeader) String contentType,
+    @Header(APIConstants.authHeader) String accessToken,
+    @Queries() Map<String, dynamic> request,
   );
 
   //get available porter
