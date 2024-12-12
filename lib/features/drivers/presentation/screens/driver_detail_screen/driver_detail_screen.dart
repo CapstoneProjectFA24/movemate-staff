@@ -332,21 +332,30 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
   }
 
   Map<String, bool> _getDriverAssignmentStatus(List assignments) {
+    final staffAssignment = assignments.firstWhere(
+        (a) => a['StaffType'] == 'DRIVER' && a['UserId'] == user?.id,
+        orElse: () => null);
+
+    if (staffAssignment == null) {
+      return {
+        'isDriverWaiting': false,
+        'isDriverAssigned': false,
+        'isDriverIncoming': false,
+        'isDriverArrived': false,
+        'isDriverInprogress': false,
+        'isDriverCompleted': false,
+        'isDriverFailed': false,
+      };
+    }
+
     return {
-      'isDriverWaiting': assignments
-          .any((a) => a['StaffType'] == "DRIVER" && a["Status"] == "WAITING"),
-      'isDriverAssigned': assignments
-          .any((a) => a['StaffType'] == "DRIVER" && a["Status"] == "ASSIGNED"),
-      'isDriverIncoming': assignments
-          .any((a) => a['StaffType'] == "DRIVER" && a["Status"] == "INCOMING"),
-      'isDriverArrived': assignments
-          .any((a) => a['StaffType'] == "DRIVER" && a["Status"] == "ARRIVED"),
-      'isDriverInprogress': assignments.any(
-          (a) => a['StaffType'] == "DRIVER" && a["Status"] == "IN_PROGRESS"),
-      'isDriverCompleted': assignments
-          .any((a) => a['StaffType'] == "DRIVER" && a["Status"] == "COMPLETED"),
-      'isDriverFailed': assignments
-          .any((a) => a['StaffType'] == "DRIVER" && a["Status"] == "FAILED"),
+      'isDriverWaiting': staffAssignment['Status'] == 'WAITING',
+      'isDriverAssigned': staffAssignment['Status'] == 'ASSIGNED',
+      'isDriverIncoming': staffAssignment['Status'] == 'INCOMING',
+      'isDriverArrived': staffAssignment['Status'] == 'ARRIVED',
+      'isDriverInprogress': staffAssignment['Status'] == 'IN_PROGRESS',
+      'isDriverCompleted': staffAssignment['Status'] == 'COMPLETED',
+      'isDriverFailed': staffAssignment['Status'] == 'FAILED',
     };
   }
 
@@ -416,6 +425,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
         isDriverEndDeliveryPointBuildRoute =
             driverAssignmentStatus['isDriverCompleted']! &&
                 !driverAssignmentStatus['isDriverFailed']!;
+
         setState(() {
           canDriverConfirmIncomingFlag = false;
           canDriverStartMovingFlag = false;
@@ -481,6 +491,192 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
             waypoint = _getDeliveryPointLatLng();
           } else if (buildRouteFlags['isDriverEndDeliveryPointBuildRoute']!) {
             waypoint = _getDeliveryPointLatLng();
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return Dialog(
+                  backgroundColor: Colors.transparent,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [Colors.white, Color(0xFFFFF8F0)],
+                      ),
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 20,
+                          spreadRadius: 1,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          height: 100,
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              // colors: [Color(0xFFFF9900), Color(0xFFFFB446)],
+                              colors: [
+                                AssetsConstants.mainColor,
+                                AssetsConstants.mainColor
+                              ],
+                            ),
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(24),
+                              topRight: Radius.circular(24),
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFFFF9900).withOpacity(0.7),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Positioned(
+                                top: -20,
+                                right: -20,
+                                child: Container(
+                                  width: 100,
+                                  height: 100,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Colors.white.withOpacity(0.1),
+                                  ),
+                                ),
+                              ),
+                              TweenAnimationBuilder(
+                                duration: const Duration(milliseconds: 600),
+                                tween: Tween<double>(begin: 0, end: 1),
+                                builder: (context, double value, child) {
+                                  return Transform.scale(
+                                    scale: value,
+                                    child: child,
+                                  );
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: const BoxDecoration(
+                                    color: Colors.white,
+                                    shape: BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: AssetsConstants.mainColor,
+                                        blurRadius: 12,
+                                        spreadRadius: 2,
+                                      ),
+                                    ],
+                                  ),
+                                  child: const Icon(
+                                    Icons.rate_review_rounded,
+                                    size: 32,
+                                    color: AssetsConstants.mainColor,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+                          child: Column(
+                            children: [
+                              const Text(
+                                'Bạn đã hoàn thành công việc',
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF2D3142),
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                'Hãy quay lại màn hình chính để kiểm tra các đơn khác',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  height: 1.5,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                              const SizedBox(height: 32),
+                            ],
+                          ),
+                        ),
+
+                        // Buttons
+                        Container(
+                          padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                          child: Row(
+                            children: [
+                              // "Đánh giá ngay" button
+                              Expanded(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12),
+                                    gradient: const LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: [
+                                        AssetsConstants.mainColor,
+                                        AssetsConstants.mainColor
+                                      ],
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: const Color(0xFFFF9900)
+                                            .withOpacity(0.3),
+                                        blurRadius: 8,
+                                        spreadRadius: 0,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
+                                  ),
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                      Navigator.of(context).pop();
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.transparent,
+                                      foregroundColor: Colors.white,
+                                      shadowColor: Colors.transparent,
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 16),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                    ),
+                                    child: const Text(
+                                      'Xác nhận',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            );
           } else {
             return;
           }
