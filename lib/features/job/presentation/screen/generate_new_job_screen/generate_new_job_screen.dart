@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:intl/intl.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
+import 'package:movemate_staff/features/job/data/model/request/booking_requesst.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/presentation/controllers/house_type_controller/house_type_controller.dart';
 import 'package:movemate_staff/features/job/presentation/providers/booking_provider.dart';
@@ -65,6 +66,7 @@ class GenerateNewJobScreen extends HookConsumerWidget {
         bookingNotifier.updateNumberOfRooms(int.tryParse(job.roomNumber) ?? 1);
         bookingNotifier
             .updateNumberOfFloors(int.tryParse(job.floorsNumber) ?? 1);
+        bookingNotifier.updateBookingDate(parseCustomDate(job.bookingAt));
       });
       return null;
     }, [roomNumberController, floorsNumberController]);
@@ -72,9 +74,7 @@ class GenerateNewJobScreen extends HookConsumerWidget {
 // Lấy giá trị mặc định từ job.bookingAt
     final initialBookingDate = useMemoized(() {
       try {
-        return job.bookingAt != null
-            ? parseCustomDate(job.bookingAt)
-            : DateTime.now();
+        return parseCustomDate(job.bookingAt);
       } catch (e) {
         print("Error parsing bookingAt: $e");
         return DateTime.now();
