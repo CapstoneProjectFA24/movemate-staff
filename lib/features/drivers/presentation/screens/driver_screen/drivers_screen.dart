@@ -144,10 +144,11 @@ class DriversScreen extends HookConsumerWidget {
                     DateFormat.yMd().format(selectedDate.value);
                 return GestureDetector(
                   onTap: () {
+            
                     selectedDate.value = day;
                     // Scroll to selected date
                     final offset =
-                        max(0, (index * 80.0) - (size.width / 2) + 40)
+                        max(0, (index * 90.0) - (size.width / 2) + 40)
                             .toDouble();
                     horizontalScrollController.animateTo(
                       offset,

@@ -56,7 +56,7 @@ class PorterScreen extends HookConsumerWidget {
       });
       return null;
     }, []);
-    
+
     final fetchResult = useFetch<BookingResponseEntity>(
       function: (model, context) => ref
           .read(porterControllerProvider.notifier)
@@ -152,7 +152,7 @@ class PorterScreen extends HookConsumerWidget {
                     selectedDate.value = day;
                     // Scroll to selected date
                     final offset =
-                        max(0, (index * 80.0) - (size.width / 2) + 40)
+                        max(0, (index * 90.0) - (size.width / 2) + 40)
                             .toDouble();
                     horizontalScrollController.animateTo(
                       offset,
