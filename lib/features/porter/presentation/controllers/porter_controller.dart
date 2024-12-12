@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:movemate_staff/features/auth/domain/repositories/auth_repository.dart';
@@ -82,20 +81,16 @@ class PorterController extends _$PorterController {
     state = const AsyncLoading();
     final authRepository = ref.read(authRepositoryProvider);
     final user = await SharedPreferencesUtils.getInstance('user_token');
-    print("vinh go here  controller request $id");
     state = await AsyncValue.guard(() async {
-      print("vinh go here 2 controller request $id");
       await ref
           .read(bookingRepositoryProvider)
           .updateStatusPorterWithoutResourse(
             accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
             id: id,
           );
-      print("vinh go here 3 controller request $id");
       ref
           .read(refreshPorterList.notifier)
           .update((state) => !ref.read(refreshPorterList));
-      print("vinh go here 4 controller request $id");
       showSnackBar(
         context: context,
         content: "Cập nhật trạng thái thành công",
@@ -110,19 +105,17 @@ class PorterController extends _$PorterController {
       if (error is DioException) {
         final statusCode = error.response?.statusCode ?? error.onStatusDio();
 
-        handleAPIError(
-          statusCode: statusCode,
-          stateError: state.error!,
-          context: context,
-        );
-      } else {
-        showSnackBar(
-          context: context,
-          content: error.toString(),
-          icon: AssetsConstants.iconError,
-          backgroundColor: Colors.red,
-          textColor: AssetsConstants.whiteColor,
-        );
+        if (statusCode != 400) {
+          await handleAPIError(
+            statusCode: statusCode,
+            stateError: state.error!,
+            context: context,
+            onCallBackGenerateToken: () async => await reGenerateToken(
+              authRepository,
+              context,
+            ),
+          );
+        }
       }
     }
   }
