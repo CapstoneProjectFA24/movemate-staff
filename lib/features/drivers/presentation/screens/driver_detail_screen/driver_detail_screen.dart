@@ -591,6 +591,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
   Future<void> _startArrivedToInprogress() async {
     if (_isMapReady) {
       try {
+        await _buildInitialRoute(useFirebaseLocation: true);
         setState(() {
           _isNavigationStarted = true;
         });
@@ -700,7 +701,8 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                         _updateLocationRealtime(destination, "DRIVER");
 
                         try {
-                          await widget.ref
+                          await ProviderScope.containerOf(context,
+                                  listen: false)
                               .read(driverControllerProvider.notifier)
                               .updateStatusDriverWithoutResourse(
                                 id: widget.job.id,
@@ -800,7 +802,8 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                         _updateLocationRealtime(destination, "DRIVER");
 
                         try {
-                          await widget.ref
+                          await ProviderScope.containerOf(context,
+                                  listen: false)
                               .read(driverControllerProvider.notifier)
                               .updateStatusDriverWithoutResourse(
                                 id: widget.job.id,
@@ -948,6 +951,10 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                                             onPressed: () async {
                                               context.router.pop();
                                               if (_isFirstNavigation) {
+                                                LatLng destination =
+                                                    _getPickupPointLatLng();
+                                                _updateLocationRealtime(
+                                                    destination, "DRIVER");
                                                 setState(() {
                                                   instructionImage =
                                                       const SizedBox.shrink();
@@ -960,6 +967,10 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
 
                                                 _startNextRoute();
                                               } else {
+                                                LatLng destination =
+                                                    _getDeliveryPointLatLng();
+                                                _updateLocationRealtime(
+                                                    destination, "DRIVER");
                                                 setState(() {
                                                   instructionImage =
                                                       const SizedBox.shrink();
@@ -1065,7 +1076,6 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                                 color: Colors.black54,
                                 size: 24,
                               ),
-                            
                               onPressed: () {
                                 setState(() {
                                   canDriverActiveIncident = true;
@@ -1093,8 +1103,6 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                                   });
                                 });
                               },
-                            
-                            
                             ),
                           ],
                         ),
