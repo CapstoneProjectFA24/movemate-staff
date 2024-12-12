@@ -20,6 +20,7 @@ import 'package:movemate_staff/features/porter/presentation/controllers/porter_c
 import 'package:movemate_staff/utils/commons/widgets/cloudinary/cloudinary_camera_upload_widget.dart';
 import 'package:movemate_staff/utils/constants/api_constant.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
+import 'package:movemate_staff/utils/providers/common_provider.dart';
 
 import '../../../../../../../utils/commons/widgets/widgets_common_export.dart';
 
@@ -33,7 +34,7 @@ class PorterIncidentsScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final supportType = useState<String?>('Hư xe');
-
+    final user = ref.read(authProvider);
     final stateIsLoading = useState<bool>(false);
 
     final state = ref.watch(orderControllerProvider);
@@ -71,8 +72,9 @@ class PorterIncidentsScreen extends HookConsumerWidget {
 
         description.value = descriptionController.text;
 
-        final int getAssignmentId =
-            order.assignments.firstWhere((e) => e.staffType == 'PORTER').id;
+        final int getAssignmentId = order.assignments
+            .firstWhere((e) => e.staffType == 'PORTER' && e.userId == user?.id)
+            .id;
 
         final String requests = 'Loại hỗ trợ: ${supportType.value} ' +
             ' Mô tả : ${description.value}';
