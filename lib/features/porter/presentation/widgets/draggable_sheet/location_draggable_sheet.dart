@@ -54,7 +54,11 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
             children: [
               _buildDeliveryStatusCard(job: job, status: bookingStatus),
               _buildTrackingInfoCard(
-                  job: job, status: bookingStatus, context: context),
+                job: job,
+                status: bookingStatus,
+                context: context,
+                profile: userProfileById,
+              ),
               _buildDetailsSheet(
                   context: context,
                   job: job,
@@ -152,10 +156,12 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
     );
   }
 
-  Widget _buildTrackingInfoCard(
-      {required BookingResponseEntity job,
-      required BookingStatusResult status,
-      required BuildContext context}) {
+  Widget _buildTrackingInfoCard({
+    required BookingResponseEntity job,
+    required BookingStatusResult status,
+    required BuildContext context,
+    required ProfileEntity? profile,
+  }) {
     // print("check status ${bookingStatus.statusMessage}");
     //PORTER
     //REVIEWER
@@ -165,7 +171,7 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
             .firstWhere((e) => e.staffType == 'PORTER')
             .isResponsible;
 
-        return isResponsible == true ? "Trưởng" : "Nhân viên";
+        return isResponsible == true ? "Trưởng" : "";
       } catch (e) {
         return "Bốc vác"; // Giá trị mặc định nếu không tìm thấy Driver
       }
@@ -207,7 +213,29 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: Colors.grey[300]!),
               ),
-              child: const Icon(Icons.local_shipping),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(
+                  profile?.avatarUrl ??
+                      'https://static.vecteezy.com/system/resources/thumbnails/018/865/413/small/car-driver-simple-flat-icon-illustration-free-vector.jpg',
+                  fit: BoxFit.cover,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Center(
+                      child: CircularProgressIndicator(
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded /
+                                loadingProgress.expectedTotalBytes!
+                            : null,
+                      ),
+                    );
+                  },
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Icon(Icons
+                        .local_shipping); // Fallback icon if image fails to load
+                  },
+                ),
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(

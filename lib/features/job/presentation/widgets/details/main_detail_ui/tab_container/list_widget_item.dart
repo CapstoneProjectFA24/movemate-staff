@@ -59,6 +59,7 @@ class ListItemWidget extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isSelected = selectedValue == item;
 
+    final bool checkFailed = item.status == 'FAILED';
     // Use the Hook within the build method
     final userProfile = useFetchObject<ProfileEntity>(
       function: (context) => ref
@@ -67,142 +68,185 @@ class ListItemWidget extends HookConsumerWidget {
       context: context,
     );
 
-    return Card(
-      elevation: 0,
-      margin: const EdgeInsets.symmetric(vertical: 4),
-      color: isSelected ? Colors.blue.shade50 : Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(
-          color: isSelected ? Colors.blue.shade100 : Colors.grey.shade200,
-          width: 1,
-        ),
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: () {
-          selectionNotifier.value = isSelected ? null : item;
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: iconColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: userProfile.data?.avatarUrl != null &&
-                        userProfile.data!.avatarUrl!.isNotEmpty
-                    ? Image.network(
-                        userProfile.data!.avatarUrl!,
-                        width: 20,
-                        height: 20,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          // Hiển thị Icon nếu có lỗi khi tải hình ảnh
-                          return Icon(
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Card(
+          elevation: 0,
+          margin: const EdgeInsets.symmetric(vertical: 4),
+          color: isSelected ? Colors.blue.shade50 : Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: BorderSide(
+              color: isSelected ? Colors.blue.shade100 : Colors.grey.shade200,
+              width: 1,
+            ),
+          ),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(12),
+            onTap: !checkFailed
+                ? () {
+                    selectionNotifier.value = isSelected ? null : item;
+                  }
+                : null,
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: iconColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: userProfile.data?.avatarUrl != null &&
+                            userProfile.data!.avatarUrl!.isNotEmpty
+                        ? Image.network(
+                            userProfile.data!.avatarUrl!,
+                            width: 20,
+                            height: 20,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              // Hiển thị Icon nếu có lỗi khi tải hình ảnh
+                              return Icon(
+                                icon, // Biến `icon` nên được định nghĩa trước đây
+                                color: iconColor,
+                                size: 20,
+                              );
+                            },
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  value: loadingProgress.expectedTotalBytes !=
+                                          null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                          (loadingProgress.expectedTotalBytes ??
+                                              1)
+                                      : null,
+                                ),
+                              );
+                            },
+                          )
+                        : Icon(
                             icon, // Biến `icon` nên được định nghĩa trước đây
                             color: iconColor,
                             size: 20,
-                          );
-                        },
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              value: loadingProgress.expectedTotalBytes != null
-                                  ? loadingProgress.cumulativeBytesLoaded /
-                                      (loadingProgress.expectedTotalBytes ?? 1)
-                                  : null,
+                          ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              ' ${userProfile.data?.name ?? ''}',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
-                          );
-                        },
-                      )
-                    : Icon(
-                        icon, // Biến `icon` nên được định nghĩa trước đây
-                        color: iconColor,
-                        size: 20,
-                      ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          ' ${userProfile.data?.name ?? ''}',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Text(
+                              subtitle,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              '-',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              userProfile.data?.phone ?? '',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Text(
-                          subtitle,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey.shade600,
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          '-',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey.shade600,
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          userProfile.data?.phone ?? '',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey.shade600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                  ),
+                  // Thêm nút chat
+
+                  IconButton(
+                    icon: const Icon(Icons.chat_bubble_outline),
+                    onPressed: () {
+                      if (userProfile.data != null) {
+                        navigateToChatScreen(
+                          context: context,
+                          userId: item.userId.toString(),
+                          name: userProfile.data!.name ?? '',
+                          avatarUrl: userProfile.data!.avatarUrl,
+                          role: role,
+                        );
+                      }
+                    },
+                  ),
+
+                  Radio<AssignmentsResponseEntity>(
+                    value: item,
+                    groupValue: selectedValue,
+                    onChanged: !checkFailed
+                        ? (value) {
+                            selectionNotifier.value = isSelected ? null : value;
+                          }
+                        : null,
+                    activeColor: Colors.blue,
+                  ),
+                ],
               ),
-              // Thêm nút chat
-              IconButton(
-                icon: const Icon(Icons.chat_bubble_outline),
-                onPressed: () {
-                  if (userProfile.data != null) {
-                    navigateToChatScreen(
-                      context: context,
-                      userId: item.userId.toString(),
-                      name: userProfile.data!.name ?? '',
-                      avatarUrl: userProfile.data!.avatarUrl,
-                      role: role,
-                    );
-                  }
-                },
-              ),
-              Radio<AssignmentsResponseEntity>(
-                value: item,
-                groupValue: selectedValue,
-                onChanged: (value) {
-                  selectionNotifier.value = isSelected ? null : value;
-                },
-                activeColor: Colors.blue,
-              ),
-            ],
+            ),
           ),
         ),
-      ),
+        if (checkFailed) // Add your condition here
+          Positioned(
+            top: -4,
+            left: -4,
+            child: Container(
+              width: 20,
+              height: 20,
+              decoration: BoxDecoration(
+                color: Colors.redAccent,
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: Colors.white,
+                  width: 1.5,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    spreadRadius: 1,
+                    blurRadius: 2,
+                    offset: const Offset(0, 1),
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.warning,
+                size: 10,
+                color: Colors.white,
+              ),
+            ),
+          ),
+      ],
     );
   }
 }

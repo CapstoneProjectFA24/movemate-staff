@@ -16,6 +16,7 @@ import 'package:movemate_staff/hooks/use_fetch_obj.dart';
 import 'package:movemate_staff/services/realtime_service/booking_realtime_entity/booking_realtime_entity.dart';
 import 'package:movemate_staff/services/realtime_service/booking_status_realtime/booking_status_stream_provider.dart';
 import 'package:movemate_staff/utils/commons/widgets/loading_overlay.dart';
+import 'package:movemate_staff/utils/providers/common_provider.dart';
 
 class DeliveryDetailsBottomSheet extends HookConsumerWidget {
   final BookingResponseEntity job;
@@ -53,7 +54,7 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
       context: context,
     );
     final userProfileById = useFetchUserResult.data;
-
+    final user = ref.read(authProvider);
 // Normal content if isCredit is false
     return LoadingOverlay(
       isLoading: state.isLoading,
@@ -77,6 +78,7 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
                   job: job,
                   status: bookingStatus,
                   context: context,
+                  profile: userProfileById,
                 ),
                 _buildDetailsSheet(
                   context: context,
@@ -297,10 +299,12 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
     );
   }
 
-  Widget _buildTrackingInfoCard(
-      {required BookingResponseEntity job,
-      required BookingStatusResult status,
-      required BuildContext context}) {
+  Widget _buildTrackingInfoCard({
+    required BookingResponseEntity job,
+    required BookingStatusResult status,
+    required BuildContext context,
+    required ProfileEntity? profile,
+  }) {
     // print("check status ${bookingStatus.statusMessage}");
     //PORTER
     //REVIEWER
@@ -310,7 +314,7 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
             .firstWhere((e) => e.staffType == 'DRIVER')
             .isResponsible;
 
-        return isResponsible == true ? "Trưởng" : "Nhân viên";
+        return isResponsible == true ? "Trưởng" : "";
       } catch (e) {
         return "Bốc vác"; // Giá trị mặc định nếu không tìm thấy Driver
       }
@@ -327,6 +331,7 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
         "check status ConfirmArrived ${status.canDriverConfirmArrived.toString()}");
     print(
         "check statusCompleteDelivery${status.canDriverCompleteDelivery.toString()}");
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
@@ -352,7 +357,29 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: Colors.grey[300]!),
               ),
-              child: const Icon(Icons.local_shipping),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(
+                  profile?.avatarUrl ??
+                      'https://static.vecteezy.com/system/resources/thumbnails/018/865/413/small/car-driver-simple-flat-icon-illustration-free-vector.jpg',
+                  fit: BoxFit.cover,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Center(
+                      child: CircularProgressIndicator(
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded /
+                                loadingProgress.expectedTotalBytes!
+                            : null,
+                      ),
+                    );
+                  },
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Icon(Icons
+                        .local_shipping); // Fallback icon if image fails to load
+                  },
+                ),
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
