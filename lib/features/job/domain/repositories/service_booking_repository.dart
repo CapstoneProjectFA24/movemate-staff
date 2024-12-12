@@ -5,6 +5,7 @@ import 'package:movemate_staff/features/drivers/data/models/request/porter_updat
 import 'package:movemate_staff/features/drivers/data/models/request/update_resourse_request.dart';
 import 'package:movemate_staff/features/job/data/model/request/booking_requesst.dart';
 import 'package:movemate_staff/features/job/data/model/request/driver_report_incident_request.dart';
+import 'package:movemate_staff/features/job/data/model/request/porter_accept_incident_request.dart';
 import 'package:movemate_staff/features/job/data/model/request/reviewer_status_request.dart';
 import 'package:movemate_staff/features/job/data/model/request/reviewer_time_request.dart';
 import 'package:movemate_staff/features/job/data/model/response/booking_response.dart';
@@ -127,6 +128,11 @@ abstract class BookingRepository {
   //Driver report incldent s
   Future<SuccessModel> driverReportIncident({
     required DriverReportIncidentRequest request,
+    required String accessToken,
+    required int id,
+  });
+  Future<SuccessModel> porterAcceptIncidentByBookingId({
+    required PorterAcceptIncidentRequest request,
     required String accessToken,
     required int id,
   });

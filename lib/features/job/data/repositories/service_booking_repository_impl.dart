@@ -7,6 +7,7 @@ import 'package:movemate_staff/features/job/data/model/queries/booking_queries.d
 import 'package:movemate_staff/features/job/data/model/queries/incident_queries.dart';
 import 'package:movemate_staff/features/job/data/model/request/booking_requesst.dart';
 import 'package:movemate_staff/features/job/data/model/request/driver_report_incident_request.dart';
+import 'package:movemate_staff/features/job/data/model/request/porter_accept_incident_request.dart';
 import 'package:movemate_staff/features/job/data/model/request/reviewer_status_request.dart';
 import 'package:movemate_staff/features/job/data/model/request/reviewer_time_request.dart';
 import 'package:movemate_staff/features/job/data/model/response/booking_response.dart';
@@ -338,6 +339,29 @@ class BookingRepositoryImpl extends RemoteBaseRepository
     );
   }
 
+  // porter report incident
+  @override
+  Future<SuccessModel> porterAcceptIncidentByBookingId({
+    required PorterAcceptIncidentRequest request,
+    required String accessToken,
+    required int id,
+  }) {
+    final requestIncident = PorterAcceptIncidentRequest(
+      failReason: request.failReason,
+    );
+    // final requestIncident = request.toString();
+    // print('checking repo ${requestIncident}');
+    // print('checking repo id ${id}');
+    return getDataOf(
+      request: () => _bookingSource.porterAcceptIncidentByBookingId(
+        requestIncident,
+        APIConstants.contentType,
+        accessToken,
+        id,
+      ),
+    );
+  }
+
 //porter update service
   @override
   Future<SuccessModel> porterUpdateNewService({
@@ -363,6 +387,7 @@ class BookingRepositoryImpl extends RemoteBaseRepository
     );
   }
 
+// porterAcceptIncidentByBookingId
 //get list incident by booking
   //get list incident list
   @override

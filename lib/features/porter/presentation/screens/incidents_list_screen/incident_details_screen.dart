@@ -5,8 +5,11 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/features/drivers/presentation/widgets/draggable_sheet/location_draggable_sheet.dart';
+import 'package:movemate_staff/features/job/data/model/request/porter_accept_incident_request.dart';
 import 'package:movemate_staff/features/porter/domain/entities/order_tracker_entity_response.dart';
+import 'package:movemate_staff/features/porter/presentation/controllers/porter_controller.dart';
 import 'package:movemate_staff/utils/commons/widgets/app_bar.dart';
+import 'package:movemate_staff/utils/commons/widgets/snack_bar.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
 import 'package:movemate_staff/utils/providers/common_provider.dart';
 
@@ -209,8 +212,27 @@ class IncidentDetailsScreen extends HookConsumerWidget {
             right: 20,
             child: ElevatedButton(
               onPressed: isPending
-                  ? () {
+                  ? () async {
+                      final request =
+                          PorterAcceptIncidentRequest(failReason: 'none');
                       print('object checking button');
+
+                      try {
+                        await ref
+                            .read(porterControllerProvider.notifier)
+                            .porterAcceptIncidentByBookingId(
+                                context: context,
+                                id: incident.id,
+                                request: request);
+                      } catch (e) {
+                        showSnackBar(
+                          context: context,
+                          content: "Cập nhật trạng thái thất bại",
+                          icon: AssetsConstants.iconSuccess,
+                          backgroundColor: Colors.redAccent,
+                          textColor: AssetsConstants.whiteColor,
+                        );
+                      }
                     }
                   : () {
                       final tabsRouter = context.router.root

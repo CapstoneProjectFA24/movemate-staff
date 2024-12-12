@@ -6,7 +6,7 @@ part of 'porter_controller.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$porterControllerHash() => r'51356696e7af871ae1d3ba72a8659293b37e3cb3';
+String _$porterControllerHash() => r'd8e7c2f9125f85d45e610004e07a62bae7ed3f0d';
 
 /// See also [PorterController].
 @ProviderFor(PorterController)

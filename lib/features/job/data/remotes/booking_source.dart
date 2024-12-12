@@ -6,6 +6,7 @@ import 'package:movemate_staff/features/drivers/data/models/request/porter_updat
 import 'package:movemate_staff/features/drivers/data/models/request/update_resourse_request.dart';
 import 'package:movemate_staff/features/job/data/model/queries/booking_queries.dart';
 import 'package:movemate_staff/features/job/data/model/request/driver_report_incident_request.dart';
+import 'package:movemate_staff/features/job/data/model/request/porter_accept_incident_request.dart';
 import 'package:movemate_staff/features/job/data/model/request/reviewer_status_request.dart';
 import 'package:movemate_staff/features/job/data/model/request/reviewer_time_request.dart';
 import 'package:movemate_staff/features/job/data/model/response/booking_response_object.dart';
@@ -199,6 +200,14 @@ abstract class BookingSource {
     @Path('id') int id,
   );
 
+  // Porter report incident
+  @PUT('${APIConstants.put_porter_accept_incident}/{bookingTrackerId}')
+  Future<HttpResponse<SuccessModel>> porterAcceptIncidentByBookingId(
+    @Body() PorterAcceptIncidentRequest request,
+    @Header(APIConstants.contentHeader) String contentType,
+    @Header(APIConstants.authHeader) String accessToken,
+    @Path('bookingTrackerId') int id,
+  );
   // get list incident by booking id
   @GET(APIConstants.get_incident_list_by_booking_id)
   Future<HttpResponse<IncidentResponse>> getIncidentListByBookingId(
