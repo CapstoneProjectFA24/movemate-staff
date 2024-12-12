@@ -57,6 +57,11 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
   Timer? _locationUpdateTimer;
   bool _isFirstNavigation = true;
   LatLng? _nextDestination;
+
+  bool canPorterConfirmIncomingFlag = false;
+  bool canPorterConfirmToUploadInprogress = false;
+  bool canPorterConfirmToOngoingToEnd = false;
+
   // realtime
   UserModel? user;
   final DatabaseReference locationRef =
@@ -312,11 +317,11 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
               LatLng? lastLocation = await _getLastLocationFromFirebase();
 
               if (lastLocation != null) {
-                _updateLocationOnce(_currentPosition!, "PORTER");
                 await _buildInitialRoute(useFirebaseLocation: true);
+                _updateLocationOnce(lastLocation!, "PORTER");
               } else {
+                await _buildInitialRoute(useFirebaseLocation: false);
                 _updateLocationOnce(_currentPosition!, "PORTER");
-                _buildInitialRoute(useFirebaseLocation: false);
               }
             } else {
               print("Invalid position. Unable to update location.");
@@ -374,11 +379,11 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
         if (porterAssignmentStatus['isPorterIncoming']! ||
             porterAssignmentStatus['isPorterAssigned']!) {
           setState(() {
-            // canDriverConfirmIncomingFlag = true;
+            canPorterConfirmIncomingFlag = true;
           });
         } else {
           setState(() {
-            // canDriverConfirmIncomingFlag = false;
+            canPorterConfirmIncomingFlag = false;
           });
         }
 
@@ -389,6 +394,9 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
             porterAssignmentStatus['isPorterIncoming']! ||
             (!porterAssignmentStatus['isPorterInprogress']! &&
                 !porterAssignmentStatus['isPorterArrived']! &&
+                !porterAssignmentStatus['isPorterPacking']! &&
+                !porterAssignmentStatus['isPorterDelivered']! &&
+                !porterAssignmentStatus['isPorterOngoing']! &&
                 !porterAssignmentStatus['isPorterCompleted']! &&
                 !porterAssignmentStatus['isPorterFailed']!);
         isPorterAtDeliveryPointBuildRoute =
@@ -399,6 +407,9 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
                 (!porterAssignmentStatus["isPorterUnloaded"]! ||
                     !porterAssignmentStatus['isPorterDelivered']! ||
                     !porterAssignmentStatus['isPorterCompleted']! ||
+                    !porterAssignmentStatus['isPorterIncoming']! ||
+                    !porterAssignmentStatus['isPorterAssigned']! ||
+                    !porterAssignmentStatus['isPorterUnloaded']! ||
                     !porterAssignmentStatus['isPorterFailed']!);
         isPorterEndDeliveryPointBuildRoute =
             (porterAssignmentStatus['isPorterCompleted']! ||
@@ -409,18 +420,35 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
         if (porterAssignmentStatus['isPorterIncoming']! ||
             porterAssignmentStatus['isPorterAssigned']!) {
           setState(() {
-            // canDriverConfirmIncomingFlag = true;
+            canPorterConfirmIncomingFlag = true;
           });
-        } else if (porterAssignmentStatus['isPorterArrived']! ||
-            porterAssignmentStatus['isPorterInprogress']!) {
+        } else if (porterAssignmentStatus['isPorterArrived']!) {
           setState(() {
-            // canDriverConfirmIncomingFlag = false;
-            // canDriverStartMovingFlag = true;
+            canPorterConfirmIncomingFlag = false;
+            canPorterConfirmToOngoingToEnd = false;
+            canPorterConfirmToUploadInprogress = true;
+          });
+        } else if (porterAssignmentStatus["isPorterPacking"]! ||
+            porterAssignmentStatus["isPorterOngoing"]! ||
+            porterAssignmentStatus["isPorterInprogress"]! &&
+                !porterAssignmentStatus["isPorterArrived"]!) {
+          setState(() {
+            canPorterConfirmIncomingFlag = false;
+            canPorterConfirmToOngoingToEnd = true;
+            canPorterConfirmToUploadInprogress = false;
+          });
+        } else if (porterAssignmentStatus["isPorterDelivered"]! ||
+            porterAssignmentStatus["isPorterUnloaded"]!) {
+          setState(() {
+            canPorterConfirmIncomingFlag = false;
+            canPorterConfirmToOngoingToEnd = false;
+            canPorterConfirmToUploadInprogress = true;
           });
         } else {
           setState(() {
-            // canDriverConfirmIncomingFlag = false;
-            // canDriverStartMovingFlag = false;
+            canPorterConfirmIncomingFlag = false;
+            canPorterConfirmToUploadInprogress = false;
+            canPorterConfirmToOngoingToEnd = false;
           });
         }
         break;
@@ -478,12 +506,6 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
       final porterAssignmentStatus = _getPorterAssignmentStatus(assignments);
       final buildRouteFlags =
           _getBuildRouteFlags(porterAssignmentStatus, fireStoreBookingStatus);
-
-      print("vinh debug : ${buildRouteFlags['isPorterStartBuildRoute']!}");
-      print(
-          "vinh debug 1 : ${buildRouteFlags['isPorterAtDeliveryPointBuildRoute']!}");
-      print(
-          "vinh debug 2 : ${buildRouteFlags['isPorterEndDeliveryPointBuildRoute']!}");
 
       if (_navigationController != null && _currentPosition != null) {
         LatLng? startPosition;
@@ -566,13 +588,14 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
   Future<void> _startAssinedToComing() async {
     if (_isMapReady) {
       try {
+        await _buildInitialRoute(useFirebaseLocation: true);
         setState(() {
           _isNavigationStarted = true;
         });
 
         await _navigationController?.startNavigation();
         try {
-          await widget.ref
+          await ProviderScope.containerOf(context, listen: false)
               .read(porterControllerProvider.notifier)
               .updateStatusPorterWithoutResourse(
                 id: widget.job.id,
@@ -600,7 +623,7 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
 
         await _navigationController?.startNavigation();
         try {
-          await widget.ref
+          await ProviderScope.containerOf(context, listen: false)
               .read(porterControllerProvider.notifier)
               .updateStatusPorterWithoutResourse(
                 id: widget.job.id,
@@ -622,7 +645,8 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
   Future<void> _startArrivedtoProgress() async {
     if (_isMapReady) {
       try {
-        await widget.ref
+        await _buildInitialRoute(useFirebaseLocation: true);
+        await ProviderScope.containerOf(context, listen: false)
             .read(porterControllerProvider.notifier)
             .updateStatusPorterWithoutResourse(
               id: widget.job.id,
@@ -634,6 +658,106 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
       } catch (driverError) {
         print(
             "Lỗi khi bắt đầu điều hướng  inprogres lên ongoing: ${driverError.toString()}");
+      }
+    }
+  }
+
+  Future<void> _fastFinishToComplete() async {
+    if (_navigationController != null) {
+      if (mounted) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+            backgroundColor: AssetsConstants.whiteColor,
+            contentPadding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
+            actionsPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            title: Row(
+              children: [
+                const Icon(
+                  Icons.location_on,
+                  color: AssetsConstants.primaryLight,
+                  size: 28,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        "Xác nhận tới ngay",
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: AssetsConstants.blackColor,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        "Vui lòng xác nhận để tiếp tục",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AssetsConstants.blackColor.withOpacity(0.7),
+                          fontWeight: FontWeight.normal,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              Row(
+                children: [
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        LatLng destination = _getDeliveryPointLatLng();
+                        // Cập nhật vị trí cuối cùng lên Firebase
+                        _updateLocationRealtime(destination, "PORTER");
+
+                        try {
+                          await widget.ref
+                              .read(porterControllerProvider.notifier)
+                              .updateStatusPorterWithoutResourse(
+                                id: widget.job.id,
+                                context: context,
+                              );
+                        } finally {
+                          context.router.push(PorterConfirmScreenRoute(
+                            job: _currentJob,
+                          ));
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AssetsConstants.primaryLight,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: const Text(
+                        "Xác nhận đã đến",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: AssetsConstants.whiteColor,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
       }
     }
   }
@@ -659,6 +783,106 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
     });
     _navigationController?.finishNavigation();
     _buildInitialRoute();
+  }
+
+  Future<void> _fastFinishToArrived() async {
+    if (_navigationController != null) {
+      if (mounted) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+            backgroundColor: AssetsConstants.whiteColor,
+            contentPadding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
+            actionsPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            title: Row(
+              children: [
+                const Icon(
+                  Icons.location_on,
+                  color: AssetsConstants.primaryLight,
+                  size: 28,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        "Xác nhận tới ngay",
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: AssetsConstants.blackColor,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        "Vui lòng xác nhận để tiếp tục",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AssetsConstants.blackColor.withOpacity(0.7),
+                          fontWeight: FontWeight.normal,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              Row(
+                children: [
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        LatLng destination = _getPickupPointLatLng();
+                        // Cập nhật vị trí cuối cùng lên Firebase
+                        _updateLocationRealtime(destination, "PORTER");
+
+                        try {
+                          await widget.ref
+                              .read(porterControllerProvider.notifier)
+                              .updateStatusPorterWithoutResourse(
+                                id: widget.job.id,
+                                context: context,
+                              );
+                        } finally {
+                          context.router.push(PorterConfirmScreenRoute(
+                            job: _currentJob,
+                          ));
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AssetsConstants.primaryLight,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: const Text(
+                        "Xác nhận đã đến",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: AssetsConstants.whiteColor,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -927,14 +1151,21 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 if (!_isNavigationStarted)
-                  if (widget.bookingStatus.canPorterConfirmIncoming)
+                  if (canPorterConfirmIncomingFlag)
                     FloatingActionButton(
                       onPressed: _isMapReady ? _startAssinedToComing : null,
                       // onPressed: _isMapReady ? _startNavigation : null,
                       child: const Icon(Icons.directions),
                     ),
                 if (!_isNavigationStarted)
-                  if (widget.bookingStatus.canPorterConfirmInprogress)
+                  if (canPorterConfirmIncomingFlag)
+                    FloatingActionButton(
+                      onPressed: _fastFinishToArrived,
+                      backgroundColor: Colors.green,
+                      child: const Icon(Icons.check),
+                    ),
+                if (!_isNavigationStarted)
+                  if (canPorterConfirmToUploadInprogress)
                     FloatingActionButton(
                       onPressed: _isMapReady ? _startArrivedtoProgress : null,
                       child: const Icon(
@@ -943,12 +1174,19 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
                       ),
                     ),
                 if (!_isNavigationStarted)
-                  if (widget.bookingStatus.canPorterConfirmOngoing)
+                  if (canPorterConfirmToOngoingToEnd)
                     FloatingActionButton(
                       onPressed: _isMapReady ? _startAssinedToComing : null,
                       // onPressed: _isMapReady ? _startPackingToOngoing : null,
                       // onPressed: _isMapReady ? _startNavigation : null,
                       child: const Icon(Icons.directions_car),
+                    ),
+                if (!_isNavigationStarted)
+                  if (canPorterConfirmToOngoingToEnd)
+                    FloatingActionButton(
+                      onPressed: _fastFinishToComplete,
+                      backgroundColor: Colors.green,
+                      child: const Icon(Icons.check),
                     ),
               ],
             )
