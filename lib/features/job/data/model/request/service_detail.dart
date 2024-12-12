@@ -35,6 +35,10 @@ class ServiceDetail {
 
   String toJson() => json.encode(toMap());
 
+  @override
+  String toString() =>
+      'ServiceDetail(serviceId: $serviceId, quantity: $quantity)';
+
   factory ServiceDetail.fromJson(String source) =>
       ServiceDetail.fromMap(json.decode(source));
 }

@@ -1,5 +1,6 @@
 // service_booking_repository_impl.dart
 
+import 'package:movemate_staff/features/drivers/data/models/request/driver_update_service_request.dart';
 import 'package:movemate_staff/features/drivers/data/models/request/update_resourse_request.dart';
 import 'package:movemate_staff/features/job/data/model/queries/booking_queries.dart';
 import 'package:movemate_staff/features/job/data/model/request/booking_requesst.dart';
@@ -222,6 +223,30 @@ class BookingRepositoryImpl extends RemoteBaseRepository
     return getDataOf(
       request: () => _bookingSource.updateCreateScheduleReview(
           APIConstants.contentType, accessToken, request, id),
+    );
+  }
+
+  @override
+  Future<SuccessModel> driverUpdateNewService({
+    required String accessToken,
+    required DriverUpdateServiceRequest request,
+    required int id,
+  }) async {
+    print("repo log ${request.toJson()}");
+    print("repo log $id");
+
+    final driverRequest = DriverUpdateServiceRequest(
+      bookingDetails: request.bookingDetails,
+      truckCategoryId: request.truckCategoryId,
+    );
+    print("repo object chekcRequest request ${driverRequest.toJson()}");
+    return getDataOf(
+      request: () => _bookingSource.driverUpdateNewService(
+        driverRequest,
+        APIConstants.contentType,
+        accessToken,
+        id,
+      ),
     );
   }
 

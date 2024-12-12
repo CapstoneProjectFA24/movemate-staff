@@ -6,6 +6,8 @@ import 'package:movemate_staff/features/driver/presentation/screen/driver_screen
 import 'package:movemate_staff/features/drivers/presentation/screens/driver_chat_with_customer.dart/reviewer_chat_with_customer.dart';
 import 'package:movemate_staff/features/drivers/presentation/widgets/draggable_sheet/driver_confirm_upload/driver_confirm_upload.dart';
 import 'package:movemate_staff/features/drivers/presentation/widgets/driver_report_incident/incidents_screen.dart';
+import 'package:movemate_staff/features/drivers/presentation/widgets/driver_update_new_service/driver_update_new_service_children_screen.dart';
+import 'package:movemate_staff/features/drivers/presentation/widgets/driver_update_new_service/driver_update_new_service_vehicles_screen.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/booking_response_entity.dart';
 import 'package:movemate_staff/features/job/presentation/screen/complete_proposal_screen/complete_proposal_screen.dart';
 import 'package:movemate_staff/features/job/presentation/screen/generate_new_job_screen/generate_new_job_screen.dart';
@@ -192,6 +194,12 @@ class AppRouter extends _$AppRouter {
         ),
         AutoRoute(
           page: DriverConfirmUploadRoute.page,
+        ),
+        AutoRoute(
+          page: DriverUpdateNewServiceVehiclesScreenRoute.page,
+        ),
+        AutoRoute(
+          page: DriverUpdateNewServiceChildrenScreenRoute.page,
         ),
         AutoRoute(page: OnboardingScreenRoute.page),
         AutoRoute(

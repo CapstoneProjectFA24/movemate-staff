@@ -426,4 +426,5 @@ class BookingUpdateRequest {
       estimatedDeliveryTime: estimatedDeliveryTime,
     );
   }
+
 }

@@ -154,7 +154,8 @@ class DriverIncidentReportModal extends HookConsumerWidget {
                 ElevatedButton(
                   onPressed: () {
                     // Close the modal
-
+                    context.router.push(
+                        DriverUpdateNewServiceVehiclesScreenRoute(job: order));
                     Navigator.of(context).pop();
                   },
                   style: ElevatedButton.styleFrom(

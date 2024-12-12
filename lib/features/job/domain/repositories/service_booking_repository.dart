@@ -1,5 +1,6 @@
 // service_booking_repository.dart
 
+import 'package:movemate_staff/features/drivers/data/models/request/driver_update_service_request.dart';
 import 'package:movemate_staff/features/drivers/data/models/request/update_resourse_request.dart';
 import 'package:movemate_staff/features/job/data/model/request/booking_requesst.dart';
 import 'package:movemate_staff/features/job/data/model/request/driver_report_incident_request.dart';
@@ -83,6 +84,13 @@ abstract class BookingRepository {
   Future<BookingResponse> postValuationBooking({
     required BookingRequest request,
     required String accessToken,
+  });
+
+  //driver update
+  Future<SuccessModel> driverUpdateNewService({
+    required String accessToken,
+    required DriverUpdateServiceRequest request,
+    required int id,
   });
 
   Future<SuccessModel> updateStateReviewer({

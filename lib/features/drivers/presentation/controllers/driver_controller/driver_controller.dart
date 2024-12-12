@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/features/auth/domain/repositories/auth_repository.dart';
 import 'package:movemate_staff/features/auth/presentation/screens/sign_in/sign_in_controller.dart';
+import 'package:movemate_staff/features/drivers/data/models/request/driver_update_service_request.dart';
 import 'package:movemate_staff/features/drivers/data/models/request/update_resourse_request.dart';
 import 'package:movemate_staff/features/drivers/presentation/widgets/drivers_screen_widget/custom_bottom_sheet.dart';
 import 'package:movemate_staff/features/job/data/model/request/driver_report_incident_request.dart';
@@ -375,6 +376,56 @@ class DriverController extends _$DriverController {
         const TabViewScreenRoute(children: [HomeScreenRoute()]),
       ]);
     }
+
+    if (state.hasError) {
+      final error = state.error!;
+      if (error is DioException) {
+        final statusCode = error.response?.statusCode ?? error.onStatusDio();
+
+        handleAPIError(
+          statusCode: statusCode,
+          stateError: state.error!,
+          context: context,
+        );
+      } else {
+        showSnackBar(
+          context: context,
+          content: error.toString(),
+          icon: AssetsConstants.iconError,
+          backgroundColor: Colors.red,
+          textColor: AssetsConstants.whiteColor,
+        );
+      }
+    }
+  }
+
+//Driver update service
+  Future<void> driverUpdateNewService({
+    required BuildContext context,
+    required int id,
+    required DriverUpdateServiceRequest request,
+  }) async {
+    state = const AsyncLoading();
+    final authRepository = ref.read(authRepositoryProvider);
+    final user = await SharedPreferencesUtils.getInstance('user_token');
+    // final driverRequest = DriverUpdateServiceRequest.fromBookingUpdate;
+    // print('check requets $request');
+    state = await AsyncValue.guard(() async {
+      final res = await ref
+          .read(bookingRepositoryProvider)
+          .driverUpdateNewService(
+            request: request,
+            accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
+            id: id,
+          );
+      showSnackBar(
+        context: context,
+        content: "Gửi yêu cầu thành công",
+        icon: AssetsConstants.iconSuccess,
+        backgroundColor: Colors.orange,
+        textColor: AssetsConstants.whiteColor,
+      );
+    });
 
     if (state.hasError) {
       final error = state.error!;

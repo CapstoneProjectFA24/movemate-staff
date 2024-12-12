@@ -1,6 +1,7 @@
 // service_booking_source.dart
 
 import 'package:dio/dio.dart';
+import 'package:movemate_staff/features/drivers/data/models/request/driver_update_service_request.dart';
 import 'package:movemate_staff/features/drivers/data/models/request/update_resourse_request.dart';
 import 'package:movemate_staff/features/job/data/model/queries/booking_queries.dart';
 import 'package:movemate_staff/features/job/data/model/request/driver_report_incident_request.dart';
@@ -166,6 +167,14 @@ abstract class BookingSource {
   @PUT('${APIConstants.put_driver_incident}/{id}')
   Future<HttpResponse<SuccessModel>> driverReportIncident(
     @Body() String request,
+    @Header(APIConstants.contentHeader) String contentType,
+    @Header(APIConstants.authHeader) String accessToken,
+    @Path('id') int id,
+  );
+  //driver update service
+  @PUT('${APIConstants.put_driver_update_new_service}/{id}')
+  Future<HttpResponse<SuccessModel>> driverUpdateNewService(
+    @Body() DriverUpdateServiceRequest request,
     @Header(APIConstants.contentHeader) String contentType,
     @Header(APIConstants.authHeader) String accessToken,
     @Path('id') int id,

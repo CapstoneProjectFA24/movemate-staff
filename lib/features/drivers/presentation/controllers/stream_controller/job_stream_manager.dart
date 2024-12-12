@@ -12,8 +12,8 @@ class JobStreamManager {
   Stream<BookingResponseEntity> get jobStream => _jobController.stream;
 
   void updateJob(BookingResponseEntity newJob) {
-    print(
-        'tuan Updating order in StreamManager: ${newJob.assignments.map((e) => e.toJson())}');
+    // print(
+    //     'tuan Updating order in StreamManager: ${newJob.assignments.map((e) => e.toJson())}');
 
     _jobController.add(newJob);
   }

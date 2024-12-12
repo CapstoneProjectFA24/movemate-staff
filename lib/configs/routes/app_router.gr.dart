@@ -131,6 +131,28 @@ abstract class _$AppRouter extends RootStackRouter {
         child: const DriverScreen(),
       );
     },
+    DriverUpdateNewServiceChildrenScreenRoute.name: (routeData) {
+      final args =
+          routeData.argsAs<DriverUpdateNewServiceChildrenScreenRouteArgs>();
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: DriverUpdateNewServiceChildrenScreen(
+          key: args.key,
+          job: args.job,
+        ),
+      );
+    },
+    DriverUpdateNewServiceVehiclesScreenRoute.name: (routeData) {
+      final args =
+          routeData.argsAs<DriverUpdateNewServiceVehiclesScreenRouteArgs>();
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: DriverUpdateNewServiceVehiclesScreen(
+          key: args.key,
+          job: args.job,
+        ),
+      );
+    },
     DriversScreenRoute.name: (routeData) {
       return AutoRoutePage<dynamic>(
         routeData: routeData,
@@ -794,6 +816,84 @@ class DriverScreenRoute extends PageRouteInfo<void> {
   static const String name = 'DriverScreenRoute';
 
   static const PageInfo<void> page = PageInfo<void>(name);
+}
+
+/// generated route for
+/// [DriverUpdateNewServiceChildrenScreen]
+class DriverUpdateNewServiceChildrenScreenRoute
+    extends PageRouteInfo<DriverUpdateNewServiceChildrenScreenRouteArgs> {
+  DriverUpdateNewServiceChildrenScreenRoute({
+    Key? key,
+    required BookingResponseEntity job,
+    List<PageRouteInfo>? children,
+  }) : super(
+          DriverUpdateNewServiceChildrenScreenRoute.name,
+          args: DriverUpdateNewServiceChildrenScreenRouteArgs(
+            key: key,
+            job: job,
+          ),
+          initialChildren: children,
+        );
+
+  static const String name = 'DriverUpdateNewServiceChildrenScreenRoute';
+
+  static const PageInfo<DriverUpdateNewServiceChildrenScreenRouteArgs> page =
+      PageInfo<DriverUpdateNewServiceChildrenScreenRouteArgs>(name);
+}
+
+class DriverUpdateNewServiceChildrenScreenRouteArgs {
+  const DriverUpdateNewServiceChildrenScreenRouteArgs({
+    this.key,
+    required this.job,
+  });
+
+  final Key? key;
+
+  final BookingResponseEntity job;
+
+  @override
+  String toString() {
+    return 'DriverUpdateNewServiceChildrenScreenRouteArgs{key: $key, job: $job}';
+  }
+}
+
+/// generated route for
+/// [DriverUpdateNewServiceVehiclesScreen]
+class DriverUpdateNewServiceVehiclesScreenRoute
+    extends PageRouteInfo<DriverUpdateNewServiceVehiclesScreenRouteArgs> {
+  DriverUpdateNewServiceVehiclesScreenRoute({
+    Key? key,
+    required BookingResponseEntity job,
+    List<PageRouteInfo>? children,
+  }) : super(
+          DriverUpdateNewServiceVehiclesScreenRoute.name,
+          args: DriverUpdateNewServiceVehiclesScreenRouteArgs(
+            key: key,
+            job: job,
+          ),
+          initialChildren: children,
+        );
+
+  static const String name = 'DriverUpdateNewServiceVehiclesScreenRoute';
+
+  static const PageInfo<DriverUpdateNewServiceVehiclesScreenRouteArgs> page =
+      PageInfo<DriverUpdateNewServiceVehiclesScreenRouteArgs>(name);
+}
+
+class DriverUpdateNewServiceVehiclesScreenRouteArgs {
+  const DriverUpdateNewServiceVehiclesScreenRouteArgs({
+    this.key,
+    required this.job,
+  });
+
+  final Key? key;
+
+  final BookingResponseEntity job;
+
+  @override
+  String toString() {
+    return 'DriverUpdateNewServiceVehiclesScreenRouteArgs{key: $key, job: $job}';
+  }
 }
 
 /// generated route for
