@@ -393,7 +393,7 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
         icon: Icons.calendar_today,
         isActive: status.canCreateSchedule,
         isCompleted: isStepCompleted(1, progressionStates),
-        action: status.canCreateSchedule ? 'Hẹn' : null,
+        action: status.canCreateSchedule ? 'Hẹn khách' : null,
         onPressed: status.canCreateSchedule
             ? () => _showScheduleDialog(context, ref)
             : null,
@@ -480,11 +480,11 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
   }
 
   void _showScheduleDialog(BuildContext context, WidgetRef ref) {
-    final bookingstate = ref.watch(bookingProvider);
     showDialog(
       context: context,
       builder: (context) => ScheduleDialog(
         orderId: job.id.toString(),
+        bookingAt: job.bookingAt,
         onDateTimeSelected: (DateTime selectedDateTime) async {
           await ref
               .read(reviewerUpdateControllerProvider.notifier)
@@ -671,25 +671,8 @@ class BookingHeaderStatusSection extends HookConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Header và nội dung ở đây
                 Container(
                   padding: const EdgeInsets.all(6),
-                  // decoration: BoxDecoration(
-                  //   gradient: LinearGradient(
-                  //     begin: Alignment.topLeft,
-                  //     end: Alignment.bottomRight,
-                  //     colors: [
-                  //       AssetsConstants.primaryLighter,
-                  //       AssetsConstants.primaryLighter.withOpacity(0.8),
-                  //     ],
-                  //   ),
-                  //   borderRadius: const BorderRadius.only(
-                  //     topLeft: Radius.circular(24),
-                  //     topRight: Radius.circular(24),
-                  //   ),
-                  // ),
-
-                  // Content Section
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

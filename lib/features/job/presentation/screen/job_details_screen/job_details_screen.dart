@@ -137,7 +137,7 @@ class JobDetailsScreen extends HookConsumerWidget {
           backgroundColor: AssetsConstants.primaryMain,
           backButtonColor: AssetsConstants.whiteColor,
           showBackButton: true,
-          title: "Thông tin đơn hàng #${job.id} ",
+          title: "Thông tin đơn hàng BOK${job.id} ",
           iconSecond: Icons.home_outlined,
           iconFirst: Icons.chat_outlined,
           onBackButtonPressed: () {
