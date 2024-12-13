@@ -337,29 +337,38 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
   }
 
   Map<String, bool> _getPorterAssignmentStatus(List assignments) {
+    final staffAssignment = assignments.firstWhere(
+        (a) => a['StaffType'] == 'PORTER' && a['UserId'] == user?.id,
+        orElse: () => null);
+
+    if (staffAssignment == null) {
+      return {
+        'isPorterWaiting': false,
+        'isPorterAssigned': false,
+        'isPorterIncoming': false,
+        'isPorterArrived': false,
+        'isPorterInprogress': false,
+        'isPorterPacking': false,
+        'isPorterOngoing': false,
+        'isPorterDelivered': false,
+        'isPorterUnloaded': false,
+        'isPorterCompleted': false,
+        'isPorterFailed': false,
+      };
+    }
+
     return {
-      'isPorterWaiting': assignments
-          .any((a) => a['StaffType'] == "PORTER" && a["Status"] == "WAITING"),
-      'isPorterAssigned': assignments
-          .any((a) => a['StaffType'] == "PORTER" && a["Status"] == "ASSIGNED"),
-      'isPorterIncoming': assignments
-          .any((a) => a['StaffType'] == "PORTER" && a["Status"] == "INCOMING"),
-      'isPorterArrived': assignments
-          .any((a) => a['StaffType'] == "PORTER" && a["Status"] == "ARRIVED"),
-      'isPorterInprogress': assignments.any(
-          (a) => a['StaffType'] == "PORTER" && a["Status"] == "IN_PROGRESS"),
-      'isPorterPacking': assignments
-          .any((a) => a["StaffType"] == "PORTER" && a["Status"] == "PACKING"),
-      'isPorterOngoing': assignments
-          .any((a) => a['StaffType'] == "PORTER" && a["Status"] == "ONGOING"),
-      'isPorterDelivered': assignments
-          .any((a) => a['StaffType'] == "PORTER" && a["Status"] == "DELIVERED"),
-      'isPorterUnloaded': assignments
-          .any((a) => a['StaffType'] == "PORTER" && a["Status"] == "UNLOADED"),
-      'isPorterCompleted': assignments
-          .any((a) => a['StaffType'] == "PORTER" && a["Status"] == "COMPLETED"),
-      'isPorterFailed': assignments
-          .any((a) => a['StaffType'] == "PORTER" && a["Status"] == "FAILED"),
+      'isPorterWaiting': staffAssignment['Status'] == "WAITING",
+      'isPorterAssigned': staffAssignment['Status'] == "ASSIGNED",
+      'isPorterIncoming': staffAssignment['Status'] == "INCOMING",
+      'isPorterArrived': staffAssignment['Status'] == "ARRIVED",
+      'isPorterInprogress': staffAssignment['Status'] == "IN_PROGRESS",
+      'isPorterPacking': staffAssignment['Status'] == "PACKING",
+      'isPorterOngoing': staffAssignment['Status'] == "ONGOING",
+      'isPorterDelivered': staffAssignment['Status'] == "DELIVERED",
+      'isPorterUnloaded': staffAssignment['Status'] == "UNLOADED",
+      'isPorterCompleted': staffAssignment['Status'] == "COMPLETED",
+      'isPorterFailed': staffAssignment['Status'] == "FAILED",
     };
   }
 
