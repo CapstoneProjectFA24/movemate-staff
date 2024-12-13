@@ -78,19 +78,19 @@ class HomeScreen extends HookConsumerWidget {
                       ),
                     ),
                     Text(
-                      'Mã nhân viên: ${user?.roleId}',
+                      'Chức vụ: ${user?.roleName.type}',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18,
                       ),
                     ),
-                    // Text(
-                    //   'Tổng số đánh giá: 20',
-                    //   style: TextStyle(
-                    //     color: Colors.white,
-                    //     fontSize: 18,
-                    //   ),
-                    // ),
+                    Text(
+                      'Mã nhân viên: #${user?.id}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                      ),
+                    ),
                   ],
                 ),
               ),
