@@ -29,6 +29,10 @@ final refreshPorterList = StateProvider.autoDispose<bool>(
   (ref) => true,
 );
 
+final refreshIncidentList = StateProvider.autoDispose<bool>(
+  (ref) => true,
+);
+
 @riverpod
 class PorterController extends _$PorterController {
   @override
@@ -401,12 +405,9 @@ class PorterController extends _$PorterController {
     state = const AsyncLoading();
     final authRepository = ref.read(authRepositoryProvider);
     final user = await SharedPreferencesUtils.getInstance('user_token');
-    // final porterRequest = porterUpdateServiceRequest.fromBookingUpdate;
-    // print('check requets $request');
+
     state = await AsyncValue.guard(() async {
-    await ref
-          .read(bookingRepositoryProvider)
-          .porterAcceptIncidentByBookingId(
+      await ref.read(bookingRepositoryProvider).porterAcceptIncidentByBookingId(
             request: request,
             accessToken: APIConstants.prefixToken + user!.tokens.accessToken,
             id: id,
@@ -418,6 +419,9 @@ class PorterController extends _$PorterController {
         backgroundColor: Colors.orange,
         textColor: AssetsConstants.whiteColor,
       );
+      ref
+          .read(refreshIncidentList.notifier)
+          .update((state) => !ref.read(refreshIncidentList));
     });
 
     if (state.hasError) {

@@ -40,7 +40,7 @@ class AssignmentsResponseEntity {
           ? (json['isResponsible'] is bool
               ? json['isResponsible']
               : (json['isResponsible'] is int
-                  ? json['isResponsible'] == 1
+                  ? json['isResponsible'] == 0
                   : null))
           : null,
     );

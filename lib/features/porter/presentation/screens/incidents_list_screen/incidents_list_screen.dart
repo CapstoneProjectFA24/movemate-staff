@@ -49,6 +49,8 @@ class IncidentsListScreen extends HookConsumerWidget {
       context: context,
     );
 
+    ref.listen<bool>(refreshIncidentList, (_, __) => fetchResult.refresh());
+
     final dataListIcident = fetchResult.items;
 
     useEffect(() {

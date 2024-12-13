@@ -68,7 +68,11 @@ class IncidentDetailsScreen extends HookConsumerWidget {
         statusColor = Colors.grey;
     }
 
-    final isPending = incident.status == 'PENDING';
+    final isCheckIsPennding = incident.status == 'PENDING';
+    final bool isResposible = incident.assignments
+        .firstWhere((e) => e.isResponsible == true && e.staffType == 'PORTER')
+        .isResponsible!;
+    final isPending = isCheckIsPennding && isResposible;
     return Scaffold(
       appBar: CustomAppBar(
         backgroundColor: AssetsConstants.primaryMain,
@@ -214,8 +218,21 @@ class IncidentDetailsScreen extends HookConsumerWidget {
               onPressed: isPending
                   ? () async {
                       final request =
-                          PorterAcceptIncidentRequest(failReason: 'none');
+                          PorterAcceptIncidentRequest(status: "WAITING");
                       print('object checking button');
+                      // Show loading dialog
+                      if (context.mounted) {
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (ctx) => const Center(
+                            child: CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                  AssetsConstants.primaryMain),
+                            ),
+                          ),
+                        );
+                      }
 
                       try {
                         await ref
@@ -224,6 +241,8 @@ class IncidentDetailsScreen extends HookConsumerWidget {
                                 context: context,
                                 id: incident.id,
                                 request: request);
+                        Navigator.of(context).pop();
+                        Navigator.of(context).pop();
                       } catch (e) {
                         showSnackBar(
                           context: context,

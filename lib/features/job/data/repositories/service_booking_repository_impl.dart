@@ -347,7 +347,7 @@ class BookingRepositoryImpl extends RemoteBaseRepository
     required int id,
   }) {
     final requestIncident = PorterAcceptIncidentRequest(
-      failReason: request.failReason,
+      status: request.status,
     );
     // final requestIncident = request.toString();
     // print('checking repo ${requestIncident}');

@@ -346,6 +346,9 @@ class PorterConfirmScreen extends HookConsumerWidget {
     print(
         "updating status 6 CompleteUnloading :  ${status.canPorterCompleteUnloading}");
     print("updating status 7 Complete :  ${status.canPorterComplete}");
+
+    print("updating status 8 PACKING :  ${_getBookingData()}");
+
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: CustomAppBar(
