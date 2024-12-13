@@ -86,7 +86,6 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
   void _initStreams() {
     _jobSubscription = JobStreamManager().jobStream.listen((updateJob) {
       if (updateJob.id == widget.job.id) {
-        print('Received updated order in ReviewerTrackingMap: ${updateJob.id}');
         setState(() {
           _currentJob = updateJob;
           // _buildInitialRoute();

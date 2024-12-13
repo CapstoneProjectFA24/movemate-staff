@@ -90,8 +90,7 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
   void _initStreams() {
     _jobSubscription = JobStreamManager().jobStream.listen((updateJob) {
       if (updateJob.id == widget.job.id) {
-        print(
-            'tuan Received updated order in ReviewerTrackingMap: ${updateJob.id}');
+
         setState(() {
           _currentJob = updateJob;
           // _buildInitialRoute();
@@ -447,15 +446,15 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
           setState(() {
             canPorterConfirmIncomingFlag = true;
           });
-        } else if (porterAssignmentStatus['isPorterArrived']!) {
+        } else if (porterAssignmentStatus['isPorterArrived']! ||
+            porterAssignmentStatus['isPorterInprogress']!) {
           setState(() {
             canPorterConfirmIncomingFlag = false;
             canPorterConfirmToOngoingToEnd = false;
             canPorterConfirmToUploadInprogress = true;
           });
         } else if (porterAssignmentStatus["isPorterPacking"]! ||
-            porterAssignmentStatus["isPorterOngoing"]! ||
-            porterAssignmentStatus["isPorterInprogress"]! &&
+            porterAssignmentStatus["isPorterOngoing"]! &&
                 !porterAssignmentStatus["isPorterArrived"]!) {
           setState(() {
             canPorterConfirmIncomingFlag = false;

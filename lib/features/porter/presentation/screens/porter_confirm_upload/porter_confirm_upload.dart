@@ -83,8 +83,6 @@ class PorterConfirmScreen extends HookConsumerWidget {
     useEffect(() {
       final subscription = JobStreamManager().jobStream.listen((updateJob) {
         if (updateJob.id == job.id) {
-          // print(
-          //     'tuan Received updated order in PorterConfirmScreen: ${updateJob.id}');
           currentJob.value = updateJob;
         }
       });
@@ -329,26 +327,6 @@ class PorterConfirmScreen extends HookConsumerWidget {
       );
     }
 
-    print("updating image ");
-
-    print(
-        "updating status 0 ConfirmIncoming :  ${status.canPorterConfirmIncoming}");
-    print(
-        "updating status 1 ConfirmArrived :  ${status.canPorterConfirmArrived}");
-    print(
-        "updating status 2 ConfirmInprogress :  ${status.canPorterConfirmInprogress}");
-    print(
-        "updating status 3 ConfirmPacking :  ${status.canPorterConfirmPacking}");
-    print(
-        "updating status 4 ConfirmOngoing :  ${status.canPorterConfirmOngoing}");
-    print(
-        "updating status 5 ConfirmDelivered :  ${status.canPorterConfirmDelivered}");
-    print(
-        "updating status 6 CompleteUnloading :  ${status.canPorterCompleteUnloading}");
-    print("updating status 7 Complete :  ${status.canPorterComplete}");
-
-    print("updating status 8 PACKING :  ${_getBookingData()}");
-
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: CustomAppBar(
@@ -434,8 +412,7 @@ class PorterConfirmScreen extends HookConsumerWidget {
                             request: request,
                             context: context,
                           );
-                      print(
-                          "objects checking lisst 1 resource ${request.resourceList.length}");
+
                       bookingAsync.isRefreshing;
                     },
                     actionButtonLabel: 'Xác nhận đến',
