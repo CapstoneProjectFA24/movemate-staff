@@ -56,8 +56,7 @@ class APIConstants {
   static const put_porter_update_new_service =
       '/bookingdetails/porter/update-booking';
 
-  static const put_porter_accept_incident =
-      '/assignments/porter';
+  static const put_porter_accept_incident = '/assignments/porter';
 
   //get incident list
   static const get_incident_list_by_booking_id = '/bookingtrackers';
