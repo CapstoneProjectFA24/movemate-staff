@@ -10,6 +10,7 @@ import 'package:movemate_staff/utils/enums/enums_export.dart';
 final optionsSystemStatus = [
   BookingStatusType.coming,
   BookingStatusType.inProgress,
+  BookingStatusType.paused,
   BookingStatusType.completed,
 ];
 final refreshOrderList = StateProvider.autoDispose<bool>(
@@ -34,6 +35,8 @@ showDriverCustomBottomSheet({
             return 'Đơn vận chuyển mới';
           case BookingStatusType.inProgress:
             return 'Đang trong tiến trình';
+          case BookingStatusType.paused:
+            return 'Chờ khách hàng kiểm định';
           case BookingStatusType.completed:
             return 'Hoàn thành';
           default:
@@ -162,7 +165,8 @@ showDriverCustomBottomSheet({
                         RadioListTile(
                           title: LabelText(
                             content: getTitleSystemStatus(
-                                BookingStatusType.completed),
+                              BookingStatusType.paused,
+                            ),
                             size: AssetsConstants.defaultFontSize - 10.0,
                           ),
                           value: optionsSystemStatus[2],
@@ -174,8 +178,24 @@ showDriverCustomBottomSheet({
                           },
                           activeColor: AssetsConstants.blue2,
                         ),
+                        RadioListTile(
+                          title: LabelText(
+                            content: getTitleSystemStatus(
+                                BookingStatusType.completed),
+                            size: AssetsConstants.defaultFontSize - 10.0,
+                          ),
+                          value: optionsSystemStatus[3],
+                          groupValue: ref.watch(filterSystemStatus),
+                          onChanged: (val) {
+                            ref
+                                .read(filterSystemStatus.notifier)
+                                .update((state) => optionsSystemStatus[3]);
+                          },
+                          activeColor: AssetsConstants.blue2,
+                        ),
                       ],
                     ),
+                  
                   ),
                 ],
               ),

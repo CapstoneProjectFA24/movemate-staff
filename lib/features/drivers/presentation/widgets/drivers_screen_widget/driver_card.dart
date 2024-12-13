@@ -9,6 +9,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:movemate_staff/hooks/use_booking_status.dart';
 import 'package:movemate_staff/services/realtime_service/booking_status_realtime/booking_status_stream_provider.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:movemate_staff/utils/constants/asset_constant.dart';
 
 class DriverCard extends HookConsumerWidget {
   final BookingResponseEntity job;
@@ -43,6 +44,9 @@ class DriverCard extends HookConsumerWidget {
     } else if (bookingStatus.isInProgress) {
       cardColor = Colors.orange.shade400;
       statusText = 'Đang vận chuyển';
+    } else if (bookingStatus.isPaused) {
+      cardColor = AssetsConstants.yellow1;
+      statusText = 'Đang chờ khách cập nhật';
     } else {
       cardColor = const Color.fromARGB(255, 244, 190, 54);
       statusText = 'Mới';
