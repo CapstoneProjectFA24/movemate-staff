@@ -1526,7 +1526,7 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
                         _updateLocationRealtime(destination, "PORTER");
 
                         try {
-                          await widget.ref
+                          ProviderScope.containerOf(context, listen: false)
                               .read(porterControllerProvider.notifier)
                               .updateStatusPorterWithoutResourse(
                                 id: widget.job.id,
