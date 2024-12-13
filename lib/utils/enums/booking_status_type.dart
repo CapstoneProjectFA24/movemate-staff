@@ -11,7 +11,8 @@ enum BookingStatusType {
   confirmed('CONFIRMED'),
   completed('COMPLETED'),
   cancelled('CANCEL'),
-  refunded('REFUNDED');
+  refunded('REFUNDED'),
+  paused('PAUSED');
 
   final String type;
   const BookingStatusType(this.type);
@@ -60,6 +61,8 @@ extension ConvertOrderPartnerStatus on String {
         return BookingStatusType.inProgress;
       case 'CONFIRMED':
         return BookingStatusType.confirmed;
+      case 'PAUSED':
+        return BookingStatusType.paused;
       case 'COMPLETED':
         return BookingStatusType.completed;
       case 'CANCEL':

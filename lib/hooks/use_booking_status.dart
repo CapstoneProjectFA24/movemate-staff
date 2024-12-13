@@ -29,6 +29,7 @@ class BookingStatusResult {
   final bool isInProgress;
   final bool isConfirmed;
   final bool isCompleted;
+  final bool isPaused;
 
   // Driver states
   final bool canDriverConfirmIncoming;
@@ -85,6 +86,7 @@ class BookingStatusResult {
     this.isConfirmed = false,
     this.isBookingComing = false,
     this.isCompleted = false,
+    this.isPaused = false,
     this.canDriverConfirmIncoming = false,
     this.canDriverConfirmArrived = false,
     this.canDriverStartMoving = false,
@@ -525,6 +527,7 @@ BookingStatusResult useBookingStatus(
       isInProgress: status == BookingStatusType.inProgress,
       isConfirmed: status == BookingStatusType.confirmed,
       isCompleted: status == BookingStatusType.completed,
+      isPaused: status == BookingStatusType.paused,
       canDriverConfirmIncoming: canDriverConfirmIncoming,
       canDriverConfirmArrived: canDriverConfirmArrived,
       canDriverStartMoving: canDriverStartMoving,
