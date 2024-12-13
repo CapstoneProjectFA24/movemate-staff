@@ -360,8 +360,7 @@ class DriverConfirmUpload extends HookConsumerWidget {
                       final request = UpdateResourseRequest(
                         resourceList: resources3,
                       );
-                      print(
-                          "object list resource ${request.resourceList.length}");
+
                       await ref
                           .read(driverControllerProvider.notifier)
                           .updateStatusDriverResourse(
