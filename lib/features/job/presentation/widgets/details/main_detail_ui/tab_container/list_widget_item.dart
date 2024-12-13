@@ -60,6 +60,7 @@ class ListItemWidget extends HookConsumerWidget {
     final isSelected = selectedValue == item;
 
     final bool checkFailed = item.status == 'FAILED';
+    final bool checkWaiting = item.status == 'WAITING';
     // Use the Hook within the build method
     final userProfile = useFetchObject<ProfileEntity>(
       function: (context) => ref
@@ -84,7 +85,7 @@ class ListItemWidget extends HookConsumerWidget {
           ),
           child: InkWell(
             borderRadius: BorderRadius.circular(12),
-            onTap: !checkFailed
+            onTap: (!checkFailed || !checkWaiting)
                 ? () {
                     selectionNotifier.value = isSelected ? null : item;
                   }
@@ -204,7 +205,7 @@ class ListItemWidget extends HookConsumerWidget {
                   Radio<AssignmentsResponseEntity>(
                     value: item,
                     groupValue: selectedValue,
-                    onChanged: !checkFailed
+                    onChanged: (!checkFailed || !checkWaiting)
                         ? (value) {
                             selectionNotifier.value = isSelected ? null : value;
                           }
