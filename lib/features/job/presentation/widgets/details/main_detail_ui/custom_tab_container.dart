@@ -290,7 +290,7 @@ class CustomTabContainer extends HookConsumerWidget {
           selectionNotifier: selectedPorter,
           icon: Icons.person_outlined,
           iconColor: Colors.blue,
-          subtitle: (item.isResponsible ?? true) ? 'Trưởng' : 'Nhân viên',
+          subtitle: (item.isResponsible ?? true) ? 'Trách nhiệm' : 'Nhân viên',
           role: "porter",
         );
       },
@@ -314,7 +314,7 @@ class CustomTabContainer extends HookConsumerWidget {
           selectionNotifier: selectedDriver,
           icon: Icons.drive_eta_outlined,
           iconColor: Colors.green,
-          subtitle: (item.isResponsible ?? true) ? 'Trưởng' : 'Nhân viên',
+          subtitle: (item.isResponsible ?? true) ? 'Trách nhiệm' : 'Nhân viên',
           role: "driver",
         );
       },
@@ -363,7 +363,7 @@ class CustomTabContainer extends HookConsumerWidget {
                     }
                   }
                 : null,
-            label: 'Gán bốc vác trưởng',
+            label: 'Gán bốc vác chính',
             isPrimary: true,
             isEnabled: selectedPorter != null && !hasResponsiblePorter,
           ),
@@ -430,7 +430,7 @@ class CustomTabContainer extends HookConsumerWidget {
                     }
                   }
                 : null,
-            label: 'Gán tài xế trưởng',
+            label: 'Gán tài xế chính',
             isPrimary: true,
             isEnabled: selectedDriver != null && !hasResponsibleDriver,
           ),
