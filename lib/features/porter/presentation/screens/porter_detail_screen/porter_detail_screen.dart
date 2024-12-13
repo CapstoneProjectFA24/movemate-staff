@@ -857,7 +857,8 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
                         _updateLocationRealtime(destination, "PORTER");
 
                         try {
-                          await widget.ref
+                          await ProviderScope.containerOf(context,
+                                  listen: false)
                               .read(porterControllerProvider.notifier)
                               .updateStatusPorterWithoutResourse(
                                 id: widget.job.id,
@@ -1005,6 +1006,10 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
                                             onPressed: () async {
                                               context.router.pop();
                                               if (_isFirstNavigation) {
+                                                LatLng destination =
+                                                    _getPickupPointLatLng();
+                                                _updateLocationRealtime(
+                                                    destination, "PORTER");
                                                 setState(() {
                                                   instructionImage =
                                                       const SizedBox.shrink();
@@ -1017,6 +1022,10 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
 
                                                 _startNextRoute();
                                               } else {
+                                                LatLng destination =
+                                                    _getDeliveryPointLatLng();
+                                                _updateLocationRealtime(
+                                                    destination, "PORTER");
                                                 setState(() {
                                                   instructionImage =
                                                       const SizedBox.shrink();
