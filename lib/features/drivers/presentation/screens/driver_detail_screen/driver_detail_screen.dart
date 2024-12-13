@@ -495,12 +495,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
       final buildRouteFlags =
           _getBuildRouteFlags(driverAssignmentStatus, fireStoreBookingStatus);
 
-      print("vinh debug ${buildRouteFlags["isDriverStartBuildRoute"]!}");
-      print(
-          "vinh debug 1 ${buildRouteFlags["isDriverAtDeliveryPointBuildRoute"]!}");
-      print(
-          "vinh debug 2 ${buildRouteFlags["isDriverEndDeliveryPointBuildRoute"]!}");
-      print("vinh debug 3 ${buildRouteFlags["isDriverPause"]!}");
+
 
       if (_navigationController != null && _currentPosition != null) {
         LatLng? startPosition;
