@@ -44,7 +44,7 @@ class PorterCard extends HookConsumerWidget {
     } else if (bookingStatus.isInProgress) {
       cardColor = Colors.orange.shade400;
       statusText = 'Đang vận chuyển';
-    }else if (bookingStatus.isPaused) {
+    } else if (bookingStatus.isPaused) {
       cardColor = AssetsConstants.yellow1;
       statusText = 'Đang chờ khách cập nhật';
     } else {

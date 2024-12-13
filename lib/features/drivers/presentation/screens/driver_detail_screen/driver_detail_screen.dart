@@ -700,6 +700,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                 );
               },
             );
+      
           } else if (buildRouteFlags["isFailedRoute"]!) {
             waypoint = _getDeliveryPointLatLng();
             showDialog(
@@ -894,6 +895,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                 );
               },
             );
+         
           } else if (buildRouteFlags["isDriverPause"]!) {
             waypoint = _getDeliveryPointLatLng();
             showDialog(
@@ -1088,6 +1090,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                 );
               },
             );
+          
           } else {
             return;
           }
