@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:movemate_staff/features/auth/data/models/request/register_token_request.dart';
+import 'package:movemate_staff/utils/commons/functions/firebase_utils.dart';
+import 'package:movemate_staff/utils/constants/api_constant.dart';
 // import 'package:movemate_staff/utils/commons/functions/firebase_utils.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:dio/dio.dart';
@@ -46,8 +49,8 @@ class SignInController extends _$SignInController {
         final user = await authRepository.signIn(request: request);
 
         // get FCM token
-        // final deviceToken = await getDeviceToken();
-        // print(deviceToken);
+        final deviceToken = await getDeviceToken();
+        print("fcm done 0  ${deviceToken}");
         final userModel = UserModel(
           id: user.payload.id,
           roleName: user.payload.roleName,
@@ -58,8 +61,14 @@ class SignInController extends _$SignInController {
           gender: user.payload.gender,
           phone: user.payload.phone,
           tokens: user.payload.tokens,
+          fcmToken: deviceToken,
+        );
+        await authRepository.registerFcmToken(
+          request: RegisterTokenRequest(fcmToken: deviceToken),
+          accessToken: APIConstants.prefixToken + userModel.tokens.accessToken,
         );
 
+        print("fcm done");
         ref.read(authProvider.notifier).update(
               (state) => userModel,
             );
