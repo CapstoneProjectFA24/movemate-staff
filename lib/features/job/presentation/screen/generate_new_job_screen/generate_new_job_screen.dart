@@ -67,6 +67,7 @@ class GenerateNewJobScreen extends HookConsumerWidget {
         bookingNotifier
             .updateNumberOfFloors(int.tryParse(job.floorsNumber) ?? 1);
         bookingNotifier.updateBookingDate(parseCustomDate(job.bookingAt));
+        bookingNotifier.updateDistance(job.estimatedDistance);
       });
       return null;
     }, [roomNumberController, floorsNumberController]);

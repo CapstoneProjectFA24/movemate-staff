@@ -374,7 +374,6 @@ class BookingUpdateRequest {
     }
     String estimatedDeliveryTime = booking.estimatedDeliveryTime;
 
-
     // Thêm selectedPackages với số lượng vào bookingDetails
     bookingDetails.addAll(booking.selectedPackages
         .where((package) => package.quantity != null && package.quantity! > 0)
@@ -426,5 +425,4 @@ class BookingUpdateRequest {
       estimatedDeliveryTime: estimatedDeliveryTime,
     );
   }
-
 }

@@ -190,7 +190,7 @@ class BookingController extends _$BookingController {
     final user = await SharedPreferencesUtils.getInstance('user_token');
 
     // Debugging
-    print('Booking Request: ${jsonEncode(bookingRequest.toMap())}');
+    // print('Booking Request: ${jsonEncode(bookingRequest.toMap())}');
 
     state = await AsyncValue.guard(() async {
       // print("go here 1");

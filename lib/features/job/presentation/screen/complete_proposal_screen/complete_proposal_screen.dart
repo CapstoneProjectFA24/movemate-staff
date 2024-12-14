@@ -214,7 +214,7 @@ class CompleteProposalScreen extends HookConsumerWidget {
               showSnackBar(context, 'Vui lòng nhập thời gian hợp lệ');
               return;
             }
-            print("object bookingRequest  ${bookingRequest.bookingAt}");
+            // print("object bookingRequest  ${bookingRequest.bookingAt}");
             showConfirmationDialog(
               context,
               'Xác nhận',
@@ -226,6 +226,7 @@ class CompleteProposalScreen extends HookConsumerWidget {
                       context: context,
                       id: job.id,
                     );
+                // print("check update booking ${bookingRequest.toJson()}");
 
                 context.router.popUntil(
                     (route) => route.settings.name == 'JobScreenRoute');

@@ -350,6 +350,14 @@ class BookingNotifier extends StateNotifier<Booking> {
     state = state.copyWith(isReviewOnline: isReviewOnline);
   }
 
+  void updateDistance(String location) {
+    print("Updating distance Location: $location");
+    state = state.copyWith(
+      estimatedDistance: location,
+      // selectorHasError: null,
+    );
+  }
+
   void reset() {
     state = Booking(
       totalPrice: 0.0,
@@ -372,6 +380,7 @@ class BookingNotifier extends StateNotifier<Booking> {
       houseType: null,
       numberOfRooms: 0,
       numberOfFloors: 0,
+      estimatedDeliveryTime: '',
       notes: "",
       isRoundTrip: false,
       // Additional fields for your booking form
