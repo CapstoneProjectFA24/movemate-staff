@@ -13,6 +13,23 @@ class HomeScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.read(authProvider);
+    const List<String> validRoles = [
+      'admin',
+      'manager',
+      'reviewer',
+      'driver',
+      'porter',
+    ];
+
+    bool isValidRoleName(String? roleType) {
+      if (roleType == null) return false;
+      return validRoles.contains(roleType.toLowerCase());
+    }
+
+    final isReviewer = user?.roleName == 'review' ?? false;
+    final isDriver = user?.roleName == 'driver' ?? false;
+    final isPorter = user?.roleName == 'driver' ?? false;
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -148,32 +165,35 @@ class HomeScreen extends HookConsumerWidget {
                         //     AutoTabsRouter.of(context).setActiveIndex(1);
                         //   },
                         // ),
-                        DashboardCard(
-                          icon: Icons.add_to_home_screen_rounded,
-                          color: Colors.orange,
-                          title: 'Đánh giá tại nhà',
-                          onTap: () {
-                            context.router
-                                .push(JobScreenRoute(isReviewOnline: false));
-                          },
-                        ),
-                        DashboardCard(
-                          icon: Icons.online_prediction_rounded,
-                          color: Colors.greenAccent,
-                          title: 'Đánh giá trực tuyến',
-                          onTap: () {
-                            context.router
-                                .push(JobScreenRoute(isReviewOnline: true));
-                          },
-                        ),
-                        DashboardCard(
-                          icon: Icons.tab,
-                          color: Colors.orange,
-                          title: 'Công việc bốc vác',
-                          onTap: () {
-                            context.router.push(const PorterScreenRoute());
-                          },
-                        ),
+                        if (isReviewer)
+                          DashboardCard(
+                            icon: Icons.add_to_home_screen_rounded,
+                            color: Colors.orange,
+                            title: 'Đánh giá tại nhà',
+                            onTap: () {
+                              context.router
+                                  .push(JobScreenRoute(isReviewOnline: false));
+                            },
+                          ),
+                        if (isReviewer)
+                          DashboardCard(
+                            icon: Icons.online_prediction_rounded,
+                            color: Colors.greenAccent,
+                            title: 'Đánh giá trực tuyến',
+                            onTap: () {
+                              context.router
+                                  .push(JobScreenRoute(isReviewOnline: true));
+                            },
+                          ),
+                        if (isPorter)
+                          DashboardCard(
+                            icon: Icons.tab,
+                            color: Colors.orange,
+                            title: 'Công việc bốc vác',
+                            onTap: () {
+                              context.router.push(const PorterScreenRoute());
+                            },
+                          ),
 
                         // DashboardCard(
                         //   icon: Icons.money,
@@ -184,14 +204,15 @@ class HomeScreen extends HookConsumerWidget {
                         //     context.router.push(const JobScreenRoute(isReviewOnline: trrue));
                         //   },
                         // ),
-                        DashboardCard(
-                          icon: Icons.notification_add_outlined,
-                          color: const Color.fromARGB(255, 86, 76, 175),
-                          title: 'Yêu cầu',
-                          onTap: () {
-                            context.router.push(const OrderScreenRoute());
-                          },
-                        ),
+                        if (isDriver)
+                          DashboardCard(
+                            icon: Icons.notification_add_outlined,
+                            color: const Color.fromARGB(255, 86, 76, 175),
+                            title: 'Yêu cầu',
+                            onTap: () {
+                              context.router.push(const OrderScreenRoute());
+                            },
+                          ),
                         DashboardCard(
                           icon: Icons.local_shipping,
                           color: AssetsConstants.primaryMain,
