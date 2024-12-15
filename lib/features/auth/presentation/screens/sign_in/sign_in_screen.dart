@@ -1,3 +1,4 @@
+import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -8,6 +9,7 @@ import 'package:icons_plus/icons_plus.dart';
 
 // config
 import 'package:movemate_staff/configs/routes/app_router.dart';
+import 'package:movemate_staff/features/auth/presentation/widgets/handle_modal/development_modal.dart';
 
 //thêm thư viện link
 
@@ -22,6 +24,7 @@ import 'package:movemate_staff/utils/resources/validations.dart';
 // controller
 import 'package:movemate_staff/features/auth/presentation/widgets/custom_scaford.dart';
 import 'package:movemate_staff/features/auth/presentation/screens/sign_in/sign_in_controller.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 @RoutePage()
 class SignInScreen extends HookConsumerWidget with Validations {
@@ -60,18 +63,41 @@ class SignInScreen extends HookConsumerWidget with Validations {
     final isEmailSelected = useState(true);
 
     final state = ref.watch(signInControllerProvider);
+    
+Future<void> _launchURL() async {
+     print(" tuan log  chạy 1 ");
+  final Uri url = Uri.parse('https://movematee.vercel.app/dashboard/');
+     print(" tuan log  chạy 2 ");
+  if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+    print(" tuan log không chạy được link ");
+    throw 'Could not launch $url';
+  }
+}
+    void showDevelopmentModal(BuildContext context) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return const DevelopmentModal(
+            description:
+                'Chức năng này hiện đang được phát triển. Vui lòng quay lại sau.',
+          );
+        },
+      );
+    }
 
-// Future<void> _launchURL() async {
-//   const url = 'https://your-web-link.com'; // Thay bằng đường link bạn muốn chuyển hướng
-//   if (await canLaunch(url)) {
-//     await launch(url, mode: LaunchMode.externalApplication);
-//   } else {
-//     // Xử lý khi không thể mở URL
-//     throw 'Could not launch $url';
-//   }
-// }
-
-
+        void showForgotPasswordSnackbar(BuildContext context) {
+      Flushbar(
+        message: "Vui lòng lấy lại mật khẩu trên trang chủ",
+        duration: const Duration(seconds: 3),
+        backgroundColor: Colors.orange, // Màu chủ đạo (cam)
+        margin: const EdgeInsets.all(8.0),
+        borderRadius: BorderRadius.circular(8.0),
+        flushbarPosition: FlushbarPosition.TOP, // Hiển thị từ trên xuống
+        forwardAnimationCurve: Curves.easeInOut,
+        reverseAnimationCurve: Curves.easeInOut,
+        // Bạn có thể thêm các tùy chỉnh khác nếu cần
+      ).show(context);
+    }
     return LoadingOverlay(
       isLoading: state.isLoading,
       child: CustomScaffold(
@@ -208,7 +234,9 @@ class SignInScreen extends HookConsumerWidget with Validations {
                           children: [
                             GestureDetector(
                               onTap: () {
-                                context.router.replace(SignUpScreenRoute());
+                                // context.router.replace(SignUpScreenRoute());
+                                print("redireck qua trang https://movematee.vercel.app");
+                                _launchURL();
                               },
                               child: const LabelText(
                                 content: 'Chưa có tài khoản?',
@@ -221,6 +249,7 @@ class SignInScreen extends HookConsumerWidget with Validations {
                               onTap: () {
                                 // Forgot password navigation
                                 // context.router.push(EnterEmailScreenRoute());
+                                showForgotPasswordSnackbar(context);
                               },
                               child: const LabelText(
                                 content: 'Quên mật khẩu?',
@@ -301,34 +330,37 @@ class SignInScreen extends HookConsumerWidget with Validations {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Container(
-                              width: size.width * 0.8,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(8.0),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.2),
-                                    spreadRadius: 2,
-                                    blurRadius: 5,
-                                    offset: const Offset(0, 3),
-                                  ),
-                                ],
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Logo(Logos.google),
-                                  const SizedBox(width: 20),
-                                  const Text(
-                                    'Google',
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
+                            GestureDetector(
+                              onTap:() => showDevelopmentModal(context),
+                              child: Container(
+                                width: size.width * 0.8,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.2),
+                                      spreadRadius: 2,
+                                      blurRadius: 5,
+                                      offset: const Offset(0, 3),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Logo(Logos.google),
+                                    const SizedBox(width: 20),
+                                    const Text(
+                                      'Google',
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ],
