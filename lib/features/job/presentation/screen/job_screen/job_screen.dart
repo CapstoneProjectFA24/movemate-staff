@@ -154,7 +154,7 @@ class JobScreen extends HookConsumerWidget {
             child: Column(
               children: [
                 SizedBox(
-                  height: 90,
+                  height: 100,
                   child: ListView.builder(
                     controller: useScrollController(
                       initialScrollOffset: todayIndex.value * 80.0,
@@ -221,6 +221,7 @@ class JobScreen extends HookConsumerWidget {
                                 ),
                               ),
                               const SizedBox(height: 5),
+                              // Chỉ hiển thị số khi có booking
                               if (bookingsCount > 0)
                                 ScaleTransition(
                                   scale: pulseAnimation,
