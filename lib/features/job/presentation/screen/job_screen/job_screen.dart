@@ -40,6 +40,21 @@ class JobScreen extends HookConsumerWidget {
     final state = ref.watch(bookingControllerProvider);
     final size = MediaQuery.sizeOf(context);
     final scrollController = useScrollController();
+    final selectedDate = useState(DateTime.now());
+    final todayIndex = useState(7);
+
+    final pulseController = useAnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: useSingleTickerProvider(),
+    )..repeat(reverse: true);
+
+    final pulseAnimation = Tween<double>(
+      begin: 1.0,
+      end: 1.1,
+    ).animate(CurvedAnimation(
+      parent: pulseController,
+      curve: Curves.easeInOut,
+    ));
 
     final fetchResult = useFetch<BookingResponseEntity>(
       function: (model, context) => ref
@@ -63,53 +78,74 @@ class JobScreen extends HookConsumerWidget {
       "Đã đánh giá",
     ];
 
-    final selectedDate = useState(DateTime.now());
-    final todayIndex = useState(7);
-
-    List<BookingResponseEntity> getJobsForSelectedDate() {
+    //  hàm đếm tổng số đơn theo trạng thái
+    int getTotalBookingsForStatus(String tabStatus) {
       return fetchResult.items.where((booking) {
-        DateTime bookingDate =
-            DateFormat("MM/dd/yyyy HH:mm:ss").parse(booking.bookingAt);
-        return DateFormat.yMd().format(bookingDate) ==
-            DateFormat.yMd().format(selectedDate.value);
+        final status = booking.status.toBookingTypeEnum();
+        if (tabStatus == "Đang đợi đánh giá") {
+          return [
+            BookingStatusType.pending,
+            BookingStatusType.assigned,
+            BookingStatusType.waiting,
+            BookingStatusType.depositing,
+          ].contains(status);
+        } else {
+          return [
+            BookingStatusType.reviewing,
+            BookingStatusType.reviewed,
+            BookingStatusType.coming,
+            BookingStatusType.inProgress,
+            BookingStatusType.completed,
+            BookingStatusType.confirmed,
+          ].contains(status);
+        }
+      }).length;
+    }
+
+    // Hàm mới để lọc booking theo ngày và status
+    List<BookingResponseEntity> getBookingsForDateAndStatus(
+        DateTime date, String tabStatus) {
+      return fetchResult.items.where((booking) {
+        // Kiểm tra ngày
+        final bookingDate = DateFormat('MM/dd/yyyy').parse(booking.bookingAt);
+        final isSameDate = bookingDate.day == date.day &&
+            bookingDate.month == date.month &&
+            bookingDate.year == date.year;
+
+        // Kiểm tra status
+        final status = booking.status.toBookingTypeEnum();
+        if (tabStatus == "Đang đợi đánh giá") {
+          return isSameDate &&
+              [
+                BookingStatusType.pending,
+                BookingStatusType.assigned,
+                BookingStatusType.waiting,
+                BookingStatusType.depositing,
+              ].contains(status);
+        } else {
+          return isSameDate &&
+              [
+                BookingStatusType.reviewing,
+                BookingStatusType.reviewed,
+                BookingStatusType.coming,
+                BookingStatusType.inProgress,
+                BookingStatusType.completed,
+                BookingStatusType.confirmed,
+              ].contains(status);
+        }
       }).toList();
     }
 
     ref.listen<bool>(refreshJobList, (_, __) => fetchResult.refresh());
     ref.listen<bool>(refreshDriverList, (_, __) => fetchResult.refresh());
     ref.listen<bool>(refreshPorterList, (_, __) => fetchResult.refresh());
-    
-    Widget buildTabContent(String tabName) {
-      List<BookingResponseEntity> filteredBookings = getJobsForSelectedDate();
 
-      switch (tabName) {
-        case "Đang đợi đánh giá":
-          filteredBookings = filteredBookings.where((booking) {
-            final status = booking.status.toBookingTypeEnum();
-            return [
-              BookingStatusType.pending,
-              BookingStatusType.assigned,
-              BookingStatusType.waiting,
-              BookingStatusType.depositing,
-            ].contains(status);
-          }).toList();
-          break;
-        case "Đã đánh giá":
-          filteredBookings = filteredBookings.where((booking) {
-            final status = booking.status.toBookingTypeEnum();
-            return [
-              BookingStatusType.reviewing,
-              BookingStatusType.reviewed,
-              BookingStatusType.coming,
-              BookingStatusType.inProgress,
-              BookingStatusType.completed,
-              BookingStatusType.confirmed,
-            ].contains(status);
-          }).toList();
-          break;
-        default:
-          filteredBookings = [];
-      }
+    Widget buildTabContent(String tabName) {
+      List<BookingResponseEntity> filteredBookings =
+          getBookingsForDateAndStatus(
+        selectedDate.value,
+        tabName,
+      );
 
       return CustomScrollView(
         controller: scrollController,
@@ -129,6 +165,12 @@ class JobScreen extends HookConsumerWidget {
                       final day = DateTime.now().add(Duration(days: index - 7));
                       bool isSelected = DateFormat.yMd().format(day) ==
                           DateFormat.yMd().format(selectedDate.value);
+
+                      final bookingsCount = getBookingsForDateAndStatus(
+                        day,
+                        currentTabStatus.value,
+                      ).length;
+
                       return GestureDetector(
                         onTap: () {
                           selectedDate.value = day;
@@ -139,7 +181,9 @@ class JobScreen extends HookConsumerWidget {
                           duration: const Duration(milliseconds: 300),
                           width: 80,
                           margin: const EdgeInsets.symmetric(
-                              horizontal: 5, vertical: 10),
+                            horizontal: 5,
+                            vertical: 10,
+                          ),
                           decoration: BoxDecoration(
                             color: isSelected
                                 ? Colors.orange.shade800
@@ -148,9 +192,10 @@ class JobScreen extends HookConsumerWidget {
                             boxShadow: isSelected
                                 ? [
                                     BoxShadow(
-                                        color: Colors.orange.shade200,
-                                        blurRadius: 8,
-                                        offset: const Offset(0, 4))
+                                      color: Colors.orange.shade200,
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 4),
+                                    )
                                   ]
                                 : [],
                           ),
@@ -175,6 +220,42 @@ class JobScreen extends HookConsumerWidget {
                                   fontSize: 18,
                                 ),
                               ),
+                              const SizedBox(height: 5),
+                              if (bookingsCount > 0)
+                                ScaleTransition(
+                                  scale: pulseAnimation,
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 2,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: isSelected
+                                          ? Colors.white.withOpacity(0.2)
+                                          : Colors.green.withOpacity(0.2),
+                                      borderRadius: BorderRadius.circular(10),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: isSelected
+                                              ? Colors.white.withOpacity(0.3)
+                                              : Colors.green.withOpacity(0.3),
+                                          blurRadius: 4,
+                                          spreadRadius: 1,
+                                        ),
+                                      ],
+                                    ),
+                                    child: Text(
+                                      '$bookingsCount',
+                                      style: TextStyle(
+                                        color: isSelected
+                                            ? Colors.white
+                                            : AssetsConstants.green1,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
                             ],
                           ),
                         ),
@@ -183,21 +264,43 @@ class JobScreen extends HookConsumerWidget {
                   ),
                 ),
                 const Divider(),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        DateFormat('dd/MM/yyyy').format(selectedDate.value),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        'Số lượng công việc trong ngày: ${filteredBookings.length}',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: filteredBookings.isNotEmpty
+                              ? Colors.orange.shade800
+                              : Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
                 SizedBox(height: size.height * 0.02),
               ],
             ),
           ),
           if (state.isLoading && filteredBookings.isEmpty)
             const SliverToBoxAdapter(
-              child: Center(
-                child: HomeShimmer(amount: 4),
-              ),
+              child: Center(child: HomeShimmer(amount: 4)),
             )
           else if (filteredBookings.isEmpty)
             const SliverToBoxAdapter(
               child: Align(
                 alignment: Alignment.topCenter,
-                child: EmptyBox(title: 'Không có đơn để đánh giá '),
+                child: EmptyBox(title: 'Không có đơn để đánh giá'),
               ),
             )
           else
@@ -251,7 +354,42 @@ class JobScreen extends HookConsumerWidget {
               indicatorWeight: 2,
               labelColor: Colors.orange,
               unselectedLabelColor: Colors.grey,
-              tabs: tabs.map((tab) => Tab(text: tab)).toList(),
+              tabs: tabs.map((tab) {
+                final count = getTotalBookingsForStatus(tab);
+                return Tab(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(tab),
+                      if (count > 0) ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: tabController.index == tabs.indexOf(tab)
+                                ? Colors.orange
+                                : Colors.grey.shade300,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            '$count',
+                            style: TextStyle(
+                              color: tabController.index == tabs.indexOf(tab)
+                                  ? Colors.white
+                                  : Colors.grey.shade700,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                );
+              }).toList(),
             ),
           ),
         ),

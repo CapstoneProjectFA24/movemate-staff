@@ -14,11 +14,11 @@ class HomeScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.read(authProvider);
     const List<String> validRoles = [
-      'admin',
-      'manager',
-      'reviewer',
-      'driver',
-      'porter',
+      'Admin',
+      'Manager',
+      'Reviewer',
+      'Driver',
+      'Porter',
     ];
 
     bool isValidRoleName(String? roleType) {

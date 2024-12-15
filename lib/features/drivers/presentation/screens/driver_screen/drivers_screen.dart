@@ -40,6 +40,19 @@ class DriversScreen extends HookConsumerWidget {
     final horizontalScrollController = useScrollController();
     final dateListKey = useMemoized(() => GlobalKey());
 
+    final pulseController = useAnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: useSingleTickerProvider(),
+    )..repeat(reverse: true);
+
+    final pulseAnimation = Tween<double>(
+      begin: 1.0,
+      end: 1.1,
+    ).animate(CurvedAnimation(
+      parent: pulseController,
+      curve: Curves.easeInOut,
+    ));
+
     // Khởi tạo scroll controller để focus vào ngày hiện tại
     useEffect(() {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -144,7 +157,6 @@ class DriversScreen extends HookConsumerWidget {
                     DateFormat.yMd().format(selectedDate.value);
                 return GestureDetector(
                   onTap: () {
-            
                     selectedDate.value = day;
                     // Scroll to selected date
                     final offset =
@@ -197,6 +209,54 @@ class DriversScreen extends HookConsumerWidget {
                             fontSize: 18,
                           ),
                         ),
+                        const SizedBox(height: 5),
+                        ScaleTransition(
+                          scale: _getBookingsForDate(fetchResult.items, day)
+                                  .isNotEmpty
+                              ? pulseAnimation
+                              : const AlwaysStoppedAnimation(1.0),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: _getBookingsForDate(fetchResult.items, day)
+                                      .isNotEmpty
+                                  ? isSelected
+                                      ? Colors.white.withOpacity(0.2)
+                                      : Colors.green.withOpacity(0.2)
+                                  : Colors.grey.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(10),
+                              boxShadow:
+                                  _getBookingsForDate(fetchResult.items, day)
+                                          .isNotEmpty
+                                      ? [
+                                          BoxShadow(
+                                            color: isSelected
+                                                ? Colors.white.withOpacity(0.3)
+                                                : Colors.green.withOpacity(0.3),
+                                            blurRadius: 4,
+                                            spreadRadius: 1,
+                                          )
+                                        ]
+                                      : [],
+                            ),
+                            child: Text(
+                              '${_getBookingsForDate(fetchResult.items, day).length}',
+                              style: TextStyle(
+                                color:
+                                    _getBookingsForDate(fetchResult.items, day)
+                                            .isNotEmpty
+                                        ? isSelected
+                                            ? Colors.white
+                                            : AssetsConstants.green1
+                                        : Colors.grey,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                     
                       ],
                     ),
                   ),
@@ -205,6 +265,30 @@ class DriversScreen extends HookConsumerWidget {
             ),
           ),
           const Divider(),
+          // Thêm phần hiển thị số lượng booking
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  DateFormat('dd/MM/yyyy').format(selectedDate.value),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                // Text(
+                //   'Số lượng : ${jobs.length}',
+                //   style: TextStyle(
+                //     fontSize: 16,
+                //     color:
+                //         jobs.isNotEmpty ? Colors.orange.shade800 : Colors.grey,
+                //   ),
+                // ),
+              ],
+            ),
+          ),
           SizedBox(height: size.height * 0.02),
           (state.isLoading && fetchResult.loadMore == false)
               ? const Center(
@@ -270,4 +354,16 @@ class DriversScreen extends HookConsumerWidget {
           bookingDate.year == selectedDate.year;
     }).toList();
   }
+}
+
+List<BookingResponseEntity> _getBookingsForDate(
+  List<BookingResponseEntity> bookingResponseEntities,
+  DateTime date,
+) {
+  return bookingResponseEntities.where((entity) {
+    final bookingDate = DateFormat('MM/dd/yyyy').parse(entity.bookingAt);
+    return bookingDate.day == date.day &&
+        bookingDate.month == date.month &&
+        bookingDate.year == date.year;
+  }).toList();
 }
