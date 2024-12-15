@@ -29,33 +29,33 @@ class ProfileScreen extends HookConsumerWidget {
     };
 
     final menuItems = [
-      ProfileMenu(
-        icon: Icons.security,
-        title: profile['security'].toString(),
-        onTap: () {},
-      ),
-      ProfileMenu(
-        icon: Icons.account_balance_wallet,
-        title: profile['wallet'].toString(),
-        onTap: () {
-          context.router.push(const WalletScreenRoute());
-        },
-      ),
-      ProfileMenu(
-        icon: Icons.present_to_all,
-        title: profile['present'].toString(),
-        onTap: () {},
-      ),
-      ProfileMenu(
-        icon: Icons.receipt_long,
-        title: profile['bill'].toString(),
-        onTap: () {},
-      ),
-      ProfileMenu(
-        icon: Icons.location_on,
-        title: profile['center'].toString(),
-        onTap: () {},
-      ),
+      // ProfileMenu(
+      //   icon: Icons.security,
+      //   title: profile['security'].toString(),
+      //   onTap: () {},
+      // ),
+      // ProfileMenu(
+      //   icon: Icons.account_balance_wallet,
+      //   title: profile['wallet'].toString(),
+      //   onTap: () {
+      //     context.router.push(const WalletScreenRoute());
+      //   },
+      // ),
+      // ProfileMenu(
+      //   icon: Icons.present_to_all,
+      //   title: profile['present'].toString(),
+      //   onTap: () {},
+      // ),
+      // ProfileMenu(
+      //   icon: Icons.receipt_long,
+      //   title: profile['bill'].toString(),
+      //   onTap: () {},
+      // ),
+      // ProfileMenu(
+      //   icon: Icons.location_on,
+      //   title: profile['center'].toString(),
+      //   onTap: () {},
+      // ),
       ProfileMenu(
         icon: Icons.logout_outlined,
         title: "Đăng xuất",

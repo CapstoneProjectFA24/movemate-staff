@@ -154,32 +154,34 @@ class ListItemWidget extends HookConsumerWidget {
                           ],
                         ),
                         const SizedBox(height: 4),
-                        Row(
-                          children: [
-                            Text(
-                              subtitle,
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey.shade600,
+                        FittedBox(
+                          child: Row(
+                            children: [
+                              Text(
+                                subtitle,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey.shade600,
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              '-',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey.shade600,
+                              const SizedBox(width: 4),
+                              Text(
+                                '-',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey.shade600,
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              userProfile.data?.phone ?? '',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey.shade600,
+                              const SizedBox(width: 4),
+                              Text(
+                                userProfile.data?.phone ?? '',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey.shade600,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ],
                     ),

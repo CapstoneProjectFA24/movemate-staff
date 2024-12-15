@@ -555,7 +555,7 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
             _nextDestination = _getDeliveryPointLatLng();
           } else if (buildRouteFlags['isPorterAtDeliveryPointBuildRoute']!) {
             waypoint = _getDeliveryPointLatLng();
-          } else if (buildRouteFlags['isPorterEndDeliveryPointBuildRoute']!) {
+          } else if (buildRouteFlags['isPorterEndDeliveryPointBuildRoute']! ) {
             waypoint = _getDeliveryPointLatLng();
             showDialog(
               context: context,
@@ -743,7 +743,8 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
                   ),
                 );
               },
-            );
+            );         
+
           } else if (buildRouteFlags["isFailedRoute"]!) {
             waypoint = _getDeliveryPointLatLng();
             showDialog(

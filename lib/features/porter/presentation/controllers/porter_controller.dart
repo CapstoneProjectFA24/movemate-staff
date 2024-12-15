@@ -105,7 +105,7 @@ class PorterController extends _$PorterController {
         context: context,
         content: "Cập nhật trạng thái thành công",
         icon: AssetsConstants.iconSuccess,
-        backgroundColor: Colors.green,
+        backgroundColor: Colors.orange,
         textColor: AssetsConstants.whiteColor,
       );
     });
@@ -155,7 +155,7 @@ class PorterController extends _$PorterController {
         context: context,
         content: "Cập nhật trạng thái thành công",
         icon: AssetsConstants.iconSuccess,
-        backgroundColor: Colors.green,
+        backgroundColor: Colors.orange,
         textColor: AssetsConstants.whiteColor,
       );
     });

@@ -9,6 +9,10 @@ import 'package:icons_plus/icons_plus.dart';
 // config
 import 'package:movemate_staff/configs/routes/app_router.dart';
 
+//thêm thư viện link
+
+
+
 // utils
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
 import 'package:movemate_staff/utils/commons/widgets/widgets_common_export.dart';
@@ -56,6 +60,17 @@ class SignInScreen extends HookConsumerWidget with Validations {
     final isEmailSelected = useState(true);
 
     final state = ref.watch(signInControllerProvider);
+
+// Future<void> _launchURL() async {
+//   const url = 'https://your-web-link.com'; // Thay bằng đường link bạn muốn chuyển hướng
+//   if (await canLaunch(url)) {
+//     await launch(url, mode: LaunchMode.externalApplication);
+//   } else {
+//     // Xử lý khi không thể mở URL
+//     throw 'Could not launch $url';
+//   }
+// }
+
 
     return LoadingOverlay(
       isLoading: state.isLoading,
