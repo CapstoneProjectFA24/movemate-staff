@@ -26,9 +26,9 @@ class HomeScreen extends HookConsumerWidget {
       return validRoles.contains(roleType.toLowerCase());
     }
 
-    final isReviewer = user?.roleName.type == 'review' ?? false;
-    final isDriver = user?.roleName.type == 'driver' ?? false;
-    final isPorter = user?.roleName.type == 'porter' ?? false;
+    final isReviewer = user?.roleName.type.toUpperCase() == 'REVIEWER' ?? false;
+    final isDriver = user?.roleName.type == 'DRIVER' ?? false;
+    final isPorter = user?.roleName.type == 'PORTER' ?? false;
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
