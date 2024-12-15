@@ -87,7 +87,7 @@ void showFlutterNotification(RemoteMessage message) {
           channel.name,
           channelDescription: channel.description,
           icon: '@drawable/movemate_logo',
-          // Thêm các tùy chọn để hiển thị thông báo ngay trong app
+          // Thêm các tùy chọn để hiển thị thông báo ngay trong app  
           importance: Importance.max,
           priority: Priority.high,
         ),

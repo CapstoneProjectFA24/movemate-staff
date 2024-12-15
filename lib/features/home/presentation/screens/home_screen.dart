@@ -27,8 +27,8 @@ class HomeScreen extends HookConsumerWidget {
     }
 
     final isReviewer = user?.roleName.type.toUpperCase() == 'REVIEWER' ?? false;
-    final isDriver = user?.roleName.type == 'DRIVER' ?? false;
-    final isPorter = user?.roleName.type == 'PORTER' ?? false;
+    final isDriver = user?.roleName.type.toUpperCase() == 'DRIVER' ?? false;
+    final isPorter = user?.roleName.type.toUpperCase() == 'PORTER' ?? false;
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -205,14 +205,6 @@ class HomeScreen extends HookConsumerWidget {
                         //   },
                         // ),
 
-                        DashboardCard(
-                          icon: Icons.notification_add_outlined,
-                          color: const Color.fromARGB(255, 86, 76, 175),
-                          title: 'Yêu cầu',
-                          onTap: () {
-                            context.router.push(const OrderScreenRoute());
-                          },
-                        ),
                         if (isDriver)
                           DashboardCard(
                             icon: Icons.local_shipping,
@@ -222,6 +214,15 @@ class HomeScreen extends HookConsumerWidget {
                               context.router.push(const DriversScreenRoute());
                             },
                           ),
+
+                        DashboardCard(
+                          icon: Icons.notification_add_outlined,
+                          color: const Color.fromARGB(255, 86, 76, 175),
+                          title: 'Yêu cầu',
+                          onTap: () {
+                            context.router.push(const OrderScreenRoute());
+                          },
+                        ),
                       ],
                     ),
                   ),
