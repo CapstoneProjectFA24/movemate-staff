@@ -316,7 +316,7 @@ class DeliveryDetailsBottomSheet extends HookConsumerWidget {
             .firstWhere((e) => e.staffType == 'DRIVER')
             .isResponsible;
 
-        return isResponsible == true ? "Trưởng" : "";
+        return isResponsible == true ? "chịu trách nhiệm" : "";
       } catch (e) {
         return "Bốc vác"; // Giá trị mặc định nếu không tìm thấy Driver
       }
