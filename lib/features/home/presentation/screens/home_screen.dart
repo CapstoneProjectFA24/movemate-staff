@@ -26,9 +26,9 @@ class HomeScreen extends HookConsumerWidget {
       return validRoles.contains(roleType.toLowerCase());
     }
 
-    final isReviewer = user?.roleName == 'review' ?? false;
-    final isDriver = user?.roleName == 'driver' ?? false;
-    final isPorter = user?.roleName == 'driver' ?? false;
+    final isReviewer = user?.roleName.type == 'review' ?? false;
+    final isDriver = user?.roleName.type == 'driver' ?? false;
+    final isPorter = user?.roleName.type == 'porter' ?? false;
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -204,23 +204,24 @@ class HomeScreen extends HookConsumerWidget {
                         //     context.router.push(const JobScreenRoute(isReviewOnline: trrue));
                         //   },
                         // ),
-                        if (isDriver)
-                          DashboardCard(
-                            icon: Icons.notification_add_outlined,
-                            color: const Color.fromARGB(255, 86, 76, 175),
-                            title: 'Yêu cầu',
-                            onTap: () {
-                              context.router.push(const OrderScreenRoute());
-                            },
-                          ),
+
                         DashboardCard(
-                          icon: Icons.local_shipping,
-                          color: AssetsConstants.primaryMain,
-                          title: 'Tài xế',
+                          icon: Icons.notification_add_outlined,
+                          color: const Color.fromARGB(255, 86, 76, 175),
+                          title: 'Yêu cầu',
                           onTap: () {
-                            context.router.push(const DriversScreenRoute());
+                            context.router.push(const OrderScreenRoute());
                           },
                         ),
+                        if (isDriver)
+                          DashboardCard(
+                            icon: Icons.local_shipping,
+                            color: AssetsConstants.primaryMain,
+                            title: 'Tài xế',
+                            onTap: () {
+                              context.router.push(const DriversScreenRoute());
+                            },
+                          ),
                       ],
                     ),
                   ),
