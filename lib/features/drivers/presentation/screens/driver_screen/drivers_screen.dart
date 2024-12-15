@@ -256,7 +256,6 @@ class DriversScreen extends HookConsumerWidget {
                             ),
                           ),
                         ),
-                     
                       ],
                     ),
                   ),

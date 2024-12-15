@@ -55,8 +55,8 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
   //Location tracking
   StreamSubscription<Position>? _positionStreamSubscription;
   Timer? _locationUpdateTimer;
-  bool _isFirstNavigation = true; // Add this flag
-  LatLng? _nextDestination; // Add this to store next destination
+  bool _isFirstNavigation = true;
+  LatLng? _nextDestination;
 
   bool canDriverConfirmIncomingFlag = false;
   bool canDriverStartMovingFlag = false;
@@ -494,8 +494,6 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
       final buildRouteFlags =
           _getBuildRouteFlags(driverAssignmentStatus, fireStoreBookingStatus);
 
-
-
       if (_navigationController != null && _currentPosition != null) {
         LatLng? startPosition;
 
@@ -699,7 +697,6 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                 );
               },
             );
-      
           } else if (buildRouteFlags["isFailedRoute"]!) {
             waypoint = _getDeliveryPointLatLng();
             showDialog(
@@ -894,7 +891,6 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                 );
               },
             );
-         
           } else if (buildRouteFlags["isDriverPause"]!) {
             waypoint = _getDeliveryPointLatLng();
             showDialog(
@@ -1089,7 +1085,6 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                 );
               },
             );
-          
           } else {
             return;
           }
@@ -1319,6 +1314,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                           context.router.push(DriverConfirmUploadRoute(
                             job: _currentJob,
                           ));
+                          Navigator.of(context).pop();
                         }
                       },
                       style: ElevatedButton.styleFrom(
@@ -1420,6 +1416,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                           context.router.push(DriverConfirmUploadRoute(
                             job: _currentJob,
                           ));
+                          Navigator.of(context).pop();
                         }
                       },
                       style: ElevatedButton.styleFrom(
