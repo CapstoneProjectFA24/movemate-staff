@@ -2,7 +2,7 @@ enum UserRole {
   reviewer('Reviewer'),
   driver('Driver'),
   admin('Admin'),
-  poster('Poster'),
+  poster('Porter'),
   customer('Customer');
 
   final String type;
@@ -11,7 +11,7 @@ enum UserRole {
   static UserRole fromString(String role) {
     return UserRole.values.firstWhere(
       (e) => e.type.toLowerCase() == role.toLowerCase(),
-      orElse: () => UserRole.reviewer, 
+      orElse: () => UserRole.reviewer,
     );
   }
 }
@@ -23,7 +23,7 @@ extension ConvertUserRole on String {
         return UserRole.driver;
       case 'Reviewer':
         return UserRole.reviewer;
-      case 'Poster':
+      case 'Porter':
         return UserRole.poster;
       case 'Admin':
         return UserRole.poster;
