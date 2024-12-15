@@ -151,7 +151,7 @@ class PorterScreen extends HookConsumerWidget {
         children: [
           // Week View (Horizontal Scroll)
           SizedBox(
-            height: 90,
+            height: 100,
             child: ListView.builder(
               controller: horizontalScrollController,
               scrollDirection: Axis.horizontal,
