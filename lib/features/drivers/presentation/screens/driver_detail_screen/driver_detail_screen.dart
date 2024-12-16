@@ -305,6 +305,13 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
             final buildRouteFlags = _getBuildRouteFlags(
                 driverAssignmentStatus, fireStoreBookingStatus);
 
+                final porterAssignmentStatus =
+                _getPorterAssignmentStatus(assignments);
+            final isWaitingProcess =
+                porterAssignmentStatus['isPorterArrived']! ||
+                    porterAssignmentStatus["isPorterInprogress"]!;
+            canDriverWaitingProcess = isWaitingProcess;
+
             if (buildRouteFlags['isDriverStartBuildRoute']!) {
               _currentPosition = LatLng(position.latitude, position.longitude);
             } else if (buildRouteFlags['isDriverAtDeliveryPointBuildRoute']!) {
@@ -543,9 +550,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
 
       print("vinh debug isWaitingProcess ${isWaitingProcess} ");
       print("vinh debug canDriverWaitingProcess ${canDriverWaitingProcess} ");
-      setState(() {
-        canDriverWaitingProcess = isWaitingProcess;
-      });
+ 
       final buildRouteFlags =
           _getBuildRouteFlags(driverAssignmentStatus, fireStoreBookingStatus);
 
@@ -2200,14 +2205,14 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                       child: const Icon(Icons.check),
                     ),
                 if (!_isNavigationStarted)
-                  if (canDriverStartMovingFlag  && canDriverWaitingProcess)
+                  if (canDriverStartMovingFlag  && !canDriverWaitingProcess)
                     FloatingActionButton(
                       onPressed: _isMapReady ? _startArrivedToInprogress : null,
                       // onPressed: _isMapReady ? _startNavigation : null,
                       child: const Icon(Icons.directions_car),
                     ),
                 if (!_isNavigationStarted)
-                  if (canDriverStartMovingFlag  && canDriverWaitingProcess)
+                  if (canDriverStartMovingFlag  && !canDriverWaitingProcess)
                     FloatingActionButton(
                       onPressed: _fastFinishToComplete,
                       backgroundColor: Colors.green,
