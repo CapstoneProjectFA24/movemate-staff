@@ -63,6 +63,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
   bool canDriverStartMovingFlag = false;
   bool canDriverActiveIncident = false;
   bool canDriverTimingToStart = false;
+  bool canDriverWaitingProcess = false;
 
   // realtime
   UserModel? user;
@@ -337,6 +338,23 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
     }
   }
 
+  Map<String, bool> _getPorterAssignmentStatus(List assignments) {
+    return {
+      'isPorterWaiting': assignments.any((a) => a['Status'] == "WAITING"),
+      'isPorterAssigned': assignments.any((a) => a['Status'] == "ASSIGNED"),
+      'isPorterIncoming': assignments.any((a) => a['Status'] == "INCOMING"),
+      'isPorterArrived': assignments.any((a) => a['Status'] == "ARRIVED"),
+      'isPorterInprogress':
+          assignments.any((a) => a['Status'] == "IN_PROGRESS"),
+      'isPorterPacking': assignments.any((a) => a['Status'] == "PACKING"),
+      'isPorterOngoing': assignments.any((a) => a['Status'] == "ONGOING"),
+      'isPorterDelivered': assignments.any((a) => a['Status'] == "DELIVERED"),
+      'isPorterUnloaded': assignments.any((a) => a['Status'] == "UNLOADED"),
+      'isPorterCompleted': assignments.any((a) => a['Status'] == "COMPLETED"),
+      'isPorterFailed': assignments.any((a) => a['Status'] == "FAILED"),
+    };
+  }
+
   Map<String, bool> _getDriverAssignmentStatus(List assignments) {
     final staffAssignment = assignments.firstWhere(
         (a) => a['StaffType'] == 'DRIVER' && a['UserId'] == user?.id,
@@ -500,10 +518,13 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
       final format = DateFormat("MM/dd/yyyy HH:mm:ss");
 
       final bookingDateTime = format.parse(bookingAt);
+
       final earliestStartTime =
           bookingDateTime.subtract(const Duration(hours: 1));
+
       final isValidTime = now.isAfter(earliestStartTime) &&
           now.isBefore(bookingDateTime.add(const Duration(hours: 24)));
+
       setState(() {
         canDriverTimingToStart = isValidTime;
       });
@@ -514,6 +535,15 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
       print("vinh debug 3: $isValidTime");
 
       final driverAssignmentStatus = _getDriverAssignmentStatus(assignments);
+
+      final porterAssignmentStatus = _getPorterAssignmentStatus(assignments);
+
+    final isWaitingProcess = porterAssignmentStatus['isPorterArrived']! ||  porterAssignmentStatus["isPorterInprogress"]! || porterAssignmentStatus["isPorterPacking"]!  ;
+
+      print("vinh debug isWaitingProcess ${isWaitingProcess} ");
+setState(() {
+ canDriverWaitingProcess =   isWaitingProcess ;
+});
       final buildRouteFlags =
           _getBuildRouteFlags(driverAssignmentStatus, fireStoreBookingStatus);
 
@@ -530,8 +560,200 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
             waypoint = _getPickupPointLatLng();
             _nextDestination = _getDeliveryPointLatLng();
 
-            if(!isValidTime){
+            if (!isValidTime) {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return Dialog(
+                    backgroundColor: Colors.transparent,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [Colors.white, Color(0xFFFFF8F0)],
+                        ),
+                        borderRadius: BorderRadius.circular(24),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 20,
+                            spreadRadius: 1,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            height: 100,
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                // colors: [Color(0xFFFF9900), Color(0xFFFFB446)],
+                                colors: [
+                                  AssetsConstants.green1,
+                                  AssetsConstants.green1
+                                ],
+                              ),
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(24),
+                                topRight: Radius.circular(24),
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color.fromARGB(255, 0, 255, 17)
+                                      .withOpacity(0.7),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                Positioned(
+                                  top: -20,
+                                  right: -20,
+                                  child: Container(
+                                    width: 100,
+                                    height: 100,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Colors.white.withOpacity(0.1),
+                                    ),
+                                  ),
+                                ),
+                                TweenAnimationBuilder(
+                                  duration: const Duration(milliseconds: 600),
+                                  tween: Tween<double>(begin: 0, end: 1),
+                                  builder: (context, double value, child) {
+                                    return Transform.scale(
+                                      scale: value,
+                                      child: child,
+                                    );
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(16),
+                                    decoration: const BoxDecoration(
+                                      color: Colors.white,
+                                      shape: BoxShape.circle,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: AssetsConstants.green1,
+                                          blurRadius: 12,
+                                          spreadRadius: 2,
+                                        ),
+                                      ],
+                                    ),
+                                    child: const Icon(
+                                      Icons.published_with_changes_outlined,
+                                      size: 32,
+                                      color: AssetsConstants.green1,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
 
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+                            child: Column(
+                              children: [
+                                const Text(
+                                  'Chưa tới thời gian dọn nhà ',
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF2D3142),
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  'Bạn chỉ có thể xem thông tin của khách hàng',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    height: 1.5,
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                                const SizedBox(height: 32),
+                              ],
+                            ),
+                          ),
+
+                          // Buttons
+                          Container(
+                            padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                            child: Row(
+                              children: [
+                                // "Đánh giá ngay" button
+                                Expanded(
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12),
+                                      gradient: const LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                        colors: [
+                                          AssetsConstants.green1,
+                                          AssetsConstants.green1
+                                        ],
+                                      ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: const Color(0xFFFF9900)
+                                              .withOpacity(0.3),
+                                          blurRadius: 8,
+                                          spreadRadius: 0,
+                                          offset: const Offset(0, 4),
+                                        ),
+                                      ],
+                                    ),
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        // Navigator.of(context).pop();
+                                        Navigator.of(context).pop();
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.transparent,
+                                        foregroundColor: Colors.white,
+                                        shadowColor: Colors.transparent,
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 16),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                      ),
+                                      child: const Text(
+                                        'Xác nhận',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
+            }
+          } else if (buildRouteFlags['isDriverAtDeliveryPointBuildRoute']!) {
+            waypoint = _getDeliveryPointLatLng();
+            if (isWaitingProcess ){
+              
             showDialog(
               context: context,
               builder: (BuildContext context) {
@@ -620,7 +842,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                                     ],
                                   ),
                                   child: const Icon(
-                                    Icons.published_with_changes_outlined,
+                                    Icons.done,
                                     size: 32,
                                     color: AssetsConstants.green1,
                                   ),
@@ -635,7 +857,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                           child: Column(
                             children: [
                               const Text(
-                                'Chưa tới thời gian dọn nhà ',
+                                'Đang chờ nhân viên bốc vác làm việc',
                                 style: TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold,
@@ -644,7 +866,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                               ),
                               const SizedBox(height: 16),
                               Text(
-                                'Bạn chỉ có thể xem thông tin của khách hàng',
+                                'Chờ nhân viên bốc vác hoàn thành đóng gói hàng lên xe',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontSize: 16,
@@ -719,13 +941,11 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                 );
               },
             );
-         
+          
             }
-          } else if (buildRouteFlags['isDriverAtDeliveryPointBuildRoute']!) {
-            waypoint = _getDeliveryPointLatLng();
           } else if (buildRouteFlags['isDriverEndDeliveryPointBuildRoute']!) {
             waypoint = _getDeliveryPointLatLng();
-         
+
             showDialog(
               context: context,
               builder: (BuildContext context) {
@@ -913,7 +1133,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                 );
               },
             );
-         
+          
           } else if (buildRouteFlags["isFailedRoute"]!) {
             waypoint = _getDeliveryPointLatLng();
             showDialog(
@@ -1665,8 +1885,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-
-    print("vinh debug 4 ${canDriverTimingToStart}");
+    // print("vinh debug 4 ${canDriverTimingToStart}");
 
     return Scaffold(
       body: SafeArea(
@@ -1967,27 +2186,27 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 if (!_isNavigationStarted)
-                  if (canDriverConfirmIncomingFlag&&canDriverTimingToStart)
+                  if (canDriverConfirmIncomingFlag && canDriverTimingToStart)
                     FloatingActionButton(
                       onPressed: _isMapReady ? _startAssinedToComing : null,
                       // onPressed: _isMapReady ? _startNavigation : null,
                       child: const Icon(Icons.directions),
                     ),
                 if (!_isNavigationStarted)
-                  if (canDriverConfirmIncomingFlag&&canDriverTimingToStart)
+                  if (canDriverConfirmIncomingFlag && canDriverTimingToStart)
                     FloatingActionButton(
                       onPressed: _fastFinishToArrived,
                       backgroundColor: Colors.green,
                       child: const Icon(Icons.check),
                     ),
                 if (!_isNavigationStarted)
-                  if (canDriverStartMovingFlag)
+                  if (canDriverStartMovingFlag && !canDriverWaitingProcess)
                     FloatingActionButton(
                       onPressed: _isMapReady ? _startArrivedToInprogress : null,
                       // onPressed: _isMapReady ? _startNavigation : null,
                       child: const Icon(Icons.directions_car),
                     ),
-                if (!_isNavigationStarted)
+                if (!_isNavigationStarted && !canDriverWaitingProcess)
                   if (canDriverStartMovingFlag)
                     FloatingActionButton(
                       onPressed: _fastFinishToComplete,
