@@ -162,6 +162,16 @@ class PorterConfirmScreen extends HookConsumerWidget {
       bool isFailedRoute = false;
       bool isPorterPause = false;
 
+bool canPorterConfirmArrived = false;
+
+bool canPorterConfirmPacking = false;
+
+bool canPorterConfirmDelivered = false;
+
+bool canPorterCompleteUnloading = false;
+
+bool canPorterComplete = false;
+
       switch (fireStoreBookingStatus) {
         case "COMING":
           isPorterStartBuildRoute =
@@ -174,51 +184,16 @@ class PorterConfirmScreen extends HookConsumerWidget {
 
           isFailedRoute = porterAssignmentStatus["isPorterFailed"]!;
 
+canPorterConfirmArrived = porterAssignmentStatus['isPorterIncoming']! ;
+
           break;
         case "IN_PROGRESS":
-          isPorterStartBuildRoute =
-              porterAssignmentStatus['isPorterWaiting']! ||
-                  porterAssignmentStatus['isPorterAssigned']! ||
-                  porterAssignmentStatus['isPorterIncoming']! ||
-                  (!porterAssignmentStatus['isPorterInprogress']! &&
-                      !porterAssignmentStatus['isPorterArrived']! &&
-                      !porterAssignmentStatus['isPorterPacking']! &&
-                      !porterAssignmentStatus['isPorterDelivered']! &&
-                      !porterAssignmentStatus['isPorterOngoing']! &&
-                      !porterAssignmentStatus['isPorterCompleted']! &&
-                      !porterAssignmentStatus['isPorterFailed']!);
-
-          isPorterAtDeliveryPointBuildRoute =
-              (porterAssignmentStatus['isPorterArrived']! ||
-                      porterAssignmentStatus['isPorterInprogress']! ||
-                      porterAssignmentStatus["isPorterPacking"]! ||
-                      porterAssignmentStatus["isPorterOngoing"]!) &&
-                  (!porterAssignmentStatus["isPorterUnloaded"]! ||
-                      !porterAssignmentStatus['isPorterDelivered']! ||
-                      !porterAssignmentStatus['isPorterCompleted']! ||
-                      !porterAssignmentStatus['isPorterIncoming']! ||
-                      !porterAssignmentStatus['isPorterAssigned']! ||
-                      !porterAssignmentStatus['isPorterUnloaded']! ||
-                      !porterAssignmentStatus['isPorterFailed']!);
-
-          isPorterEndDeliveryPointBuildRoute =
-              (porterAssignmentStatus['isPorterCompleted']! ||
-                      porterAssignmentStatus["isPorterDelivered"]! ||
-                      porterAssignmentStatus["isPorterUnloaded"]!) &&
-                  !porterAssignmentStatus['isPorterFailed']!;
-
-          isFailedRoute = porterAssignmentStatus["isPorterFailed"]!;
-
-          if (porterAssignmentStatus['isPorterIncoming']! ||
-              porterAssignmentStatus['isPorterAssigned']!) {
-          } else if (porterAssignmentStatus['isPorterArrived']! ||
-              porterAssignmentStatus['isPorterInprogress']!) {
-          } else if (porterAssignmentStatus["isPorterPacking"]! ||
-              porterAssignmentStatus["isPorterOngoing"]! &&
-                  !porterAssignmentStatus["isPorterArrived"]!) {
-          } else if (porterAssignmentStatus["isPorterDelivered"]! ||
-              porterAssignmentStatus["isPorterUnloaded"]!) {
-          } else {}
+          
+canPorterConfirmArrived = porterAssignmentStatus['isPorterIncoming']! ;
+canPorterConfirmPacking = porterAssignmentStatus['isPorterInprogress']!;
+canPorterConfirmDelivered = porterAssignmentStatus['isPorterOngoing']!;
+canPorterCompleteUnloading = porterAssignmentStatus['isPorterDelivered']!;
+canPorterComplete = porterAssignmentStatus['isPorterCompleted']!;
           break;
         case "COMPLETED":
           isPorterEndDeliveryPointBuildRoute =
@@ -245,7 +220,14 @@ class PorterConfirmScreen extends HookConsumerWidget {
         'isPorterEndDeliveryPointBuildRoute':
             isPorterEndDeliveryPointBuildRoute,
         'isFailedRoute': isFailedRoute,
-        'isPorterPause': isPorterPause
+        'isPorterPause': isPorterPause,
+////////////
+
+        'canPorterConfirmArrived': canPorterConfirmArrived,
+        'canPorterConfirmPacking': canPorterConfirmPacking,
+        'canPorterConfirmDelivered': canPorterConfirmDelivered,
+        'canPorterCompleteUnloading': canPorterCompleteUnloading,
+        'canPorterComplete': canPorterComplete,
       };
     }
 
@@ -540,7 +522,7 @@ class PorterConfirmScreen extends HookConsumerWidget {
                     },
                     actionButtonLabel: 'Xác nhận đến',
                     actionIcon: Icons.location_on,
-                    isEnabled: status.canPorterConfirmArrived,
+                    isEnabled: buildRouteFlags['canPorterConfirmArrived']!,
                     // isEnabled: status.canPorterConfirmIncoming,
                     showCameraButton: true,
                     request: request.value,
@@ -603,7 +585,7 @@ class PorterConfirmScreen extends HookConsumerWidget {
                     },
                     actionButtonLabel: 'Xác nhận đóng gói',
                     actionIcon: Icons.location_on,
-                    isEnabled: status.canPorterConfirmPacking,
+                    isEnabled: buildRouteFlags['canPorterConfirmPacking']!,
                     // isEnabled: status.canPorterConfirmIncoming,
                     showCameraButton: true,
                     request: request.value,
@@ -665,7 +647,7 @@ class PorterConfirmScreen extends HookConsumerWidget {
                     },
                     actionButtonLabel: 'Xác nhận giao hàng',
                     actionIcon: Icons.location_on,
-                    isEnabled: status.canPorterConfirmDelivered,
+                    isEnabled: buildRouteFlags['canPorterConfirmDelivered']!,
                     // isEnabled: status.canPorterConfirmIncoming,
                     showCameraButton: true,
                     request: request.value,
@@ -727,7 +709,7 @@ class PorterConfirmScreen extends HookConsumerWidget {
                     },
                     actionButtonLabel: 'Xác nhận dỡ hàng',
                     actionIcon: Icons.location_on,
-                    isEnabled: status.canPorterCompleteUnloading,
+                    isEnabled: buildRouteFlags['canPorterCompleteUnloading']!,
                     // isEnabled: status.canPorterConfirmIncoming,
                     showCameraButton: true,
                     request: request.value,
@@ -789,7 +771,7 @@ class PorterConfirmScreen extends HookConsumerWidget {
                     },
                     actionButtonLabel: 'Xác nhận hoàn thành',
                     actionIcon: Icons.location_on,
-                    isEnabled: status.canPorterComplete,
+                    isEnabled: buildRouteFlags['canPorterComplete']!,
                     showCameraButton: true,
                     request: request.value,
                   ),

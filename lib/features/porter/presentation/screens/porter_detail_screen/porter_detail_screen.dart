@@ -574,7 +574,198 @@ final bookingAt = bookingData["BookingAt"] as String;
             waypoint = _getPickupPointLatLng();
             _nextDestination = _getDeliveryPointLatLng();
             //TODO: hiển thị modal khi mà !isValidTime
-            
+   
+            if(!isValidTime){
+
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return Dialog(
+                  backgroundColor: Colors.transparent,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [Colors.white, Color(0xFFFFF8F0)],
+                      ),
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 20,
+                          spreadRadius: 1,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          height: 100,
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              // colors: [Color(0xFFFF9900), Color(0xFFFFB446)],
+                              colors: [
+                                AssetsConstants.green1,
+                                AssetsConstants.green1
+                              ],
+                            ),
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(24),
+                              topRight: Radius.circular(24),
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color.fromARGB(255, 0, 255, 17)
+                                    .withOpacity(0.7),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Positioned(
+                                top: -20,
+                                right: -20,
+                                child: Container(
+                                  width: 100,
+                                  height: 100,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Colors.white.withOpacity(0.1),
+                                  ),
+                                ),
+                              ),
+                              TweenAnimationBuilder(
+                                duration: const Duration(milliseconds: 600),
+                                tween: Tween<double>(begin: 0, end: 1),
+                                builder: (context, double value, child) {
+                                  return Transform.scale(
+                                    scale: value,
+                                    child: child,
+                                  );
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: const BoxDecoration(
+                                    color: Colors.white,
+                                    shape: BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: AssetsConstants.green1,
+                                        blurRadius: 12,
+                                        spreadRadius: 2,
+                                      ),
+                                    ],
+                                  ),
+                                  child: const Icon(
+                                    Icons.published_with_changes_outlined,
+                                    size: 32,
+                                    color: AssetsConstants.green1,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+                          child: Column(
+                            children: [
+                              const Text(
+                                'Chưa tới thời gian dọn nhà ',
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF2D3142),
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                'Bạn chỉ có thể xem thông tin của khách hàng',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  height: 1.5,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                              const SizedBox(height: 32),
+                            ],
+                          ),
+                        ),
+
+                        // Buttons
+                        Container(
+                          padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                          child: Row(
+                            children: [
+                              // "Đánh giá ngay" button
+                              Expanded(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12),
+                                    gradient: const LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: [
+                                        AssetsConstants.green1,
+                                        AssetsConstants.green1
+                                      ],
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: const Color(0xFFFF9900)
+                                            .withOpacity(0.3),
+                                        blurRadius: 8,
+                                        spreadRadius: 0,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
+                                  ),
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      // Navigator.of(context).pop();
+                                      Navigator.of(context).pop();
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.transparent,
+                                      foregroundColor: Colors.white,
+                                      shadowColor: Colors.transparent,
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 16),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                    ),
+                                    child: const Text(
+                                      'Xác nhận',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            );
+         
+            }
           } else if (buildRouteFlags['isPorterAtDeliveryPointBuildRoute']!) {
             waypoint = _getDeliveryPointLatLng();
           } else if (buildRouteFlags['isPorterEndDeliveryPointBuildRoute']! ) {
@@ -1927,7 +2118,7 @@ final bookingAt = bookingData["BookingAt"] as String;
                             ),
                             const SizedBox(width: 16),
                             const Text(
-                              'Đã giao hàng',
+                              '',
                               style: TextStyle(
                                 color: Colors.black54,
                                 fontSize: 16,
@@ -1935,16 +2126,16 @@ final bookingAt = bookingData["BookingAt"] as String;
                               ),
                             ),
                             const Spacer(),
-                            IconButton(
-                              icon: const Icon(
-                                Icons.headset_mic_outlined,
-                                color: Colors.black54,
-                                size: 24,
-                              ),
-                              onPressed: () {
-                                // Add support action
-                              },
-                            ),
+                            // IconButton(
+                            //   icon: const Icon(
+                            //     Icons.headset_mic_outlined,
+                            //     color: Colors.black54,
+                            //     size: 24,
+                            //   ),
+                            //   onPressed: () {
+                            //     // Add support action
+                            //   },
+                            // ),
                             IconButton(
                               icon: const Icon(
                                 Icons.help_outline,
@@ -2017,13 +2208,13 @@ final bookingAt = bookingData["BookingAt"] as String;
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 if (!_isNavigationStarted)
-                  if (canPorterConfirmIncomingFlag)
+                  if (canPorterConfirmIncomingFlag && canPorterTimingToStart)
                     FloatingActionButton(
                       onPressed: _isMapReady ? _startAssinedToComing : null,
                       // onPressed: _isMapReady ? _startNavigation : null,
                       child: const Icon(Icons.directions),
                     ),
-                if (!_isNavigationStarted)
+                if (!_isNavigationStarted && canPorterTimingToStart)
                   if (canPorterConfirmIncomingFlag)
                     FloatingActionButton(
                       onPressed: _fastFinishToArrived,
@@ -2031,7 +2222,7 @@ final bookingAt = bookingData["BookingAt"] as String;
                       child: const Icon(Icons.check),
                     ),
                 if (!_isNavigationStarted)
-                  if (canPorterConfirmToUploadInprogress)
+                  if (canPorterConfirmToUploadInprogress && canPorterTimingToStart)
                     FloatingActionButton(
                       onPressed: _isMapReady ? _startArrivedtoProgress : null,
                       child: const Icon(
@@ -2040,7 +2231,7 @@ final bookingAt = bookingData["BookingAt"] as String;
                       ),
                     ),
                 if (!_isNavigationStarted)
-                  if (canPorterConfirmToOngoingToEnd)
+                  if (canPorterConfirmToOngoingToEnd&&canPorterTimingToStart)
                     FloatingActionButton(
                       onPressed: _isMapReady ? _startAssinedToComing : null,
                       // onPressed: _isMapReady ? _startPackingToOngoing : null,

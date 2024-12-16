@@ -1874,7 +1874,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                             ),
                             const SizedBox(width: 16),
                             const Text(
-                              'Đã giao hàng',
+                              '',
                               style: TextStyle(
                                 color: Colors.black54,
                                 fontSize: 16,
@@ -1882,16 +1882,16 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                               ),
                             ),
                             const Spacer(),
-                            IconButton(
-                              icon: const Icon(
-                                Icons.headset_mic_outlined,
-                                color: Colors.black54,
-                                size: 24,
-                              ),
-                              onPressed: () {
-                                // Add support action
-                              },
-                            ),
+                            // IconButton(
+                            //   icon: const Icon(
+                            //     Icons.headset_mic_outlined,
+                            //     color: Colors.black54,
+                            //     size: 24,
+                            //   ),
+                            //   onPressed: () {
+                            //     // Add support action
+                            //   },
+                            // ),
 
 // Modify the help icon button's onPressed callback:
                             IconButton(
