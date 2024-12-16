@@ -415,9 +415,10 @@ class DriverConfirmUpload extends HookConsumerWidget {
                     },
                     onImageTapped: (url) => fullScreenImage.value = url,
                     onActionPressed: _createActionHandler(
-                        images: images1.value,
-                        imagePublicIds: imagePublicIds1.value,
-                        trackerType: "DRIVER_ARRIVED"),
+                      images: images1.value,
+                      imagePublicIds: imagePublicIds1.value,
+                      trackerType: "DRIVER_ARRIVED",
+                    ),
                     actionButtonLabel: 'Xác nhận đến',
                     actionIcon: Icons.location_on,
                     isEnabled: buildRouteFlags["canDriverConfirmArrived"]!,

@@ -17,6 +17,7 @@ import 'package:movemate_staff/services/realtime_service/booking_status_realtime
 import 'package:movemate_staff/utils/commons/widgets/app_bar.dart';
 import 'package:movemate_staff/utils/commons/widgets/cloudinary/cloudinary_camera_upload_widget.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
+import 'package:movemate_staff/utils/providers/common_provider.dart';
 
 @RoutePage()
 // final uploadedImagesProvider = StateProvider<List<Resource>>((ref) => []);
@@ -48,13 +49,13 @@ class PorterConfirmScreen extends HookConsumerWidget {
     final images5 = useState<List<String>>([]);
     final imagePublicIds5 = useState<List<String>>([]);
     final fullScreenImage = useState<String?>(null);
-
+    final rebuildKey = useState(UniqueKey());
     final request = useState(PorterUpdateResourseRequest(resourceList: []));
     // final uploadedImages = ref.watch(uploadedImagesProvider);
     final bookingAsync = ref.watch(bookingStreamProvider(job.id.toString()));
     final status = useBookingStatus(bookingAsync.value, job.isReviewOnline);
     final currentJob = useState<BookingResponseEntity>(job);
-
+    final user = ref.read(authProvider);
     final jobEntity = useFetchObject<BookingResponseEntity>(
         function: (context) async {
           return ref
@@ -112,18 +113,145 @@ class PorterConfirmScreen extends HookConsumerWidget {
     if (_bookingData.value == null) {
       return const Center(child: CircularProgressIndicator());
     }
+    final assignments = _bookingData.value!["Assignments"] as List;
+    final fireStoreBookingStatus = _bookingData.value!["Status"] as String;
 
-    // List<dynamic> getTrackerSources(
-    //     BookingResponseEntity job, String trackerType) {
-    //   try {
-    //     final trackers =
-    //         job.bookingTrackers.firstWhere((e) => e.type == trackerType);
+    Map<String, bool> _getPorterAssignmentStatus(List assignments) {
+      final staffAssignment = assignments.firstWhere(
+          (a) => a['StaffType'] == 'PORTER' && a['UserId'] == user?.id,
+          orElse: () => null);
 
-    //     return trackers.trackerSources;
-    //   } catch (e) {
-    //     return [];
-    //   }
-    // }
+      if (staffAssignment == null) {
+        return {
+          'isPorterWaiting': false,
+          'isPorterAssigned': false,
+          'isPorterIncoming': false,
+          'isPorterArrived': false,
+          'isPorterInprogress': false,
+          'isPorterPacking': false,
+          'isPorterOngoing': false,
+          'isPorterDelivered': false,
+          'isPorterUnloaded': false,
+          'isPorterCompleted': false,
+          'isPorterFailed': false,
+        };
+      }
+
+      return {
+        'isPorterWaiting': staffAssignment['Status'] == "WAITING",
+        'isPorterAssigned': staffAssignment['Status'] == "ASSIGNED",
+        'isPorterIncoming': staffAssignment['Status'] == "INCOMING",
+        'isPorterArrived': staffAssignment['Status'] == "ARRIVED",
+        'isPorterInprogress': staffAssignment['Status'] == "IN_PROGRESS",
+        'isPorterPacking': staffAssignment['Status'] == "PACKING",
+        'isPorterOngoing': staffAssignment['Status'] == "ONGOING",
+        'isPorterDelivered': staffAssignment['Status'] == "DELIVERED",
+        'isPorterUnloaded': staffAssignment['Status'] == "UNLOADED",
+        'isPorterCompleted': staffAssignment['Status'] == "COMPLETED",
+        'isPorterFailed': staffAssignment['Status'] == "FAILED",
+      };
+    }
+
+    Map<String, bool> _getBuildRouteFlags(
+        Map<String, bool> porterAssignmentStatus,
+        String fireStoreBookingStatus) {
+      bool isPorterStartBuildRoute = false;
+      bool isPorterAtDeliveryPointBuildRoute = false;
+      bool isPorterEndDeliveryPointBuildRoute = false;
+
+      bool isFailedRoute = false;
+      bool isPorterPause = false;
+
+      switch (fireStoreBookingStatus) {
+        case "COMING":
+          isPorterStartBuildRoute =
+              porterAssignmentStatus['isPorterWaiting']! ||
+                  porterAssignmentStatus['isPorterAssigned']! ||
+                  porterAssignmentStatus['isPorterIncoming']! ||
+                  (!porterAssignmentStatus['isPorterInprogress']! &&
+                      !porterAssignmentStatus['isPorterCompleted']! &&
+                      !porterAssignmentStatus['isPorterFailed']!);
+
+          isFailedRoute = porterAssignmentStatus["isPorterFailed"]!;
+
+          break;
+        case "IN_PROGRESS":
+          isPorterStartBuildRoute =
+              porterAssignmentStatus['isPorterWaiting']! ||
+                  porterAssignmentStatus['isPorterAssigned']! ||
+                  porterAssignmentStatus['isPorterIncoming']! ||
+                  (!porterAssignmentStatus['isPorterInprogress']! &&
+                      !porterAssignmentStatus['isPorterArrived']! &&
+                      !porterAssignmentStatus['isPorterPacking']! &&
+                      !porterAssignmentStatus['isPorterDelivered']! &&
+                      !porterAssignmentStatus['isPorterOngoing']! &&
+                      !porterAssignmentStatus['isPorterCompleted']! &&
+                      !porterAssignmentStatus['isPorterFailed']!);
+
+          isPorterAtDeliveryPointBuildRoute =
+              (porterAssignmentStatus['isPorterArrived']! ||
+                      porterAssignmentStatus['isPorterInprogress']! ||
+                      porterAssignmentStatus["isPorterPacking"]! ||
+                      porterAssignmentStatus["isPorterOngoing"]!) &&
+                  (!porterAssignmentStatus["isPorterUnloaded"]! ||
+                      !porterAssignmentStatus['isPorterDelivered']! ||
+                      !porterAssignmentStatus['isPorterCompleted']! ||
+                      !porterAssignmentStatus['isPorterIncoming']! ||
+                      !porterAssignmentStatus['isPorterAssigned']! ||
+                      !porterAssignmentStatus['isPorterUnloaded']! ||
+                      !porterAssignmentStatus['isPorterFailed']!);
+
+          isPorterEndDeliveryPointBuildRoute =
+              (porterAssignmentStatus['isPorterCompleted']! ||
+                      porterAssignmentStatus["isPorterDelivered"]! ||
+                      porterAssignmentStatus["isPorterUnloaded"]!) &&
+                  !porterAssignmentStatus['isPorterFailed']!;
+
+          isFailedRoute = porterAssignmentStatus["isPorterFailed"]!;
+
+          if (porterAssignmentStatus['isPorterIncoming']! ||
+              porterAssignmentStatus['isPorterAssigned']!) {
+          } else if (porterAssignmentStatus['isPorterArrived']! ||
+              porterAssignmentStatus['isPorterInprogress']!) {
+          } else if (porterAssignmentStatus["isPorterPacking"]! ||
+              porterAssignmentStatus["isPorterOngoing"]! &&
+                  !porterAssignmentStatus["isPorterArrived"]!) {
+          } else if (porterAssignmentStatus["isPorterDelivered"]! ||
+              porterAssignmentStatus["isPorterUnloaded"]!) {
+          } else {}
+          break;
+        case "COMPLETED":
+          isPorterEndDeliveryPointBuildRoute =
+              (porterAssignmentStatus['isPorterCompleted']! ||
+                      porterAssignmentStatus["isPorterDelivered"]! ||
+                      porterAssignmentStatus["isPorterUnloaded"]!) &&
+                  !porterAssignmentStatus['isPorterFailed']!;
+
+          isFailedRoute = porterAssignmentStatus["isPorterFailed"]!;
+
+          break;
+
+        case "PAUSED":
+          isPorterPause = true;
+          break;
+
+        default:
+          break;
+      }
+
+      return {
+        'isPorterStartBuildRoute': isPorterStartBuildRoute,
+        'isPorterAtDeliveryPointBuildRoute': isPorterAtDeliveryPointBuildRoute,
+        'isPorterEndDeliveryPointBuildRoute':
+            isPorterEndDeliveryPointBuildRoute,
+        'isFailedRoute': isFailedRoute,
+        'isPorterPause': isPorterPause
+      };
+    }
+
+    final porterAssignmentStatus = _getPorterAssignmentStatus(assignments);
+    final buildRouteFlags =
+        _getBuildRouteFlags(porterAssignmentStatus, fireStoreBookingStatus);
 
     List<dynamic> getTrackerSources(
         Map<String, dynamic> bookingData, String trackerType) {
@@ -137,11 +265,6 @@ class PorterConfirmScreen extends HookConsumerWidget {
       }
     }
 
-    // final imagesSourceArrivedTesst =
-    //     getTrackerSources(_bookingData.value!, "PORTER_ARRIVED");
-    // print("checking lisst resource ${imagesSourceArrivedTesst.length}");
-    // final imagesSourcePacking =
-    //     getTrackerSourcesPorter(_bookingData.value!, "PORTER_PACKING");
     final imagesSourceArrived =
         getTrackerSources(_bookingData.value!, "PORTER_ARRIVED");
     final imagesSourcePacking =
@@ -412,7 +535,7 @@ class PorterConfirmScreen extends HookConsumerWidget {
                             request: request,
                             context: context,
                           );
-
+                      rebuildKey.value = UniqueKey();
                       bookingAsync.isRefreshing;
                     },
                     actionButtonLabel: 'Xác nhận đến',
@@ -475,6 +598,7 @@ class PorterConfirmScreen extends HookConsumerWidget {
                             request: request,
                             context: context,
                           );
+                      rebuildKey.value = UniqueKey();
                       bookingAsync.isRefreshing;
                     },
                     actionButtonLabel: 'Xác nhận đóng gói',
@@ -536,6 +660,7 @@ class PorterConfirmScreen extends HookConsumerWidget {
                             request: request,
                             context: context,
                           );
+                      rebuildKey.value = UniqueKey();
                       bookingAsync.isRefreshing;
                     },
                     actionButtonLabel: 'Xác nhận giao hàng',
@@ -597,6 +722,7 @@ class PorterConfirmScreen extends HookConsumerWidget {
                             request: request,
                             context: context,
                           );
+                      rebuildKey.value = UniqueKey();
                       bookingAsync.isRefreshing;
                     },
                     actionButtonLabel: 'Xác nhận dỡ hàng',
@@ -658,6 +784,7 @@ class PorterConfirmScreen extends HookConsumerWidget {
                             request: request,
                             context: context,
                           );
+                      rebuildKey.value = UniqueKey();
                       bookingAsync.isRefreshing;
                     },
                     actionButtonLabel: 'Xác nhận hoàn thành',
@@ -667,30 +794,6 @@ class PorterConfirmScreen extends HookConsumerWidget {
                     request: request.value,
                   ),
                   const SizedBox(height: 16),
-                  // SizedBox(
-                  //   width: double.infinity,
-                  //   child: ElevatedButton(
-                  //     onPressed: () {
-                  //       saveImagesAndNavigate();
-                  //     },
-                  //     style: ElevatedButton.styleFrom(
-                  //       backgroundColor: primaryOrange,
-                  //       foregroundColor: Colors.white,
-                  //       padding: const EdgeInsets.symmetric(
-                  //           horizontal: 24, vertical: 12),
-                  //       shape: RoundedRectangleBorder(
-                  //         borderRadius: BorderRadius.circular(8),
-                  //       ),
-                  //     ),
-                  //     child: const Text(
-                  //       'Xác nhận',
-                  //       style: TextStyle(
-                  //         fontSize: 16,
-                  //         fontWeight: FontWeight.bold,
-                  //       ),
-                  //     ),
-                  //   ),
-                  // )
                 ],
               ),
             ),
