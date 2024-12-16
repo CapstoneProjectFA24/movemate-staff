@@ -147,201 +147,237 @@ class PorterScreen extends HookConsumerWidget {
           }
         },
       ),
-      body: Column(
-        children: [
-          // Week View (Horizontal Scroll)
-          SizedBox(
-            height: 100,
-            child: ListView.builder(
-              controller: horizontalScrollController,
-              scrollDirection: Axis.horizontal,
-              itemCount: 60,
-              itemBuilder: (context, index) {
-                final day = DateTime.now().add(Duration(days: index - 26));
-                final isSelected = DateFormat.yMd().format(day) ==
-                    DateFormat.yMd().format(selectedDate.value);
-                return GestureDetector(
-                  onTap: () {
-                    selectedDate.value = day;
-                    // Scroll to selected date
-                    final offset =
-                        max(0, (index * 90.0) - (size.width / 2) + 40)
-                            .toDouble();
-                    horizontalScrollController.animateTo(
-                      offset,
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                    );
-                    fetchResult.refresh();
-                  },
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    width: 80,
-                    margin:
-                        const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? Colors.orange.shade800
-                          : Colors.grey.shade200,
-                      borderRadius: BorderRadius.circular(15),
-                      boxShadow: isSelected
-                          ? [
-                              BoxShadow(
-                                  color: Colors.orange.shade200,
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 4))
-                            ]
-                          : [],
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          DateFormat.E().format(day),
-                          style: TextStyle(
-                            color: isSelected ? Colors.white : Colors.black,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 5),
-                        Text(
-                          DateFormat.d().format(day),
-                          style: TextStyle(
-                            color: isSelected ? Colors.white : Colors.black87,
-                            fontSize: 18,
-                          ),
-                        ),
-                        const SizedBox(height: 5),
-                        ScaleTransition(
-                          scale: _getBookingsForDate(fetchResult.items, day)
-                                  .isNotEmpty
-                              ? pulseAnimation
-                              : const AlwaysStoppedAnimation(1.0),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: _getBookingsForDate(fetchResult.items, day)
-                                      .isNotEmpty
-                                  ? isSelected
-                                      ? Colors.white.withOpacity(0.2)
-                                      : Colors.green.withOpacity(0.2)
-                                  : Colors.grey.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(10),
-                              boxShadow:
-                                  _getBookingsForDate(fetchResult.items, day)
-                                          .isNotEmpty
-                                      ? [
-                                          BoxShadow(
-                                            color: isSelected
-                                                ? Colors.white.withOpacity(0.3)
-                                                : Colors.green.withOpacity(0.3),
-                                            blurRadius: 4,
-                                            spreadRadius: 1,
-                                          )
-                                        ]
-                                      : [],
-                            ),
-                            child: Text(
-                              '${_getBookingsForDate(fetchResult.items, day).length}',
-                              style: TextStyle(
-                                color:
-                                    _getBookingsForDate(fetchResult.items, day)
-                                            .isNotEmpty
-                                        ? isSelected
-                                            ? Colors.white
-                                            : AssetsConstants.green1
-                                        : Colors.grey,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-          const Divider(),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: SafeArea( // Added SafeArea
+        child: Stack( // Wrap the entire body in a Stack
+          children: [
+            Column(
               children: [
-                Text(
-                  DateFormat('dd/MM/yyyy').format(selectedDate.value),
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                // Text(
-                //   'Số lượng : ${jobs.length}',
-                //   style: TextStyle(
-                //     fontSize: 16,
-                //     color:
-                //         jobs.isNotEmpty ? Colors.orange.shade800 : Colors.grey,
-                //   ),
-                // ),
-              ],
-            ),
-          ),
-          (state.isLoading && fetchResult.loadMore == false)
-              ? const Center(
-                  child: HomeShimmer(amount: 4),
-                )
-              : fetchResult.items.isEmpty
-                  ? const Align(
-                      alignment: Alignment.topCenter,
-                      child: EmptyBox(title: 'Đơn hàng trống'),
-                    )
-                  : Expanded(
-                      child: ListView.builder(
-                        controller: scrollController,
-                        padding: const EdgeInsets.all(10),
-                        itemCount: jobs.length,
-                        itemBuilder: (context, index) {
-                          final job = jobs[index];
-                          final startTime = DateFormat('MM/dd/yyyy HH:mm:ss')
-                              .parse(job.bookingAt);
-                          return Padding(
-                              
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Column(
-                                  children: [
-                                    Text(
-                                      DateFormat.Hm().format(startTime),
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.orange.shade800,
+                // Week View (Horizontal Scroll)
+                SizedBox(
+                  height: 100, // Adjust height if necessary
+                  child: ListView.builder(
+                    controller: horizontalScrollController,
+                    scrollDirection: Axis.horizontal,
+                    itemCount: 60,
+                    itemBuilder: (context, index) {
+                      final day = DateTime.now().add(Duration(days: index - 26));
+                      final isSelected = DateFormat.yMd().format(day) ==
+                          DateFormat.yMd().format(selectedDate.value);
+                      return GestureDetector(
+                        onTap: () {
+                          selectedDate.value = day;
+                          // Scroll to selected date
+                          final offset =
+                              max(0, (index * 90.0) - (size.width / 2) + 40)
+                                  .toDouble();
+                          horizontalScrollController.animateTo(
+                            offset,
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                          fetchResult.refresh();
+                        },
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          width: 80,
+                          margin:
+                              const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? Colors.orange.shade800
+                                : Colors.grey.shade200,
+                            borderRadius: BorderRadius.circular(15),
+                            boxShadow: isSelected
+                                ? [
+                                    BoxShadow(
+                                        color: Colors.orange.shade200,
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 4))
+                                  ]
+                                : [],
+                          ),
+                          child: Stack( // Use Stack to overlay ScaleTransition
+                            clipBehavior: Clip.none, // Allow overflow
+                            children: [
+                              Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Column(
+                                    children: [
+                                      Text(
+                                        DateFormat.E().format(day),
+                                        style: TextStyle(
+                                          color: isSelected ? Colors.white : Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 5),
+                                      Text(
+                                        DateFormat.d().format(day),
+                                        style: TextStyle(
+                                          color: isSelected ? Colors.white : Colors.black87,
+                                          fontSize: 18,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              // Position the ScaleTransition at the top layer
+                              Positioned(
+                                bottom: -10, // Adjust as needed to float above
+                                right: 0,
+                                left: 0,
+                                child: Center(
+                                  child: ScaleTransition(
+                                    scale: _getBookingsForDate(fetchResult.items, day)
+                                            .isNotEmpty
+                                        ? pulseAnimation
+                                        : const AlwaysStoppedAnimation(1.0),
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 2),
+                                      decoration: BoxDecoration(
+                                        color: _getBookingsForDate(fetchResult.items, day)
+                                                .isNotEmpty
+                                            ? isSelected
+                                                ? Colors.white.withOpacity(0.2)
+                                                : Colors.green.withOpacity(0.2)
+                                            : Colors.grey.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(10),
+                                        boxShadow:
+                                            _getBookingsForDate(fetchResult.items, day)
+                                                    .isNotEmpty
+                                                ? [
+                                                    BoxShadow(
+                                                      color: isSelected
+                                                          ? Colors.white.withOpacity(0.3)
+                                                          : Colors.green.withOpacity(0.3),
+                                                      blurRadius: 4,
+                                                      spreadRadius: 1,
+                                                    )
+                                                  ]
+                                                : [],
+                                      ),
+                                      child: Text(
+                                        '${_getBookingsForDate(fetchResult.items, day).length}',
+                                        style: TextStyle(
+                                          color:
+                                              _getBookingsForDate(fetchResult.items, day)
+                                                      .isNotEmpty
+                                                  ? isSelected
+                                                      ? Colors.white
+                                                      : AssetsConstants.green1
+                                                  : Colors.grey,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
                                     ),
-                                    if (index < jobs.length - 1)
-                                      Container(
-                                        height: 80,
-                                        width: 2,
-                                        color: Colors.orange.shade200,
-                                      ),
-                                  ],
+                                  ),
                                 ),
-                                const SizedBox(width: 10),
-                                Expanded(
-                                  child: PorterCard(job: job),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const Divider(),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        DateFormat('dd/MM/yyyy').format(selectedDate.value),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-        ],
+                      // Optionally display job count
+                      // Text(
+                      //   'Số lượng : ${jobs.length}',
+                      //   style: TextStyle(
+                      //     fontSize: 16,
+                      //     color:
+                      //         jobs.isNotEmpty ? Colors.orange.shade800 : Colors.grey,
+                      //   ),
+                      // ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Builder(
+                    builder: (context) {
+                      if (state.isLoading && fetchResult.loadMore == false) {
+                        return const Center(
+                          child: HomeShimmer(amount: 4),
+                        );
+                      } else if (fetchResult.items.isEmpty) {
+                        return const Align(
+                          alignment: Alignment.topCenter,
+                          child: EmptyBox(title: 'Đơn hàng trống'),
+                        );
+                      } else {
+                        return ListView.builder(
+                          controller: scrollController,
+                          padding: const EdgeInsets.all(10),
+                          itemCount: jobs.length,
+                          itemBuilder: (context, index) {
+                            final job = jobs[index];
+                            final startTime = DateFormat('MM/dd/yyyy HH:mm:ss')
+                                .parse(job.bookingAt);
+                            return Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        DateFormat.Hm().format(startTime),
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.orange.shade800,
+                                        ),
+                                      ),
+                                      if (index < jobs.length - 1)
+                                        Container(
+                                          height: 80,
+                                          width: 2,
+                                          color: Colors.orange.shade200,
+                                        ),
+                                    ],
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: PorterCard(job: job),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        );
+                      }
+                    },
+                  ),
+                ),
+              ],
+            ),
+            // Optional: If you have any global ScaleTransitions, place them here
+            // Positioned(
+            //   top: 0,
+            //   left: 0,
+            //   right: 0,
+            //   child: YourGlobalScaleTransition(),
+            // ),
+          ],
+        ),
       ),
     );
   }
