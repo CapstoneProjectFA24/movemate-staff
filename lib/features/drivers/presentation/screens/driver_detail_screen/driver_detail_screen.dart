@@ -613,7 +613,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                           child: Column(
                             children: [
                               const Text(
-                                'Bạn đã hoàn thành công việc',
+                                'Bạn đã hoàn thành công việc chờ khách hàng thanh toán',
                                 style: TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold,

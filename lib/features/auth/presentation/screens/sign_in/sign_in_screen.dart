@@ -66,7 +66,7 @@ class SignInScreen extends HookConsumerWidget with Validations {
     
 Future<void> _launchURL() async {
      print(" tuan log  chạy 1 ");
-  final Uri url = Uri.parse('https://movematee.vercel.app/dashboard/');
+  final Uri url = Uri.parse('https://movematee.vercel.app/sign-up/');
      print(" tuan log  chạy 2 ");
   if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
     print(" tuan log không chạy được link ");
