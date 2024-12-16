@@ -162,15 +162,15 @@ class PorterConfirmScreen extends HookConsumerWidget {
       bool isFailedRoute = false;
       bool isPorterPause = false;
 
-bool canPorterConfirmArrived = false;
+      bool canPorterConfirmArrived = false;
 
-bool canPorterConfirmPacking = false;
+      bool canPorterConfirmPacking = false;
 
-bool canPorterConfirmDelivered = false;
+      bool canPorterConfirmDelivered = false;
 
-bool canPorterCompleteUnloading = false;
+      bool canPorterCompleteUnloading = false;
 
-bool canPorterComplete = false;
+      bool canPorterComplete = false;
 
       switch (fireStoreBookingStatus) {
         case "COMING":
@@ -184,16 +184,18 @@ bool canPorterComplete = false;
 
           isFailedRoute = porterAssignmentStatus["isPorterFailed"]!;
 
-canPorterConfirmArrived = porterAssignmentStatus['isPorterIncoming']! ;
+          canPorterConfirmArrived = porterAssignmentStatus['isPorterIncoming']!;
 
           break;
         case "IN_PROGRESS":
-          
-canPorterConfirmArrived = porterAssignmentStatus['isPorterIncoming']! ;
-canPorterConfirmPacking = porterAssignmentStatus['isPorterInprogress']!;
-canPorterConfirmDelivered = porterAssignmentStatus['isPorterOngoing']!;
-canPorterCompleteUnloading = porterAssignmentStatus['isPorterDelivered']!;
-canPorterComplete = porterAssignmentStatus['isPorterCompleted']!;
+          canPorterConfirmArrived = porterAssignmentStatus['isPorterIncoming']!;
+          canPorterConfirmPacking =
+              porterAssignmentStatus['isPorterInprogress']!;
+          canPorterConfirmDelivered =
+              porterAssignmentStatus['isPorterOngoing']!;
+          canPorterCompleteUnloading =
+              porterAssignmentStatus['isPorterDelivered']!;
+          canPorterComplete = porterAssignmentStatus['isPorterUnloaded']!;
           break;
         case "COMPLETED":
           isPorterEndDeliveryPointBuildRoute =
@@ -312,6 +314,41 @@ canPorterComplete = porterAssignmentStatus['isPorterCompleted']!;
       imagesSourcePacking,
       imagesSourceArrived
     ]);
+
+    VoidCallback _createActionHandler(
+        {required List<String> images,
+        required List<String> imagePublicIds,
+        required String trackerType}) {
+      return () async {
+        try {
+          final List<Resource> resources =
+              convertToResourceList(images, imagePublicIds);
+
+          final request = PorterUpdateResourseRequest(
+            resourceList: resources,
+          );
+
+          await ref
+              .read(porterControllerProvider.notifier)
+              .updateStatusPorterResourse(
+                id: job.id,
+                request: request,
+                context: context,
+              );
+
+          await _getBookingData();
+
+          rebuildKey.value = UniqueKey();
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Có lỗi xảy ra: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      };
+    }
 
     Widget buildConfirmationSection({
       required String title,
@@ -501,25 +538,12 @@ canPorterComplete = porterAssignmentStatus['isPorterCompleted']!;
                       );
                     },
                     onImageTapped: (url) => fullScreenImage.value = url,
-                    onActionPressed: () async {
-                      // Xử lý khi tài xế xác nhận đã đến
-                      final List<Resource> resources1 = convertToResourceList(
-                          images1.value, imagePublicIds1.value);
 
-                      final request = PorterUpdateResourseRequest(
-                        resourceList: resources1,
-                      );
-
-                      await ref
-                          .read(porterControllerProvider.notifier)
-                          .updateStatusPorterResourse(
-                            id: job.id,
-                            request: request,
-                            context: context,
-                          );
-                      rebuildKey.value = UniqueKey();
-                      bookingAsync.isRefreshing;
-                    },
+                    onActionPressed: _createActionHandler(
+                      images: images1.value,
+                      imagePublicIds: imagePublicIds1.value,
+                      trackerType: "PORTER_ARRIVED",
+                    ),
                     actionButtonLabel: 'Xác nhận đến',
                     actionIcon: Icons.location_on,
                     isEnabled: buildRouteFlags['canPorterConfirmArrived']!,
@@ -564,25 +588,12 @@ canPorterComplete = porterAssignmentStatus['isPorterCompleted']!;
                       );
                     },
                     onImageTapped: (url) => fullScreenImage.value = url,
-                    onActionPressed: () async {
-                      // Xử lý khi tài xế xác nhận đã đến
-                      final List<Resource> resources2 = convertToResourceList(
-                          images2.value, imagePublicIds2.value);
 
-                      final request = PorterUpdateResourseRequest(
-                        resourceList: resources2,
-                      );
-
-                      await ref
-                          .read(porterControllerProvider.notifier)
-                          .updateStatusPorterResourse(
-                            id: job.id,
-                            request: request,
-                            context: context,
-                          );
-                      rebuildKey.value = UniqueKey();
-                      bookingAsync.isRefreshing;
-                    },
+                    onActionPressed: _createActionHandler(
+                      images: images2.value,
+                      imagePublicIds: imagePublicIds2.value,
+                      trackerType: "PORTER_PACKING",
+                    ),
                     actionButtonLabel: 'Xác nhận đóng gói',
                     actionIcon: Icons.location_on,
                     isEnabled: buildRouteFlags['canPorterConfirmPacking']!,
@@ -627,24 +638,12 @@ canPorterComplete = porterAssignmentStatus['isPorterCompleted']!;
                       );
                     },
                     onImageTapped: (url) => fullScreenImage.value = url,
-                    onActionPressed: () async {
-                      // Xử lý khi tài xế xác nhận đã đến
-                      final List<Resource> resources3 = convertToResourceList(
-                          images3.value, imagePublicIds3.value);
-                      final request = PorterUpdateResourseRequest(
-                        resourceList: resources3,
-                      );
 
-                      await ref
-                          .read(porterControllerProvider.notifier)
-                          .updateStatusPorterResourse(
-                            id: job.id,
-                            request: request,
-                            context: context,
-                          );
-                      rebuildKey.value = UniqueKey();
-                      bookingAsync.isRefreshing;
-                    },
+                    onActionPressed: _createActionHandler(
+                      images: images3.value,
+                      imagePublicIds: imagePublicIds3.value,
+                      trackerType: "PORTER_DELIVERED",
+                    ),
                     actionButtonLabel: 'Xác nhận giao hàng',
                     actionIcon: Icons.location_on,
                     isEnabled: buildRouteFlags['canPorterConfirmDelivered']!,
@@ -689,24 +688,11 @@ canPorterComplete = porterAssignmentStatus['isPorterCompleted']!;
                       );
                     },
                     onImageTapped: (url) => fullScreenImage.value = url,
-                    onActionPressed: () async {
-                      // Xử lý khi tài xế xác nhận đã đến
-                      final List<Resource> resources4 = convertToResourceList(
-                          images4.value, imagePublicIds4.value);
-                      final request = PorterUpdateResourseRequest(
-                        resourceList: resources4,
-                      );
-
-                      await ref
-                          .read(porterControllerProvider.notifier)
-                          .updateStatusPorterResourse(
-                            id: job.id,
-                            request: request,
-                            context: context,
-                          );
-                      rebuildKey.value = UniqueKey();
-                      bookingAsync.isRefreshing;
-                    },
+                    onActionPressed: _createActionHandler(
+                      images: images4.value,
+                      imagePublicIds: imagePublicIds4.value,
+                      trackerType: "PORTER_UNLOADED",
+                    ),
                     actionButtonLabel: 'Xác nhận dỡ hàng',
                     actionIcon: Icons.location_on,
                     isEnabled: buildRouteFlags['canPorterCompleteUnloading']!,
@@ -751,24 +737,11 @@ canPorterComplete = porterAssignmentStatus['isPorterCompleted']!;
                       );
                     },
                     onImageTapped: (url) => fullScreenImage.value = url,
-                    onActionPressed: () async {
-                      // Xử lý khi tài xế xác nhận đã đến
-                      final List<Resource> resources5 = convertToResourceList(
-                          images5.value, imagePublicIds5.value);
-                      final request = PorterUpdateResourseRequest(
-                        resourceList: resources5,
-                      );
-
-                      await ref
-                          .read(porterControllerProvider.notifier)
-                          .updateStatusPorterResourse(
-                            id: job.id,
-                            request: request,
-                            context: context,
-                          );
-                      rebuildKey.value = UniqueKey();
-                      bookingAsync.isRefreshing;
-                    },
+                    onActionPressed: _createActionHandler(
+                      images: images5.value,
+                      imagePublicIds: imagePublicIds5.value,
+                      trackerType: "PORTER_COMPLETED",
+                    ),
                     actionButtonLabel: 'Xác nhận hoàn thành',
                     actionIcon: Icons.location_on,
                     isEnabled: buildRouteFlags['canPorterComplete']!,
