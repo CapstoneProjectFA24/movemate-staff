@@ -2205,14 +2205,14 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                       child: const Icon(Icons.check),
                     ),
                 if (!_isNavigationStarted)
-                  if (canDriverStartMovingFlag  && !canDriverWaitingProcess)
+                  if (canDriverStartMovingFlag  && canDriverWaitingProcess)
                     FloatingActionButton(
                       onPressed: _isMapReady ? _startArrivedToInprogress : null,
                       // onPressed: _isMapReady ? _startNavigation : null,
                       child: const Icon(Icons.directions_car),
                     ),
                 if (!_isNavigationStarted)
-                  if (canDriverStartMovingFlag  && !canDriverWaitingProcess)
+                  if (canDriverStartMovingFlag  && canDriverWaitingProcess)
                     FloatingActionButton(
                       onPressed: _fastFinishToComplete,
                       backgroundColor: Colors.green,
