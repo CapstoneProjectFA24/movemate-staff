@@ -13,7 +13,7 @@ class APIConstants {
   static const reGenerateToken = '/authentications/re';
   static const regiseterFcm = '/authentications/fcmtoken';
   static const authen = '/authentications';
-  
+
   // Booking endpoints
   // static const get_truck_category = '/truckcategorys';
   static const get_service_truck_cate = '/services/truck-category';
@@ -70,11 +70,11 @@ class APIConstants {
   static const user_info = '/users';
 
   // api vietmap-key
-  static const apiVietMapKey =
-      "be00f7e132bdd086ccd57e21460209836f5d37ce56beaa42";
-  // // api vietmap-key
   // static const apiVietMapKey =
-  //     "e7fb2f56a9eca6890aae01882c6b789527a21dcf88c75145";
+  //     "be00f7e132bdd086ccd57e21460209836f5d37ce56beaa42";
+  // // api vietmap-key
+  static const apiVietMapKey =
+      "e7fb2f56a9eca6890aae01882c6b789527a21dcf88c75145";
 
   // error
   static const Map<String, String> errorTrans = {

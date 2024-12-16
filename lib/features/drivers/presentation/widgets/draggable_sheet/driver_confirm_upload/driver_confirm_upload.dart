@@ -38,12 +38,14 @@ class DriverConfirmUpload extends HookConsumerWidget {
     final images1 = useState<List<String>>([]);
     final imagePublicIds1 = useState<List<String>>([]);
 
-
     final images3 = useState<List<String>>([]);
     final imagePublicIds3 = useState<List<String>>([]);
 
     final fullScreenImage = useState<String?>(null);
     final request = useState(UpdateResourseRequest(resourceList: []));
+
+    final rebuildKey = useState(UniqueKey());
+
     // final uploadedImages = ref.watch(uploadedImagesProvider);
     final bookingAsync = ref.watch(bookingStreamProvider(job.id.toString()));
     final status = useBookingStatus(bookingAsync.value, job.isReviewOnline);
@@ -67,7 +69,6 @@ class DriverConfirmUpload extends HookConsumerWidget {
     useEffect(() {
       _getBookingData();
     }, []);
-
 
     if (_bookingData.value == null) {
       return const Center(child: CircularProgressIndicator());
@@ -115,41 +116,19 @@ class DriverConfirmUpload extends HookConsumerWidget {
 
       switch (fireStoreBookingStatus) {
         case "COMING":
-         canDriverConfirmArrived =
-              !driverAssignmentStatus['isDriverInprogress']! &&
-                  !driverAssignmentStatus['isDriverWaiting']! &&
-                  !driverAssignmentStatus['isDriverAssigned']! &&
-                  !driverAssignmentStatus['isDriverArrived']! &&
-                  !driverAssignmentStatus['isDriverCompleted']! &&
-                  driverAssignmentStatus['isDriverIncoming']!;
+          canDriverConfirmArrived = driverAssignmentStatus['isDriverIncoming']!;
 
           canDriverCompleteDelivery =
-              driverAssignmentStatus['isDriverInprogress']! &&
-                  !driverAssignmentStatus['isDriverWaiting']! &&
-                  !driverAssignmentStatus['isDriverAssigned']! &&
-                  !driverAssignmentStatus['isDriverArrived']! &&
-                  !driverAssignmentStatus['isDriverCompleted']! &&
-                  !driverAssignmentStatus['isDriverIncoming']!;
+              driverAssignmentStatus['isDriverInprogress']!;
           break;
 
         case "IN_PROGRESS":
           isFailedRoute = driverAssignmentStatus['isDriverFailed']!;
 
-         canDriverConfirmArrived =
-              !driverAssignmentStatus['isDriverInprogress']! &&
-                  !driverAssignmentStatus['isDriverWaiting']! &&
-                  !driverAssignmentStatus['isDriverAssigned']! &&
-                  !driverAssignmentStatus['isDriverArrived']! &&
-                  !driverAssignmentStatus['isDriverCompleted']! &&
-                  driverAssignmentStatus['isDriverIncoming']!;
+          canDriverConfirmArrived = driverAssignmentStatus['isDriverIncoming']!;
 
           canDriverCompleteDelivery =
-              driverAssignmentStatus['isDriverInprogress']! &&
-                  !driverAssignmentStatus['isDriverWaiting']! &&
-                  !driverAssignmentStatus['isDriverAssigned']! &&
-                  !driverAssignmentStatus['isDriverArrived']! &&
-                  !driverAssignmentStatus['isDriverCompleted']! &&
-                  !driverAssignmentStatus['isDriverIncoming']!;
+              driverAssignmentStatus['isDriverInprogress']!;
 
           break;
         case "COMPLETED":
@@ -178,7 +157,6 @@ class DriverConfirmUpload extends HookConsumerWidget {
     final buildRouteFlags =
         _getBuildRouteFlags(driverAssignmentStatus, fireStoreBookingStatus);
 
-
     List<dynamic> getTrackerSources(
         Map<String, dynamic> bookingData, String trackerType) {
       try {
@@ -190,9 +168,6 @@ class DriverConfirmUpload extends HookConsumerWidget {
         return [];
       }
     }
-
-
-
 
     final imagesSourceArrived =
         getTrackerSources(_bookingData.value!, "DRIVER_ARRIVED");
@@ -335,7 +310,43 @@ class DriverConfirmUpload extends HookConsumerWidget {
       );
     }
 
+    VoidCallback _createActionHandler(
+        {required List<String> images,
+        required List<String> imagePublicIds,
+        required String trackerType}) {
+      return () async {
+        try {
+          final List<Resource> resources =
+              convertToResourceList(images, imagePublicIds);
+
+          final request = UpdateResourseRequest(
+            resourceList: resources,
+          );
+
+          await ref
+              .read(driverControllerProvider.notifier)
+              .updateStatusDriverResourse(
+                id: job.id,
+                request: request,
+                context: context,
+              );
+
+          await _getBookingData();
+
+          rebuildKey.value = UniqueKey();
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Có lỗi xảy ra: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      };
+    }
+
     return Scaffold(
+      key: rebuildKey.value,
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: CustomAppBar(
         backgroundColor: primaryOrange,
@@ -403,28 +414,10 @@ class DriverConfirmUpload extends HookConsumerWidget {
                       //     "checking resource list after removal: ${request.value.resourceList.length}");
                     },
                     onImageTapped: (url) => fullScreenImage.value = url,
-                    onActionPressed: () async {
-                      // Xử lý khi tài xế xác nhận đã đến
-                      final List<Resource> resources1 = convertToResourceList(
-                          images1.value, imagePublicIds1.value);
-
-                      final request = UpdateResourseRequest(
-                        resourceList: resources1,
-                      );
-                      // print(
-                      //     'checking resource list: ${request.resourceList.length}');
-
-                      await ref
-                          .read(driverControllerProvider.notifier)
-                          .updateStatusDriverResourse(
-                            id: job.id,
-                            request: request,
-                            context: context,
-                          );
-                      bookingAsync.isRefreshing;
-                      // print(
-                      //     "checking resourse list  ${request.resourceList.length}");
-                    },
+                    onActionPressed: _createActionHandler(
+                        images: images1.value,
+                        imagePublicIds: imagePublicIds1.value,
+                        trackerType: "DRIVER_ARRIVED"),
                     actionButtonLabel: 'Xác nhận đến',
                     actionIcon: Icons.location_on,
                     isEnabled: buildRouteFlags["canDriverConfirmArrived"]!,
@@ -462,27 +455,10 @@ class DriverConfirmUpload extends HookConsumerWidget {
                       );
                     },
                     onImageTapped: (url) => fullScreenImage.value = url,
-                    onActionPressed: () async {
-                      // final request = UpdateResourseRequest(
-                      //   resourceList: uploadedImages,
-                      // );
-                      final List<Resource> resources3 = convertToResourceList(
-                          images3.value, imagePublicIds3.value);
-
-                      final request = UpdateResourseRequest(
-                        resourceList: resources3,
-                      );
-
-                      await ref
-                          .read(driverControllerProvider.notifier)
-                          .updateStatusDriverResourse(
-                            id: job.id,
-                            request: request,
-                            context: context,
-                          );
-
-                      bookingAsync.isRefreshing;
-                    },
+                    onActionPressed: _createActionHandler(
+                        images: images3.value,
+                        imagePublicIds: imagePublicIds3.value,
+                        trackerType: "DRIVER_COMPLETED"),
                     actionButtonLabel: 'Xác nhận giao hàng',
                     actionIcon: Icons.check_circle,
                     isEnabled: buildRouteFlags["canDriverCompleteDelivery"]!,
