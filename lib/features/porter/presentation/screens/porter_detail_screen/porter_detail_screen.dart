@@ -557,6 +557,8 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
             waypoint = _getDeliveryPointLatLng();
           } else if (buildRouteFlags['isPorterEndDeliveryPointBuildRoute']! ) {
             waypoint = _getDeliveryPointLatLng();
+            if(porterAssignmentStatus['isPorterCompleted']!){
+            
             showDialog(
               context: context,
               builder: (BuildContext context) {
@@ -744,6 +746,8 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
                 );
               },
             );         
+
+            }
 
           } else if (buildRouteFlags["isFailedRoute"]!) {
             waypoint = _getDeliveryPointLatLng();
