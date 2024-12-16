@@ -538,17 +538,19 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
 
       final porterAssignmentStatus = _getPorterAssignmentStatus(assignments);
 
-    final isWaitingProcess = porterAssignmentStatus['isPorterArrived']! ||  porterAssignmentStatus["isPorterInprogress"]! || porterAssignmentStatus["isPorterPacking"]!  ;
+      final isWaitingProcess = porterAssignmentStatus['isPorterArrived']! ||
+          porterAssignmentStatus["isPorterInprogress"]!;
 
       print("vinh debug isWaitingProcess ${isWaitingProcess} ");
-setState(() {
- canDriverWaitingProcess =   isWaitingProcess ;
-});
+      print("vinh debug canDriverWaitingProcess ${canDriverWaitingProcess} ");
+      setState(() {
+        canDriverWaitingProcess = isWaitingProcess;
+      });
       final buildRouteFlags =
           _getBuildRouteFlags(driverAssignmentStatus, fireStoreBookingStatus);
 
       if (_navigationController != null && _currentPosition != null) {
-        LatLng? startPosition;
+        LatLng? startPosition;  
 
         if (useFirebaseLocation) {
           startPosition = await _getLastLocationFromFirebase();
@@ -752,196 +754,195 @@ setState(() {
             }
           } else if (buildRouteFlags['isDriverAtDeliveryPointBuildRoute']!) {
             waypoint = _getDeliveryPointLatLng();
-            if (isWaitingProcess ){
-              
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return Dialog(
-                  backgroundColor: Colors.transparent,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [Colors.white, Color(0xFFFFF8F0)],
-                      ),
-                      borderRadius: BorderRadius.circular(24),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 20,
-                          spreadRadius: 1,
-                          offset: const Offset(0, 4),
+            if (isWaitingProcess) {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return Dialog(
+                    backgroundColor: Colors.transparent,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [Colors.white, Color(0xFFFFF8F0)],
                         ),
-                      ],
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          height: 100,
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              // colors: [Color(0xFFFF9900), Color(0xFFFFB446)],
-                              colors: [
-                                AssetsConstants.green1,
-                                AssetsConstants.green1
+                        borderRadius: BorderRadius.circular(24),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 20,
+                            spreadRadius: 1,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            height: 100,
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                // colors: [Color(0xFFFF9900), Color(0xFFFFB446)],
+                                colors: [
+                                  AssetsConstants.green1,
+                                  AssetsConstants.green1
+                                ],
+                              ),
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(24),
+                                topRight: Radius.circular(24),
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color.fromARGB(255, 0, 255, 17)
+                                      .withOpacity(0.7),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
                               ],
                             ),
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(24),
-                              topRight: Radius.circular(24),
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: const Color.fromARGB(255, 0, 255, 17)
-                                    .withOpacity(0.7),
-                                blurRadius: 8,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              Positioned(
-                                top: -20,
-                                right: -20,
-                                child: Container(
-                                  width: 100,
-                                  height: 100,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.white.withOpacity(0.1),
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                Positioned(
+                                  top: -20,
+                                  right: -20,
+                                  child: Container(
+                                    width: 100,
+                                    height: 100,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Colors.white.withOpacity(0.1),
+                                    ),
                                   ),
                                 ),
-                              ),
-                              TweenAnimationBuilder(
-                                duration: const Duration(milliseconds: 600),
-                                tween: Tween<double>(begin: 0, end: 1),
-                                builder: (context, double value, child) {
-                                  return Transform.scale(
-                                    scale: value,
-                                    child: child,
-                                  );
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.all(16),
-                                  decoration: const BoxDecoration(
-                                    color: Colors.white,
-                                    shape: BoxShape.circle,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: AssetsConstants.green1,
-                                        blurRadius: 12,
-                                        spreadRadius: 2,
-                                      ),
-                                    ],
-                                  ),
-                                  child: const Icon(
-                                    Icons.done,
-                                    size: 32,
-                                    color: AssetsConstants.green1,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
-                          child: Column(
-                            children: [
-                              const Text(
-                                'Đang chờ nhân viên bốc vác làm việc',
-                                style: TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF2D3142),
-                                ),
-                              ),
-                              const SizedBox(height: 16),
-                              Text(
-                                'Chờ nhân viên bốc vác hoàn thành đóng gói hàng lên xe',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  height: 1.5,
-                                  color: Colors.grey[600],
-                                ),
-                              ),
-                              const SizedBox(height: 32),
-                            ],
-                          ),
-                        ),
-
-                        // Buttons
-                        Container(
-                          padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-                          child: Row(
-                            children: [
-                              // "Đánh giá ngay" button
-                              Expanded(
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(12),
-                                    gradient: const LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                      colors: [
-                                        AssetsConstants.green1,
-                                        AssetsConstants.green1
+                                TweenAnimationBuilder(
+                                  duration: const Duration(milliseconds: 600),
+                                  tween: Tween<double>(begin: 0, end: 1),
+                                  builder: (context, double value, child) {
+                                    return Transform.scale(
+                                      scale: value,
+                                      child: child,
+                                    );
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(16),
+                                    decoration: const BoxDecoration(
+                                      color: Colors.white,
+                                      shape: BoxShape.circle,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: AssetsConstants.green1,
+                                          blurRadius: 12,
+                                          spreadRadius: 2,
+                                        ),
                                       ],
                                     ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: const Color(0xFFFF9900)
-                                            .withOpacity(0.3),
-                                        blurRadius: 8,
-                                        spreadRadius: 0,
-                                        offset: const Offset(0, 4),
-                                      ),
-                                    ],
-                                  ),
-                                  child: ElevatedButton(
-                                    onPressed: () {
-                                      // Navigator.of(context).pop();
-                                      Navigator.of(context).pop();
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.transparent,
-                                      foregroundColor: Colors.white,
-                                      shadowColor: Colors.transparent,
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 16),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
+                                    child: const Icon(
+                                      Icons.done,
+                                      size: 32,
+                                      color: AssetsConstants.green1,
                                     ),
-                                    child: const Text(
-                                      'Xác nhận',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+                            child: Column(
+                              children: [
+                                const Text(
+                                  'Đang chờ nhân viên bốc vác làm việc',
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF2D3142),
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  'Chờ nhân viên bốc vác hoàn thành đóng gói hàng lên xe',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    height: 1.5,
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                                const SizedBox(height: 32),
+                              ],
+                            ),
+                          ),
+
+                          // Buttons
+                          Container(
+                            padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                            child: Row(
+                              children: [
+                                // "Đánh giá ngay" button
+                                Expanded(
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12),
+                                      gradient: const LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                        colors: [
+                                          AssetsConstants.green1,
+                                          AssetsConstants.green1
+                                        ],
+                                      ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: const Color(0xFFFF9900)
+                                              .withOpacity(0.3),
+                                          blurRadius: 8,
+                                          spreadRadius: 0,
+                                          offset: const Offset(0, 4),
+                                        ),
+                                      ],
+                                    ),
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        // Navigator.of(context).pop();
+                                        Navigator.of(context).pop();
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.transparent,
+                                        foregroundColor: Colors.white,
+                                        shadowColor: Colors.transparent,
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 16),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                      ),
+                                      child: const Text(
+                                        'Xác nhận',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              },
-            );
-          
+                  );
+                },
+              );
             }
           } else if (buildRouteFlags['isDriverEndDeliveryPointBuildRoute']!) {
             waypoint = _getDeliveryPointLatLng();
@@ -1133,7 +1134,6 @@ setState(() {
                 );
               },
             );
-          
           } else if (buildRouteFlags["isFailedRoute"]!) {
             waypoint = _getDeliveryPointLatLng();
             showDialog(
@@ -2200,14 +2200,14 @@ setState(() {
                       child: const Icon(Icons.check),
                     ),
                 if (!_isNavigationStarted)
-                  if (canDriverStartMovingFlag && !canDriverWaitingProcess)
+                  if (canDriverStartMovingFlag  && canDriverWaitingProcess)
                     FloatingActionButton(
                       onPressed: _isMapReady ? _startArrivedToInprogress : null,
                       // onPressed: _isMapReady ? _startNavigation : null,
                       child: const Icon(Icons.directions_car),
                     ),
-                if (!_isNavigationStarted && !canDriverWaitingProcess)
-                  if (canDriverStartMovingFlag)
+                if (!_isNavigationStarted)
+                  if (canDriverStartMovingFlag  && canDriverWaitingProcess)
                     FloatingActionButton(
                       onPressed: _fastFinishToComplete,
                       backgroundColor: Colors.green,
