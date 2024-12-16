@@ -1537,6 +1537,8 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
                                 context: context,
                               );
                         } finally {
+                                                    Navigator.of(context).pop();
+
                           context.router.push(PorterConfirmScreenRoute(
                             job: _currentJob,
                           ));
@@ -1661,6 +1663,8 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
                                 context: context,
                               );
                         } finally {
+                                                    Navigator.of(context).pop();
+
                           context.router.push(PorterConfirmScreenRoute(
                             job: _currentJob,
                           ));

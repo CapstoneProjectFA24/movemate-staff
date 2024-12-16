@@ -622,7 +622,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                               ),
                               const SizedBox(height: 16),
                               Text(
-                                'Hãy quay lại màn hình chính để kiểm tra các đơn khác',
+                                'Chờ khách hàng thanh toán để kết thúc công việc',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontSize: 16,
@@ -665,7 +665,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                                   ),
                                   child: ElevatedButton(
                                     onPressed: () {
-                                      Navigator.of(context).pop();
+                                      // Navigator.of(context).pop();
                                       Navigator.of(context).pop();
                                     },
                                     style: ElevatedButton.styleFrom(
@@ -1413,10 +1413,10 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                                 context: context,
                               );
                         } finally {
+                          Navigator.of(context).pop();
                           context.router.push(DriverConfirmUploadRoute(
                             job: _currentJob,
                           ));
-                          Navigator.of(context).pop();
                         }
                       },
                       style: ElevatedButton.styleFrom(

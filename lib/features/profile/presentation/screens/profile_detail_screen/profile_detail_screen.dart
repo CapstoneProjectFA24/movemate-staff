@@ -86,60 +86,60 @@ class ProfileDetailScreen extends HookConsumerWidget {
                         ),
                       ],
                     ),
-                    const FaIcon(
-                      FontAwesomeIcons.edit,
-                      color: Colors.grey,
-                    ),
+                    // const FaIcon(
+                    //   FontAwesomeIcons.edit,
+                    //   color: Colors.grey,
+                    // ),
                   ],
                 ),
                 const SizedBox(height: 20),
                 // Status
-                Center(
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE0F7E0),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Text(
-                      'Đã xác thực',
-                      style: TextStyle(
-                        color: Color(0xFF4CAF50),
-                        fontSize: 12,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
+                // Center(
+                //   child: Container(
+                //     padding:
+                //         const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                //     decoration: BoxDecoration(
+                //       color: const Color(0xFFE0F7E0),
+                //       borderRadius: BorderRadius.circular(20),
+                //     ),
+                //     child: const Text(
+                //       'Đã xác thực',
+                //       style: TextStyle(
+                //         color: Color(0xFF4CAF50),
+                //         fontSize: 12,
+                //       ),
+                //     ),
+                //   ),
+                // ),
+                // const SizedBox(height: 20),
                 // Personal Info Section
-                Section(
-                  title: 'Thông tin cá nhân',
-                  onEditPressed: () {
-                    context.router.push(
-                        const InfoScreenRoute()); // Điều hướng đến trang Info
-                  },
-                  children: const [
-                    InfoRow(label: 'Tên thân mật', value: "Vinh"),
-                    InfoRow(label: 'Tên thật', value: 'Nguyễn Vinh'),
-                    InfoRow(label: 'Giới tính', value: 'Nam'),
-                    InfoRow(label: 'CMND/CCCD', value: '077123456789'),
-                    InfoRow(label: 'Sống tại', value: 'TP. Hồ Chí Minh'),
-                  ],
-                ),
-                const SizedBox(height: 20),
+                // Section(
+                //   title: 'Thông tin cá nhân',
+                //   onEditPressed: () {
+                //     context.router.push(
+                //         const InfoScreenRoute()); // Điều hướng đến trang Info
+                //   },
+                //   children: const [
+                //     InfoRow(label: 'Tên thân mật', value: "Vinh"),
+                //     InfoRow(label: 'Tên thật', value: 'Nguyễn Vinh'),
+                //     InfoRow(label: 'Giới tính', value: 'Nam'),
+                //     InfoRow(label: 'CMND/CCCD', value: '077123456789'),
+                //     InfoRow(label: 'Sống tại', value: 'TP. Hồ Chí Minh'),
+                //   ],
+                // ),
+                // const SizedBox(height: 20),
                 // Contact Info Section
                 Section(
                   title: 'Thông tin liên hệ',
                   onEditPressed: () {
-                    context.router.push(const ContactScreenRoute());
+                    // context.router.push(const ContactScreenRoute());
                   },
                   children: [
                     InfoRow(label: 'Số điện thoại', value: '${user.phone}'),
                     InfoRow(label: 'Gmail', value: user.email),
-                    const InfoRow(
-                        label: 'Địa chỉ',
-                        value: 'Quận 9, Thành phố Hồ Chí Minh'),
+                    // const InfoRow(
+                    //     label: 'Địa chỉ',
+                    //     value: 'Quận 9, Thành phố Hồ Chí Minh'),
                   ],
                 ),
                 const SizedBox(height: 20),

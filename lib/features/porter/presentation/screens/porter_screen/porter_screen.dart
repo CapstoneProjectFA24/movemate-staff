@@ -307,32 +307,36 @@ class PorterScreen extends HookConsumerWidget {
                           final job = jobs[index];
                           final startTime = DateFormat('MM/dd/yyyy HH:mm:ss')
                               .parse(job.bookingAt);
-                          return Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Column(
-                                children: [
-                                  Text(
-                                    DateFormat.Hm().format(startTime),
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.orange.shade800,
+                          return Padding(
+                              
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Column(
+                                  children: [
+                                    Text(
+                                      DateFormat.Hm().format(startTime),
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.orange.shade800,
+                                      ),
                                     ),
-                                  ),
-                                  if (index < jobs.length - 1)
-                                    Container(
-                                      height: 80,
-                                      width: 2,
-                                      color: Colors.orange.shade200,
-                                    ),
-                                ],
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: PorterCard(job: job),
-                              ),
-                            ],
+                                    if (index < jobs.length - 1)
+                                      Container(
+                                        height: 80,
+                                        width: 2,
+                                        color: Colors.orange.shade200,
+                                      ),
+                                  ],
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: PorterCard(job: job),
+                                ),
+                              ],
+                            ),
                           );
                         },
                       ),
