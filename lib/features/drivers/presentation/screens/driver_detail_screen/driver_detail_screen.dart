@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/features/drivers/presentation/controllers/driver_controller/driver_controller.dart';
 import 'package:movemate_staff/features/drivers/presentation/controllers/stream_controller/job_stream_manager.dart';
@@ -61,6 +62,8 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
   bool canDriverConfirmIncomingFlag = false;
   bool canDriverStartMovingFlag = false;
   bool canDriverActiveIncident = false;
+  bool canDriverTimingToStart = false;
+
   // realtime
   UserModel? user;
   final DatabaseReference locationRef =
@@ -486,9 +489,29 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
 
     if (bookingData != null &&
         bookingData["Assignments"] != null &&
-        bookingData["Status"] != null) {
+        bookingData["Status"] != null &&
+        bookingData["BookingAt"] != null) {
       final assignments = bookingData["Assignments"] as List;
       final fireStoreBookingStatus = bookingData["Status"] as String;
+
+      final bookingAt = bookingData["BookingAt"] as String;
+
+      final now = DateTime.now();
+      final format = DateFormat("MM/dd/yyyy HH:mm:ss");
+
+      final bookingDateTime = format.parse(bookingAt);
+      final earliestStartTime =
+          bookingDateTime.subtract(const Duration(hours: 1));
+      final isValidTime = now.isAfter(earliestStartTime) &&
+          now.isBefore(bookingDateTime.add(const Duration(hours: 24)));
+      setState(() {
+        canDriverTimingToStart = isValidTime;
+      });
+
+      print("vinh debug: $bookingDateTime");
+      print("vinh debug 1: $earliestStartTime");
+      print("vinh debug 2: $now");
+      print("vinh debug 3: $isValidTime");
 
       final driverAssignmentStatus = _getDriverAssignmentStatus(assignments);
       final buildRouteFlags =
@@ -506,10 +529,203 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
           if (buildRouteFlags['isDriverStartBuildRoute']!) {
             waypoint = _getPickupPointLatLng();
             _nextDestination = _getDeliveryPointLatLng();
+
+            if(!isValidTime){
+
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return Dialog(
+                  backgroundColor: Colors.transparent,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [Colors.white, Color(0xFFFFF8F0)],
+                      ),
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 20,
+                          spreadRadius: 1,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          height: 100,
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              // colors: [Color(0xFFFF9900), Color(0xFFFFB446)],
+                              colors: [
+                                AssetsConstants.green1,
+                                AssetsConstants.green1
+                              ],
+                            ),
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(24),
+                              topRight: Radius.circular(24),
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color.fromARGB(255, 0, 255, 17)
+                                    .withOpacity(0.7),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Positioned(
+                                top: -20,
+                                right: -20,
+                                child: Container(
+                                  width: 100,
+                                  height: 100,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Colors.white.withOpacity(0.1),
+                                  ),
+                                ),
+                              ),
+                              TweenAnimationBuilder(
+                                duration: const Duration(milliseconds: 600),
+                                tween: Tween<double>(begin: 0, end: 1),
+                                builder: (context, double value, child) {
+                                  return Transform.scale(
+                                    scale: value,
+                                    child: child,
+                                  );
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: const BoxDecoration(
+                                    color: Colors.white,
+                                    shape: BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: AssetsConstants.green1,
+                                        blurRadius: 12,
+                                        spreadRadius: 2,
+                                      ),
+                                    ],
+                                  ),
+                                  child: const Icon(
+                                    Icons.published_with_changes_outlined,
+                                    size: 32,
+                                    color: AssetsConstants.green1,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+                          child: Column(
+                            children: [
+                              const Text(
+                                'Chưa tới thời gian dọn nhà ',
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF2D3142),
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                'Bạn chỉ có thể xem thông tin của khách hàng',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  height: 1.5,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                              const SizedBox(height: 32),
+                            ],
+                          ),
+                        ),
+
+                        // Buttons
+                        Container(
+                          padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                          child: Row(
+                            children: [
+                              // "Đánh giá ngay" button
+                              Expanded(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12),
+                                    gradient: const LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                      colors: [
+                                        AssetsConstants.green1,
+                                        AssetsConstants.green1
+                                      ],
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: const Color(0xFFFF9900)
+                                            .withOpacity(0.3),
+                                        blurRadius: 8,
+                                        spreadRadius: 0,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
+                                  ),
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      // Navigator.of(context).pop();
+                                      Navigator.of(context).pop();
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.transparent,
+                                      foregroundColor: Colors.white,
+                                      shadowColor: Colors.transparent,
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 16),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                    ),
+                                    child: const Text(
+                                      'Xác nhận',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            );
+         
+            }
           } else if (buildRouteFlags['isDriverAtDeliveryPointBuildRoute']!) {
             waypoint = _getDeliveryPointLatLng();
           } else if (buildRouteFlags['isDriverEndDeliveryPointBuildRoute']!) {
             waypoint = _getDeliveryPointLatLng();
+         
             showDialog(
               context: context,
               builder: (BuildContext context) {
@@ -697,6 +913,7 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
                 );
               },
             );
+         
           } else if (buildRouteFlags["isFailedRoute"]!) {
             waypoint = _getDeliveryPointLatLng();
             showDialog(
@@ -1448,6 +1665,9 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    print("vinh debug 4 ${canDriverTimingToStart}");
+
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -1747,14 +1967,14 @@ class _DriverDetailScreenState extends State<DriverDetailScreen> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 if (!_isNavigationStarted)
-                  if (canDriverConfirmIncomingFlag)
+                  if (canDriverConfirmIncomingFlag&&canDriverTimingToStart)
                     FloatingActionButton(
                       onPressed: _isMapReady ? _startAssinedToComing : null,
                       // onPressed: _isMapReady ? _startNavigation : null,
                       child: const Icon(Icons.directions),
                     ),
                 if (!_isNavigationStarted)
-                  if (canDriverConfirmIncomingFlag)
+                  if (canDriverConfirmIncomingFlag&&canDriverTimingToStart)
                     FloatingActionButton(
                       onPressed: _fastFinishToArrived,
                       backgroundColor: Colors.green,

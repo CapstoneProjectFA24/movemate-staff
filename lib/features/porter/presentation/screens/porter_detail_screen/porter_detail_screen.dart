@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:movemate_staff/configs/routes/app_router.dart';
 import 'package:movemate_staff/features/drivers/presentation/controllers/stream_controller/job_stream_manager.dart';
 import 'package:movemate_staff/features/job/domain/entities/booking_response_entity/assignment_response_entity.dart';
@@ -64,6 +65,8 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
   bool canPorterConfirmToUploadInprogress = false;
   bool canPorterConfirmToOngoingToEnd = false;
   bool canPorterActiveModal = false;
+  bool canPorterTimingToStart = false;
+
 
   // realtime
   UserModel? user;
@@ -537,6 +540,23 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
       final assignments = bookingData["Assignments"] as List;
       final fireStoreBookingStatus = bookingData["Status"] as String;
 
+final bookingAt = bookingData["BookingAt"] as String;
+   final now = DateTime.now();
+      final format = DateFormat("MM/dd/yyyy HH:mm:ss");
+
+      final bookingDateTime = format.parse(bookingAt);
+      final earliestStartTime =
+          bookingDateTime.subtract(const Duration(hours: 1));
+      final isValidTime = now.isAfter(earliestStartTime) &&
+          now.isBefore(bookingDateTime.add(const Duration(hours: 24)));
+      setState(() {
+        canPorterTimingToStart = isValidTime;
+      });
+      print("vinh debug: $bookingDateTime");
+      print("vinh debug 1: $earliestStartTime");
+      print("vinh debug 2: $now");
+      print("vinh debug 3: $isValidTime");
+
       final porterAssignmentStatus = _getPorterAssignmentStatus(assignments);
       final buildRouteFlags =
           _getBuildRouteFlags(porterAssignmentStatus, fireStoreBookingStatus);
@@ -553,6 +573,8 @@ class _PorterDetailScreenScreenState extends State<PorterDetailScreen> {
           if (buildRouteFlags['isPorterStartBuildRoute']!) {
             waypoint = _getPickupPointLatLng();
             _nextDestination = _getDeliveryPointLatLng();
+            //TODO: hiển thị modal khi mà !isValidTime
+            
           } else if (buildRouteFlags['isPorterAtDeliveryPointBuildRoute']!) {
             waypoint = _getDeliveryPointLatLng();
           } else if (buildRouteFlags['isPorterEndDeliveryPointBuildRoute']! ) {

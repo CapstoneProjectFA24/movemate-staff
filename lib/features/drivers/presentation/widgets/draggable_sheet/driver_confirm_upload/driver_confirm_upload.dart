@@ -15,6 +15,7 @@ import 'package:movemate_staff/services/realtime_service/booking_status_realtime
 import 'package:movemate_staff/utils/commons/widgets/cloudinary/cloudinary_camera_upload_widget.dart';
 import 'package:movemate_staff/utils/commons/widgets/widgets_common_export.dart';
 import 'package:movemate_staff/utils/constants/asset_constant.dart';
+import 'package:movemate_staff/utils/providers/common_provider.dart';
 
 @RoutePage()
 class DriverConfirmUpload extends HookConsumerWidget {
@@ -32,10 +33,11 @@ class DriverConfirmUpload extends HookConsumerWidget {
     const secondaryOrange = Color(0xFFFFE5D6);
     const darkGrey = Color(0xFF4A4A4A);
     const disabledGrey = Color(0xFFE0E0E0);
-
+    final user = ref.read(authProvider);
     // Image states
     final images1 = useState<List<String>>([]);
     final imagePublicIds1 = useState<List<String>>([]);
+
 
     final images3 = useState<List<String>>([]);
     final imagePublicIds3 = useState<List<String>>([]);
@@ -66,9 +68,116 @@ class DriverConfirmUpload extends HookConsumerWidget {
       _getBookingData();
     }, []);
 
+
     if (_bookingData.value == null) {
       return const Center(child: CircularProgressIndicator());
     }
+
+    final assignments = _bookingData.value!["Assignments"] as List;
+    final fireStoreBookingStatus = _bookingData.value!["Status"] as String;
+
+    Map<String, bool> _getDriverAssignmentStatus(List assignments) {
+      final staffAssignment = assignments.firstWhere(
+          (a) => a['StaffType'] == 'DRIVER' && a['UserId'] == user?.id,
+          orElse: () => null);
+
+      if (staffAssignment == null) {
+        return {
+          'isDriverWaiting': false,
+          'isDriverAssigned': false,
+          'isDriverIncoming': false,
+          'isDriverArrived': false,
+          'isDriverInprogress': false,
+          'isDriverCompleted': false,
+          'isDriverFailed': false,
+        };
+      }
+
+      return {
+        'isDriverWaiting': staffAssignment['Status'] == 'WAITING',
+        'isDriverAssigned': staffAssignment['Status'] == 'ASSIGNED',
+        'isDriverIncoming': staffAssignment['Status'] == 'INCOMING',
+        'isDriverArrived': staffAssignment['Status'] == 'ARRIVED',
+        'isDriverInprogress': staffAssignment['Status'] == 'IN_PROGRESS',
+        'isDriverCompleted': staffAssignment['Status'] == 'COMPLETED',
+        'isDriverFailed': staffAssignment['Status'] == 'FAILED',
+      };
+    }
+
+    Map<String, bool> _getBuildRouteFlags(
+        Map<String, bool> driverAssignmentStatus,
+        String fireStoreBookingStatus) {
+      bool canDriverConfirmArrived = false;
+      bool canDriverCompleteDelivery = false;
+
+      bool isFailedRoute = false;
+      bool isDriverPause = false;
+
+      switch (fireStoreBookingStatus) {
+        case "COMING":
+         canDriverConfirmArrived =
+              !driverAssignmentStatus['isDriverInprogress']! &&
+                  !driverAssignmentStatus['isDriverWaiting']! &&
+                  !driverAssignmentStatus['isDriverAssigned']! &&
+                  !driverAssignmentStatus['isDriverArrived']! &&
+                  !driverAssignmentStatus['isDriverCompleted']! &&
+                  driverAssignmentStatus['isDriverIncoming']!;
+
+          canDriverCompleteDelivery =
+              driverAssignmentStatus['isDriverInprogress']! &&
+                  !driverAssignmentStatus['isDriverWaiting']! &&
+                  !driverAssignmentStatus['isDriverAssigned']! &&
+                  !driverAssignmentStatus['isDriverArrived']! &&
+                  !driverAssignmentStatus['isDriverCompleted']! &&
+                  !driverAssignmentStatus['isDriverIncoming']!;
+          break;
+
+        case "IN_PROGRESS":
+          isFailedRoute = driverAssignmentStatus['isDriverFailed']!;
+
+         canDriverConfirmArrived =
+              !driverAssignmentStatus['isDriverInprogress']! &&
+                  !driverAssignmentStatus['isDriverWaiting']! &&
+                  !driverAssignmentStatus['isDriverAssigned']! &&
+                  !driverAssignmentStatus['isDriverArrived']! &&
+                  !driverAssignmentStatus['isDriverCompleted']! &&
+                  driverAssignmentStatus['isDriverIncoming']!;
+
+          canDriverCompleteDelivery =
+              driverAssignmentStatus['isDriverInprogress']! &&
+                  !driverAssignmentStatus['isDriverWaiting']! &&
+                  !driverAssignmentStatus['isDriverAssigned']! &&
+                  !driverAssignmentStatus['isDriverArrived']! &&
+                  !driverAssignmentStatus['isDriverCompleted']! &&
+                  !driverAssignmentStatus['isDriverIncoming']!;
+
+          break;
+        case "COMPLETED":
+          isFailedRoute = driverAssignmentStatus['isDriverFailed']!;
+
+          break;
+
+        case "PAUSED":
+          isDriverPause = true;
+          break;
+
+        default:
+          break;
+      }
+
+      return {
+        'isFailedRoute': isFailedRoute,
+        'isDriverPause': isDriverPause,
+        'canDriverConfirmArrived': canDriverConfirmArrived,
+        'canDriverCompleteDelivery': canDriverCompleteDelivery
+      };
+    }
+
+    final driverAssignmentStatus = _getDriverAssignmentStatus(assignments);
+
+    final buildRouteFlags =
+        _getBuildRouteFlags(driverAssignmentStatus, fireStoreBookingStatus);
+
 
     List<dynamic> getTrackerSources(
         Map<String, dynamic> bookingData, String trackerType) {
@@ -81,6 +190,9 @@ class DriverConfirmUpload extends HookConsumerWidget {
         return [];
       }
     }
+
+
+
 
     final imagesSourceArrived =
         getTrackerSources(_bookingData.value!, "DRIVER_ARRIVED");
@@ -315,7 +427,7 @@ class DriverConfirmUpload extends HookConsumerWidget {
                     },
                     actionButtonLabel: 'Xác nhận đến',
                     actionIcon: Icons.location_on,
-                    isEnabled: status.canDriverConfirmArrived,
+                    isEnabled: buildRouteFlags["canDriverConfirmArrived"]!,
                     showCameraButton: true,
                     request: request.value,
                   ),
@@ -373,7 +485,7 @@ class DriverConfirmUpload extends HookConsumerWidget {
                     },
                     actionButtonLabel: 'Xác nhận giao hàng',
                     actionIcon: Icons.check_circle,
-                    isEnabled: status.canDriverCompleteDelivery,
+                    isEnabled: buildRouteFlags["canDriverCompleteDelivery"]!,
                     showCameraButton: true,
                     request: request.value,
                   ),
